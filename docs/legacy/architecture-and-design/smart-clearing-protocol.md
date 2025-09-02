@@ -4,7 +4,7 @@ description: How Yellow Network operates
 
 # Smart Clearing Protocol
 
-Despite the stakeholders in crypto being slightly different from a [clearing house in traditional finance](../../about/related-work/traditional-finance.md), the introduction of an independent Layer-3 smart clearing protocol helps to mitigate the problems of:
+Despite the stakeholders in crypto being slightly different from a [clearing house in traditional finance](../about/related-work/traditional-finance.md), the introduction of an independent Layer-3 smart clearing protocol helps to mitigate the problems of:
 
 Market fragmentation by connecting smaller brokers, market makers, and exchanges; cross-chain and cross-network.
 

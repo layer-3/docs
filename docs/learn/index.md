@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: Introduction
-description: Learn about Yellow SDK, state channels, and the Yellow Network ecosystem
-keywords: [yellow sdk, nitrolite, state channels, blockchain scaling, web3 development]
+description: Learn about state channels, and the Yellow Network ecosystem
+keywords: [state channels, blockchain scaling, web3 development]
 ---
 
-# Introduction to Yellow SDK
+# Introduction
 
-The Yellow SDK empowers developers to build high-performance decentralized applications that combine the speed of traditional web apps with the security and decentralization of blockchain technology.
+Learn how to build high-performance decentralized applications that combine the speed of traditional web apps with the security and decentralization of blockchain technology.
 
 ## What is Yellow SDK?
 
-Yellow SDK is a real-time communication toolkit built on the **NitroliteRPC** protocol. It enables developers to create applications with:
+**Yellow SDK** is a real-time communication toolkit built on the _Nitrolite RPC_ protocol. It enables developers to create applications with:
 
 - **Instant messaging** between participants
 - **Secure authentication** using wallet signatures
@@ -100,4 +100,4 @@ Ready to start building? The Yellow SDK provides everything you need:
 - **Production infrastructure**: ClearNode network and custody contracts
 - **Developer tools**: Testing utilities and debugging helpers
 
-Continue to the [Quick Start Guide](quick-start/quick-start) to build your first Yellow App in minutes.
+Continue to the [Quick Start Guide](../build/quick-start) to build your first Yellow App in minutes.

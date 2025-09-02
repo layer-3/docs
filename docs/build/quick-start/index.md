@@ -340,8 +340,8 @@ await app.sendPayment('100000', '0xPartnerAddress'); // Send 0.1 USDC
 
 Congratulations! You've built your first Yellow App. Here's what to explore next:
 
-- **[Advanced Guide](../advanced)**: Learn about multi-party applications, production deployment, and advanced patterns
-- **[API Reference](../advanced/api-reference)**: Explore all available SDK methods and options
+- **[Advanced Topics](../../learn/advanced/architecture)**: Learn about architecture, multi-party applications, and production deployment
+- **[API Reference](../../api-reference)**: Explore all available SDK methods and options
 
 ## Need Help?
 

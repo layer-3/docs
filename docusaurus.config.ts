@@ -71,13 +71,33 @@ const config: Config = {
       },
       items: [
         {
-          to: '/docs/learn/intro',
+          to: '/docs/learn',
           label: 'Learn',
           position: 'left',
         },
         {
-          to: '/docs/build/yellow-sdk',
+          to: '/docs/build/quick-start',
           label: 'Build',
+          position: 'left',
+        },
+        {
+          to: '/docs/manuals',
+          label: 'Manuals',
+          position: 'left',
+        },
+        {
+          to: '/docs/tutorials',
+          label: 'Tutorials',
+          position: 'left',
+        },
+        {
+          to: '/docs/api-reference',
+          label: 'API Reference',
+          position: 'left',
+        },
+        {
+          to: '/docs/legacy/',
+          label: 'Legacy',
           position: 'left',
         },
         {
@@ -94,12 +114,8 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Introduction',
-              to: '/docs/learn/intro',
-            },
-            {
-              label: 'Yellow SDK',
-              to: '/docs/build/yellow-sdk',
+              label: 'Documentation',
+              to: '/docs/learn',
             },
           ],
         },
