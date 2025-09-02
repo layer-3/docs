@@ -11,7 +11,7 @@ Learn how to build high-performance decentralized applications that combine the 
 
 ## What is Yellow SDK?
 
-This is a real-time communication toolkit built on the **NitroliteRPC** protocol. It enables developers to create applications with:
+**Yellow SDK** is a real-time communication toolkit built on the _Nitrolite RPC_ protocol. It enables developers to create applications with:
 
 - **Instant messaging** between participants
 - **Secure authentication** using wallet signatures
