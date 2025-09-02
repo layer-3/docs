@@ -64,9 +64,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Yellow Network',
+      title: '',
       logo: {
-        alt: 'Yellow Network Logo',
+        alt: 'Yellow Network',
         src: 'img/logo.svg',
       },
       items: [
