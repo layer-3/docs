@@ -15,6 +15,6 @@ Audit & KYC is currently in progress and the results will be published soon.
 
 #### Report:
 
-[Download Yellow Network Audit 2323.pdf](../assets/Yellow%20Network%20Audit%202323.pdf)
+[Download Yellow Network Audit 2323.pdf](/assets/Yellow%20Network%20Audit%202323.pdf)
 
 _**More audits will be published closer to TGE.**_

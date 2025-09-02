@@ -69,6 +69,7 @@ const config: Config = {
     ],
   ],
 
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
@@ -84,6 +85,11 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Tutorial',
+        },
+        {
+          to: '/docs/category/learn',
+          label: 'Yellow SDK',
+          position: 'left',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
