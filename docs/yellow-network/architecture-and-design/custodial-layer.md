@@ -1,10 +1,10 @@
 # Custodial Layer
 
-{% hint style="info" %}
-[NextSupported Technologies](https://app.gitbook.com/o/QctDSNMsySynj5wfSI1z/s/XSYwcbHANS5peGYWN1S6/~/changes/29zaX9vxbByRsicxZH9K/yellow-network/architecture-and-design/supported-technologies) At this stage, Yellow Network does not provide any in-house custodial solution, neither centralized nor decentralized. This means that participating brokers are responsible to provide their own custody solutions.
+:::info
+At this stage, Yellow Network does not provide any in-house custodial solution, neither centralized nor decentralized. This means that participating brokers are responsible to provide their own custody solutions.
 
-However, we are aware of the need for decentralized custodial solutions and plan to address this issue in the near future.&#x20;
-{% endhint %}
+However, we are aware of the need for decentralized custodial solutions and plan to address this issue in the near future.
+:::
 
 The Yellow Network Smart Clearing Protocol does not custody assets of participating brokers except for:
 
@@ -24,7 +24,7 @@ At this stage we plan to integrate the following third-party custody solutions:
 * [Cobo](https://cobo.com/)
 * [Fireblocks](https://www.fireblocks.com/)
 
-Technically, any custodial solution can be supported by Yellow Network, and we plan to expand our offer continuously. [Contact](broken-reference) our sales and development team for specific requests.&#x20;
+Technically, any custodial solution can be supported by Yellow Network, and we plan to expand our offer continuously. [Contact](#) our sales and development team for specific requests.&#x20;
 
 ### Multi-Chain
 

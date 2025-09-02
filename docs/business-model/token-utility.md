@@ -26,7 +26,7 @@ The node software is open-source; however, you need to lock $YELLOW tokens to be
 
 ### **Token Distribution**
 
-![](<../.gitbook/assets/Group 13630 (1).png>)
+*[Token Distribution Chart]*
 
 * 30% will be dedicated to ecosystem projects development (Community Fund)**;**
 * Funds from that pool will be allocated based on community proposals 15% will be allocated for growth-hacking rewards;&#x20;

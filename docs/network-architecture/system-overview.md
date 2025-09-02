@@ -110,4 +110,4 @@ List of networks to be supported later:
 
 **Yellow nodes:** [Jamstack](https://jamstack.org/), [Golang](https://go.dev/), [Next.js](https://nextjs.org/), [gRPC](https://grpc.io/)
 
-![](<../.gitbook/assets/Group 13631.png>)
+![Technologies Used and Created by Yellow](/img/placeholder.png)

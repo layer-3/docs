@@ -4,9 +4,9 @@ description: Learn everything you need to know about our token
 
 # 🪙 $YELLOW
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this state. The current, and all subsequent sub-pages, are subject to change.
-{% endhint %}
+:::
 
 * **Token Name:** YELLOW
 * **Token Ticker:** $YELLOW

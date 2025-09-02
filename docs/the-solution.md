@@ -45,7 +45,7 @@ Cutting-edge state channel technology enables fast trading and reaching assets l
 * Near-instant off-chain transactions;
 * Efficient on-chain transactions.
 
-![](<.gitbook/assets/Group 13236.png>)
+*[Image placeholder: Solution architecture diagram]*
 
 ### Security&#x20;
 

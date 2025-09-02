@@ -52,9 +52,9 @@ We aim to continuously add new networks and blockchains into the future. If you 
 ## **Currencies and Markets**
 
 * The number of supported currencies depends on each broker. Brokers have the ability to add currencies and appropriate markets at their own discretion from the admin panel.
-* <mark style="background-color:orange;">P2P trading is available to brokers only for approved markets and currencies with assets matching from both sides.</mark>
+* **P2P trading is available to brokers only for approved markets and currencies with assets matching from both sides.**
 
-_<mark style="background-color:orange;">Note: A list of supported currencies and trading pairs will be made available shortly</mark>_&#x20;
+_**Note: A list of supported currencies and trading pairs will be made available shortly**_&#x20;
 
 ## **Support**&#x20;
 

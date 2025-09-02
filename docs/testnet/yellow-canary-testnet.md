@@ -4,7 +4,7 @@ Yellow Canary Testnet is designed to test the innovations of Yellow Network in a
 
 Canary Network will be used for trading tangible assets like on the production Yellow Network, but with smaller transaction value. It minimizes the risk of releasing vulnerabilities while risking small amounts of money. The $DUCKIES token is the token used on the canary testnet to connect to the network and pay the fees, acting like the $YELLOW token for Yellow Network.
 
-{% embed url="https://www.yellow.org/duckies" %}
+Visit [Yellow Duckies](https://www.yellow.org/duckies)
 
 ## What Yellow Canary Testnet Puts Forward <a href="#id-453b" id="id-453b"></a>
 

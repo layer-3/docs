@@ -6,22 +6,22 @@ description: >-
 
 # 📚 Glossary
 
-{% tabs %}
-{% tab title="A" %}
+<!-- Tabs -->
+## A
 [Adjudicator](glossary.md#undefined)
 
 [Atomic Swap](glossary.md#undefined)
 
 [Automated Market Making (AMM](glossary.md#automated-market-making)[)](glossary.md#automated-market-making)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="B" %}
+## B
 [Broker](glossary.md#broker)
 
 [B2B (Broker to Broker) liquidity channel](glossary.md#b2b-broker-to-broker-liquidity-channel)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="C" %}
+## C
 [Centralized Exchange (CEX)](glossary.md#centralized-exchange-cex)
 
 [Clearing / Smart Clearing](glossary.md#clearing)
@@ -29,120 +29,120 @@ description: >-
 [Collateral](glossary.md#collateral)
 
 [Custodians](glossary.md#custodians)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="D" %}
+## D
 [Decentralized Exchange (DEX)](glossary.md#decentralized-exchange-dex)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="E" %}
+## E
 [Exchanges](glossary.md#exchanges)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="F" %}
+## F
 [FAQ](glossary.md#undefined-1)
 
 [Fees](glossary.md#fees)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="G" %}
+## G
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="H" %}
+## H
 [Hash Time Locked Contract (HTLC)](glossary.md#undefined-1)
 
 [High Frequency Trading (HFT)](glossary.md#high-frequency-trading-hft)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="I" %}
+## I
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="J" %}
+## J
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="K" %}
+## K
 [Know Your Customer (KYC)](glossary.md#know-your-customer-kyc)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="L" %}
+## L
 [Layer (0-3)](glossary.md#layer-1-3)
 
 [Liquidity Aggregation](glossary.md#liquidity-aggregation)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="M" %}
+## M
 [Market Makers](glossary.md#market-makers)
 
 [Multi-Chain & Multi-Custody Support](glossary.md#multi-chain-and-multi-custody-support)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="N" %}
+## N
 [Yellow Network](glossary.md#yellow-network)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="O" %}
+## O
 [OpenDAX](glossary.md#opendax)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="P" %}
+## P
 [Policies](glossary.md#policies)
 
 [Protocol](glossary.md#protocol)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="Q" %}
+## Q
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="R" %}
+## R
 [Remote Order Matching](glossary.md#remote-order-matching)
 
 [Reserve Vault](glossary.md#undefined-1)
 
 [Retail Broker](glossary.md#retail-brokers)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="S" %}
+## S
 [Settlement](glossary.md#settlement)
 
 [State Channel](glossary.md#state-channel)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="T" %}
+## T
 [Tokenomics](glossary.md#tokenomics)
 
 [Tiers](glossary.md#tiers)
 
 [Trading Channel](glossary.md#trading-channel)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="U" %}
+## U
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="V" %}
+## V
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="W" %}
+## W
 [Whitepaper](glossary.md#whitepaper)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="X" %}
+## X
 
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="Y" %}
+## Y
 [Whitepaper](glossary.md#whitepaper)[Whitepaper](glossary.md#whitepaper)
-{% endtab %}
+<!-- End tab -->
 
-{% tab title="Z" %}
+## Z
 
-{% endtab %}
-{% endtabs %}
+<!-- End tab -->
+<!-- End tabs -->
 
 ## A
 
@@ -233,7 +233,7 @@ Exchanges are big players in the network; they usually target a global audience 
 
 Yellow Network will charge fees and reward participants based on their activity. However, fees are not charged for profit; all collected fees are either redistributed to network participants or used to fund the [Reserve Vault](../../yellow-network/yellow-reserve-vault.md).
 
-The first layer [(Layer 1)](broken-reference) is a **Liquidity Fee**
+The first layer [(Layer 1)](#) is a **Liquidity Fee**
 
 The second layer [(Layer 2)](../../yellow-network/fees/clearing-fee.md) is a **Clearing Fee**
 
@@ -305,7 +305,7 @@ Yellow Network embodies a decentralized Layer-3 peer-to-peer mesh network allowi
 
 #### Policies
 
-Our policies set the foundation of our work and are readily available to everyone. They can be found under the [Legal](broken-reference) section.&#x20;
+Our policies set the foundation of our work and are readily available to everyone. They can be found under the [Legal](#) section.&#x20;
 
 #### Protocol
 

@@ -8,7 +8,7 @@ Today, the world of cryptocurrency trading shows significant inefficiencies part
 
 ## The Blockchain Trilemma <a href="#pj8bkb32jts7" id="pj8bkb32jts7"></a>
 
-![Source: Yellow.org & Ledger Academy](<../.gitbook/assets/The Problem.png>)
+*[Blockchain Trilemma Diagram - Source: Yellow.org & Ledger Academy]*
 
 > "The three pillars of blockchain scalability, decentralization and security co-exist but struggle to exist in harmony." - Vitalik Buterin
 
@@ -28,7 +28,7 @@ Despite the critical nature of blockchain interoperability, cross-chain systems 
 
 These silos and sub-ecosystems hinder scalability, efficiency, and mass adoption.&#x20;
 
-![Traditional finance vs. Crypto finance](<../.gitbook/assets/Traditional finance vs. Crypto finance.png>)
+*[Image placeholder: Traditional finance vs. Crypto finance comparison diagram]*
 
 ### Security <a href="#rpdroawe59eb" id="rpdroawe59eb"></a>
 

@@ -2,7 +2,7 @@
 
 The Yellow Clearing House will charge fees and reward participants based on their activity within the Yellow Network. The Yellow Network will not charge fees for profit; all collected fees are either redistributed or used for token liquidity management.
 
-![](<../../.gitbook/assets/YN Fee Distribution (11).png>)
+![YN Fee Distribution](/img/placeholder.png)
 
 Brokers using the Yellow Network will encounter two fee layers.
 

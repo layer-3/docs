@@ -4,11 +4,11 @@ description: The status-quo in global crypto markets.
 
 # 📊 Market Analysis
 
-{% hint style="info" %}
+:::info
 Updated: September 7, 2022
 
 _All information in this section is sourced from publicly available data and represents a snapshot at the time of writing unless otherwise stated._&#x20;
-{% endhint %}
+:::
 
 This section aims to establish a general understanding of the current status quo in crypto markets and crypto trading as they are crucial factors for Yellow Network.&#x20;
 
@@ -46,7 +46,9 @@ Venture capital allocated to crypto projects surpassed $14bn spread over roughly
 
 The increase in crypto adoption has led to harsh spikes in transaction prices on certain blockchains, most notably ETH and BTC. This has started pushing many smaller players to the side. Gas prices significantly impact trading profitability, leading to failed trade executions and skewed pricing.&#x20;
 
-<figure><img src="../.gitbook/assets/transaction-fees-daily.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/on-chain-metrics/comparison-bitcoin-ethereum/transaction-fees-daily">https://www.theblock.co/data/on-chain-metrics/comparison-bitcoin-ethereum/transaction-fees-daily</a></p></figcaption></figure>
+*[Image placeholder: Daily transaction fees chart]*
+
+Source: The Block, [https://www.theblock.co/data/on-chain-metrics/comparison-bitcoin-ethereum/transaction-fees-daily](https://www.theblock.co/data/on-chain-metrics/comparison-bitcoin-ethereum/transaction-fees-daily)
 
 #### Growth of Layer-1 and Layer-2 Platforms&#x20;
 
@@ -56,7 +58,9 @@ Many of these solutions aim to provide additional scalability and eradicate some
 
 For example, the use of cross-chain bridging surged from $670M to $32B throughout 2021. However, this massive surge in volume increasingly attracts exploits and hacks, as shown in the graph below. &#x20;
 
-<figure><img src="../.gitbook/assets/funds-stolen-by-defi-attackers.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/decentralized-finance/exploits/funds-stolen-by-defi-attackers">https://www.theblock.co/data/decentralized-finance/exploits/funds-stolen-by-defi-attackers</a></p></figcaption></figure>
+*[Image placeholder: Funds stolen by DeFi attackers chart]*
+
+Source: The Block, [https://www.theblock.co/data/decentralized-finance/exploits/funds-stolen-by-defi-attackers](https://www.theblock.co/data/decentralized-finance/exploits/funds-stolen-by-defi-attackers)
 
 ### To a Crypto Winter in 2022
 
@@ -64,13 +68,17 @@ For example, the use of cross-chain bridging surged from $670M to $32B throughou
 
 Following a strong year in 2021 for most crypto assets and the Web3 space in general, worsening global economic factors started spilling over into crypto markets. Most (crypto) assets have since seen a steep decline in exchange trading volumes, shrinking the total crypto market capitalization to about $1T, down from almost $3T at its peak in November 2021.
 
-<figure><img src="../.gitbook/assets/crypto-total-marketcap (1).png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/crypto-markets/prices/crypto-total-marketcap">https://www.theblock.co/data/crypto-markets/prices/crypto-total-marketcap</a></p></figcaption></figure>
+*[Image placeholder: Crypto total market cap chart]*
+
+Source: The Block, [https://www.theblock.co/data/crypto-markets/prices/crypto-total-marketcap](https://www.theblock.co/data/crypto-markets/prices/crypto-total-marketcap)
 
 #### Failing Asset Managers and Protocols
 
 Price declines in assets led to short liquidations and ultimately the collapse of several asset managers and entire blockchain protocols. 3 Arrow Capital (3AC) and Terra Protocol are the most prominent examples. Accelerating short liquidation leads to additional price pressure, ultimately causing and reinforcing a bear market.&#x20;
 
-<figure><img src="../.gitbook/assets/short-liquidations.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/crypto-markets/futures/short-liquidations">https://www.theblock.co/data/crypto-markets/futures/short-liquidations</a></p></figcaption></figure>
+*[Image placeholder: Short liquidations chart]*
+
+Source: The Block, [https://www.theblock.co/data/crypto-markets/futures/short-liquidations](https://www.theblock.co/data/crypto-markets/futures/short-liquidations)
 
 #### Impact on Exchanges <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
 
@@ -78,15 +86,21 @@ Exchanges have seen a steep decline in activity and are confronted with [volumes
 
 While in the past two years decentralized exchanges (DEXs) have continuously gained market share over Centralized Exchanges this trend has started to reverse in the early months of 2022.
 
-<figure><img src="../.gitbook/assets/dex-to-cex-spot-trade-volume.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-to-cex-spot-trade-volume">https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-to-cex-spot-trade-volume</a></p></figcaption></figure>
+*[Image placeholder: DEX to CEX spot trade volume chart]*
 
-<figure><img src="../.gitbook/assets/dex-volume-monthly.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly">https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly</a></p></figcaption></figure>
+Source: The Block, [https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-to-cex-spot-trade-volume](https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-to-cex-spot-trade-volume)
+
+*[Image placeholder: DEX monthly volume chart]*
+
+Source: The Block, [https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly](https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly)
 
 #### Scaling Solutions on the Rise <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
 
 Contrary to trading volumes and asset prices, value locked in scaling solutions has shown (some) resilience in 2022. State channel solutions still represent a relatively small market share when compared to Rollups, but have maintained an overall market share.&#x20;
 
-<figure><img src="../.gitbook/assets/value-locked-of-ethereum-scaling-solutions.png" alt=""><figcaption><p>Source: The Block, <a href="https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions">https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions</a></p></figcaption></figure>
+*[Image placeholder: Value locked in Ethereum scaling solutions chart]*
+
+Source: The Block, [https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions](https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions)
 
 #### Bitcoin Loses Market Share <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
 

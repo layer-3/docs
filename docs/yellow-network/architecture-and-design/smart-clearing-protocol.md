@@ -24,7 +24,7 @@ This greatly reduces the risk of overexposure and helps to streamline liquidity 
 
 The Clearing Protocol can accurately report order flow data to regulators. This lowers the reporting burden for traders and brokers while simultaneously increasing the marketplace's safety and transparency, and helping to identify and exclude bad actors.&#x20;
 
-![The Yellow Network brings these functionalities using cutting-edge state channel technology and settlement via smart contracts.](<../../.gitbook/assets/Benefits of a Crypto Clearing House.png>)
+![The Yellow Network brings these functionalities using cutting-edge state channel technology and settlement via smart contracts.](/img/placeholder.png)
 
 ## Protocol Overview
 
@@ -38,7 +38,7 @@ The Yellow Network smart clearing protocol takes care of brokers' collateralizat
 
 A [settlement](smart-clearing-protocol.md#settlement) mechanism is used to clear/reduce the liabilities of a broker by moving funds between custodians.
 
-![General overview of Yellow Network Clearing Protocol](<../../.gitbook/assets/Smart Clearing Protocol.png>)
+![General overview of Yellow Network Clearing Protocol](/img/placeholder.png)
 
 ## State Channels
 
