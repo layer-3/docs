@@ -7,7 +7,7 @@ description: Meet some of our trusted partners and advisors
 :::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.&#x20;
 
-For more information, visit the [Roadmap](../about/roadmap.md)
+For more information, visit the [Roadmap](about/roadmap.md)
 :::
 
 We are proud to have a strong and ever-expanding network of Advisors, Backers, and Partners from different fields and industries. These partnerships allow us to achieve far-reaching impact and scale.

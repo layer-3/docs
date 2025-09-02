@@ -23,24 +23,6 @@
 
 * [🐤 Yellow Canary Testnet](testnet/yellow-canary-testnet.md)
 
-## Yellow Network
-
-* [🪙 $YELLOW](yellow-network/usdyellow/README.md)
-  * [🧾 Tokenomics](yellow-network/usdyellow/tokenomics.md)
-* [📐 Architecture & Design](yellow-network/architecture-and-design/README.md)
-  * [System Overview](yellow-network/architecture-and-design/system-overview.md)
-  * [Smart Clearing Protocol](yellow-network/architecture-and-design/smart-clearing-protocol.md)
-  * [Custodial Layer](yellow-network/architecture-and-design/custodial-layer.md)
-  * [Supported Technologies](yellow-network/architecture-and-design/supported-technologies.md)
-  * [Risk Management](yellow-network/architecture-and-design/risk-management.md)
-* [📥 Yellow Reserve Vault](yellow-network/yellow-reserve-vault.md)
-* [💳 Fees](yellow-network/fees/README.md)
-  * [Clearing Fee](yellow-network/fees/clearing-fee.md)
-  * [Fee Calculation Example](yellow-network/fees/fee-calculation-example.md)
-* [👥 Partners & Advisors](yellow-network/partners-and-advisors.md)
-* [🍿 Core Team](yellow-network/core-team.md)
-* [🆕 Offering](yellow-network/offering.md)
-* [🗣️ Communications & Marketing](yellow-network/communications-and-marketing.md)
 
 ## Docs Hub
 

@@ -7,7 +7,7 @@ description: Keeping the token ecosystem alive
 :::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this state. The current, and all subsequent sub-pages, are subject to change.
 
-For more information, visit the [Roadmap.](../../about/roadmap.md)
+For more information, visit the [Roadmap.](../about/roadmap.md)
 :::
 
 *[Fee Structure Diagram]*

@@ -16,6 +16,6 @@ Yellow Network in [Detail](#)
 
 [Community and Social Media](#)
 
-Overview of [Supported Technologies](../../yellow-network/architecture-and-design/supported-technologies.md)
+Overview of [Supported Technologies](../../../legacy/architecture-and-design/supported-technologies.md)
 
 [Glossary](glossary.md) of Terminology

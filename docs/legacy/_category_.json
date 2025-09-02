@@ -1,0 +1,8 @@
+{
+  "label": "Legacy",
+  "position": 7,
+  "link": {
+    "type": "doc",
+    "id": "legacy/index"
+  }
+}

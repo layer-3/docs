@@ -3,7 +3,7 @@
 :::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
-For more information, visit the [Roadmap](../../about/roadmap.md)
+For more information, visit the [Roadmap](../about/roadmap.md)
 :::
 
 Yellow Network is using a mesh (peer-to-peer) network, using state channels to unify blockchains and reach tokens locked on isolated networks, without the need of bridging them. Our technology is not a new blockchain. It is an independent network using the same principle as the Bitcoin lightning network to reach high performance and secure consensus.

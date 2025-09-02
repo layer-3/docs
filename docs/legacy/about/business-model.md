@@ -33,13 +33,13 @@ Our solutions suggest significant cost reduction in R\&D as well as infrastructu
 
 ## Sustainable Token Ecosystem
 
-Our [$YELLOW](../yellow-network/usdyellow/tokenomics.md) token serves as the gateway to Yellow Network. Participants of Yellow Network are required to lock $YELLOW in order to open trading channels with other brokers.&#x20;
+Our [$YELLOW](../../legacy/usdyellow/tokenomics.md) token serves as the gateway to Yellow Network. Participants of Yellow Network are required to lock $YELLOW in order to open trading channels with other brokers.&#x20;
 
 $YELLOW token margin accounts ensure accountability and prevent overexposure, thus significantly reducing counterparty risk when accessing non-proprietary assets.&#x20;
 
-Yellow Network is a non-profit organization where market makers earn 100% of the liquidity provisioning fees. Our P2P technology allows brokers to define the [fees ](../yellow-network/fees/)at their discretion, creating unprecedented fee transparency.&#x20;
+Yellow Network is a non-profit organization where market makers earn 100% of the liquidity provisioning fees. Our P2P technology allows brokers to define the [fees ](../../legacy/fees/)at their discretion, creating unprecedented fee transparency.&#x20;
 
-Yellow Network only charges a small settlement fee to users to fund the [Yellow Reserve Vault](../yellow-network/yellow-reserve-vault.md) which serves to resolve settlement disputes and acts as a treasury for the Yellow Network ecosystem. With this approach, every participant contributes to safety and security.
+Yellow Network only charges a small settlement fee to users to fund the [Yellow Reserve Vault](../../legacy/yellow-reserve-vault.md) which serves to resolve settlement disputes and acts as a treasury for the Yellow Network ecosystem. With this approach, every participant contributes to safety and security.
 
 ## Key Stakeholders
 

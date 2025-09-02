@@ -10,7 +10,7 @@ description: >-
 :::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
-For more information, visit the [Roadmap](../about/roadmap.md).
+For more information, visit the [Roadmap](about/roadmap.md).
 :::
 
 ## Key Benefits&#x20;
