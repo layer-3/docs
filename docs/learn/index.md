@@ -9,7 +9,7 @@ keywords: [state channels, blockchain scaling, web3 development]
 
 Learn how to build high-performance decentralized applications that combine the speed of traditional web apps with the security and decentralization of blockchain technology.
 
-## What is this?
+## What is Yellow SDK?
 
 This is a real-time communication toolkit built on the **NitroliteRPC** protocol. It enables developers to create applications with:
 
