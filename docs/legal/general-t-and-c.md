@@ -4,13 +4,13 @@ description: 'General Terms & Conditions of Yellow Network. Last revised: Nov 18
 
 # 📝 General T\&C
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change. &#x20;
 
 For more information, visit the [Roadmap](../about/roadmap.md)
 
 For Terms and Conditions specific to $YELLOW tokens, please refer to the dedicated section - [$YELLOW T\&C](usdyellow-t-and-c.md)
-{% endhint %}
+:::
 
 These Terms of Service are entered into between you (hereinafter referred to as “**you**” or “**your**”) and Layer3 Fintech Ltd. (as defined below).
 

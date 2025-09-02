@@ -4,9 +4,9 @@ description: Summary of Web3 projects with related work to Yellow Network
 
 # 🌕 Web 3
 
-{% hint style="info" %}
-Related Work refers to aspects of existing concepts that lay the groundwork for a new project.&#x20;
-{% endhint %}
+:::info
+Related Work refers to aspects of existing concepts that lay the groundwork for a new project.
+:::
 
 Since the launch of Bitcoin, cryptocurrency trading has witnessed massive user adoption on a global scale and many alternative projects have been developed in the space. Users now have a broad choice of different blockchains, tokens, and decentralized applications. New projects are launched daily, many of which aim to simplify the users' journey in this wild Web3.0.&#x20;
 

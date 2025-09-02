@@ -1,10 +1,10 @@
 # 📥 Yellow Reserve Vault
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.&#x20;
 
 For more information, visit the [Roadmap.](../about/roadmap.md)
-{% endhint %}
+:::
 
 The Yellow Reserve Vault is our treasury entity and is tasked with two main responsibilities:
 
@@ -15,4 +15,4 @@ $YELLOW Tokens sent to the reserve vault will be used to build a diversified por
 
 The Reserve Vault can decide to burn $YELLOW under certain conditions to support the valuation of the native Yellow Network token.
 
-<figure><img src="../.gitbook/assets/Yellow Reserve Vault.png" alt=""><figcaption></figcaption></figure>
+*[Image placeholder: Yellow Reserve Vault diagram]*

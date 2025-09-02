@@ -8,7 +8,7 @@ In traditional finance terms, a clearinghouse is an independent institution form
 
 The clearinghouse enters the picture after a buyer, and a seller executes a trade. Its role is to accomplish the steps that finalize and validate the transaction. In acting as a middleman, the clearinghouse provides the security and efficiency integral to stability in a financial market.
 
-<figure><img src="../../.gitbook/assets/Role of a Clearing House.png" alt=""><figcaption></figcaption></figure>
+*[Image placeholder: Role of a Clearing House diagram]*
 
 A traditional clearinghouse is tasked with five crucial roles that add stability, safety, and transparency to markets:
 

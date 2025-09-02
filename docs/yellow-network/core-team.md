@@ -6,7 +6,7 @@ description: The leadership behind the Yellow Network project
 
 ## **Louis Bellet, CEO & Co-Founder**
 
-![](<../.gitbook/assets/Bellet Louis.jpg>)
+*[Photo: Bellet Louis]*
 
 [LinkedIn](https://www.linkedin.com/in/louisbellet/) [Telegram](https://t.me/mod_yellow) [Email](mailto:lbellet@yellow.com)
 
@@ -14,7 +14,7 @@ Louis is a software architect and serial entrepreneur in the fintech, crypto & b
 
 ## **Alexis Yellow, Executive Chairman & Founder**
 
-### ![](<../.gitbook/assets/Alexis Yellow.jpg>)
+###
 
 [LinkedIn](https://www.linkedin.com/in/sirkia/) [Telegram](http://t.me/alexisyellow) [Email](mailto:alex@yellow.com)
 
@@ -22,7 +22,7 @@ Alexis started his career in avionics before moving to the European Space Center
 
 ## **Camille Meulien, CTO**
 
-### ![](<../.gitbook/assets/Camille Meulien.jpg>)
+###
 
 [LinkedIn](https://www.linkedin.com/in/camillemeulien) [Telegram](http://t.me/camille_yellow) [Email](mailto:cmeulien@openware.com)
 
@@ -30,7 +30,7 @@ As a software architect, Camille is a known authority in the FinTech development
 
 ## **Sergii Kashchenko, COO**
 
-### ![](<../.gitbook/assets/Kashchenko Sergii.jpg>)
+###
 
 [LinkedIn](https://www.linkedin.com/in/kashchenko/) [Telegram](http://t.me/sergii_ow) [Email](mailto:skashchenko@openware.com)
 
@@ -38,7 +38,7 @@ Ex-R\&D Director of Bitfury and startup COO/Co-Founder with a 16-year track reco
 
 ## **Bakhtiyar Mamedov, CFO**
 
-### ![](<../.gitbook/assets/Bakhtiyar Mamedov.jpg>)
+###
 
 [LinkedIn](https://www.linkedin.com/in/bakhtiyar-mamedov-2175329/) [Telegram](http://t.me/bakhtiyar_yellow) [Email](mailto:bmammadov@openware.com)
 
@@ -46,7 +46,7 @@ A financial expert and manager with a strong background at Big 4, powering more 
 
 ## Anastasiia Bobeshko, Head of BizDev & Marketing
 
-![](<../.gitbook/assets/Anastasiia Bobeshko.jpg>)
+*[Photo: Anastasiia Bobeshko]*
 
 [LinkedIn](https://www.linkedin.com/in/anastasiiabobeshko/) [Telegram](https://t.me/anastasiia_yellow) [Email](mailto:abobeshko@yellow.com)&#x20;
 

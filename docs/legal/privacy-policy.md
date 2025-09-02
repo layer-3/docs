@@ -4,11 +4,11 @@ description: 'Last revised: Nov 19, 2022'
 
 # 🔏 Privacy Policy
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change. &#x20;
 
 For more information, visit the [Roadmap](../about/roadmap.md)
-{% endhint %}
+:::
 
 Thank you for visiting [https://www.yellow.org/](https://www.yellow.org/) (**"Website"**)&#x20;
 

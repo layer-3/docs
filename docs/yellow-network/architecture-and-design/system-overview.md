@@ -4,7 +4,7 @@ description: Technologies used and created by the Yellow Network team
 
 # System Overview
 
-![](<../../.gitbook/assets/Technologies Used and Created by Yellow.png>)
+![Technologies Used and Created by Yellow](/img/placeholder.png)
 
 **Yellow Network:** state channels; P2P network
 

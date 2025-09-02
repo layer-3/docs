@@ -14,9 +14,9 @@ A Clearing Fee is due whenever broker positions are cleared or settled on Yellow
 * There are dynamic fee levels with a floor fee that depends on the number of $YELLOW tokens stacked.
 * The Clearing Fee is not for profit and funds the Yellow Reserve Vault.
 
-<mark style="background-color:yellow;">**Clearing Fee=Net Settlement Liability calculated  in  $YELLOW x Clearing Fee (%)**</mark>
+****Clearing Fee=Net Settlement Liability calculated  in  $YELLOW x Clearing Fee (%)****
 
-<table data-header-hidden><thead><tr><th width="162"></th><th></th></tr></thead><tbody><tr><td>Defined by</td><td>Yellow Network</td></tr><tr><td>Beneficiary</td><td>Yellow Network</td></tr><tr><td>Payment Ccy</td><td><a href="../usdyellow/tokenomics.md">$YELLOW</a></td></tr><tr><td>Periodicity</td><td>Periodicity: Calculated and paid on settlement <br>(min. every 24h, or on a  specific settlement request by the broker)</td></tr></tbody></table>
+<table data-header-hidden><thead><tr><th width="162"></th><th></th></tr></thead><tbody><tr><td>Defined by</td><td>Yellow Network</td></tr><tr><td>Beneficiary</td><td>Yellow Network</td></tr><tr><td>Payment Ccy</td><td><a href="../usdyellow/tokenomics.md">$YELLOW</a></td></tr><tr><td>Periodicity</td><td>Periodicity: Calculated and paid on settlement <br/>(min. every 24h, or on a  specific settlement request by the broker)</td></tr></tbody></table>
 
 ### **Clearing Fee Tiers**
 

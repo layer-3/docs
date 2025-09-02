@@ -1,3 +1,3 @@
 # 📃 Duckies One-Pager
 
-{% file src="../.gitbook/assets/Duckies Whitepaper English.pdf" %}
+[Download Duckies Whitepaper English.pdf](../assets/Duckies%20Whitepaper%20English.pdf)

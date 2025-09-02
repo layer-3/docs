@@ -85,9 +85,9 @@ The broker can connect to many custodians solutions, each custody solution have 
 
 | Criteria         | Existing solutions                                                                  | Yellow Network                                                                                      |
 | ---------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Speed            | <p>CEX: 50-450 ms<br>DEX: 30-120 sec</p>                                            | You have the lowest latency at any point on the globe: 10-50 ms                                     |
+| Speed            | CEX: 50-450 ms<br/>DEX: 30-120 sec                                            | You have the lowest latency at any point on the globe: 10-50 ms                                     |
 | Liquidity        | Fragmented and in competition for stacking                                          | Aggregated without locking requirements, you can mine trading fees without unstacking your Assets   |
 | Cross-chain      | Using bridges, extremely high risk and slow                                         | Through layer-3 Virtualization, off-chain assets can remain in cold wallets but traded at low costs |
-| Decentralization | <p>CEX: Are centralized in a data center.<br>DEX: Are located on a single chain</p> | High, True Decentralization of business, data centers, and chains                                   |
+| Decentralization | CEX: Are centralized in a data center.<br/>DEX: Are located on a single chain | High, True Decentralization of business, data centers, and chains                                   |
 
 Table: Benefits of solution

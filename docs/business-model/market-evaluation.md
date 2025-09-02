@@ -6,7 +6,7 @@
 
 We’ve been powering 150+ fintech businesses and expect blockchain-powered finance to grow exponentially. Crypto-trading is disruptive but how does it stand against traditional finance?
 
-![](<../.gitbook/assets/Group 13511 (1).png>)
+*[Traditional Finance vs Crypto Finance Comparison Chart]*
 
 To overgrow The Wall Street, crypto should use and reimagine the competitor’s strengths.
 
@@ -54,7 +54,7 @@ Crypto trading market is already large, reaching $60T volume in 2021 (with 30% Y
 
 #### Our Partners <a href="#_2qsyp119etoy" id="_2qsyp119etoy"></a>
 
-![](<../.gitbook/assets/Group 13633.png>)
+*[Image placeholder: Partners logos diagram]*
 
 We are currently receiving more than 50 leads/applications per week with an average budget of \~$250K.
 

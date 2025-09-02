@@ -1,8 +1,8 @@
 # ❔ FAQ
 
-{% hint style="info" %}
-The FAQ section is currently undergoing undergoing updates and modifications. If you can't find your answer here please reach out to us via our [community channels](broken-reference).&#x20;
-{% endhint %}
+:::info
+The FAQ section is currently undergoing undergoing updates and modifications. If you can't find your answer here please reach out to us via our [community channels](#).&#x20;
+:::
 
 ### Company <a href="#ybf38mwqeoqh" id="ybf38mwqeoqh"></a>
 

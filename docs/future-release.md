@@ -4,7 +4,7 @@
 | --------------------------------------------------------------------------------------------------------------------------- |
 | Instant access to peer-to-peer network of brokers with shared liquidity, execute your strategies right on the liquidity hub |
 
-Earn rewards for staking $YELLOW tokens and collateral.![](.gitbook/assets/6)
+Earn rewards for staking $YELLOW tokens and collateral.![Staking rewards diagram](/img/placeholder.png)
 
 #### **Delegate liquidity to brokers**
 

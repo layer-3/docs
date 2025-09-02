@@ -4,13 +4,13 @@ description: Keeping the token ecosystem alive
 
 # 💳 Fees
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this state. The current, and all subsequent sub-pages, are subject to change.
 
 For more information, visit the [Roadmap.](../../about/roadmap.md)
-{% endhint %}
+:::
 
-![](<../../.gitbook/assets/Fee Structure (1).png>)
+*[Fee Structure Diagram]*
 
 Yellow Network charges fees and rewards participants based on their activity. However, fees are not charged for profit; all collected fees are either redistributed to network participants or used to fund the [Reserve Vault](../yellow-reserve-vault.md).
 

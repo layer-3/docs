@@ -12,7 +12,7 @@ Yellow Network smart clearing protocol takes care of brokers collateralization l
 
 A [settlement](smart-clearing-contract.md#settlement) mechanism is used to clear/reduce liabilities of a broker, by moving funds between custodians.
 
-![General overview of Yellow Network Clearing Protocol](<../.gitbook/assets/overview (1).svg>)
+![General overview of Yellow Network Clearing Protocol](/img/placeholder.svg)
 
 ### Network access
 

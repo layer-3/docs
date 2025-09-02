@@ -18,11 +18,15 @@ The usage, adoption, and application of cryptocurrencies and their prices have i
 
 For a variety of reasons, both retail and institutional investors are increasing their exposure to cryptocurrencies through many strategies such as ETFs and derivatives trading. Many of these investors were seeking a safe haven from inflationary fiat currency. They hedged assets that are uncorrelated with the price movements of typical financial products such as stocks or bonds. The [cryptocurrency market reached a record high of $3 trillion in November 2021](https://finance.yahoo.com/news/cryptocurrencies-hit-market-cap-3-063245377.html), when the world's two major cryptocurrencies, Bitcoin and Ethereum, rose to record highs and rallied more than 6% to reach $67,591.86 and 3.5% to reach $4,789.45, respectively.
 
-![Source: Statista - Overall cryptocurrency market capitalization per week from July 2010 to May 2022 (in billion U.S. dollars).](../.gitbook/assets/statistic\_id730876\_weekly-market-cap-of-all-cryptocurrencies-combined-up-until-may-2022.png)
+*[Image placeholder: Overall cryptocurrency market capitalization chart]*
+
+Source: Statista - Overall cryptocurrency market capitalization per week from July 2010 to May 2022 (in billion U.S. dollars).
 
 Currently, the cryptocurrency market capitalization has been rallying at around $2Trillion, as can be seen from the graph above. One of the major drivers of this growth in the adoption and usage of cryptocurrency has been the cryptocurrency exchanges. Cryptocurrency exchanges are platforms that allow for the trading of cryptocurrencies for other asset classes, such as fiat and digital currencies. [Data from CoinMarketCap](https://coinmarketcap.com/rankings/exchanges/dex/) shows that there are 521 cryptocurrency exchanges as of May 2022, of which 306 are centralized exchanges (CEXs), and the remainder are decentralized exchanges (DEXs), derivatives, and loan markets.
 
-![Source: Chainanalysis - Number of Active Cryptocurrency Exchanges by Month from January 2019 to July 2021.](../.gitbook/assets/618af8da127151d0142987e7\_crypto20exchanges20over20time.png)
+*[Image placeholder: Number of Active Cryptocurrency Exchanges chart]*
+
+Source: Chainanalysis - Number of Active Cryptocurrency Exchanges by Month from January 2019 to July 2021.
 
 One thing stands out among the growth of cryptocurrency exchanges and projects. Each of these platforms leverages a different blockchain protocol, performs different transactions and operations, and processes a unique volume of data. Likewise, it is becoming increasingly evident that their operations are siloed. Furthermore, the rapid growth of blockchain technology has resulted in the emergence of various chain configurations.
 
@@ -30,7 +34,9 @@ The siloed structure in the cryptocurrency industry has stalled scalability and 
 
 Additionally, both centralized and decentralized exchanges suffer from insufficient liquidity, which is spread across dozens of different marketplaces and exchanges that are compelled to compete. Each new blockchain project adds to this instability and greatly slows the crypto industry's growth and scaling. The exchange landscape faces massive challenges that have become difficult to overcome. The following are the prominent challenges faced by the crypto ecosystem today.
 
-![Source: Statista - The biggest problems that cryptocurrency traders see in currently available exchanges.](../.gitbook/assets/statistic\_id596462\_largest-problems-of-cryptoexchanges-according-to-traders-2018.png)
+*[Image placeholder: Biggest problems of crypto exchanges according to traders]*
+
+Source: Statista - The biggest problems that cryptocurrency traders see in currently available exchanges.
 
 ### Cross-Chain Transactions
 
@@ -59,7 +65,9 @@ Scaling is perhaps the most significant roadblock to the widespread usage and ad
 
 State channels, meanwhile, lower the costs associated with using the blockchain network. Rather than paying transaction fees, users only pay for gas when they open and close a channel. Additionally, state channels aid in the preservation of user privacy. Transactions within a channel are known only to the channel's members. This contrasts with transactions on the Ethereum blockchain, which record each transaction in a publicly auditable ledger. Finally, transactions within state channels achieve instantaneous completion. Users do not need to wait for each transaction to be confirmed on the blockchain, as each signed transaction complies with the network's regulations. This creates a more seamless user experience and more closely resembles how popular web applications operate now.
 
-![Source: Blockchainhub Berlin](../.gitbook/assets/State-Channels-1.png)
+*[Image placeholder: State Channels diagram]*
+
+Source: Blockchainhub Berlin
 
 While most traders only use CEXs (Centralized Exchanges), the trading occurs in isolated silos, each CEX and DEX (Decentralized Exchange) has its own list of markets and unlike traditional finance those markets are not global.
 
@@ -226,10 +234,10 @@ The broker can connect to many custodians solutions, each custody solution have 
 
 | Criteria         | Existing solutions                                                                  | Yellow Network                                                                                      |
 | ---------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Speed            | <p>CEX: 50-450 ms<br>DEX: 30-120 sec</p>                                            | You have the lowest latency at any point on the globe: 10-50 ms                                     |
+| Speed            | <p>CEX: 50-450 ms<br/>DEX: 30-120 sec</p>                                            | You have the lowest latency at any point on the globe: 10-50 ms                                     |
 | Liquidity        | Fragmented and in competition for stacking                                          | Aggregated without locking requirements, you can mine trading fees without unstacking your Assets   |
 | Cross-chain      | Using bridges, extremely high risk and slow                                         | Through layer-3 Virtualization, off-chain assets can remain in cold wallets but traded at low costs |
-| Decentralization | <p>CEX: Are centralized in a data center.<br>DEX: Are located on a single chain</p> | High, True Decentralization of business, data centers, and chains                                   |
+| Decentralization | <p>CEX: Are centralized in a data center.<br/>DEX: Are located on a single chain</p> | High, True Decentralization of business, data centers, and chains                                   |
 
 Table: Benefits of solution
 
@@ -270,5 +278,3 @@ The Yellow Network is matching throughput averages billions of messages per day,
 The Yellow network leverages state channel technology to revolutionize trading cryptocurrency through decentralized broker clearing networks. By decoupling trading and settlement, the Yellow Network protocol enables true decentralization of high-frequency trading and widens access to a great variety of assets, including digital and traditional assets.
 
 ## References
-
-::: {#refs} :::

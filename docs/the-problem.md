@@ -10,9 +10,9 @@ description: The market challenges Yellow Network is addressing.
 
 A monolithic business structure of current crypto exchanges isn't scalable.
 
-![Traditional finance vs. Crypto finance](<.gitbook/assets/Traditional finance vs. Crypto finance (1).png>)
+*[Image placeholder: Traditional finance vs. Crypto finance comparison]*
 
-![](<.gitbook/assets/Traditional finance vs. Crypto finance.png>)
+*[Image placeholder: Traditional finance vs. Crypto finance diagram]*
 
 #### Many Independents Blockchains <a href="#_rpdroawe59eb" id="_rpdroawe59eb"></a>
 

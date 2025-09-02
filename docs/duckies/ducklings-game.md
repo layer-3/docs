@@ -4,13 +4,13 @@ description: An NFT-based Card Trading Game
 
 # 🦆 Ducklings Game
 
-<figure><img src="../.gitbook/assets/image (21).png" alt=""><figcaption></figcaption></figure>
+*[Image placeholder: Ducklings Game header image]*
 
 Welcome to the wacky world of Ducklings Trading Card Game, a blockchain-based NFT collectible game! You'll embark on a journey as a duckling breeder to collect and meld Ducklings NFT cards. You'll encounter the eccentric and mad scientist, Dr. Quackers, who has taken over the game with his expertise in genetic engineering.
 
 Dr. Quackers has created a laboratory and is mixing (melding) Ducklings left and right to get as many Mythic breeds so he can dominate the duckies’ world! Outsmart Dr. Quakers with your own Ducklings collection to not let him win! But be careful when melding, as it can go wrong and the duck will become Zombeak, a duckie-mutant!
 
-<figure><img src="../.gitbook/assets/Group 138361.png" alt=""><figcaption></figcaption></figure>
+*[Image placeholder: Dr. Quackers laboratory diagram]*
 
 ## Types and Rarities of Dr. Quacker’s Creations
 
@@ -20,15 +20,15 @@ Be wary of failed melding attempts, as they'll result in the creation of special
 
 To start your duckling breeding journey, you can get **Ducklings Booster Packs** containing 1, 5, 10, 25, or 50 cards.&#x20;
 
-## ![](<../.gitbook/assets/Group 138369 (1).png>)**Ducklings Booster Pack**
+## **Ducklings Booster Pack**
 
-<mark style="color:yellow;">**Rarity probability distribution per booster pack: 85% common, 12% rare, 2.5% epic, and 0.5% legendary.**</mark>&#x20;
+****Rarity probability distribution per booster pack: 85% common, 12% rare, 2.5% epic, and 0.5% legendary.****&#x20;
 
 ## Melding Ducklings
 
 Each Duckling card belongs to a family and a color; and there are 5 different families (Flockers, Feathers, Waddlers, Mallards, and Fluffers) and 4 different colors (Red, Blue, Green, and Purple) in total, each with an even distribution.
 
-<figure><img src="../.gitbook/assets/Group 138371.png" alt=""><figcaption></figcaption></figure>
+*[Image placeholder: Duckling families and colors diagram]*
 
 But don't worry if you can't find the Duckling you're looking for, you can earn $DUCKIES tokens by completing community quests and using them to purchase more cards.
 
@@ -37,13 +37,13 @@ But don't worry if you can't find the Duckling you're looking for, you can earn 
 
 _Melding requirements differ based on the Ducklings’ rarity level:_
 
-<mark style="background-color:yellow;">**Melding Common Ducklings:**</mark> Same color <mark style="color:yellow;">**OR**</mark> same family;\
-<mark style="background-color:yellow;">**Melding Rare or Epic Ducklings:**</mark> Same color <mark style="color:yellow;">**AND**</mark> same family;\
-<mark style="background-color:yellow;">**Melding Legendary Ducklings:**</mark> Same color <mark style="color:yellow;">**AND**</mark> each family.
+****Melding Common Ducklings:**** Same color ****OR**** same family;\
+****Melding Rare or Epic Ducklings:**** Same color ****AND**** same family;\
+****Melding Legendary Ducklings:**** Same color ****AND**** each family.
 
 _**During the melding, the input cards are destroyed, and a new card is created.**_ You can meld the resulting cards further to get a higher rarity.
 
-## ![](<../.gitbook/assets/Group 138366.png>)MYTHIC: Dr. Quaker’s Masterpiece
+## MYTHIC: Dr. Quaker's Masterpiece
 
 You had 5 legendaries, all with the same color and different families? It is now time to meld them, and the laboratory will bore the ultimate masterpiece, the **MYTHIC**!!
 
@@ -77,7 +77,7 @@ Are you ready to dive into this WACKY world of duck breeding and create new and 
 
 ### Download the rules guide:
 
-{% file src="../.gitbook/assets/Official Duckies NFT Game Rules.pdf" %}
+[Download Official Duckies NFT Game Rules.pdf](../assets/Official%20Duckies%20NFT%20Game%20Rules.pdf)
 
 ## Duckies Media Kit
 

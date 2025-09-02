@@ -8,11 +8,11 @@ description: >-
 
 
 
-{% hint style="info" %}
+:::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
 For more information, visit the [Roadmap](roadmap.md)
-{% endhint %}
+:::
 
 Yellow Network is a non-profit project that seeks to solve the problem of truly decentralized trading by allowing participants to swap assets across different exchanges without having to rely on block creation. This brings all parties, exchanges, blockchains, and trading firms together, creating a network of brokerages and allowing for a more efficient trading infrastructure.
 
@@ -28,8 +28,8 @@ Our solutions suggest significant cost reduction in R\&D as well as infrastructu
 
 | Solution                                                                                               | Benefits                                                                                                                                                                                                                 | Cost                                     |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| <p><a href="https://www.openware.com/product/opendax">OpenDAX</a><br>Open source exchange software</p> | <ul><li>Ready to deploy </li><li>Free to use</li><li>Easy to setup, run and manage</li><li>Earn trading fees from end-users</li></ul>                                                                                    | Free                                     |
-| <p><a href="https://www.yellow.org/">Yellow Network</a><br>P2P liquidity aggregation</p>               | <ul><li>Earn liquidity provider fees</li><li>Access non-proprietary liquidity</li><li>Off-chain high-speed state channel network</li><li>Reduce counterparty risk through a fully automated settlement process</li></ul> | <p>Free<br>(requires $YELLOW tokens)</p> |
+| <p><a href="https://www.openware.com/product/opendax">OpenDAX</a><br/>Open source exchange software</p> | <ul><li>Ready to deploy </li><li>Free to use</li><li>Easy to setup, run and manage</li><li>Earn trading fees from end-users</li></ul>                                                                                    | Free                                     |
+| <p><a href="https://www.yellow.org/">Yellow Network</a><br/>P2P liquidity aggregation</p>               | <ul><li>Earn liquidity provider fees</li><li>Access non-proprietary liquidity</li><li>Off-chain high-speed state channel network</li><li>Reduce counterparty risk through a fully automated settlement process</li></ul> | <p>Free<br/>(requires $YELLOW tokens)</p> |
 
 ## Sustainable Token Ecosystem
 
