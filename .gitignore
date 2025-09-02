@@ -3,7 +3,9 @@
 
 # Production
 /build
-
+.idea
+.docusaurus
+node_modules
 # Generated files
 .docusaurus
 .cache-loader

@@ -14,7 +14,7 @@ Louis is a software architect and serial entrepreneur in the fintech, crypto & b
 
 ## **Alexis Yellow, Executive Chairman & Founder**
 
-###
+*[Photo coming soon]*
 
 [LinkedIn](https://www.linkedin.com/in/sirkia/) [Telegram](http://t.me/alexisyellow) [Email](mailto:alex@yellow.com)
 
@@ -22,7 +22,7 @@ Alexis started his career in avionics before moving to the European Space Center
 
 ## **Camille Meulien, CTO**
 
-###
+*[Photo coming soon]*
 
 [LinkedIn](https://www.linkedin.com/in/camillemeulien) [Telegram](http://t.me/camille_yellow) [Email](mailto:cmeulien@openware.com)
 
@@ -30,7 +30,7 @@ As a software architect, Camille is a known authority in the FinTech development
 
 ## **Sergii Kashchenko, COO**
 
-###
+*[Photo coming soon]*
 
 [LinkedIn](https://www.linkedin.com/in/kashchenko/) [Telegram](http://t.me/sergii_ow) [Email](mailto:skashchenko@openware.com)
 
@@ -38,7 +38,7 @@ Ex-R\&D Director of Bitfury and startup COO/Co-Founder with a 16-year track reco
 
 ## **Bakhtiyar Mamedov, CFO**
 
-###
+*[Photo coming soon]*
 
 [LinkedIn](https://www.linkedin.com/in/bakhtiyar-mamedov-2175329/) [Telegram](http://t.me/bakhtiyar_yellow) [Email](mailto:bmammadov@openware.com)
 
