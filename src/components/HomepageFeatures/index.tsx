@@ -11,32 +11,34 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Yellow SDK',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Build real-time decentralized applications with instant transfers,
+        secure sessions, and seamless multi-party interactions.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Cross-Chain Liquidity',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Aggregated liquidity across multiple blockchain networks. Connects
+        exchanges, market makers, and brokers in a unified ecosystem for
+        seamless cross-chain asset transfers.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Trustless Trading',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Execute high-frequency trades without gas costs or MEV concerns.
+        Instant finality with cryptographic security guarantees 
+        and state-channel dispute resolution mechanisms.
       </>
     ),
   },
