@@ -77,7 +77,7 @@ Are you ready to dive into this WACKY world of duck breeding and create new and 
 
 ### Download the rules guide:
 
-[Download Official Duckies NFT Game Rules.pdf](../assets/Official%20Duckies%20NFT%20Game%20Rules.pdf)
+[Download Official Duckies NFT Game Rules.pdf](/assets/Official%20Duckies%20NFT%20Game%20Rules.pdf)
 
 ## Duckies Media Kit
 
