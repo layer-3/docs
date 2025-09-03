@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /**
  * Any CSS included here will be global. The classic template
  * bundles Infima by default. Infima is a CSS framework designed to
@@ -27,4 +31,217 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom Sidebar Styling */
+.theme-doc-sidebar-item-link {
+  padding: 6px 16px;
+  display: block;
+  transition: none;
+  margin-bottom: 2px;
+}
+
+/* Remove ALL hover background effects and add text darkening */
+.theme-doc-sidebar-item-link:hover,
+.menu__link:hover,
+.menu__caret:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  text-decoration: none;
+  color: #333333 !important;
+}
+
+/* Remove hover effects for menu items and add text darkening */
+.menu__list-item:hover,
+.menu__list-item:hover > .menu__link {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.menu__list-item:hover > .menu__link {
+  color: #333333 !important;
+}
+
+/* Dark mode hover text */
+[data-theme='dark'] .theme-doc-sidebar-item-link:hover,
+[data-theme='dark'] .menu__link:hover,
+[data-theme='dark'] .menu__list-item:hover > .menu__link {
+  color: #cccccc !important;
+}
+
+/* Active/current item styling - black instead of green */
+.theme-doc-sidebar-item-link--active,
+.menu__link--active {
+  color: #000000 !important;
+  font-weight: 600;
+  background: transparent !important;
+  position: relative;
+}
+
+/* Use pseudo-element for left border to avoid text jumping */
+.theme-doc-sidebar-item-link--active::before,
+.menu__link--active:not(.menu__link--sublist)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #000000;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-item-link--active,
+[data-theme='dark'] .menu__link--active {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-item-link--active::before,
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist)::before {
+  background-color: #ffffff;
+}
+
+/* Override Docusaurus default active colors */
+.menu__link--active:not(.menu__link--sublist) {
+  background-color: transparent !important;
+}
+
+/* Category items spacing */
+.theme-doc-sidebar-item-category {
+  margin-bottom: 8px;
+}
+
+.theme-doc-sidebar-item-category > .theme-doc-sidebar-item-link {
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+/* Reduce spacing between all sidebar items */
+.theme-doc-sidebar-item {
+  margin-bottom: 2px;
+}
+
+/* Remove category collapse/expand hover effects and add text darkening */
+.theme-doc-sidebar-item-category .theme-doc-sidebar-item-link:hover,
+.theme-doc-sidebar-item-category .menu__link:hover,
+.theme-doc-sidebar-item-category:hover,
+.menu__list-item--collapsed:hover,
+.menu__list-item--collapsible:hover,
+.menu__list-item--collapsed:hover > .menu__link,
+.menu__list-item--collapsible:hover > .menu__link {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #333333 !important;
+}
+
+/* Dark mode category hover */
+[data-theme='dark'] .theme-doc-sidebar-item-category .theme-doc-sidebar-item-link:hover,
+[data-theme='dark'] .theme-doc-sidebar-item-category .menu__link:hover,
+[data-theme='dark'] .menu__list-item--collapsed:hover > .menu__link,
+[data-theme='dark'] .menu__list-item--collapsible:hover > .menu__link {
+  color: #cccccc !important;
+}
+
+/* Force remove background on all menu states */
+.menu__list .menu__list-item:hover,
+.menu__list .menu__list-item:hover .menu__link,
+.menu__list .menu__list-item--active:hover,
+.menu__list .menu__list-item--active:hover .menu__link,
+.menu__list-item.theme-doc-sidebar-item-category:hover,
+.menu__list-item.theme-doc-sidebar-item-category:hover .menu__link {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Specifically target expanded/selected category states */
+.menu__list-item--collapsible.theme-doc-sidebar-item-category:hover,
+.menu__list-item--collapsed.theme-doc-sidebar-item-category:hover,
+.menu__list-item.theme-doc-sidebar-item-category--active:hover,
+.menu__list-item.theme-doc-sidebar-item-category .menu__link:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #333333 !important;
+}
+
+[data-theme='dark'] .menu__list-item.theme-doc-sidebar-item-category .menu__link:hover {
+  color: #cccccc !important;
+}
+
+/* Nuclear option - override ALL possible menu link hover combinations */
+a.menu__link:hover,
+a.menu__link.menu__link--sublist:hover,
+a.menu__link.menu__link--active:hover,
+a.menu__link.menu__link--sublist.menu__link--active:hover,
+.menu__list-item > a.menu__link:hover,
+.menu__list-item > a.menu__link.menu__link--sublist:hover,
+.menu__list-item > a.menu__link.menu__link--active:hover,
+.menu__list-item > a.menu__link.menu__link--sublist.menu__link--active:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #333333 !important;
+}
+
+[data-theme='dark'] a.menu__link:hover,
+[data-theme='dark'] a.menu__link.menu__link--sublist:hover,
+[data-theme='dark'] a.menu__link.menu__link--active:hover,
+[data-theme='dark'] a.menu__link.menu__link--sublist.menu__link--active:hover,
+[data-theme='dark'] .menu__list-item > a.menu__link:hover,
+[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--sublist:hover,
+[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--active:hover,
+[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--sublist.menu__link--active:hover {
+  color: #cccccc !important;
+}
+
+/* Remove black border and styling for parent categories (categories with subcategories) */
+.menu__link--sublist.menu__link--active,
+a.menu__link.menu__link--sublist.menu__link--active {
+  border-left: none !important;
+  padding-left: 16px !important;
+  font-weight: 600;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Remove hover effects specifically for parent categories */
+.menu__link--sublist:hover,
+.menu__link--sublist.menu__link--active:hover,
+a.menu__link.menu__link--sublist:hover,
+a.menu__link.menu__link--sublist.menu__link--active:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #333333 !important;
+}
+
+[data-theme='dark'] .menu__link--sublist:hover,
+[data-theme='dark'] .menu__link--sublist.menu__link--active:hover,
+[data-theme='dark'] a.menu__link.menu__link--sublist:hover,
+[data-theme='dark'] a.menu__link.menu__link--sublist.menu__link--active:hover {
+  color: #cccccc !important;
+}
+
+/* Move expand/collapse icon to the left side of text */
+.menu__link--sublist {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  padding-left: 16px !important;
+}
+
+/* Move the caret to the beginning (left side) */
+.menu__link--sublist .menu__caret {
+  order: -1 !important;
+  margin-right: 8px !important;
+  margin-left: 0 !important;
+  position: relative !important;
+  right: auto !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+
+/* Category title when expanded */
+.theme-doc-sidebar-item-category-level-1 > .theme-doc-sidebar-item-link {
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 700;
 }

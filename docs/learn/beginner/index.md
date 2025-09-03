@@ -6,8 +6,12 @@ description: Beginner-friendly guides and tutorials
 
 # Beginner Guide
 
-:::info Work in Progress
-This section is currently under development. Beginner-friendly guides and step-by-step tutorials will be available soon.
-:::
+Essential concepts and guides to get you started with Yellow Network development. This section covers fundamental topics every developer should understand before building Yellow Apps.
 
-Coming soon: Beginner-friendly content to help you get started with development.
+## 📝 [Yellow Account](./yellow-account)
+
+Learn about Yellow Account management, wallet connections, digital asset handling, and security best practices for working with the Yellow Network ecosystem.
+
+---
+
+Ready to start building? Continue to the [Quick Start Guide](../../build/quick-start) to create your first Yellow App.
