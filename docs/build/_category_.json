@@ -2,7 +2,9 @@
   "label": "Build",
   "position": 3,
   "link": {
-    "type": "doc",
-    "id": "build/quick-start/index"
+    "type": "generated-index",
+    "title": "Build with Yellow SDK",
+    "description": "Ready to create fast, scalable applications using Yellow Network's state channel infrastructure? This section provides everything you need to start building.",
+    "slug": "/build"
   }
 }
