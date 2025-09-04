@@ -2,9 +2,7 @@
   "label": "Learn",
   "position": 2,
   "link": {
-    "type": "generated-index",
-    "title": "Learn About Yellow Network",
-    "description": "Comprehensive learning resources for Yellow Network and state channels. Discover everything you need to know about decentralized clearing, state channels, and the ERC-7824 standard.",
-    "slug": "/learn"
+    "type": "doc",
+    "id": "learn/index"
   }
 }

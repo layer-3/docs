@@ -7,12 +7,31 @@ keywords: [Yellow SDK, NitroliteRPC, state channels, web3 development]
 
 # What is Yellow SDK
 
-This is a real-time communication toolkit built on the **NitroliteRPC** protocol. It enables developers to create applications with:
+This is a real-time communication toolkit built on the **Nitrolite** protocol. It enables developers to create applications with:
 
-- **Instant messaging** between participants
-- **Secure authentication** using wallet signatures
-- **Real-time sessions** for multi-party interactions
-- **ClearNode infrastructure** for reliable message delivery
+- **Instant Transactions**: Off-chain operations mean no waiting for block confirmations.
+- **Minimal Gas Fees**: On-chain gas is primarily for channel opening and settlement.
+- **High Throughput**: Capable of handling thousands of transactions per second.
+- **Application Flexibility**: Ideal for games, payment systems, real-time interactions, and more.
+
+##  Core SDK Architecture
+The Nitrolite SDK is designed with modularity and broad compatibility in mind:
+
+**NitroliteClient**: This is the main entry point for developers. It provides a high-level API to manage the lifecycle of state channels, including deposits, channel creation, application session management, and withdrawals.
+
+**Nitrolite RPC**: This component handles the secure, real-time, off-chain communication between channel participants and the broker. It's responsible for message signing, verification, and routing.
+
+
+##  Understanding NitroliteRPC
+NitroliteRPC is a utility in our SDK that standardizes message creation for communication with ClearNodes. It's not a full protocol implementation but rather a set of helper functions that ensure your application constructs properly formatted messages for ClearNode interaction.
+
+### Key functions of NitroliteRPC include:
+
+- **Message Construction**: Creates properly formatted request messages
+- **Signature Management**: Handles the cryptographic signing of messages
+- **Standard Format Enforcement**: Ensures all messages follow the required format for ClearNode compatibility
+- **Authentication Flow Helpers**: Simplifies the authentication process
+Under the hood, NitroliteRPC provides functions that generate message objects with the correct structure, timestamps, and signature formatting, so you don't have to build these messages manually when communicating with ClearNodes.
 
 ## Package Information
 
@@ -22,6 +41,7 @@ The Yellow SDK is available as:
 - **Comprehensive documentation**: Step-by-step guides and examples
 - **Production infrastructure**: ClearNode network and custody contracts
 - **Developer tools**: Testing utilities and debugging helpers
+
 
 ## Getting Started
 
