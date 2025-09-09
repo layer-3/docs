@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: What is Yellow SDK
 description: Learn about the Yellow Network, SDK toolkit and its capabilities
-keywords: [Yellow SDK, Nitrolite, State Channels, web3]
+keywords: [Yellow SDK, Nitrolite, State Channels, Web3]
 ---
 
 # What is Yellow SDK
