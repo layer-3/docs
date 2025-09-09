@@ -5,8 +5,8 @@ description: Comprehensive learning resources for Yellow Network and state chann
 
 # Learn
 
-**[Introduction](./introduction/what-is-yellow-sdk)** - Understand the fundamentals of Yellow Network, including our approach to decentralized clearing and state channels. This section provides an overview of the Yellow SDK, state channel mechanics, scaling solutions, and the ERC-7824 standard.
+**[Introduction](/docs/learn/introduction/what-is-yellow-sdk)** - Understand the fundamentals of Yellow Network, Chain Abstraction and Yellow Apps. Explore NitroliteRPC Protocol.
 
-**[Beginner](./beginner/yellow-account)** - Follow our practical guides to get up and running. Learn how to set up a Yellow Account, perform basic state channel operations, and follow the core workflows for building your first Yellow App.
+**[Beginner](/docs/learn/beginner/yellow-account)** - Follow the core workflows for building your first Yellow App. Learn how to set up a Yellow Account and perform basic operations.
 
-**[Advanced](./advanced/architecture)** - For experienced developers, this section details the underlying architecture of the Yellow Network. Topics include implementing multi-party state channels, advanced deployment strategies, security best practices, and architectural patterns for production-level Yellow Apps.
+**[Advanced](/docs/learn/advanced/architecture)** - For experienced developers, this section details the underlying architecture of the Yellow Network. Explore low-level state channel management with Nitrolite Client. Include multiple participants in one application session. Understand advanced deployment strategies, security best practices, and architectural patterns for production-level Yellow Apps.

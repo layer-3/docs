@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Yellow Network',
-  tagline: 'Decentralized clearing and settlement network',
+  tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -58,11 +58,27 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
+  plugins: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        language: ['en'],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        docsRouteBasePath: '/docs',
+      },
+    ],
+  ],
 
 
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: true,
+    },
     navbar: {
       title: '',
       logo: {
@@ -108,8 +124,18 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
+        {
+          title: ' ',
+          items: [
+            {
+              html: `
+                <img src="img/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0;" />
+              `,
+            },
+          ],
+        },
         {
           title: 'Docs',
           items: [
@@ -127,17 +153,17 @@ const config: Config = {
               href: 'https://discord.com/invite/yellownetwork',
             },
             {
-              label: 'X',
-              href: 'https://x.com/YellowCom_News',
+              label: 'GitHub',
+              href: 'https://github.com/layer-3',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'Social',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/layer-3',
+              label: 'X',
+              href: 'https://x.com/YellowCom_News',
             },
           ],
         },

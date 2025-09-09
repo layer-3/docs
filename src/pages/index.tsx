@@ -13,22 +13,13 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+        <Heading as="h1" className="hero__title" style={{color: 'white'}}>
+          Explore the <span style={{color: '#FDDA16'}}>SDK</span>
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/learn">
-            Learn
-          </Link>
-          <Link
-            className="button button--primary button--lg"
-            to="/docs/build/quick-start">
-            Start Building
-          </Link>
-        </div>
+        <p className="hero__subtitle">
+          Decentralized clearing and settlement network<br />
+          Develop Yellow Apps with instant finality.
+        </p>
       </div>
     </header>
   );
