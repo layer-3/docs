@@ -4,6 +4,9 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+const isDev = process.env.NODE_ENV === 'development';
+const baseUrl = '/docs/';
+
 const config: Config = {
   title: 'Yellow Network',
   tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
@@ -15,17 +18,17 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: isDev ? 'http://localhost:3000' : 'https://layer-3.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'yellow-network', // Usually your GitHub org/user name.
-  projectName: 'yellow-docs', // Usually your repo name.
+  organizationName: 'layer-3', // Usually your GitHub org/user name.
+  projectName: 'docs', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -42,11 +45,13 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          routeBasePath: '/',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -60,13 +65,9 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
   plugins: [
     [
-      '@easyops-cn/docusaurus-search-local',
+      'docusaurus-lunr-search',
       {
-        hashed: true,
-        language: ['en'],
-        highlightSearchTermsOnTargetPage: true,
-        explicitSearchResultPath: true,
-        docsRouteBasePath: '/docs',
+        languages: ['en'],
       },
     ],
   ],
@@ -87,32 +88,32 @@ const config: Config = {
       },
       items: [
         {
-          to: '/docs/learn',
+          to: '/learn',
           label: 'Learn',
           position: 'left',
         },
         {
-          to: '/docs/build/quick-start',
+          to: '/build/quick-start',
           label: 'Build',
           position: 'left',
         },
         {
-          to: '/docs/manuals',
+          to: '/manuals',
           label: 'Manuals',
           position: 'left',
         },
         {
-          to: '/docs/tutorials',
+          to: '/tutorials',
           label: 'Tutorials',
           position: 'left',
         },
         {
-          to: '/docs/api-reference',
+          to: '/api-reference',
           label: 'API Reference',
           position: 'left',
         },
         {
-          to: '/docs/legacy/',
+          to: '/legacy',
           label: 'Legacy',
           position: 'left',
         },
@@ -141,7 +142,7 @@ const config: Config = {
           items: [
             {
               label: 'Documentation',
-              to: '/docs/learn',
+              to: '/learn',
             },
           ],
         },
