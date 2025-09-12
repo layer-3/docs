@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  imageSrc: string;
   description: ReactNode;
   link: string;
   isExternal?: boolean;
@@ -15,7 +15,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'Learn the Basics',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    imageSrc: require('@site/static/img/icons/learn.png').default,
     description: (
       <>
         Understand the fundamentals of Yellow Network, its architecture,
@@ -26,7 +26,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Build a Yellow App',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    imageSrc: require('@site/static/img/icons/build.png').default,
     description: (
       <>
         Create decentralized applications using Yellow SDK with real-time
@@ -37,7 +37,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Run a Clearnode',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    imageSrc: require('@site/static/img/icons/clearnode.png').default,
     description: (
       <>
         Set up and operate a clearnode to participate in the network,
@@ -48,7 +48,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Join the Community',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    imageSrc: require('@site/static/img/icons/community.png').default,
     description: (
       <>
         Connect with developers, traders, and node operators in our
@@ -60,7 +60,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Apply for Grants',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    imageSrc: require('@site/static/img/icons/grants.png').default,
     description: (
       <>
         Get funding support for your Yellow Network project through
@@ -72,7 +72,7 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description, link, isExternal}: FeatureItem) {
+function Feature({title, imageSrc, description, link, isExternal}: FeatureItem) {
   const linkProps = isExternal 
     ? { href: link, target: '_blank', rel: 'noopener noreferrer' }
     : { to: link };
@@ -84,7 +84,9 @@ function Feature({title, Svg, description, link, isExternal}: FeatureItem) {
         className={styles.featureLink}
       >
         <div className={styles.featureContent}>
-          <div className={styles.featureSquare} />
+          <div className={styles.featureSquare}>
+            <img src={imageSrc} alt={title} className={styles.featureIcon} />
+          </div>
           <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
           <p className={styles.featureDescription}>{description}</p>
         </div>
