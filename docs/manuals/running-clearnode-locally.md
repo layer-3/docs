@@ -87,26 +87,34 @@ docker-compose down
 
 ### Supported Networks
 
-Clearnode supports the following networks, which can be configured by adding the appropriate environment variables:
+Clearnode supports the following mainnet networks, which can be configured by adding the appropriate environment variables:
 
-| Network | Chain ID | Environment Variable Prefix |
-|---------|----------|----------------------------|
-| POLYGON | 137 | `POLYGON_` |
-| ETH_SEPOLIA | 11155111 | `ETH_SEPOLIA_` |
-| LINEA_MAINNET | 59144 | `LINEA_MAINNET_` |
-| CELO | 42220 | `CELO_` |
-| BASE | 8453 | `BASE_` |
-| WORLD_CHAIN | 480 | `WORLD_CHAIN_` |
-| ROOTSTOCK | 30 | `ROOTSTOCK_` |
-| FLOW | 747 | `FLOW_` |
-| LOCALNET | 1337 | `LOCALNET_` |
-| ETH_MAINNET | 1 | `ETH_MAINNET_` |
-| ANVIL | 31337 | `ANVIL_` |
-| LINEA_SEPOLIA | 59141 | `LINEA_SEPOLIA_` |
-| BASE_SEPOLIA | 84532 | `BASE_SEPOLIA_` |
-| POLYGON_AMOY | 80002 | `POLYGON_AMOY_` |
+| Network          | Chain ID | Environment Variable Prefix |
+| ---------------- | -------- | --------------------------- |
+| ETH_MAINNET      | 1        | `ETH_MAINNET_`              |
+| ROOTSTOCK        | 30       | `ROOTSTOCK_`                |
+| POLYGON          | 137      | `POLYGON_`                  |
+| WORLD_CHAIN      | 480      | `WORLD_CHAIN_`              |
+| FLOW             | 747      | `FLOW_`                     |
+| BASE             | 8453     | `BASE_`                     |
+| CELO             | 42220    | `CELO_`                     |
+| LINEA_MAINNET    | 59144    | `LINEA_MAINNET_`            |
+| XRPL_EVM_MAINNET | 1440000  | `XRPL_EVM_MAINNET_`         |
+
+And it supports the following testnet networks:
+
+| Network          | Chain ID | Environment Variable Prefix |
+| ---------------- | -------- | --------------------------- |
+| LINEA_SEPOLIA    | 59141    | `LINEA_SEPOLIA_`            |
+| POLYGON_AMOY     | 80002    | `POLYGON_AMOY_`             |
+| BASE_SEPOLIA     | 84532    | `BASE_SEPOLIA_`             |
+| XRPL_EVM_TESTNET | 1449000  | `XRPL_EVM_TESTNET_`         |
+| ETH_SEPOLIA      | 11155111 | `ETH_SEPOLIA_`              |
+| LOCALNET         | 1337     | `LOCALNET_`                 |
+| ANVIL            | 31337    | `ANVIL_`                    |
 
 For each network, you can configure:
+
 - `{NETWORK}_INFURA_URL` or similar RPC endpoint
 - `{NETWORK}_CUSTODY_CONTRACT_ADDRESS`
 - `{NETWORK}_ADJUDICATOR_ADDRESS`
@@ -137,21 +145,25 @@ The Docker Compose setup typically includes:
 ### Useful Commands
 
 Check service status:
+
 ```bash
 docker-compose ps
 ```
 
 View logs for a specific service:
+
 ```bash
 docker-compose logs -f <service-name>
 ```
 
 Restart a specific service:
+
 ```bash
 docker-compose restart <service-name>
 ```
 
 Clean up (remove containers, networks, and volumes):
+
 ```bash
 docker-compose down -v
 ```
