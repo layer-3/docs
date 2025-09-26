@@ -705,3 +705,13 @@ span,
   margin-left: 0 !important;
 }
 
+/* Code blocks font styling */
+pre[class*="language-"] *, 
+.prism-code *, 
+[class*="codeBlock"] *,
+code {
+  font-family: 'Menlo', Monaco, 'Courier New', monospace !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+}
+
