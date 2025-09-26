@@ -78,13 +78,15 @@ const config: Config = {
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       defaultMode: 'light',
-      disableSwitch: true,
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
     },
     navbar: {
       title: '',
       logo: {
         alt: 'Yellow Network',
-        src: 'img/logo.svg',
+        src: 'img/themes/light/logo.svg',
+        srcDark: 'img/themes/dark/logo.svg',
       },
       items: [
         {
@@ -119,8 +121,9 @@ const config: Config = {
         },
         {
           href: 'https://github.com/layer-3',
-          label: 'GitHub',
           position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
         },
       ],
     },
@@ -132,7 +135,8 @@ const config: Config = {
           items: [
             {
               html: `
-                <img src="img/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0;" />
+                <img src="img/themes/light/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0;" class="footer-logo-light" />
+                <img src="img/themes/dark/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0; display: none;" class="footer-logo-dark" />
               `,
             },
           ],

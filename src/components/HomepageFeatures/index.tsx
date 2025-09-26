@@ -2,11 +2,14 @@ import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
+import {useThemeConfig} from '@docusaurus/theme-common';
+import {useColorMode} from '@docusaurus/theme-common';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
   imageSrc: string;
+  imageSrcDark: string;
   description: ReactNode;
   link: string;
   isExternal?: boolean;
@@ -15,7 +18,8 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'Learn the Basics',
-    imageSrc: require('@site/static/img/icons/learn.png').default,
+    imageSrc: require('@site/static/img/themes/light/icons/learn.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/learn.png').default,
     description: (
       <>
         Understand the fundamentals of Yellow Network, its architecture,
@@ -26,7 +30,8 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Build a Yellow App',
-    imageSrc: require('@site/static/img/icons/build.png').default,
+    imageSrc: require('@site/static/img/themes/light/icons/build.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/build.png').default,
     description: (
       <>
         Create decentralized applications using Yellow SDK with real-time
@@ -37,7 +42,8 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Run a Clearnode',
-    imageSrc: require('@site/static/img/icons/clearnode.png').default,
+    imageSrc: require('@site/static/img/themes/light/icons/clearnode.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/clearnode.png').default,
     description: (
       <>
         Set up and operate a clearnode to participate in the network,
@@ -48,7 +54,8 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Join the Community',
-    imageSrc: require('@site/static/img/icons/community.png').default,
+    imageSrc: require('@site/static/img/themes/light/icons/community.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/community.png').default,
     description: (
       <>
         Connect with developers, traders, and node operators in our
@@ -60,7 +67,8 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Apply for Grants',
-    imageSrc: require('@site/static/img/icons/grants.png').default,
+    imageSrc: require('@site/static/img/themes/light/icons/grants.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/grants.png').default,
     description: (
       <>
         Get funding support for your Yellow Network project through
@@ -72,7 +80,10 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, imageSrc, description, link, isExternal}: FeatureItem) {
+function Feature({title, imageSrc, imageSrcDark, description, link, isExternal}: FeatureItem) {
+  const {colorMode} = useColorMode();
+  const currentImageSrc = colorMode === 'dark' ? imageSrcDark : imageSrc;
+  
   const linkProps = isExternal 
     ? { href: link, target: '_blank', rel: 'noopener noreferrer' }
     : { to: link };
@@ -85,7 +96,7 @@ function Feature({title, imageSrc, description, link, isExternal}: FeatureItem) 
       >
         <div className={styles.featureContent}>
           <div className={styles.featureSquare}>
-            <img src={imageSrc} alt={title} className={styles.featureIcon} />
+            <img src={currentImageSrc} alt={title} className={styles.featureIcon} />
           </div>
           <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
           <p className={styles.featureDescription}>{description}</p>
