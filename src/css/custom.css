@@ -22,7 +22,20 @@
   --ifm-color-primary-lightest: #335CFF;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-  --ifm-font-family-base: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --ifm-font-family-base: 'Poppins', sans-serif;
+  --ifm-font-weight-base: 300;
+  --ifm-font-weight-semibold: 500;
+  --ifm-font-weight-bold: 500;
+}
+
+/* Global font styling enforcement */
+* {
+  font-family: 'Poppins', sans-serif !important;
+  font-style: medium !important;
+}
+
+*:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(b):not(strong) {
+  font-weight: 300 !important;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -82,16 +95,20 @@
   position: relative;
 }
 
-/* Use pseudo-element for left border to avoid text jumping */
-.theme-doc-sidebar-item-link--active::before,
-.menu__link--active:not(.menu__link--sublist)::before {
+/* Default left border for sidebar document links only (not category headers) */
+.menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: #000000;
+  background-color: #EDEDED;
+}
+
+/* Active left border color override */
+.menu__link--active:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
+  background-color: #FDDA16;
 }
 
 [data-theme='dark'] .theme-doc-sidebar-item-link--active,
@@ -99,9 +116,13 @@
   color: #ffffff !important;
 }
 
-[data-theme='dark'] .theme-doc-sidebar-item-link--active::before,
-[data-theme='dark'] .menu__link--active:not(.menu__link--sublist)::before {
-  background-color: #ffffff;
+/* Dark theme default border */
+[data-theme='dark'] .menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
+  background-color: #404040;
+}
+
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
+  background-color: #FDDA16;
 }
 
 /* Override Docusaurus default active colors */
@@ -387,25 +408,33 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 
 /* Navbar font styling */
 .navbar {
-  font-family: 'Metro Sans', sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 
 .navbar__brand,
 .navbar__item,
 .navbar__link,
 .menu__link {
-  font-family: 'Metro Sans', sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 400 !important;
+  font-style: medium !important;
 }
 
 /* Header title font styling */
 .hero__title {
-  font-family: 'Playfair Display', serif !important;
-  font-weight: 600 !important;
-  font-style: normal !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  font-style: medium !important;
   font-size: 48px !important;
   line-height: 56px !important;
   letter-spacing: -0.6px !important;
   vertical-align: middle !important;
+}
+
+/* Ensure SDK span inherits the same font weight */
+.hero__title span {
+  font-weight: 500 !important;
+  font-style: medium !important;
 }
 
 /* Header description styling */
@@ -599,5 +628,80 @@ button[title*="Search"] path,
   background: none !important;
   background-color: transparent !important;
   border-radius: 0 !important;
+}
+
+/* Document headings and titles font weight */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3,
+.theme-doc-markdown h4,
+.theme-doc-markdown h5,
+.theme-doc-markdown h6 {
+  font-style: medium !important;
+  font-weight: 500 !important;
+}
+
+/* Bold text styling */
+b,
+strong,
+.markdown b,
+.markdown strong,
+.theme-doc-markdown b,
+.theme-doc-markdown strong {
+  font-style: medium !important;
+  font-weight: 500 !important;
+}
+
+/* Normal text styling */
+body,
+p,
+div,
+span,
+.markdown p,
+.markdown div,
+.markdown span,
+.theme-doc-markdown p,
+.theme-doc-markdown div,
+.theme-doc-markdown span,
+.theme-doc-markdown {
+  font-style: medium !important;
+  font-weight: 300 !important;
+}
+
+/* Remove gray background on hover for all sidebar items */
+.theme-doc-sidebar-item-link:hover,
+.menu__link:hover,
+.theme-doc-sidebar-item:hover,
+.menu__list-item:hover,
+.menu__list-item-collapsible:hover,
+.menu__link--sublist:hover,
+.menu__link--sublist-caret:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Remove black left border from root sidebar items like Learn */
+.theme-doc-sidebar-item-link-level-1 .menu__link--active::before,
+.theme-doc-sidebar-item-link-level-1 .menu__link::before {
+  display: none !important;
+}
+
+.theme-doc-sidebar-item-link-level-1 .menu__link--active,
+.theme-doc-sidebar-item-link-level-1 .menu__link {
+  border-left: none !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
