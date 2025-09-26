@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const isDev = process.env.NODE_ENV === 'development';
-const baseUrl = '/docs/';
+const baseUrl = '/';
 
 const config: Config = {
   title: 'Yellow Network',
@@ -18,7 +18,7 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: isDev ? 'http://localhost:3000' : 'https://layer-3.github.io',
+  url: isDev ? 'http://localhost:3000' : 'https://docs.yellow.org',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl,
