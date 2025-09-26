@@ -26,7 +26,7 @@ const FeatureList: FeatureItem[] = [
         and how decentralized clearing and settlement works.
       </>
     ),
-    link: '/docs/learn',
+    link: '/learn',
   },
   {
     title: 'Build a Yellow App',
@@ -38,7 +38,7 @@ const FeatureList: FeatureItem[] = [
         trading capabilities and instant cross-chain settlements.
       </>
     ),
-    link: '/docs/build/quick-start',
+    link: '/build/quick-start',
   },
   {
     title: 'Run a Clearnode',
@@ -50,7 +50,7 @@ const FeatureList: FeatureItem[] = [
         earn rewards, and contribute to decentralized infrastructure.
       </>
     ),
-    link: '/docs/manuals',
+    link: '/manuals',
   },
   {
     title: 'Join the Community',
