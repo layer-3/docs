@@ -1,8 +1,0 @@
-<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-  <rect width="200" height="200" fill="#f0f0f0" stroke="#ddd" stroke-width="2"/>
-  <circle cx="100" cy="100" r="15" fill="#61DAFB"/>
-  <ellipse cx="100" cy="100" rx="50" ry="20" fill="none" stroke="#61DAFB" stroke-width="3"/>
-  <ellipse cx="100" cy="100" rx="50" ry="20" fill="none" stroke="#61DAFB" stroke-width="3" transform="rotate(60 100 100)"/>
-  <ellipse cx="100" cy="100" rx="50" ry="20" fill="none" stroke="#61DAFB" stroke-width="3" transform="rotate(-60 100 100)"/>
-  <text x="100" y="180" text-anchor="middle" font-family="Arial" font-size="14" fill="#333">React</text>
-</svg>

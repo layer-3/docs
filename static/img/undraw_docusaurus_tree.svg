@@ -1,8 +1,0 @@
-<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-  <rect width="200" height="200" fill="#f0f0f0" stroke="#ddd" stroke-width="2"/>
-  <rect x="90" y="120" width="20" height="60" fill="#8D6E63"/>
-  <circle cx="100" cy="90" r="40" fill="#4CAF50"/>
-  <circle cx="85" cy="75" r="25" fill="#66BB6A"/>
-  <circle cx="115" cy="75" r="25" fill="#66BB6A"/>
-  <text x="100" y="195" text-anchor="middle" font-family="Arial" font-size="14" fill="#333">Tree</text>
-</svg>

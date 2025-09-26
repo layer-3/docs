@@ -28,12 +28,12 @@ CLEARNODE_LOG_LEVEL=info
 BROKER_PRIVATE_KEY=0xac0974bec38a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # Networks Configuration
-POLYGON_INFURA_URL=wss://polygon-mainnet.infura.io/ws/v3/your-api-key
+POLYGON_BLOCKCHAIN_RPC=wss://polygon-mainnet.infura.io/ws/v3/your-api-key
 POLYGON_CUSTODY_CONTRACT_ADDRESS=0x490fb189DdE3a01B00be9BA5F41e3447FbC838b6
 POLYGON_ADJUDICATOR_ADDRESS=0xcbbc03a873c11beeFA8D99477E830be48d8Ae6D7
 POLYGON_BALANCE_CHECKER_ADDRESS=0x2352c63A83f9Fd126af8676146721Fa00924d7e4
 
-# BASE_INFURA_URL=...
+# BASE_BLOCKCHAIN_RPC=...
 # BASE_CUSTODY_CONTRACT_ADDRESS=...
 # BASE_ADJUDICATOR_ADDRESS=...
 # BASE_BALANCE_CHECKER_ADDRESS=...
@@ -91,15 +91,15 @@ Clearnode supports the following mainnet networks, which can be configured by ad
 
 | Network          | Chain ID | Environment Variable Prefix |
 | ---------------- | -------- | --------------------------- |
-| ETH_MAINNET      | 1        | `ETH_MAINNET_`              |
+| ETHEREUM         | 1        | `ETHEREUM_`                 |
 | ROOTSTOCK        | 30       | `ROOTSTOCK_`                |
 | POLYGON          | 137      | `POLYGON_`                  |
 | WORLD_CHAIN      | 480      | `WORLD_CHAIN_`              |
 | FLOW             | 747      | `FLOW_`                     |
 | BASE             | 8453     | `BASE_`                     |
 | CELO             | 42220    | `CELO_`                     |
-| LINEA_MAINNET    | 59144    | `LINEA_MAINNET_`            |
-| XRPL_EVM_MAINNET | 1440000  | `XRPL_EVM_MAINNET_`         |
+| LINEA            | 59144    | `LINEA_`                    |
+| XRPL_EVM         | 1440000  | `XRPL_EVM_`                 |
 
 And it supports the following testnet networks:
 
@@ -109,13 +109,13 @@ And it supports the following testnet networks:
 | POLYGON_AMOY     | 80002    | `POLYGON_AMOY_`             |
 | BASE_SEPOLIA     | 84532    | `BASE_SEPOLIA_`             |
 | XRPL_EVM_TESTNET | 1449000  | `XRPL_EVM_TESTNET_`         |
-| ETH_SEPOLIA      | 11155111 | `ETH_SEPOLIA_`              |
+| ETHEREUM_SEPOLIA      | 11155111 | `ETHEREUM_SEPOLIA_`              |
 | LOCALNET         | 1337     | `LOCALNET_`                 |
 | ANVIL            | 31337    | `ANVIL_`                    |
 
 For each network, you can configure:
 
-- `{NETWORK}_INFURA_URL` or similar RPC endpoint
+- `{NETWORK}_BLOCKCHAIN_RPC` or similar RPC endpoint
 - `{NETWORK}_CUSTODY_CONTRACT_ADDRESS`
 - `{NETWORK}_ADJUDICATOR_ADDRESS`
 - `{NETWORK}_BALANCE_CHECKER_ADDRESS`
@@ -123,7 +123,7 @@ For each network, you can configure:
 ### Configuration Notes
 
 - **BROKER_PRIVATE_KEY**: Default private key for local development (never use in production)
-- **POLYGON_INFURA_URL**: Replace `your-api-key` with your actual Infura API key
+- **POLYGON_BLOCKCHAIN_RPC**: Replace `your-api-key` with your Infura API key or use another RPC provider
 - **Database Configuration**: Default PostgreSQL configuration for local development
 - **Token Configuration**: Pre-configured with USDC and WETH tokens on Polygon
 
@@ -140,7 +140,7 @@ The Docker Compose setup typically includes:
 
 1. **Port Conflicts**: If you encounter port conflicts, check which services are running on the same ports and either stop them or modify the ports in docker-compose.yml
 
-2. **Infura API Key**: Make sure to replace the placeholder Infura API key with a valid one
+2. **Blockchain RPC**: Make sure to add Blockchain RPC URLs for your chains.
 
 ### Useful Commands
 
