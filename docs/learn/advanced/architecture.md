@@ -28,6 +28,7 @@ graph TD
 3. **Settle**: Submit final state to blockchain for fund distribution
 
 This enables applications to achieve:
+
 - **Instant finality** - no waiting for block confirmations
 - **Minimal gas costs** - pay only for setup and settlement
 - **Unlimited throughput** - thousands of transactions per second
@@ -106,12 +107,26 @@ const sessionMessage = await createAppSessionMessage(messageSigner, sessionData)
 ### ClearNode Infrastructure
 
 Network infrastructure providing:
+
 - **Message routing**: Secure communication between participants
 - **Session management**: Application session lifecycle
 - **State coordination**: Off-chain state synchronization
 - **Network resilience**: Redundancy and failover support
 
-## Application Session Management
+## Application Session Protocol
+
+The application session protocol defines how applications are created, managed, and closed on top of state channels.
+
+A protocol version specified during app session creation will be used throughout the whole session lifecycle. Therefore, it is important to choose the correct protocol version that matches your application's requirements.
+
+Additionally, if an unsupported protocol version is specified, the session creation will fail with an appropriate error message. Therefore make sure to verify the supported protocol versions before creating an application session.
+When a new version is released or an older one is deprecated, the corresponding announcement will be published and supported versions list will be updated accordingly.
+
+### Supported Protocol Versions
+
+As the development of the protocol continues, different versions may be supported to ensure backward compatibility. The current supported versions are:
+
+- `NitroRPC/0.2`: Initial supported version of the NitroRPC protocol
 
 ### Session Lifecycle
 

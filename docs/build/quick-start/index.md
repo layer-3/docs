@@ -69,7 +69,7 @@ pnpm add @erc7824/nitrolite
 Create a file `app.js` and connect to the Yellow Network:
 
 ```javascript
-import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
+import { createAppSessionMessage, parseRPCResponse, ProtocolVersion } from '@erc7824/nitrolite';
 
 // Connect to Yellow Network
 const ws = new WebSocket('wss://clearnet.yellow.com/ws');
@@ -129,7 +129,7 @@ Create a session for your payment app:
 async function createPaymentSession(messageSigner, userAddress, partnerAddress) {
   // Define your payment application
   const appDefinition = {
-    protocol: 'payment-app-v1',
+    protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
     participants: [userAddress, partnerAddress],
     weights: [50, 50], // Equal participation
     quorum: 100, // Both participants must agree
@@ -227,7 +227,7 @@ function updateBalance(amount, sender) {
 Here's a complete working example you can copy and run:
 
 ```javascript
-import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
+import { createAppSessionMessage, parseRPCResponse, ProtocolVersion } from '@erc7824/nitrolite';
 
 class SimplePaymentApp {
   constructor() {
@@ -275,7 +275,7 @@ class SimplePaymentApp {
 
   async createSession(partnerAddress) {
     const appDefinition = {
-      protocol: 'payment-app-v1',
+      protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
       participants: [this.userAddress, partnerAddress],
       weights: [50, 50],
       quorum: 100,

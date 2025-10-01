@@ -13,32 +13,46 @@ Complete reference for all Yellow SDK methods, types, and utilities.
 
 ### Message Creation
 
-#### `createAppSessionMessage(signer: MessageSigner, sessions: AppSession[]): Promise<string>`
+#### `createAppSessionMessage(signer: MessageSigner, params: CreateAppSessionRequestParams): Promise<string>`
 
 Creates a signed application session message.
 
 **Parameters:**
+
 ```typescript
 type MessageSigner = (payload: any) => Promise<Hex>;
 
-interface AppSession {
-  definition: AppDefinition;
-  allocations: AppAllocation[];
+interface CreateAppSessionRequestParams {
+  /** The detailed definition of the application being created, including protocol, participants, weights, and quorum. */
+  definition: RPCAppDefinition;
+  /** The initial allocation distribution among participants. Each participant must have sufficient balance for their allocation. */
+  allocations: RPCAppSessionAllocation[];
+  /** Optional session data as a JSON string that can store application-specific state or metadata. */
+  session_data?: string;
+};
+
+interface RPCAppDefinition {
+    /** Protocol identifies the version of the application protocol */
+    protocol: ProtocolVersion;
+    /** An array of participant addresses (Ethereum addresses) involved in the application. Must have at least 2 participants. */
+    participants: Hex[];
+    /** An array representing the relative weights or stakes of participants, often used for dispute resolution or allocation calculations. Order corresponds to the participants array. */
+    weights: number[];
+    /** The number of participants required to reach consensus or approve state updates. */
+    quorum: number;
+    /** A parameter related to the challenge period or mechanism within the application's protocol, in seconds. */
+    challenge: number;
+    /** A unique number used once, often for preventing replay attacks or ensuring uniqueness of the application instance. Must be non-zero. */
+    nonce?: number;
 }
 
-interface AppDefinition {
-  protocol: string;
-  participants: Address[];
-  weights: number[];
-  quorum: number;
-  challenge: number;
-  nonce: number;
-}
-
-interface AppAllocation {
-  participant: Address;
-  asset: string;
-  amount: string;
+interface RPCAppSessionAllocation {
+    /** The symbol of the asset (e.g., "USDC", "USDT", "ETH"). */
+    asset: string;
+    /** The amount of the asset. Must be a positive number. */
+    amount: string;
+    /** The Ethereum address of the participant receiving the allocation. */
+    participant: Address;
 }
 ```
 
@@ -224,16 +238,14 @@ try {
 ```typescript
 const CLEARNODE_ENDPOINTS = {
   MAINNET: 'wss://clearnet.yellow.com/ws',
-  TESTNET: 'wss://testnet.clearnet.yellow.com/ws',
+  TESTNET: 'wss://clearnet-sandbox.yellow.com/ws',
   LOCAL: 'ws://localhost:8080/ws'
 };
 
-const PROTOCOLS = {
-  PAYMENT: 'payment-app-v1',
-  GAMING: 'gaming-app-v1',
-  ESCROW: 'escrow-app-v1',
-  TOURNAMENT: 'tournament-v1',
-  SUBSCRIPTION: 'subscription-v1'
+// Represents the protocol version and is used to provide backward compatibility as the API evolves.
+enum ProtocolVersion {
+  // NitroRPC_0_2 is the initial supported version of the NitroRPC protocol
+  NitroRPC_0_2 = 'NitroRPC/0.2',
 };
 ```
 

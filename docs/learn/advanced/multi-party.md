@@ -22,7 +22,7 @@ import { createAppSessionMessage } from '@erc7824/nitrolite';
 
 async function createEscrowSession(buyer, seller, mediator, amount) {
   const appDefinition = {
-    protocol: 'escrow-v1',
+    protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
     participants: [buyer, seller, mediator],
     weights: [33, 33, 34], // Equal voting with mediator tiebreaker
     quorum: 67, // Requires 2 of 3 consensus
@@ -51,7 +51,7 @@ Multi-player competitive applications with prize distribution:
 async function createTournament(players, entryFee, messageSigner) {
   // Create application session for tournament logic
   const appDefinition = {
-    protocol: 'tournament-v1',
+    protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
     participants: [...players, houseAddress],
     weights: [...players.map(() => 0), 100], // House controls tournament
     quorum: 100,
@@ -90,7 +90,7 @@ Different participants can have different voting power:
 
 ```javascript
 const governanceSession = {
-  protocol: 'governance-v1',
+  protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
   participants: [admin, moderator1, moderator2, user1, user2],
   weights: [40, 20, 20, 10, 10], // Admin has 40% vote
   quorum: 60, // Requires 60% consensus
@@ -103,7 +103,7 @@ const governanceSession = {
 
 ```javascript
 const multiSigSession = {
-  protocol: 'multisig-v1',
+  protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
   participants: [signer1, signer2, signer3, beneficiary],
   weights: [33, 33, 34, 0], // 3 signers, 1 beneficiary
   quorum: 67, // Requires 2 of 3 signatures
@@ -493,7 +493,7 @@ class GamingLobby {
     
     // Create game application session
     const appDefinition = {
-      protocol: `${room.gameType}-v1`,
+      protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
       participants: [...room.players, this.serverAddress],
       weights: [...room.players.map(() => 0), 100], // Server controls game
       quorum: 100,
@@ -538,7 +538,7 @@ class SubscriptionService {
 
   async createSubscription(subscriber, provider, monthlyFee) {
     const appDefinition = {
-      protocol: 'subscription-v1',
+      protocol: ProtocolVersion.NitroRPC_0_2, // specify the app session protocol version your app uses
       participants: [subscriber, provider, this.serviceAddress],
       weights: [0, 100, 0], // Provider controls service delivery
       quorum: 100,
