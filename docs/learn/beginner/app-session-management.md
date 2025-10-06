@@ -26,7 +26,7 @@ graph TD
 
 ### 1. Creation Stage
 
-The initial stage where participants establish a yellow app with agreed-upon parameters.
+The initial stage where participants establish an application session with an optional yellow app (that can dictate state update rules) with agreed-upon parameters.
 
 **Key Requirements:**
 - All participants with non-zero allocations must sign the creation request
