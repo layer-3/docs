@@ -30,7 +30,7 @@ The initial stage where participants establish a yellow app with agreed-upon par
 
 **Key Requirements:**
 - All participants with non-zero allocations must sign the creation request
-- Protocol must be specified (`NitroRPC/0.2` or `NitroRPC/0.4`)
+- Protocol must be specified ([`NitroRPC/0.4`](#nitrorpc04-current))
 - Signature weights and quorum must be defined
 - Initial allocations must be provided
 
@@ -51,6 +51,8 @@ The active phase where participants submit intermediate states and redistribute 
 - Signature Requirements: Quorum-based validation
 
 **Sub-operations:**
+Defined by Intent introduces with protocol version [`NitroRPC/0.4`](#nitrorpc04-current). Applications using older protocol versions do not support intents and execute `Operate` sub-operation for all requests.
+
 - **Operate**: Redistribute existing session funds
 - **Deposit**: Add funds from participants' unified balances
 - **Withdraw**: Remove funds to participants' unified balances
@@ -106,7 +108,7 @@ Establishes a new app session between participants.
 ```
 
 #### NitroRPC/0.4 (Current)
-Enhanced version with improved state management and explicit versioning.
+Enhanced version with explicit versioning and improved state management allowing for optional deposits and withdrawals.
 
 **Key Differences:**
 - Required `version` field for state consistency
@@ -124,9 +126,16 @@ Enhanced version with improved state management and explicit versioning.
 
 Updates the session state during the operational stage.
 
-#### Intent-Based Operations (NitroRPC/0.4)
+#### Intent-Based Operations ([NitroRPC/0.4](#nitrorpc04-current))
+
+The `intent` field specifies the purpose of the state update. An important concept is that the `allocations` you provide are not the *change* in funds, but rather the **final desired app balance state** for each participant after the operation.
 
 **Operate Intent** - Redistribute session funds:
+This intent is used for normal application logic where the total funds within the session do not change, but are simply moved between participants. The sum of the final allocations must equal the sum of the current allocations.
+
+**Example:**
+Assume the initial state is `100.0` usdc for each of the two participants. After a game round, Participant A loses `25.0` usdc to Participant B.
+
 ```json
 {
   "req": [1, "submit_app_state", {
@@ -151,6 +160,23 @@ Updates the session state during the operational stage.
 ```
 
 **Deposit Intent** - Add funds to session:
+To deposit funds, you specify the new total allocation for each depositing participant. The system calculates the deposit amount for a participant by subtracting their current balance from the new allocation amount you provide.
+
+**Example:**
+Suppose the current session state (from the `operate` example above) is:
+
+  - Participant A (`0xA...C`): `75.0` usdc
+  - Participant B (`0x0...3`): `125.0` usdc
+
+Now, Participant A wants to deposit `50.0` usdc, and Participant B also wants to deposit `50.0` usdc.
+
+**Calculation:**
+
+  - Participant A's new total allocation = `75.0` (current) + `50.0` (deposit) = `125.0`
+  - Participant B's new total allocation = `125.0` (current) + `50.0` (deposit) = `175.0`
+
+You must submit these **updated amounts** in the `allocations` array.
+
 ```json
 {
   "req": [1, "submit_app_state", {
@@ -174,12 +200,31 @@ Updates the session state during the operational stage.
 }
 ```
 
+**Important**: Any participant making a deposit must be a signer of the request, in addition to meeting the overall signature quorum.
+
 **Withdraw Intent** - Remove funds from session:
+Similar to depositing, you specify the final allocation for each participant after the withdrawal. The system calculates the withdrawal amount by subtracting the new allocation amount from the participant's current balance.
+
+**Example:**
+Following the deposit above, the current session state is:
+
+  - Participant A (`0xA...C`): `125.0` usdc
+  - Participant B (`0x0...3`): `175.0` usdc
+
+Now, Participant A wants to withdraw `25.0` usdc, and Participant B also wants to withdraw `25.0` usdc.
+
+**Calculation:**
+
+  - Participant A's new total allocation = `125.0` (current) - `25.0` (withdraw) = `100.0`
+  - Participant B's new total allocation = `175.0` (current) - `25.0` (withdraw) = `150.0`
+
+You must submit these **final amounts** in the `allocations` array.
+
 ```json
 {
   "req": [1, "submit_app_state", {
     "app_session_id": "0x3456789012abcdef...",
-    "intent": "withdraw", 
+    "intent": "withdraw",
     "version": 4,
     "allocations": [
       {
@@ -275,56 +320,6 @@ Session data evolves through the operational stages:
 1. **Creation**: Initial configuration and rules
 2. **Operation**: Dynamic state updates reflecting application logic
 3. **Closure**: Final results and outcomes
-
-## Error Handling & Edge Cases
-
-### Common Error Scenarios
-
-**Insufficient Signatures:**
-```json
-{
-  "error": {
-    "code": -32600,
-    "message": "Signature weight (45) below required quorum (100)",
-    "data": {
-      "required_weight": 100,
-      "provided_weight": 45,
-      "missing_signers": ["0x00112233445566778899AaBbCcDdEeFf00112233"]
-    }
-  }
-}
-```
-
-**Version Mismatch:**
-```json
-{
-  "error": {
-    "code": -32601,
-    "message": "Invalid version number",
-    "data": {
-      "expected_version": 5,
-      "provided_version": 3,
-      "current_version": 4
-    }
-  }
-}
-```
-
-**Allocation Validation Errors:**
-```json
-{
-  "error": {
-    "code": -32602,
-    "message": "Invalid allocation amounts for operate intent",
-    "data": {
-      "intent": "operate",
-      "expected_total": "200.0",
-      "provided_total": "180.0",
-      "asset": "usdc"
-    }
-  }
-}
-```
 
 ### Recovery Strategies
 
