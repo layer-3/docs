@@ -200,7 +200,7 @@ You must submit these **updated amounts** in the `allocations` array.
 }
 ```
 
-**Important**: Any participant making a deposit must be a signer of the request, in addition to meeting the overall signature quorum.
+**Important**: Any participant making a deposit must be a signer of the request, in addition to the state meeting the overall signature quorum.
 
 **Withdraw Intent** - Remove funds from session:
 Similar to depositing, you specify the final allocation for each participant after the withdrawal. The system calculates the withdrawal amount by subtracting the new allocation amount from the participant's current balance.
