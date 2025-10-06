@@ -7,7 +7,7 @@ keywords: [app session, yellow application, lifecycle, stages, operations, nitro
 
 # App Session Management
 
-App sessions in the Yellow network enable secure, off-chain computation with on-chain settlement. This guide covers the complete lifecycle of app sessions, from creation through various operational stages to closure.
+App sessions in the Yellow network enable secure, off-chain computation with optional on-chain settlement. This guide covers the complete lifecycle of app sessions, from creation through various operational stages to closure.
 
 ## Session Lifecycle Overview
 
@@ -39,23 +39,29 @@ The initial stage where participants establish an application session with an op
 - Version: Initial (1)
 - Participants: Fixed set established
 - Assets: Initial allocations locked
-
 ### 2. Operational Stage
 
 The active phase where participants submit intermediate states and redistribute funds according to application logic.
 
-**Stage Characteristics:**
+#### Stage Characteristics
 - Status: `open`
 - Version: Incrementing with each state update
 - State Changes: Continuous based on application logic
 - Signature Requirements: Quorum-based validation
 
-**Sub-operations:**
+#### Sub-operations
 Defined by Intent introduces with protocol version [`NitroRPC/0.4`](#nitrorpc04-current). Applications using older protocol versions do not support intents and execute `Operate` sub-operation for all requests.
 
 - **Operate**: Redistribute existing session funds
 - **Deposit**: Add funds from participants' unified balances
 - **Withdraw**: Remove funds to participants' unified balances
+
+**State Update Requirements:**
+- **Quorum**: Sum of signer weights must meet threshold
+- **Version**: Must specify expected next version number
+- **Allocations**: Must comply with intent-specific rules
+- **Signatures**: Required signers depend on operation type
+
 
 ### 3. Closure Stage
 
@@ -64,13 +70,19 @@ The final phase where the session is terminated, and final allocations are settl
 **Stage Characteristics:**
 - Status: `open` → `closed`
 - Final State: Immutable after closure
-- Settlement: All funds distributed according to final allocations
+- Settlement: All funds distributed between participants on the Ledger layer, according to final allocations
 
 ## Core Operations
 
 ### Create Yellow App
 
 Establishes a new app session between participants.
+**Creation Requirements:**
+- **Participants**: All participants with non-zero allocations must sign
+- **Weights**: Signature weights determining voting power
+- **Quorum**: Minimum signature weight threshold for operations
+- **Challenge Period**: Time window for dispute resolution (seconds)
+- **Session Data**: Optional application-specific metadata
 
 **Protocol Versions:**
 
@@ -115,12 +127,6 @@ Enhanced version with explicit versioning and improved state management allowing
 - Enhanced allocation validation
 - Improved error handling
 
-**Creation Requirements:**
-- **Participants**: All participants with non-zero allocations must sign
-- **Weights**: Signature weights determining voting power
-- **Quorum**: Minimum signature weight threshold for operations
-- **Challenge Period**: Time window for dispute resolution (seconds)
-- **Session Data**: Optional application-specific metadata
 
 ### Submit Application State
 
@@ -130,11 +136,13 @@ Updates the session state during the operational stage.
 
 The `intent` field specifies the purpose of the state update. An important concept is that the `allocations` you provide are not the *change* in funds, but rather the **final desired app balance state** for each participant after the operation.
 
-**Operate Intent** - Redistribute session funds:
+##### Operate Intent
+
+Redistribute session funds:
 This intent is used for normal application logic where the total funds within the session do not change, but are simply moved between participants. The sum of the final allocations must equal the sum of the current allocations.
 
 **Example:**
-Assume the initial state is `100.0` usdc for each of the two participants. After a game round, Participant A loses `25.0` usdc to Participant B.
+Assume the initial state is `100.0` USDC for each of the two participants. After a game round, Participant A loses `25.0` USDC to Participant B.
 
 ```json
 {
@@ -159,16 +167,18 @@ Assume the initial state is `100.0` usdc for each of the two participants. After
 }
 ```
 
-**Deposit Intent** - Add funds to session:
+##### Deposit Intent
+
+Add funds to session:
 To deposit funds, you specify the new total allocation for each depositing participant. The system calculates the deposit amount for a participant by subtracting their current balance from the new allocation amount you provide.
 
 **Example:**
 Suppose the current session state (from the `operate` example above) is:
 
-  - Participant A (`0xA...C`): `75.0` usdc
-  - Participant B (`0x0...3`): `125.0` usdc
+  - Participant A (`0xA...C`): `75.0` USDC
+  - Participant B (`0x0...3`): `125.0` USDC
 
-Now, Participant A wants to deposit `50.0` usdc, and Participant B also wants to deposit `50.0` usdc.
+Now, Participant A wants to deposit `50.0` USDC, and Participant B also wants to deposit `50.0` USDC.
 
 **Calculation:**
 
@@ -202,16 +212,18 @@ You must submit these **updated amounts** in the `allocations` array.
 
 **Important**: Any participant making a deposit must be a signer of the request, in addition to the state meeting the overall signature quorum.
 
-**Withdraw Intent** - Remove funds from session:
+##### Withdraw Intent
+
+Remove funds from session:
 Similar to depositing, you specify the final allocation for each participant after the withdrawal. The system calculates the withdrawal amount by subtracting the new allocation amount from the participant's current balance.
 
 **Example:**
 Following the deposit above, the current session state is:
 
-  - Participant A (`0xA...C`): `125.0` usdc
-  - Participant B (`0x0...3`): `175.0` usdc
+  - Participant A (`0xA...C`): `125.0` USDC
+  - Participant B (`0x0...3`): `175.0` USDC
 
-Now, Participant A wants to withdraw `25.0` usdc, and Participant B also wants to withdraw `25.0` usdc.
+Now, Participant A wants to withdraw `25.0` USDC, and Participant B also wants to withdraw `25.0` USDC.
 
 **Calculation:**
 
@@ -242,12 +254,6 @@ You must submit these **final amounts** in the `allocations` array.
   "sig": ["0x9876fedcba...", "0x8765fedcba..."]
 }
 ```
-
-**State Update Requirements:**
-- **Quorum**: Sum of signer weights must meet threshold
-- **Version**: Must specify expected next version number
-- **Allocations**: Must comply with intent-specific rules
-- **Signatures**: Required signers depend on operation type
 
 ### Close Yellow App
 
