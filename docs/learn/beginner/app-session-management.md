@@ -89,6 +89,8 @@ The final phase where the session is terminated, and final allocations are settl
 
 ## Core Operations
 
+The following paragraphs use Clearnode RPC API requests and responses to illustrate each operation. Note that it is more convenient to use Yellow SDK in your language of choice to interact with Clearnode.
+
 ### Create Yellow App
 
 Establishes a new app session between participants.
