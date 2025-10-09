@@ -12,14 +12,6 @@ const config: Config = {
   tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
   favicon: 'img/favicon.ico',
 
-  // SEO metadata
-  metadata: [
-    {
-      name: 'description',
-      content: 'Build Yellow Apps with the Yellow SDK - a real-time communication toolkit for decentralized clearing and settlement. Create applications with unified cross-chain balance and instant finality.',
-    },
-  ],
-
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
@@ -38,6 +30,17 @@ const config: Config = {
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
+
+  // SEO metadata - injected into HTML head
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'description',
+        content: 'Build Yellow Apps with the Yellow SDK - a real-time communication toolkit for decentralized clearing and settlement. Create applications with unified cross-chain balance and instant finality.',
+      },
+    },
+  ],
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
