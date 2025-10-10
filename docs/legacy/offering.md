@@ -13,9 +13,9 @@ Yellow Network is a project in development. Not all solutions presented in the f
 For more information, visit the [Roadmap](about/roadmap.md).
 :::
 
-## Key Benefits&#x20;
+## Key Benefits
 
-* Works worldwide all-in-one toolset “OpenDAX SDK”
+* Works worldwide all-in-one toolset NeoDAX SDK
 * Easy to deploy for any stakeholder
 * A Web3 solution ready for mature retail finance
 * Real-time inter-broker exchange
@@ -34,9 +34,9 @@ Cutting-edge state channel technology enables fast trading and reaching assets l
 
 ### **For Retail Investors and Traders**
 
-* Access to audited, licensed, and trusted brokers&#x20;
+* Access to audited, licensed, and trusted brokers
 * Access to multiple assets from various chains
-* User-friendly UI with familiar features to centralized exchanges&#x20;
+* User-friendly UI with familiar features to centralized exchanges
 * Funds are protected by professional third-party custodians and smart contracts
 
 ### **For Market Makers**

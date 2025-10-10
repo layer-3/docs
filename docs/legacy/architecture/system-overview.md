@@ -12,11 +12,11 @@ description: Technologies used and created by the Yellow Network team
 
 ## **The Broker Node** <a href="#id-88o83bna5dhs" id="id-88o83bna5dhs"></a>
 
-The broker node is built with [OpenDAX™ WEB SDK](https://web-sdk.openware.com/?path=/story/getting-started--page), which offers reusable UI components for common exchange platform interfaces, including widgets.
+The broker node is built with [NeoDAX™ WEB SDK](https://web-sdk.openware.com/?path=/story/getting-started--page), which offers reusable UI components for common exchange platform interfaces, including widgets.
 
 All components come with a simple, modern design, and are customizable.
 
-The library leverages React state management tools such as providers, hooks, and utils to connect to the [OpenDAX™ WEB SDK](https://web-sdk.openware.com/?path=/story/getting-started--page) for JavaScript and pass data to the UI layer, simplifying state synchronization.
+The library leverages React state management tools such as providers, hooks, and utils to connect to the [NeoDAX™ WEB SDK](https://web-sdk.openware.com/?path=/story/getting-started--page) for JavaScript and pass data to the UI layer, simplifying state synchronization.
 
 Demo Version - [alpha.yellow.org](http://alpha.yellow.org/)
 
@@ -37,7 +37,7 @@ A great fit for exchange businesses allows deep customization.
 
 ## **Matching Engine**[**​**](https://www.yellow.org/docs/litepaper/product#matching-engine)
 
-Each broker has its own matching engine, called _Finex,_ a high-performance trading engine of the [OpenDAX™ crypto exchange software stack](https://www.openware.com/product/opendax). It is written in GO language for high throughput of orders and trades. The _Finex_ engine is the core component of the trading platform. It accepts or rejects orders, adds them to the order book, processes trades when orders match, and keeps a persistent state in the database. It prevents users from spending more funds than are available on their balance.
+Each broker has its own matching engine, called _Finex,_ a high-performance trading engine of the [NeoDAX™ crypto exchange software stack](https://www.openware.com/product/neodax). It is written in GO language for high throughput of orders and trades. The _Finex_ engine is the core component of the trading platform. It accepts or rejects orders, adds them to the order book, processes trades when orders match, and keeps a persistent state in the database. It prevents users from spending more funds than are available on their balance.
 
 Features supported in _Finex_ spot matching engine:
 
@@ -48,7 +48,7 @@ Features supported in _Finex_ spot matching engine:
 * **Stop-limit:** advanced limit order used to buy or sell a specific asset at a predefined limit.  Contrary to the stop-loss order, a stop-limit order creates a limit order instead of buying the asset outright once the limit price is achieved.&#x20;
 * **API Rate limit**: a rate limiter configurable depending on user roles; it can be configured at the API server level and the trading engine level
 * **Bi-directional WebSocket API**: allows end-users and brokers' bots to create and cancel orders and be notified about trades in real-time
-* [**gRPC API** with JS and go libraries to speed up the development of bots](https://docs.openware.com/opendax/developers-guides/api-documentation/grpc-protocol)
+* [**gRPC API** with JS and go libraries to speed up the development of bots](https://docs.openware.com/neodax/developers-guides/api-documentation/grpc-protocol)
 
 ## State Channel Technology <a href="#gxnel8rqtpbo" id="gxnel8rqtpbo"></a>
 

@@ -6,11 +6,11 @@
 
 Yellow is an umbrella brand, representing a conglomerate of fintech and blockchain product companies.
 
-Contributors to this project within the Yellow ecosystem are Openware (technology—OpenDAX™), Assetum (market-making), Yellow Capital (incubates and leads), Attirer (crypto marketing services).
+Contributors to this project within the Yellow ecosystem are Openware (technology—NeoDAX™), Assetum (market-making), Yellow Capital (incubates and leads), Attirer (crypto marketing services).
 
 We merge the multi-year crypto software development experience of Openware and Yellow’s success running a crypto exchange. This multi-structural practice allowed us to inspect numerous potential bottlenecks on both sides.
 
-Yellow Network is powered by Openware’s software; OpenDAX™. While OpenDAX™ brokerage software is free, connecting the node to liquidity streams (channels) requires staking the $YELLOW token—starting from 250,000 for 4 channels.
+Yellow Network is powered by Openware’s software; NeoDAX™. While NeoDAX™ brokerage software is free, connecting the node to liquidity streams (channels) requires staking the $YELLOW token—starting from 250,000 for 4 channels.
 
 We offer optional enterprise-grade support for node runners which is $240,000 per year.
 
@@ -20,7 +20,7 @@ Assetum is a market-making company that would contribute to the project’s liqu
 
 #### **About Openware, Inc.**&#x20;
 
-Cloud Software Engineering company with experience of over ten years of servicing European retail banks, shifting their focus entirely to the blockchain industry with the release of open-source modular platform [OpenDAX™](https://github.com/openware/opendax) for building digital asset trading systems. Over the past years, Openware has shipped over 150 trading platforms to their clients.
+Cloud Software Engineering company with experience of over ten years of servicing European retail banks, shifting their focus entirely to the blockchain industry with the release of open-source modular platform [NeoDAX™](https://github.com/openware/neodax) for building digital asset trading systems. Over the past years, Openware has shipped over 150 trading platforms to their clients.
 
 #### About Yellow.com, Inc.&#x20;
 
@@ -32,7 +32,7 @@ All of the team members are dedicated to the Yellow Network. We have been runnin
 
 **❓ Could you tell us about Yellow Incubator, what do they mainly work on?**
 
-Yellow Incubator is a vastly experienced team that advises, develops, and funds blockchain, crypto, DeFi, and NFT projects, providing seed investment, VC, and market making solutions. We finance solid projects that use OpenDAX™, reducing license costs for startups and getting equity. The company also counts Legal and Marketing teams. And we are always busy at our [blockchain incubator premises](https://www.youtube.com/watch?v=VoZLpTlSzds) in Chiang Mai, Thailand, known for its welcoming network of blockchain experts, entrepreneurs, and enthusiasts.
+Yellow Incubator is a vastly experienced team that advises, develops, and funds blockchain, crypto, DeFi, and NFT projects, providing seed investment, VC, and market making solutions. We finance solid projects that use NeoDAX™, reducing license costs for startups and getting equity. The company also counts Legal and Marketing teams. And we are always busy at our [blockchain incubator premises](https://www.youtube.com/watch?v=VoZLpTlSzds) in Chiang Mai, Thailand, known for its welcoming network of blockchain experts, entrepreneurs, and enthusiasts.
 
 ### Business Model
 
@@ -153,7 +153,7 @@ Watch Tower is auditing transactions between brokers and managing disputes autom
 
 **❓ Is** [**Yellow.com**](http://yellow.com) **currently running as a CEX, or has L3(Yellow Network) been implemented?**
 
-[Yellow.com](http://yellow.com) is running OpenDAX™ V3; it uses our liquidity network v1 called XLN. The V4 update is expected in June-July of 2022.
+[Yellow.com](http://yellow.com) is running NeoDAX™ V3; it uses our liquidity network v1 called XLN. The V4 update is expected in June-July of 2022.
 
 **❓ When I use** [**Yellow.com**](http://yellow.com) **to deposit ETH, an ETH address is generated on the deposit page. If I deposit ETH to this address, what will happen later? When will the deposit amount appear on the assets page?**
 

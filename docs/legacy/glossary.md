@@ -8,6 +8,7 @@ description: >-
 
 <!-- Tabs -->
 ## A
+
 [Adjudicator](glossary.md#undefined)
 
 [Atomic Swap](glossary.md#undefined)
@@ -16,12 +17,14 @@ description: >-
 <!-- End tab -->
 
 ## B
+
 [Broker](glossary.md#broker)
 
 [B2B (Broker to Broker) liquidity channel](glossary.md#b2b-broker-to-broker-liquidity-channel)
 <!-- End tab -->
 
 ## C
+
 [Centralized Exchange (CEX)](glossary.md#centralized-exchange-cex)
 
 [Clearing / Smart Clearing](glossary.md#clearing)
@@ -32,14 +35,17 @@ description: >-
 <!-- End tab -->
 
 ## D
+
 [Decentralized Exchange (DEX)](glossary.md#decentralized-exchange-dex)
 <!-- End tab -->
 
 ## E
+
 [Exchanges](glossary.md#exchanges)
 <!-- End tab -->
 
 ## F
+
 [FAQ](glossary.md#undefined-1)
 
 [Fees](glossary.md#fees)
@@ -50,6 +56,7 @@ description: >-
 <!-- End tab -->
 
 ## H
+
 [Hash Time Locked Contract (HTLC)](glossary.md#undefined-1)
 
 [High Frequency Trading (HFT)](glossary.md#high-frequency-trading-hft)
@@ -64,30 +71,36 @@ description: >-
 <!-- End tab -->
 
 ## K
+
 [Know Your Customer (KYC)](glossary.md#know-your-customer-kyc)
 <!-- End tab -->
 
 ## L
+
 [Layer (0-3)](glossary.md#layer-1-3)
 
 [Liquidity Aggregation](glossary.md#liquidity-aggregation)
 <!-- End tab -->
 
 ## M
+
 [Market Makers](glossary.md#market-makers)
 
 [Multi-Chain & Multi-Custody Support](glossary.md#multi-chain-and-multi-custody-support)
 <!-- End tab -->
 
 ## N
+
 [Yellow Network](glossary.md#yellow-network)
 <!-- End tab -->
 
 ## O
-[OpenDAX](glossary.md#opendax)
+
+[NeoDAX](glossary.md#neodax)
 <!-- End tab -->
 
 ## P
+
 [Policies](glossary.md#policies)
 
 [Protocol](glossary.md#protocol)
@@ -98,6 +111,7 @@ description: >-
 <!-- End tab -->
 
 ## R
+
 [Remote Order Matching](glossary.md#remote-order-matching)
 
 [Reserve Vault](glossary.md#undefined-1)
@@ -106,12 +120,14 @@ description: >-
 <!-- End tab -->
 
 ## S
+
 [Settlement](glossary.md#settlement)
 
 [State Channel](glossary.md#state-channel)
 <!-- End tab -->
 
 ## T
+
 [Tokenomics](glossary.md#tokenomics)
 
 [Tiers](glossary.md#tiers)
@@ -128,6 +144,7 @@ description: >-
 <!-- End tab -->
 
 ## W
+
 [Whitepaper](glossary.md#whitepaper)
 <!-- End tab -->
 
@@ -136,6 +153,7 @@ description: >-
 <!-- End tab -->
 
 ## Y
+
 [Whitepaper](glossary.md#whitepaper)[Whitepaper](glossary.md#whitepaper)
 <!-- End tab -->
 
@@ -148,7 +166,7 @@ description: >-
 
 #### Adjudicator
 
-Our state channel smart contract is called the [Adjudicator](../../../legacy/architecture-and-design/smart-clearing-protocol.md#adjudicator-smart-contract). Its role is to hold the [collateral](../../../legacy/architecture-and-design/risk-management.md#collateral) of each participant while the channel is open. In case of a [settlement ](glossary.md#settlement)issue, the Adjudicator is also able to manage collateral to overcome the dispute.
+Our state channel smart contract is called the [Adjudicator](../../../legacy/architecture-and-design/smart-clearing-protocol.md#adjudicator-smart-contract). Its role is to hold the [collateral](../../../legacy/architecture-and-design/risk-management.md#collateral) of each participant while the channel is open. In case of a [settlement](glossary.md#settlement)issue, the Adjudicator is also able to manage collateral to overcome the dispute.
 
 #### Atomic Swap
 
@@ -188,7 +206,7 @@ To open a state channel, brokers need to agree on a specific amount of YELLOW to
 
 #### Centralized Exchange (CEX)
 
-Centralized cryptocurrency exchanges act as an intermediary between a buyer and a seller and make money through commissions and transaction fees. Imagine a [CEX ](../../about/the-problem.md#centralized-exchanges-cex)as similar to a stock exchange but for digital assets. Generally, a [CEX ](../../about/the-problem.md#centralized-exchanges-cex)not only acts as a marketplace but also requires users to custody assets.&#x20;
+Centralized cryptocurrency exchanges act as an intermediary between a buyer and a seller and make money through commissions and transaction fees. Imagine a [CEX](../../about/the-problem.md#centralized-exchanges-cex)as similar to a stock exchange but for digital assets. Generally, a [CEX](../../about/the-problem.md#centralized-exchanges-cex)not only acts as a marketplace but also requires users to custody assets.&#x20;
 
 #### Clearing / Smart Clearing
 
@@ -227,7 +245,7 @@ Exchanges are big players in the network; they usually target a global audience 
 
 #### FAQ
 
-[Here ](faq.md)you can find answers to the most frequently asked questions from our community.
+[Here](faq.md)you can find answers to the most frequently asked questions from our community.
 
 #### Fees
 
@@ -245,7 +263,7 @@ The second layer [(Layer 2)](../../../legacy/fees/clearing-fee.md) is a **Cleari
 
 The term [Hashed Time Lock Contract (HTLC)](https://academy.binance.com/en/glossary/hashed-timelock-contract) refers to a special feature used to create [smart contracts](https://academy.binance.com/en/glossary/smart-contract) that are able to modify payment channels. Technically, the HTLC feature enables the implementation of time-bound transactions between two users. In practice, the recipient of a HTLC transaction has to acknowledge the payment by submitting a cryptographic proof within a specified timeframe (number of blocks). If the recipient forfeits or fails to claim the payment, the funds will be returned to the original sender.
 
-At Yellow Network we use [HTLC ](../../../legacy/architecture-and-design/#how-p2p-trading-works)to settle trades off-chain.&#x20;
+At Yellow Network we use [HTLC](../../../legacy/architecture-and-design/#how-p2p-trading-works)to settle trades off-chain.&#x20;
 
 #### High Frequency Trading (HFT)
 
@@ -259,7 +277,7 @@ High-frequency trading, also known as HFT, is a method of trading that uses powe
 
 #### Know Your Customer (KYC)
 
-Know Your Customer (KYC) is a standard in the investment industry that ensures [advisors](https://www.investopedia.com/terms/f/financial-advisor.asp) can verify a client's identity and know their client's investment knowledge and financial profile. For participants in Yellow Network, the end-user[ KYC](../../../legacy/architecture-and-design/supported-technologies.md#kyc-know-your-customer) is the responsibility of each broker. Yellow Network will allow brokers to integrate their own third-party KYC provider.
+Know Your Customer (KYC) is a standard in the investment industry that ensures [advisors](https://www.investopedia.com/terms/f/financial-advisor.asp) can verify a client's identity and know their client's investment knowledge and financial profile. For participants in Yellow Network, the end-user[KYC](../../../legacy/architecture-and-design/supported-technologies.md#kyc-know-your-customer) is the responsibility of each broker. Yellow Network will allow brokers to integrate their own third-party KYC provider.
 
 ## L&#x20;
 
@@ -297,9 +315,9 @@ Yellow Network embodies a decentralized Layer-3 peer-to-peer mesh network allowi
 
 ## O
 
-#### OpenDAX
+#### NeoDAX
 
-[OpenDAX™](https://www.openware.com/product/opendax) cryptocurrency exchange software is a modular platform for building crypto exchanges, NFT marketplaces, and digital banking with built-in liquidity.
+[NeoDAX™](https://www.openware.com/product/neodax) cryptocurrency exchange software is a modular platform for building crypto exchanges, NFT marketplaces, and digital banking with built-in liquidity.
 
 ## P
 
@@ -364,7 +382,7 @@ Participating brokers and liquidity providers can open trading channels to use a
 
 #### Whitepaper
 
-A whitepaper is an informational document issued by a company or [not-for-profit ](https://www.investopedia.com/terms/n/not-for-profit.asp)organization to promote or highlight the features of a solution, product, or service that it offers or plans to offer. Our Whitepaper can be found [here](../../docs-hub/whitepaper.md).&#x20;
+A whitepaper is an informational document issued by a company or [not-for-profit](https://www.investopedia.com/terms/n/not-for-profit.asp)organization to promote or highlight the features of a solution, product, or service that it offers or plans to offer. Our Whitepaper can be found [here](../../docs-hub/whitepaper.md).&#x20;
 
 ## X
 

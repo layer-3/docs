@@ -6,10 +6,10 @@ description: >-
 
 # Supported Technologies
 
-## OpenDAX Web SDK
+## NeoDAX Web SDK
 
-* npm: [https://www.npmjs.com/package/@openware/opendax-web-sdk](https://www.npmjs.com/package/@openware/opendax-web-sdk)
-* docs: [https://storybook-odax-master.v4.uat.opendax.app/?path=/story/getting-started--pag](https://storybook-odax-master.v4.uat.opendax.app/?path=/story/getting-started--page)
+* npm: [https://www.npmjs.com/package/@openware/neodax-web-sdk](https://www.npmjs.com/package/@openware/neodax-web-sdk)
+* docs: [https://storybook-neodax-master.v4.uat.opendax.app/?path=/story/getting-started--pag](https://storybook-neodax-master.v4.uat.opendax.app/?path=/story/getting-started--page)
 
 ## Pluggable Custody Solutions
 
@@ -52,7 +52,7 @@ We aim to continuously add new networks and blockchains into the future. If you 
 ## **Currencies and Markets**
 
 * The number of supported currencies depends on each broker. Brokers have the ability to add currencies and appropriate markets at their own discretion from the admin panel.
-* **P2P trading is available to brokers only for approved markets and currencies with assets matching from both sides.**
+* **Broker-to-Broker Trading is available to brokers only for approved markets and currencies with assets matching from both sides.**
 
 _**Note: A list of supported currencies and trading pairs will be made available shortly**_&#x20;
 

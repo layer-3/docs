@@ -11,13 +11,13 @@ With Yellow Network, you unlock the most cost-efficient and legal-friendly frame
 | Kickstart your local/worldwide brokerage business OR build a broker to buy/trade unique assets with features and performance of centralized exchanges, while funds are protected with smart-contract custody. | Enrich the number of supported assets and increase revenue streams with a low-friction legal framework. Wrapped tokens managed using state channel smart contracts provide access to diverse assets and unique markets. | Reduce the trade fees charged by the platform while holding $YELLOW tokens on your balance on Yellow-supported platforms. |
 |                                                                                                                                                                                                               |                                                                                                                                                                                                                         |                                                                                                                           |
 
-_**The global strategy is to have 1,000+ nodes operating globally on the network by 2025.**_
+_**The global strategy is to have 1,000 nodes operating globally on the network by 2028.**_
 
 #### Key stakeholders are:
 
 * **Existing Customers**
 
-Over 50 exchanges are ready to engage with the beta launch of OpenDAX™ v4 with the native Yellow Network integration immediately.
+Over 50 exchanges are ready to engage with the beta launch of NeoDAX™ v4 with the native Yellow Network integration immediately.
 
 * **FinTech Entrepreneurs**
 
