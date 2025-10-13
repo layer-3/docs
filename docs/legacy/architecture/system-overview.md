@@ -6,7 +6,18 @@ description: Technologies used and created by the Yellow Network team
 
 ![Technologies Used and Created by Yellow](/img/placeholder.png)
 
-**Yellow Network:** state channels; P2P network
+**Yellow Network** is mainly composed of two layers:
+
+1. **The virtual ledger layer (Layer-3)** - Yellow Clearnet - formed by a network of nodes called "clearnode"
+   - Clearnodes are gateways from blockchain to layer-3
+   - Main duties: account record keeping, blockchain deposit and withdrawal using state-channels
+   - Built with state-channel smart contracts (nitrolite) and clearnode golang microservices
+
+2. **Applications built on layer-3** including:
+   - **NeoDAX**: The prominent application for broker-to-broker trading
+   - **Watchdogs**: Replicate states for participants and call challenges in case of disaster
+   - **Oracles**: Off-chain price feeds and data providers using $YELLOW token subscription model
+   - Other high-speed DeFi applications utilizing the virtual ledger
 
 **Yellow Nodes:** [Jamstack](https://jamstack.org/), [Golang](https://go.dev/), [Next.js](https://nextjs.org/), [gRPC](https://grpc.io/)
 
@@ -68,18 +79,18 @@ Brokers are required to lock $YELLOW tokens to open channels with other particip
 
 ## Electronic Communication Network (ECN)
 
-Yellow Network implements a mesh and decentralized ECN.
+Yellow Network implements a mesh and decentralized ECN through its layer-3 virtual ledger infrastructure.
 
 An electronic communication network (ECN) is a computerized system that automatically matches buy and sell orders for securities in the market. ECN trading is especially helpful when participants in different geographical areas wish to complete a secure transaction without the use of a third party.
 
-The ECN aggregates the books of brokers and market makers in different locations. This leads to deeper liquidity and larger order books and thus a tighter bid-ask spread and faster order execution. Traders can get more attractive spreads and better order flow.
+The ECN aggregates the books of brokers and market makers in different locations through broker-to-broker connections. This leads to deeper liquidity and larger order books and thus a tighter bid-ask spread and faster order execution. Traders can get more attractive spreads and better order flow.
 
 An additional benefit of the ECN's order aggregation is better price transparency for all participating brokers and market makers.
 
-Using an ECN counters market fragmentation issues, while maintaining the decentralization aspect of the crypto trading market.
+Using an ECN counters market fragmentation issues, while maintaining the decentralization aspect of the crypto trading market. The most advanced state-channel protocols are used between NeoDAX nodes and other backend servers, allowing instant, real-time PNL margin confirmation, which provides access to on-chain margin collateral at any given disaster event.
 
 _\[INSERT: ECN Deal Flow Graphic (in preparation)]_
 
-ECN provides brokers access to global financial markets; the Yellow Network protocol forms a decentralized ECN for digital assets.
+ECN provides brokers access to global financial markets; the Yellow Network protocol forms a decentralized ECN for digital assets through its layer-3 infrastructure and NeoDAX applications.
 
 ## <a href="#o8p3zt8mxh94" id="o8p3zt8mxh94"></a>

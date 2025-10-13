@@ -67,6 +67,14 @@ Wootrade is a dark pool trading platform that offers significantly above-average
 
 An entry point to the 1inch Network's tech. The 1inch dApp is a 1 DeFi aggregator, offering access to the liquidity and token swap rates on various DEXes, with features, including partial fill and the ability to find the best swap paths across multiple liquidity sources. Users can optimize trades of DEXs on multiple networks and also with the 1inch DeFi Wallet users can buy crypto with their bank card using our partner fiat gateway providers.
 
+### HyperLiquid
+
+HyperLiquid is a high-performance decentralized exchange focused on perpetual contracts and derivatives trading. While it offers high-speed trading capabilities, it operates as a single trading venue. Yellow Network, in contrast, does not aim to launch a single trading venue but rather provides the infrastructure to build DEXs like HyperLiquid rapidly with lower CAPEX and OPEX through its layer-3 virtual ledger.
+
+### AsterDEX
+
+AsterDEX is another example of a decentralized exchange platform in the Web3 space. Similar to HyperLiquid, Yellow Network's approach differs by providing foundational infrastructure that enables projects like AsterDEX to be built more efficiently. The Yellow Clearnet layer-3 allows builders to create such platforms with reduced capital expenditure and operational costs.
+
 ## State of the Market (Q4, 2023—Q1, 2024)
 
 The macroeconomic climate has been defined by inflation and the extension of geopolitical crises. These headwinds have been strongly reflected in the crypto markets. We have also seen the effects of Terra, Celsius, and 3AC’s capitulations impact the market and encourage mass de-risking across all crypto assets.

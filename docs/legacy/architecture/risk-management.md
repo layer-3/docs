@@ -10,10 +10,10 @@ Yellow Network manages risks by requiring participating brokers to deposit colla
 
 ## Collateral
 
-P2P trading is secured through collateral deposited by brokers. There are two types of collateral that have to be provided:
+Broker-to-broker trading is secured through collateral deposited by brokers. There are two types of collateral that have to be provided:
 
-* [Network access collateral:](risk-management.md#network-access-collateral) required to open state channels and become an accredited Yellow Network participant. It acts as a last resort for disputes between brokers.
-* [Trading collateral:](risk-management.md#trading-collateral) agreed on a P2P level when a state channel is opened. Secures day-to-day trading activities between brokers and prevents overexposure. It acts as the first line of defense in disputes between brokers.
+* **Access collateral** - For accessing the layer-3 ledger layer. Required to become an accredited Yellow Network participant. All participants should have registered their public key and locked $YELLOW tokens.
+* **Trading collateral** - Typically a stablecoin amount locked for a NeoDAX session, either from retail-to-broker or broker-to-broker trading. Agreed upon when a state channel is opened. Secures day-to-day trading activities and prevents overexposure.
 
 ### Network Access Collateral
 
@@ -93,4 +93,25 @@ After a settlement dispute is resolved, the broker has to ensure that he has suf
 
 A State Channel Dispute is triggered manually by a broker and signals an issue between the broker and the protocol. For example, when a broker discovers a bug in the smart clearing protocol.
 
+While state channels have an automated way to challenge a state for unlocking escrowed funds, this does not cover all possible malicious behavior happening off-chain.
+
 State Channel Disputes trigger a halt of the trading channel and a manual intervention from the Yellow Network support team. If the dispute can be resolved the state channel is reopened for trading. If no solution is found, the channel is closed and all open positions are reverted, using brokers' collateral if necessary.
+
+## Online Dispute Resolution Center (ODRC)
+
+The **Yellow Online Dispute Resolution Center (ODRC)** can handle all manual disputes through auditing logs and quorum vote of appointed anonymous auditors.
+
+### Participant Registry
+
+The registry is a reputation database for participants, recording key information such as:
+- Trading volume
+- Disputes lost
+- Amount of capital locked
+- Public key registration
+- Reputation scores
+
+Any participant can file a dispute against another participant for a filing fee. An independent arbitration board consults the audit trails available and enforces the outcome of the dispute, which may result in:
+- A reputation fault
+- A token slash (participant collateral can be slashed in case of dispute loss)
+
+**Reputation and disputes are recorded on-chain in the participant registry**, ensuring transparency and accountability across the network.

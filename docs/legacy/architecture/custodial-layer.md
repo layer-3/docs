@@ -6,12 +6,20 @@ At this stage, Yellow Network does not provide any in-house custodial solution, 
 However, we are aware of the need for decentralized custodial solutions and plan to address this issue in the near future.
 :::
 
+## Broker Identity and Security
+
+Brokers are identified by an ECDSA key-pair. They are recommended to use an MPC TSS (Multi-Party Computation Threshold Signature Scheme) custody solution such as the FROST protocol for example.
+
+**A key security principle depends on the diversity of custody solutions and providers used by the brokers to ensure there is no central vulnerability to the network.** This distributed approach to custody enhances the overall security and resilience of the Yellow Network.
+
+## Collateral Types
+
 The Yellow Network Smart Clearing Protocol does not custody assets of participating brokers except for:
 
-1. [Network access collateral.](smart-clearing-protocol.md#network-access-collateral) Stacked Yellow Tokens which brokers lock with the Yellow Network protocol in order to gain access to state channels.
-2. [Trading collateral.](smart-clearing-protocol.md#trading-collateral) Assets locked in the smart contracts between participating brokers to secure trading.
+1. **Access collateral** - For accessing the layer-3 ledger layer. Participants lock $YELLOW tokens to gain access to the state channel infrastructure.
+2. **Trading collateral** - Typically a stablecoin amount locked for a NeoDAX session, either from retail-to-broker or broker-to-broker trading.
 
-Yellow Network will have access to the Network Access Collateral and Trading Collateral for risk management purposes in the case of a dispute between brokers.
+All participants should have registered their public key and locked $YELLOW tokens. Yellow Network will have access to the collateral for risk management purposes in the case of a dispute between brokers.
 
 ### Flexible Architecture
 

@@ -22,9 +22,13 @@ Traditional finance approaches this problem by having multiple layers of special
 
 On the other hand, crypto markets primarily operate in silos and independent blockchains, leading to a highly fragmented ecosystem.
 
-There are over 200 notable exchanges and over 6000 cryptocurrencies. Around 100 use their own proprietary blockchain, making it hard to achieve secure interoperability.
+Since we started this project, many more Layer-1 and Layer-2 blockchains have appeared, and we are now dealing with hundreds of blockchains. The fragmentation is now acute. There are over 200 notable exchanges and over 6000 cryptocurrencies. Around 100 use their own proprietary blockchain, making it hard to achieve secure interoperability.
 
 Despite the critical nature of blockchain interoperability, cross-chain systems still face several hurdles when transacting assets or data between chains. These difficulties include transaction rate bottlenecks and disparities in trust.
+
+Many projects attempting to solve cross-chain issues have relied on interblockchain communications, copying state from one chain to another. This approach is very problematic as it generates waste on-chain, increases the usage of transactions per chain, is very slow since it requires blockchain confirmation on both ends, and is fairly complex to scale as a generic solution for every blockchain. Different chains may have different security requirements to confirm a state is valid and won't be reverted.
+
+The layer-3 virtual ledger approach remedies these issues by using state-channel smart contracts deployed on every chain and synchronizing the data off-chain using traditional high-speed databases such as Postgres, SQLite, and DHT networks like Kademlia.
 
 These silos and sub-ecosystems hinder scalability, efficiency, and mass adoption.
 

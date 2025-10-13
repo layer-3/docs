@@ -52,6 +52,20 @@ Crypto trading market is already large, reaching $60T volume in 2021 (with 30% Y
 | Projected Market Cap (20x Gross Profit) | $1.1B        | $5B          | $12B          |
 | CMC Rank                                | Top-100      | Top-40       | Top-20        |
 
+#### Market Positioning: Comparable Projects FDV
+
+The Yellow Network provides foundational infrastructure for decentralized finance, positioning us alongside major industry players. Based on the Fully Diluted Valuations (FDV) of comparable projects as of October 3, 2025, the market opportunity is substantial:
+
+| Project     | FDV (Fully Diluted Valuation) |
+| ----------- | ----------------------------- |
+| HyperLiquid | $50B                          |
+| Aster       | $14B                          |
+| Uniswap     | $8B                           |
+| Jupiter     | $3B                           |
+| Raydium     | $1.6B                         |
+
+These valuations demonstrate the significant market opportunity for infrastructure providers in the DeFi space. Yellow Network's unique approach of providing the underlying layer-3 infrastructure rather than operating as a single trading venue positions us to capture value across multiple use cases and applications.
+
 #### Our Partners <a href="#_2qsyp119etoy" id="_2qsyp119etoy"></a>
 
 *[Image placeholder: Partners logos diagram]*

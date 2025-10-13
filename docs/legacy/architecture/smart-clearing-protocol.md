@@ -106,9 +106,13 @@ Situations that trigger a settlement:
 * The risk exposure of open trades is considered too high by a participant node, i.e. the open net liabilities exceed the [collateral thresholds](risk-management.md#collateral-thresholds).
 * An end-user requests a withdrawal of an asset that is not in the broker's custody but still in a trading channel's liabilities.
 
-#### Hash Timelocked Contracts (HTLC)
+#### Settlement Methods
 
-Every settlement is processed using a set of hash timelocked contracts.
+Settlements are often performed through withdrawal of funds from Layer-3 to any target blockchain, with the clearnode responsible for settlement.
+
+The escrow infrastructure depends on each chain's capacity. They are often simplified state-channels for lightweight ledger operations. In some cases, the escrow mechanism used will be a Hash Timelocked Contract (HTLC).
+
+##### Hash Timelocked Contracts (HTLC)
 
 A hash timelocked contract (HTLC) is a smart contract used to ensure that a transfer between two parties, performed before an expiration time, allows a rollback and payer to be refunded. It allows two parties to perform an atomic swap without a third party.
 
