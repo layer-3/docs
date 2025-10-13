@@ -31,7 +31,7 @@ Co-invest with us and show interest in selling their services through Yellow Net
 
 Can quickly deploy our node software on any cloud and start liquidity-mining with their exchange account.
 
-#### Token Usage[​](https://www.yellow.org/docs/litepaper/yellow-token#token-usage) <a href="#_kw1brkre74t9" id="_kw1brkre74t9"></a>
+#### Token Usage[​](https://www.yellow.org/docs/litepaper/yellow-token#token-usage)
 
 $YELLOW tokens are locked to be able to open trading channels with other brokers.
 

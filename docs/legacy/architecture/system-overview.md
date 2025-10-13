@@ -21,7 +21,7 @@ description: Technologies used and created by the Yellow Network team
 
 **Yellow Nodes:** [Jamstack](https://jamstack.org/), [Golang](https://go.dev/), [Next.js](https://nextjs.org/), [gRPC](https://grpc.io/)
 
-## **The Broker Node** <a href="#id-88o83bna5dhs" id="id-88o83bna5dhs"></a>
+## **The Broker Node**
 
 The broker node is built with [NeoDAX™ WEB SDK](https://web-sdk.openware.com/?path=/story/getting-started--page), which offers reusable UI components for common exchange platform interfaces, including widgets.
 
@@ -61,7 +61,7 @@ Features supported in _Finex_ spot matching engine:
 * **Bi-directional WebSocket API**: allows end-users and brokers' bots to create and cancel orders and be notified about trades in real-time
 * [**gRPC API** with JS and go libraries to speed up the development of bots](https://docs.openware.com/neodax/developers-guides/api-documentation/grpc-protocol)
 
-## State Channel Technology <a href="#gxnel8rqtpbo" id="gxnel8rqtpbo"></a>
+## State Channel Technology
 
 The state channel protocol keeps track of assets owned by brokers, without involving blockchains in trade operations, in an ultra-fast and secure manner.
 
@@ -92,5 +92,3 @@ Using an ECN counters market fragmentation issues, while maintaining the decentr
 _\[INSERT: ECN Deal Flow Graphic (in preparation)]_
 
 ECN provides brokers access to global financial markets; the Yellow Network protocol forms a decentralized ECN for digital assets through its layer-3 infrastructure and NeoDAX applications.
-
-## <a href="#o8p3zt8mxh94" id="o8p3zt8mxh94"></a>

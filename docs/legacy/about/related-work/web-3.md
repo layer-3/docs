@@ -25,7 +25,7 @@ Solutions such as bridges are great examples of an effort to interconnect blockc
 
 #### **Short history**
 
-Uniswap is a decentralized exchange application launched in 2018. It is the first DEX to gain significant traction on the [Ethereum Mainnet](https://ethereum.org/en/) in 2020. Since then, many clones and other decentralized applications have been launched across various blockchains and are used by millions of users to swap tokens, lend or borrow cryptocurrency assets, bridge funds, etc. 
+Uniswap is a decentralized exchange application launched in 2018. It is the first DEX to gain significant traction on the [Ethereum Mainnet](https://ethereum.org/en/) in 2020. Since then, many clones and other decentralized applications have been launched across various blockchains and are used by millions of users to swap tokens, lend or borrow cryptocurrency assets, bridge funds, etc.
 
 In short, Uniswap paved the way for DeFi (Decentralized Finance).
 

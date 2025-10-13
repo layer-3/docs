@@ -5,7 +5,7 @@ description: 'Last revised: Nov 19, 2022'
 # 🔏 Privacy Policy
 
 :::info
-Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change. 
+Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
 For more information, visit the [Roadmap](../about/roadmap.md)
 :::

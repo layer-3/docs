@@ -39,8 +39,6 @@ All participants should have registered their public key and locked $YELLOW toke
 
 **Max Supply:** 10,000,000,000
 
-### <a href="#_ob23eq6hrwly" id="_ob23eq6hrwly"></a>
-
 ### **Token Distribution**
 
 *[Token Distribution Chart]*

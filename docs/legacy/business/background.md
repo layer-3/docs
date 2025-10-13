@@ -72,4 +72,4 @@ The Lightning Network is a Layer-2 solution for the Bitcoin network. It was prop
 
 LayerZero provides an SDK that enables cross-chain transactions, but it requires modifying existing smart contracts and does not solve performance issues. It actually increases the number of transactions on already congested chains.
 
-### <a href="#_udybe2pc46jg" id="_udybe2pc46jg"></a>
+###

@@ -56,7 +56,7 @@ The emergence of DeFi drove large quantities of new users to L1 platforms. This 
 
 Many of these solutions aim to provide additional scalability and eradicate some shortcomings of existing blockchain solutions.
 
-For example, the use of cross-chain bridging surged from $670M to $32B throughout 2021. However, this massive surge in volume increasingly attracts exploits and hacks, as shown in the graph below. 
+For example, the use of cross-chain bridging surged from $670M to $32B throughout 2021. However, this massive surge in volume increasingly attracts exploits and hacks, as shown in the graph below.
 
 *[Image placeholder: Funds stolen by DeFi attackers chart]*
 
@@ -80,7 +80,7 @@ Price declines in assets led to short liquidations and ultimately the collapse o
 
 Source: The Block, [https://www.theblock.co/data/crypto-markets/futures/short-liquidations](https://www.theblock.co/data/crypto-markets/futures/short-liquidations)
 
-#### Impact on Exchanges <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
+#### Impact on Exchanges
 
 Exchanges have seen a steep decline in activity and are confronted with [volumes down 50% from their highs in late 2021.](https://www.theblock.co/data/crypto-markets/spot/cryptocurrency-exchange-volume-monthly) Recent data suggests a bottoming out of falling exchange volumes. On the other hand, fiat-to-crypto exchange volumes continue to decline, resulting in reduced buying pressure and price support for most cryptocurrencies.
 
@@ -94,7 +94,7 @@ Source: The Block, [https://www.theblock.co/data/decentralized-finance/dex-non-c
 
 Source: The Block, [https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly](https://www.theblock.co/data/decentralized-finance/dex-non-custodial/dex-volume-monthly)
 
-#### Scaling Solutions on the Rise <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
+#### Scaling Solutions on the Rise
 
 Contrary to trading volumes and asset prices, value locked in scaling solutions has shown (some) resilience in 2022. State channel solutions still represent a relatively small market share when compared to Rollups, but have maintained an overall market share.
 
@@ -102,7 +102,7 @@ Contrary to trading volumes and asset prices, value locked in scaling solutions 
 
 Source: The Block, [https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions](https://www.theblockcrypto.com/data/scaling-solutions/scaling-overview/value-locked-of-ethereum-scaling-solutions)
 
-#### Bitcoin Loses Market Share <a href="#ywlzf7jxtue3" id="ywlzf7jxtue3"></a>
+#### Bitcoin Loses Market Share
 
 One of the most notable changes in the 2022 crypto landscape is Bitcoin losing overall market share to other coins, most notably Ethereum. While ETH has profited from increased interest ahead of the [Merge](https://ethereum.org/en/upgrades/merge/), i.e., the change from PoW to PoS, Bitcoin seems to have somewhat lost its place as the leading role in the recent cryptocurrency narrative.
 
@@ -161,7 +161,7 @@ Several roadblocks are likely to persist in the near future and will take time t
 
 After a strong performance in 2021, the crypto industry has now reached full public attention and is unlikely to disappear despite facing increasing challenges in 2022.
 
-We predict that some headwinds such as high inflation, supply chain shortages, and regulatory uncertainty, are temporary and likely to subdue over the next 12-24 months. 
+We predict that some headwinds such as high inflation, supply chain shortages, and regulatory uncertainty, are temporary and likely to subdue over the next 12-24 months.
 
 Industry internal issues, such as the question of security and scalability, have been acknowledged and we see an increasing amount of solutions being developed to confront these issues.
 
@@ -169,6 +169,6 @@ In our view, challenging market environments tend to have a cleansing effect in 
 
 While there is a risk of consolidation and concentration by prominent players, the underlying decentralized nature of blockchain should, at least partially, prevent what happened to the internet over the past two decades, where a few large corporations control the market.
 
-Regulatory frameworks will have to be rewritten to accommodate the complex nature of decentralization in order to build trust and foster security. 
+Regulatory frameworks will have to be rewritten to accommodate the complex nature of decentralization in order to build trust and foster security.
 
 As a result, the collaboration between all stakeholders remains critical for widespread adoption.

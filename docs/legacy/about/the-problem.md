@@ -6,7 +6,7 @@ description: The market challenges Yellow Network seeks to address
 
 Today, the world of cryptocurrency trading shows significant inefficiencies partially due to its decentralized nature. Here at Yellow Network, we are dedicated to tackling some of the deficiencies of the Web3 space.
 
-## The Blockchain Trilemma <a href="#pj8bkb32jts7" id="pj8bkb32jts7"></a>
+## The Blockchain Trilemma
 
 *[Blockchain Trilemma Diagram - Source: Yellow.org & Ledger Academy]*
 
@@ -16,7 +16,7 @@ The so-called blockchain trilemma describes the problem that any project can onl
 
 Based on this theory, the Yellow Network team has identified critical key deficiencies in cross-broker and cross-chain cryptocurrency trading.
 
-### Scalability <a href="#pj8bkb32jts7" id="pj8bkb32jts7"></a>
+### Scalability
 
 Traditional finance approaches this problem by having multiple layers of specialized actors.
 
@@ -34,7 +34,7 @@ These silos and sub-ecosystems hinder scalability, efficiency, and mass adoption
 
 *[Image placeholder: Traditional finance vs. Crypto finance comparison diagram]*
 
-### Security <a href="#rpdroawe59eb" id="rpdroawe59eb"></a>
+### Security
 
 Certain scalability projects such as [bridges](https://www.coindesk.com/learn/are-blockchain-bridges-safe-why-bridges-are-targets-of-hacks/) increasingly suffer from fraudulent attacks and exploits. This impacts trust, acts as a major roadblock for many traders, and traps them within chain ecosystems, further hindering scalability.
 
@@ -48,7 +48,7 @@ As the current situation reveals, even though decentralization is considered the
 
 As a matter of fact, even with most DEXs, there is no real decentralized trading. For example, some DEXs may still rely on a central entity to control the flow of buy and sell orders, which allows them to prevent users from placing orders. Others continue to use third-party accounts as a way to route transactions, making them not really non-custodial in nature. When it comes to their underlying technology blockchain, computing is not fully decentralized, as all machines re-compute the same code in order to reach consensus. Additionally, liquidity remains concentrated on a single chain. As such, trading on decentralized exchanges stands in contrast to something like the shipping industry, which exhibits true decentralization. A vast network of companies works together to ensure global shipping functions effectively.
 
-## Market and liquidity fragmentation <a href="#c3n1dp2ojjwf" id="c3n1dp2ojjwf"></a>
+## Market and liquidity fragmentation
 
 Due to the proliferation of blockchains, there has been a fragmentation of assets and liquidity across different layer-1 protocols and increasingly [layer-2 chains](https://l2beat.com/scaling/tvl/). Their interoperability is limited, having hitherto been dependent on centralized cross-chain bridges that have emerged as a [top security risk](https://blog.chainalysis.com/reports/cross-chain-bridge-hacks-2022/) due to the many substantial hacks that have [occurred](https://twitter.com/tokenterminal/status/1582376876143968256/photo/1) since September 2020.
 

@@ -1,6 +1,6 @@
 ---
 description: >-
-  Unlock the most cost-efficient and user-friendly framework to run any crypto 
+  Unlock the most cost-efficient and user-friendly framework to run any crypto
   exchange
 ---
 
@@ -20,7 +20,7 @@ Yellow Network is a non-profit project that seeks to solve the problem of truly 
 
 _**Our global strategy is to have 1,000+ participants operating globally on the network by 2028.**_
 
-## Cost-Revenue Optimization[​](https://www.yellow.org/docs/litepaper/business-model#cost-revenue-structure-for-brokers)​ <a href="#id-8iwurl3m1rx8" id="id-8iwurl3m1rx8"></a>
+## Cost-Revenue Optimization[​](https://www.yellow.org/docs/litepaper/business-model#cost-revenue-structure-for-brokers)​
 
 Our solutions suggest significant cost reduction in R\&D as well as infrastructure maintenance costs, allowing businesses inside the Yellow Network ecosystem to focus on their core operations and growth while at the same time enabling new revenue streams.
 

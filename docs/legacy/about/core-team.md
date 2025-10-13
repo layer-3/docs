@@ -50,4 +50,4 @@ A financial expert and manager with a strong background at Big 4, powering more 
 
 [LinkedIn](https://www.linkedin.com/in/anastasiiabobeshko/) [Telegram](https://t.me/anastasiia_yellow) [Email](mailto:abobeshko@yellow.com)
 
-A marketing visionary, technology enthusiast, and ex-tech writer with almost 10 years of experience in building global brands. She is famous for building a marketing presence from zero to hero within various verticals, both traditional and emerging. She holds a Master's degree in engineering and leverages extensive expertise in brand growth strategies for mid-sized B2B businesses and product-centric companies. 
+A marketing visionary, technology enthusiast, and ex-tech writer with almost 10 years of experience in building global brands. She is famous for building a marketing presence from zero to hero within various verticals, both traditional and emerging. She holds a Master's degree in engineering and leverages extensive expertise in brand growth strategies for mid-sized B2B businesses and product-centric companies.

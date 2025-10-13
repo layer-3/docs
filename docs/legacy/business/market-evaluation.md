@@ -1,8 +1,8 @@
 # Market Evaluation
 
-### Market Evaluation & Challenges <a href="#_mf2skwjy4qzm" id="_mf2skwjy4qzm"></a>
+### Market Evaluation & Challenges
 
-#### Lessons from Traditional Finance[​](https://www.yellow.org/docs/litepaper/market#lessons-from-traditional-finance) <a href="#_ywlzf7jxtue3" id="_ywlzf7jxtue3"></a>
+#### Lessons from Traditional Finance
 
 We’ve been powering 150+ fintech businesses and expect blockchain-powered finance to grow exponentially. Crypto-trading is disruptive but how does it stand against traditional finance?
 
@@ -10,11 +10,11 @@ We’ve been powering 150+ fintech businesses and expect blockchain-powered fina
 
 To overgrow The Wall Street, crypto should use and reimagine the competitor’s strengths.
 
-### Industry Participants and Regulations[​](https://www.yellow.org/docs/litepaper/market#industry-participants-and-regulations) <a href="#_96m01ya3cbds" id="_96m01ya3cbds"></a>
+### Industry Participants and Regulations
 
-We are convinced that Crypto Finance should learn and leverage from the legacy of Traditional Finance when it comes to responsibilities and users’ protection. It will finally bring blockchain and Web3 finance to the new level of mass-scale.
+We are convinced that Crypto Finance should learn and leverage from the legacy of Traditional Finance when it comes to responsibilities and users' protection. It will finally bring blockchain and Web3 finance to the new level of mass-scale.
 
-#### Financial Forecast & Target MarketCap[​](https://www.yellow.org/docs/litepaper/market#financial-forecast--target-marketcap) <a href="#_cre4qvtdgwnv" id="_cre4qvtdgwnv"></a>
+#### Financial Forecast & Target MarketCap
 
 Crypto Trading Volume (datasource: coinmarketcap).
 
@@ -66,13 +66,13 @@ The Yellow Network provides foundational infrastructure for decentralized financ
 
 These valuations demonstrate the significant market opportunity for infrastructure providers in the DeFi space. Yellow Network's unique approach of providing the underlying layer-3 infrastructure rather than operating as a single trading venue positions us to capture value across multiple use cases and applications.
 
-#### Our Partners <a href="#_2qsyp119etoy" id="_2qsyp119etoy"></a>
+#### Our Partners
 
 *[Image placeholder: Partners logos diagram]*
 
 We are currently receiving more than 50 leads/applications per week with an average budget of \~$250K.
 
-#### Cost-Revenue Structure for Brokers[​](https://www.yellow.org/docs/litepaper/business-model#cost-revenue-structure-for-brokers) <a href="#_8iwurl3m1rx8" id="_8iwurl3m1rx8"></a>
+#### Cost-Revenue Structure for Brokers
 
 Our solution suggests significant cost reduction of R\&D as well as Infrastructure maintenance costs, allowing businesses inside Yellow Network to focus on marketing and growth. It is also enabling new revenue streams.
 
@@ -82,5 +82,3 @@ Our solution suggests significant cost reduction of R\&D as well as Infrastructu
 | Product development              | Network Liquidity share profits |
 | Operations, Customer support     | Asset listings and Launchpad    |
 | Infrastructure                   | Dedicated WASM trading bots     |
-
-### <a href="#_pdv0jwri1b62" id="_pdv0jwri1b62"></a>
