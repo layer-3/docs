@@ -106,7 +106,7 @@ Establishes a new app session between participants.
 
 #### NitroRPC/0.2 (Legacy)
 
-```json
+```json title="create-app-session-legacy.json" showLineNumbers
 {
   "req": [
     1,
@@ -169,7 +169,7 @@ This intent is used for normal application logic where the total funds within th
 **Example:**
 Assume the initial state is `100.0` USDC for each of the two participants. After a game round, Participant A loses `25.0` USDC to Participant B.
 
-```json
+```json title="submit-app-state.json" showLineNumbers
 {
   "req": [
     1,
@@ -217,7 +217,7 @@ Now, Participant A wants to deposit `50.0` USDC, and Participant B also wants to
 
 You must submit these **updated amounts** in the `allocations` array.
 
-```json
+```json title="deposit-funds-request.json" showLineNumbers
 {
   "req": [
     1,
@@ -267,7 +267,7 @@ Now, Participant A wants to withdraw `25.0` USDC, and Participant B also wants t
 
 You must submit these **final amounts** in the `allocations` array.
 
-```json
+```json title="withdraw-funds-request.json" showLineNumbers
 {
   "req": [
     1,
@@ -299,7 +299,7 @@ You must submit these **final amounts** in the `allocations` array.
 
 Terminates the session and finalizes all allocations.
 
-```json
+```json title="close-app-session-request.json" showLineNumbers
 {
   "req": [
     1,
@@ -341,7 +341,7 @@ The optional `session_data` field enables applications to maintain custom state 
 
 **Gaming Example:**
 
-```json
+```json title="chess-session-data.json" showLineNumbers
 {
   "gameType": "chess",
   "timeControl": { "initial": 600, "increment": 5 },
@@ -354,7 +354,7 @@ The optional `session_data` field enables applications to maintain custom state 
 
 **Trading Example:**
 
-```json
+```json title="prediction-market-session-data.json" showLineNumbers
 {
   "marketType": "prediction",
   "question": "Will BTC exceed $50k by end of month?",

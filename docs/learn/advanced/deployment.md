@@ -18,7 +18,7 @@ Deploy your Yellow App to production with confidence using battle-tested configu
 <Tabs>
   <TabItem value="mainnet" label="Mainnet">
 
-```javascript
+```javascript title="production-config.js" showLineNumbers
 // Production configuration for Polygon mainnet
 const productionConfig = {
   chainId: 137,
@@ -40,7 +40,7 @@ const productionConfig = {
   </TabItem>
   <TabItem value="testnet" label="Testnet">
 
-```javascript
+```javascript title="testnet-config.js" showLineNumbers
 // Testnet configuration for development
 const testnetConfig = {
   chainId: 80001, // Mumbai testnet
@@ -66,7 +66,7 @@ const testnetConfig = {
 
 ### Robust Initialization
 
-```javascript
+```javascript title="RobustYellowApp.js" showLineNumbers
 class RobustYellowApp {
   constructor(config) {
     this.client = new NitroliteClient(config);
@@ -166,7 +166,7 @@ class RobustYellowApp {
 
 ### Batch Operations
 
-```javascript
+```javascript title="OptimizedYellowApp.js" showLineNumbers
 class OptimizedYellowApp {
   async batchDepositsAndChannels(operations) {
     // Prepare all transactions in parallel
@@ -220,7 +220,7 @@ class OptimizedYellowApp {
 
 ### Memory-Efficient State Storage
 
-```javascript
+```javascript title="CompactStateStorage.js" showLineNumbers
 class CompactStateStorage {
   constructor() {
     this.stateHashes = new Map(); // Store only hashes
@@ -258,7 +258,7 @@ class CompactStateStorage {
 
 ### Load Balancing
 
-```javascript
+```javascript title="LoadBalancedConnection.js" showLineNumbers
 class LoadBalancedConnection {
   constructor(clearNodeUrls) {
     this.clearNodeUrls = clearNodeUrls;
@@ -301,7 +301,7 @@ class LoadBalancedConnection {
 
 ### Caching Strategy
 
-```javascript
+```javascript title="IntelligentCache.js" showLineNumbers
 class IntelligentCache {
   constructor() {
     this.stateCache = new LRUCache(1000); // Most recent states
@@ -338,7 +338,7 @@ class IntelligentCache {
 
 ### Automated Deployment
 
-```yaml
+```yaml title="deploy.yml" showLineNumbers
 # .github/workflows/deploy.yml
 name: Deploy Yellow App
 
@@ -382,7 +382,7 @@ jobs:
 
 ### Environment Management
 
-```javascript
+```javascript title="production.js" showLineNumbers
 // config/production.js
 export const productionConfig = {
   contracts: {
@@ -406,7 +406,7 @@ export const productionConfig = {
 
 ### Health Checks
 
-```javascript
+```javascript title="ProductionHealthCheck.js" showLineNumbers
 class ProductionHealthCheck {
   constructor(client) {
     this.client = client;
@@ -466,7 +466,7 @@ class ProductionHealthCheck {
 
 ### Logging and Alerting
 
-```javascript
+```javascript title="ProductionLogger.js" showLineNumbers
 class ProductionLogger {
   constructor(config) {
     this.logger = winston.createLogger({
@@ -520,7 +520,7 @@ class ProductionLogger {
 
 ### Horizontal Scaling
 
-```javascript
+```javascript title="HorizontalScaler.js" showLineNumbers
 class HorizontalScaler {
   constructor() {
     this.instances = new Map();
@@ -566,7 +566,7 @@ class HorizontalScaler {
 
 ### Database Optimization
 
-```javascript
+```javascript title="OptimizedStateStorage.js" showLineNumbers
 class OptimizedStateStorage {
   constructor(dbConfig) {
     this.db = new Database(dbConfig);
@@ -608,7 +608,7 @@ class OptimizedStateStorage {
 
 ### Key Management
 
-```javascript
+```javascript title="ProductionKeyManager.js" showLineNumbers
 class ProductionKeyManager {
   constructor() {
     this.keyVault = new AzureKeyVault(); // or AWS KMS, HashiCorp Vault
@@ -644,7 +644,7 @@ class ProductionKeyManager {
 
 ### Rate Limiting
 
-```javascript
+```javascript title="RateLimiter.js" showLineNumbers
 class RateLimiter {
   constructor() {
     this.limits = new Map();
@@ -717,7 +717,7 @@ class RateLimiter {
 
 ### Backup Strategies
 
-```javascript
+```javascript title="DisasterRecovery.js" showLineNumbers
 class DisasterRecovery {
   constructor() {
     this.backupSchedule = new CronJob('0 */6 * * *', this.performBackup.bind(this));

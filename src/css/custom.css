@@ -26,6 +26,8 @@
   --ifm-font-weight-base: 300;
   --ifm-font-weight-semibold: 500;
   --ifm-font-weight-bold: 500;
+  --doc-sidebar-width: 315px;
+  --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.3871 14.3851L18.4748 18.4728M14.3871 14.3851C11.4453 17.327 6.67557 17.327 3.73377 14.3851C0.791869 11.4433 0.791869 6.67362 3.73377 3.73182C6.67557 0.789916 11.4453 0.789916 14.3871 3.73182C17.329 6.67362 17.329 11.4433 14.3871 14.3851Z" stroke="%238E8E8E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 }
 
 /* Global font styling enforcement */
@@ -48,6 +50,8 @@
   --ifm-color-primary-lighter: #FEEF84;
   --ifm-color-primary-lightest: #FEF5B0;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Dark theme search icon */
+  --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.3871 14.3851L18.4748 18.4728M14.3871 14.3851C11.4453 17.327 6.67557 17.327 3.73377 14.3851C0.791869 11.4433 0.791869 6.67362 3.73377 3.73182C6.67557 0.789916 11.4453 0.789916 14.3871 3.73182C17.329 6.67362 17.329 11.4433 14.3871 14.3851Z" stroke="%23BBBBBB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 }
 
 /* Custom Sidebar Styling */
@@ -139,6 +143,11 @@ a.menu__link--active {
   background-color: #EDEDED;
 }
 
+/* Level 3 items border positioning */
+.menu__list .menu__list .menu__list .menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
+  left: 8px;
+}
+
 /* Add proper padding for all sidebar items with borders */
 .menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret) {
   position: relative;
@@ -146,7 +155,15 @@ a.menu__link--active {
 
 /* Add extra spacing only for sub-items (level-2 items under categories) */
 .theme-doc-sidebar-item-link-level-2 .menu__link {
-  text-indent: 8px !important;
+  padding-left: 32px !important;
+}
+
+.menu__list .menu__list .menu__link {
+  padding-left: 24px !important;
+}
+
+.menu__list .menu__list .menu__list .menu__link {
+  padding-left: 32px !important;
 }
 
 /* Table of contents styling - use darker/lighter colors instead of theme colors */
@@ -606,9 +623,44 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 input[type="search"],
 .navbar input[placeholder*="Search"],
 [class*="searchBox"] input {
-  border-radius: 8px !important;
+  border-radius: 4px !important;
   height: 40px !important;
   min-height: 40px !important;
+  background-color: var(--ifm-navbar-background-color, #ffffff) !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07) !important;
+}
+
+[data-theme='dark'] .search-bar-container,
+[data-theme='dark'] .search-bar-container input,
+[data-theme='dark'] .navbar__search input,
+[data-theme='dark'] input[type="search"],
+[data-theme='dark'] .navbar input[placeholder*="Search"],
+[data-theme='dark'] [class*="searchBox"] input {
+  background-color: var(--ifm-navbar-background-color, #242526) !important;
+  border: 1px solid #404040 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* Search input placeholder styling */
+.navbar__search input::placeholder,
+.search-bar::placeholder,
+input[type="search"]::placeholder,
+.navbar input[placeholder*="Search"]::placeholder,
+[class*="searchBox"] input::placeholder {
+  color: #747272 !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 90% !important;
+}
+
+/* Dark theme search input placeholder styling */
+[data-theme='dark'] .navbar__search input::placeholder,
+[data-theme='dark'] .search-bar::placeholder,
+[data-theme='dark'] input[type="search"]::placeholder,
+[data-theme='dark'] .navbar input[placeholder*="Search"]::placeholder,
+[data-theme='dark'] [class*="searchBox"] input::placeholder {
+  color: #A1A1A1 !important;
 }
 
 .footer-logo-light {
@@ -704,6 +756,7 @@ input[type="search"],
   color: #FFFFFF !important;
 }
 
+
 .navbar svg[role="img"],
 .navbar path,
 [class*="search"] svg,
@@ -715,7 +768,10 @@ input[type="search"] ~ svg path,
 button[title*="Search"] svg,
 button[title*="Search"] path,
 .navbar__item svg,
-.navbar__item path {
+.navbar__item path,
+.search-icon,
+.search-icon::before,
+.search-icon::after {
   color: #8E8E8E !important;
   fill: #8E8E8E !important;
   stroke: #8E8E8E !important;
@@ -734,7 +790,10 @@ button[title*="Search"] path,
 [data-theme='dark'] button[title*="Search"] svg,
 [data-theme='dark'] button[title*="Search"] path,
 [data-theme='dark'] .navbar__item svg,
-[data-theme='dark'] .navbar__item path {
+[data-theme='dark'] .navbar__item path,
+[data-theme='dark'] .search-icon,
+[data-theme='dark'] .search-icon::before,
+[data-theme='dark'] .search-icon::after {
   color: #BBBBBB !important;
   fill: #BBBBBB !important;
   stroke: #BBBBBB !important;
@@ -976,7 +1035,7 @@ pre.codeBlock_bY9V[style*="background-color"],
   line-height: 22.8px !important;
   letter-spacing: 0% !important;
   vertical-align: middle !important;
-  padding: 12px 80px 12px 16px !important;
+  padding: 8px 80px 8px 16px !important;
   margin: 0 !important;
 }
 
@@ -986,6 +1045,7 @@ pre.codeBlock_bY9V[style*="background-color"],
   background-color: #292929 !important;
   color: #a8a8a8 !important;
   border-bottom: 1px solid #404040 !important;
+  padding: 10px 80px 10px 16px !important;
 }
 
 /* Code block with title adjustments */
@@ -1005,7 +1065,7 @@ pre.codeBlock_bY9V[style*="background-color"],
   border-right: none !important;
   margin-right: 1.5em !important;
   padding-right: 1em !important;
-  font-size: 0.9em !important;
+  font-size: 0.72em !important; /* 20% smaller: 0.9em * 0.8 = 0.72em */
   background: #FFFFFF !important;
   background-color: #FFFFFF !important;
 }
@@ -1016,6 +1076,7 @@ pre.codeBlock_bY9V[style*="background-color"],
   border-right: none !important;
   background: #242424 !important;
   background-color: #242424 !important;
+  font-size: 0.72em !important;
 }
 
 /* Move button group to header area - always visible */
@@ -1124,5 +1185,3 @@ pre.codeBlock_bY9V[style*="background-color"],
 nav.menu > .menu__list > .menu__list-item {
   display: list-item !important;
 }
-
-
