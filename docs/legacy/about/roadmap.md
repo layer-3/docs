@@ -1,4 +1,5 @@
 ---
+sidebar_position: 7
 description: Explore what Yellow Network has in store for the future.
 ---
 

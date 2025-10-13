@@ -1,4 +1,5 @@
 ---
+sidebar_position: 6
 description: >-
   Unlock the most cost-efficient and user-friendly framework to run any crypto
   exchange

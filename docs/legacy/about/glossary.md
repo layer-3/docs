@@ -1,4 +1,5 @@
 ---
+sidebar_position: 10
 description: >-
   Not familiar with a term or need further information? Look no further, welcome
   to the Glossary.
@@ -9,11 +10,11 @@ description: >-
 <!-- Tabs -->
 ## A
 
-[Adjudicator](glossary.md#undefined)
+[Adjudicator](glossary.md#adjudicator)
 
-[Atomic Swap](glossary.md#undefined)
+[Atomic Swap](glossary.md#atomic-swap)
 
-[Automated Market Making (AMM](glossary.md#automated-market-making)[)](glossary.md#automated-market-making)
+[Automated Market Making (AMM)](glossary.md#automated-market-making)
 <!-- End tab -->
 
 ## B
@@ -46,7 +47,7 @@ description: >-
 
 ## F
 
-[FAQ](glossary.md#undefined-1)
+[FAQ](glossary.md#faq)
 
 [Fees](glossary.md#fees)
 <!-- End tab -->
@@ -57,7 +58,7 @@ description: >-
 
 ## H
 
-[Hash Time Locked Contract (HTLC)](glossary.md#undefined-1)
+[Hash Time Locked Contract (HTLC)](glossary.md#hash-time-lock-contract-htlc)
 
 [High Frequency Trading (HFT)](glossary.md#high-frequency-trading-hft)
 <!-- End tab -->
@@ -77,7 +78,7 @@ description: >-
 
 ## L
 
-[Layer (0-3)](glossary.md#layer-1-3)
+[Layer (0-3)](glossary.md#layer-0-3)
 
 [Liquidity Aggregation](glossary.md#liquidity-aggregation)
 <!-- End tab -->
@@ -114,7 +115,7 @@ description: >-
 
 [Remote Order Matching](glossary.md#remote-order-matching)
 
-[Reserve Vault](glossary.md#undefined-1)
+[Reserve Vault](glossary.md#reserve-vault)
 
 [Retail Broker](glossary.md#retail-brokers)
 <!-- End tab -->
@@ -154,7 +155,7 @@ description: >-
 
 ## Y
 
-[Whitepaper](glossary.md#whitepaper)[Whitepaper](glossary.md#whitepaper)
+[$YELLOW](glossary.md#usdyellow)
 <!-- End tab -->
 
 ## Z
@@ -199,8 +200,6 @@ To open a state channel, brokers need to agree on a specific amount of YELLOW to
 | outcome             | bytes           |                                                                                                                                                 |
 | turn\_num           | uint64          | Turn number: incrementing at every turn, this allows the easy identification of the latest version of a state                                   |
 | is\_final           | bool            | Once true and signed by all participants the channel is closed and the final outcome can be applied on the blockchain safely by any participant |
-
-####
 
 ## C
 

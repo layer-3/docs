@@ -1,4 +1,5 @@
 ---
+sidebar_position: 3
 description: >-
   Yellow Network decentralizes the trading for real by allowing participants to
   trade using their nearest node.

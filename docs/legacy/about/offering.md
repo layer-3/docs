@@ -1,4 +1,5 @@
 ---
+sidebar_position: 4
 description: >-
   True P2P liquidity; Yellow Network will enable brokers to link to other
   connected brokers and exchanges, merge order books, and use liquidity to

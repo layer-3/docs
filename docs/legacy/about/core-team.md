@@ -1,4 +1,5 @@
 ---
+sidebar_position: 8
 description: The leadership behind the Yellow Network project
 ---
 

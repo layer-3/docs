@@ -1,4 +1,5 @@
 ---
+sidebar_position: 5
 description: The status-quo in global crypto markets.
 ---
 

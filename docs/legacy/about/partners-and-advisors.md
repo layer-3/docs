@@ -1,4 +1,5 @@
 ---
+sidebar_position: 9
 description: Meet some of our trusted partners and advisors
 ---
 

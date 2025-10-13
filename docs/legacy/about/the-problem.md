@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 description: The market challenges Yellow Network seeks to address
 ---
 

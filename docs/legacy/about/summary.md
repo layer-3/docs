@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 description: Yellow Network seeks to revolutionize broker-to-broker trading for crypto assets through its virtual ledger layer-3 infrastructure.
 ---
 
