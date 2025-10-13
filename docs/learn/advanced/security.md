@@ -13,7 +13,7 @@ Secure your Yellow Apps with proper authentication, robust key management, and p
 
 ### Wallet Integration Security
 
-```javascript
+```javascript title="WalletSecurity.js" showLineNumbers
 class WalletSecurity {
   constructor() {
     this.authorizedSessions = new Map();
@@ -66,7 +66,7 @@ class WalletSecurity {
 
 ### Environment Configuration
 
-```javascript
+```javascript title="SecureConfig.js" showLineNumbers
 class SecureConfig {
   constructor() {
     this.requiredVars = [
@@ -107,7 +107,7 @@ class SecureConfig {
 
 ### User Input Security
 
-```javascript
+```javascript title="InputValidator.js" showLineNumbers
 class InputValidator {
   validateChannelParams(params) {
     return {
@@ -164,7 +164,7 @@ class InputValidator {
 
 ### Secure Error Responses
 
-```javascript
+```javascript title="SecureErrorHandler.js" showLineNumbers
 class SecureErrorHandler {
   constructor() {
     this.errorLogs = new Map();
@@ -213,7 +213,7 @@ class SecureErrorHandler {
 
 ### DDoS Protection
 
-```javascript
+```javascript title="RateLimiter.js" showLineNumbers
 class RateLimiter {
   constructor() {
     this.requestCounts = new Map();
@@ -265,7 +265,7 @@ class RateLimiter {
 
 ### Application Monitoring
 
-```javascript
+```javascript title="SecurityMonitor.js" showLineNumbers
 class SecurityMonitor {
   constructor() {
     this.metrics = new Map();
@@ -325,7 +325,7 @@ class SecurityMonitor {
 
 ### Application Security Tests
 
-```javascript
+```javascript title="security.test.js" showLineNumbers
 describe('Yellow App Security', () => {
   describe('Authentication', () => {
     it('should reject unauthorized wallet connections', async () => {

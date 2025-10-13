@@ -35,7 +35,7 @@ This enables applications to achieve:
 
 ### Core Data Structures
 
-```typescript
+```typescript title="types.ts" showLineNumbers
 interface Channel {
   participants: Address[];    // Channel participants
   adjudicator: Address;      // Contract that validates state transitions
@@ -65,7 +65,7 @@ enum StateIntent {
 
 The core communication protocol for real-time interaction with ClearNode infrastructure:
 
-```javascript
+```javascript title="nitro-client.js" showLineNumbers
 import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
 
 // Connect to ClearNode
@@ -91,7 +91,7 @@ ws.onmessage = (event) => {
 
 Secure message authentication using wallet signatures:
 
-```javascript
+```javascript title="message-signing.js" showLineNumbers
 // Set up message signer with your wallet
 const messageSigner = async (message) => {
   return await window.ethereum.request({
@@ -116,7 +116,7 @@ Network infrastructure providing:
 
 ### Session Lifecycle
 
-```javascript
+```javascript title="SessionManager.js" showLineNumbers
 class SessionManager {
   constructor() {
     this.activeSessions = new Map();
@@ -185,7 +185,7 @@ class SessionManager {
 
 ### Client-Side State Tracking
 
-```javascript
+```javascript title="StateTracker.js" showLineNumbers
 class StateTracker {
   constructor() {
     this.channelStates = new Map();
@@ -224,7 +224,7 @@ class StateTracker {
 
 ### Reactive Updates
 
-```javascript
+```javascript title="ReactiveChannelManager.js" showLineNumbers
 class ReactiveChannelManager {
   constructor() {
     this.stateSubjects = new Map();
@@ -252,7 +252,7 @@ class ReactiveChannelManager {
 
 ### Event-Driven Architecture
 
-```javascript
+```javascript title="EventDrivenApp.js" showLineNumbers
 class EventDrivenApp extends EventEmitter {
   constructor(config) {
     super();

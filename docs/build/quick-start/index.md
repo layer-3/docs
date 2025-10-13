@@ -36,7 +36,7 @@ Create a new project and install the Yellow SDK:
 <Tabs>
   <TabItem value="npm" label="npm">
 
-```bash
+```bash showLineNumbers
 mkdir my-yellow-app
 cd my-yellow-app
 npm init -y
@@ -46,7 +46,7 @@ npm install @erc7824/nitrolite
   </TabItem>
   <TabItem value="yarn" label="yarn">
 
-```bash
+```bash showLineNumbers
 mkdir my-yellow-app
 cd my-yellow-app
 yarn init -y
@@ -56,7 +56,7 @@ yarn add @erc7824/nitrolite
   </TabItem>
   <TabItem value="pnpm" label="pnpm">
 
-```bash
+```bash showLineNumbers
 mkdir my-yellow-app
 cd my-yellow-app
 pnpm init
@@ -70,7 +70,7 @@ pnpm add @erc7824/nitrolite
 
 Create a file `app.js` and connect to the Yellow Network:
 
-```javascript
+```javascript title="app.js" showLineNumbers
 import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
 
 // Connect to Yellow Network
@@ -96,7 +96,7 @@ console.log('Connecting to Yellow Network...');
 
 Set up your wallet for signing messages:
 
-```javascript
+```javascript showLineNumbers
 // Set up message signer for your wallet
 async function setupMessageSigner() {
   if (!window.ethereum) {
@@ -127,7 +127,7 @@ async function setupMessageSigner() {
 
 Create a session for your payment app:
 
-```javascript
+```javascript showLineNumbers
 async function createPaymentSession(messageSigner, userAddress, partnerAddress) {
   // Define your payment application
   const appDefinition = {
@@ -161,7 +161,7 @@ async function createPaymentSession(messageSigner, userAddress, partnerAddress) 
 
 ## Step 5: Send Instant Payments
 
-```javascript
+```javascript showLineNumbers
 async function sendPayment(ws, messageSigner, amount, recipient) {
   // Create payment message
   const paymentData = {
@@ -191,7 +191,7 @@ await sendPayment(ws, messageSigner, 100000n, partnerAddress); // Send 0.1 USDC
 
 ## Step 6: Handle Incoming Messages
 
-```javascript
+```javascript showLineNumbers
 // Enhanced message handling
 ws.onmessage = (event) => {
   const message = parseRPCResponse(event.data);
@@ -228,7 +228,7 @@ function updateBalance(amount, sender) {
 
 Here's a complete working example you can copy and run:
 
-```javascript
+```javascript title="SimplePaymentApp.js" showLineNumbers
 import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
 
 class SimplePaymentApp {

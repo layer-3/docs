@@ -18,7 +18,7 @@ Perfect for marketplace transactions with buyer, seller, and mediator:
 
 ### Escrow Application Session
 
-```javascript
+```javascript title="createEscrowSession.js" showLineNumbers
 import { createAppSessionMessage } from '@erc7824/nitrolite';
 
 async function createEscrowSession(buyer, seller, mediator, amount) {
@@ -48,7 +48,7 @@ async function createEscrowSession(buyer, seller, mediator, amount) {
 
 Multi-player competitive applications with prize distribution:
 
-```javascript
+```javascript title="createTournament.js" showLineNumbers
 async function createTournament(players, entryFee, messageSigner) {
   // Create application session for tournament logic
   const appDefinition = {
@@ -89,7 +89,7 @@ async function createTournament(players, entryFee, messageSigner) {
 
 Different participants can have different voting power:
 
-```javascript
+```javascript title="governanceSession.js" showLineNumbers
 const governanceSession = {
   protocol: 'governance-v1',
   participants: [admin, moderator1, moderator2, user1, user2],
@@ -102,7 +102,7 @@ const governanceSession = {
 
 ### Multi-Signature Requirements
 
-```javascript
+```javascript title="multiSigSession.js" showLineNumbers
 const multiSigSession = {
   protocol: 'multisig-v1',
   participants: [signer1, signer2, signer3, beneficiary],
@@ -119,7 +119,7 @@ const multiSigSession = {
 
 Route payments through multiple sessions for optimal liquidity:
 
-```javascript
+```javascript title="PaymentRouter.js" showLineNumbers
 class PaymentRouter {
   constructor() {
     this.sessions = new Map(); // route -> sessionId
@@ -166,7 +166,7 @@ class PaymentRouter {
 
 Keep multiple channels synchronized for complex applications:
 
-```javascript
+```javascript title="ChannelSynchronizer.js" showLineNumbers
 class ChannelSynchronizer {
   constructor() {
     this.channels = new Map();
@@ -205,7 +205,7 @@ class ChannelSynchronizer {
 
 ### Multi-Session Management
 
-```javascript
+```javascript title="MultiSessionManager.js" showLineNumbers
 class MultiSessionManager {
   constructor() {
     this.connections = new Map(); // sessionId -> WebSocket
@@ -271,7 +271,7 @@ class MultiSessionManager {
 
 ### Session Management
 
-```javascript
+```javascript title="SessionManager.js" showLineNumbers
 class SessionManager {
   constructor() {
     this.activeSessions = new Map();
@@ -333,7 +333,7 @@ class SessionManager {
 
 Create parent-child relationships between channels:
 
-```javascript
+```javascript title="HierarchicalChannels.js" showLineNumbers
 class HierarchicalChannels {
   constructor(client) {
     this.client = client;
@@ -384,7 +384,7 @@ class HierarchicalChannels {
 
 Coordinate state updates across multiple related channels:
 
-```javascript
+```javascript title="CrossChannelCoordinator.js" showLineNumbers
 class CrossChannelCoordinator {
   constructor() {
     this.channelGroups = new Map();
@@ -436,7 +436,7 @@ class CrossChannelCoordinator {
 
 ### Gaming Lobby System
 
-```javascript
+```javascript title="GamingLobby.js" showLineNumbers
 class GamingLobby {
   constructor() {
     this.gameRooms = new Map();
@@ -529,7 +529,7 @@ class GamingLobby {
 
 ### Subscription Service
 
-```javascript
+```javascript title="SubscriptionService.js" showLineNumbers
 class SubscriptionService {
   constructor() {
     this.subscriptions = new Map();
@@ -600,7 +600,7 @@ class SubscriptionService {
 
 ### Participant Management
 
-```javascript
+```javascript title="ParticipantManager.js" showLineNumbers
 class ParticipantManager {
   constructor() {
     this.participants = new Map();
@@ -648,7 +648,7 @@ class ParticipantManager {
 
 ### Message Broadcasting
 
-```javascript
+```javascript title="MessageBroadcaster.js" showLineNumbers
 class MessageBroadcaster {
   constructor() {
     this.connections = new Map();
