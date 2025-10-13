@@ -1,6 +1,6 @@
 {
   "label": "Beginner",
   "position": 2,
-  "collapsible": true,
-  "collapsed": true
+  "collapsible": false,
+  "collapsed": false
 }

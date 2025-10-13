@@ -1,6 +1,6 @@
 {
   "label": "Advanced",
   "position": 3,
-  "collapsible": true,
-  "collapsed": true
+  "collapsible": false,
+  "collapsed": false
 }

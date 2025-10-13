@@ -3,6 +3,7 @@ sidebar_position: 3
 title: Multi-Party Applications
 description: Complex scenarios with multiple participants and application patterns
 keywords: [multi-party, applications, consensus, state channels, patterns]
+displayed_sidebar: learnSidebar
 ---
 
 # Multi-Party Applications

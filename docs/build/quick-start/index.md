@@ -1,8 +1,10 @@
 ---
 sidebar_position: 2
+sidebar_label: Quick Start
 title: Quick Start
 description: Build your first Yellow App in 5 minutes - a complete beginner's guide
 keywords: [yellow sdk, quick start, tutorial, nitrolite, state channels, beginner guide]
+displayed_sidebar: buildSidebar
 ---
 
 import Tabs from '@theme/Tabs';

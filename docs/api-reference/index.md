@@ -3,6 +3,7 @@ sidebar_position: 9
 title: API Reference
 description: Complete Yellow SDK method documentation with examples and type definitions
 keywords: [api reference, methods, types, nitrolite client, documentation]
+displayed_sidebar: apiSidebar
 ---
 
 # API Reference

@@ -3,6 +3,7 @@ sidebar_position: 3
 title: App Sessions
 description: API reference for virtual application session management
 keywords: [app session, create, submit, close, virtual application, api]
+displayed_sidebar: apiSidebar
 ---
 
 # App Sessions
