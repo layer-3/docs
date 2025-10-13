@@ -22,7 +22,7 @@ The environment is built to be a highly engaging and reward-based community for 
 
 ## How to Join Yellow Canary Testnet <a href="#id-89f5" id="id-89f5"></a>
 
-* Become a [Beta Tester](https://forms.yellow.org/join_canary_testnet) if you want to be among the first to test Yellow Network's core stack.&#x20;
+* Become a [Beta Tester](https://forms.yellow.org/join_canary_testnet) if you want to be among the first to test Yellow Network's core stack.
 * [**Become an Evangelist**](https://forms.yellow.org/ambassador) if you want to be the community force that spreading the word about Yellow.
 * [**Become a Broker**](https://forms.yellow.org/canary_brokers) if you want to help test and grow Yellow Network and the technology behind it.
 

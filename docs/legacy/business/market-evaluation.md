@@ -69,4 +69,4 @@ Our solution suggests significant cost reduction of R\&D as well as Infrastructu
 | Operations, Customer support     | Asset listings and Launchpad    |
 | Infrastructure                   | Dedicated WASM trading bots     |
 
-### &#x20;<a href="#_pdv0jwri1b62" id="_pdv0jwri1b62"></a>
+### <a href="#_pdv0jwri1b62" id="_pdv0jwri1b62"></a>

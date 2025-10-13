@@ -8,7 +8,7 @@ description: Summary of Web3 projects with related work to Yellow Network
 Related Work refers to aspects of existing concepts that lay the groundwork for a new project.
 :::
 
-Since the launch of Bitcoin, cryptocurrency trading has witnessed massive user adoption on a global scale and many alternative projects have been developed in the space. Users now have a broad choice of different blockchains, tokens, and decentralized applications. New projects are launched daily, many of which aim to simplify the users' journey in this wild Web3.0.&#x20;
+Since the launch of Bitcoin, cryptocurrency trading has witnessed massive user adoption on a global scale and many alternative projects have been developed in the space. Users now have a broad choice of different blockchains, tokens, and decentralized applications. New projects are launched daily, many of which aim to simplify the users' journey in this wild Web3.0.
 
 Solutions such as bridges are great examples of an effort to interconnect blockchains, but they suffer from a lack of decentralization and pose a security risk. To avoid bridges and still trade effectively, users often require significant liquidity of the same token across different chains to trade efficiently.
 
@@ -25,17 +25,17 @@ Solutions such as bridges are great examples of an effort to interconnect blockc
 
 #### **Short history**
 
-Uniswap is a decentralized exchange application launched in 2018. It is the first DEX to gain significant traction on the [Ethereum Mainnet](https://ethereum.org/en/) in 2020. Since then, many clones and other decentralized applications have been launched across various blockchains and are used by millions of users to swap tokens, lend or borrow cryptocurrency assets, bridge funds, etc. &#x20;
+Uniswap is a decentralized exchange application launched in 2018. It is the first DEX to gain significant traction on the [Ethereum Mainnet](https://ethereum.org/en/) in 2020. Since then, many clones and other decentralized applications have been launched across various blockchains and are used by millions of users to swap tokens, lend or borrow cryptocurrency assets, bridge funds, etc. 
 
 In short, Uniswap paved the way for DeFi (Decentralized Finance).
 
 #### **Security, and Auditability**
 
-Uniswap, and other DEXs brought many advantages compared to centralized exchanges. The exchange software is fully implemented in smart contracts deployed on the blockchain. Its open-source nature means anyone can read how it works and potentially build a clone. As the DEX has no custody over user assets, there are fewer risks of wallet hacks. Since there is no expensive underlying business operation, transaction costs tend to be lower. But despite independent audits, self-custody, and other security mechanisms, many DeFi applications are still victims of breaches and exploits.&#x20;
+Uniswap, and other DEXs brought many advantages compared to centralized exchanges. The exchange software is fully implemented in smart contracts deployed on the blockchain. Its open-source nature means anyone can read how it works and potentially build a clone. As the DEX has no custody over user assets, there are fewer risks of wallet hacks. Since there is no expensive underlying business operation, transaction costs tend to be lower. But despite independent audits, self-custody, and other security mechanisms, many DeFi applications are still victims of breaches and exploits.
 
 #### **Automatic Market Making (AMM)**
 
-Anyone can provide liquidity to Uniswap markets, called pools, and receive a revenue share from fees collected from trading (swapping). Moreover, the price of assets is managed automatically; every trade impacts the price up or down depending on whether it is placed as an ask or a bid order. Since its v1, the protocol evolved to be more resilient and secure with v2 and introduced more effective liquidity use with v3.&#x20;
+Anyone can provide liquidity to Uniswap markets, called pools, and receive a revenue share from fees collected from trading (swapping). Moreover, the price of assets is managed automatically; every trade impacts the price up or down depending on whether it is placed as an ask or a bid order. Since its v1, the protocol evolved to be more resilient and secure with v2 and introduced more effective liquidity use with v3.
 
 The Uniswap protocol provides an elegant solution to the problem of market making and access to liquidity.
 

@@ -4,7 +4,7 @@ description: The market challenges Yellow Network seeks to address
 
 # 🚧 The Problem
 
-Today, the world of cryptocurrency trading shows significant inefficiencies partially due to its decentralized nature. Here at Yellow Network, we are dedicated to tackling some of the deficiencies of the Web3 space.&#x20;
+Today, the world of cryptocurrency trading shows significant inefficiencies partially due to its decentralized nature. Here at Yellow Network, we are dedicated to tackling some of the deficiencies of the Web3 space.
 
 ## The Blockchain Trilemma <a href="#pj8bkb32jts7" id="pj8bkb32jts7"></a>
 
@@ -12,31 +12,31 @@ Today, the world of cryptocurrency trading shows significant inefficiencies part
 
 > "The three pillars of blockchain scalability, decentralization and security co-exist but struggle to exist in harmony." - Vitalik Buterin
 
-The so-called blockchain trilemma describes the problem that any project can only prioritize two out of three aspects at any given time.&#x20;
+The so-called blockchain trilemma describes the problem that any project can only prioritize two out of three aspects at any given time.
 
-Based on this theory, the Yellow Network team has identified critical key deficiencies in cross-broker and cross-chain cryptocurrency trading.&#x20;
+Based on this theory, the Yellow Network team has identified critical key deficiencies in cross-broker and cross-chain cryptocurrency trading.
 
 ### Scalability <a href="#pj8bkb32jts7" id="pj8bkb32jts7"></a>
 
-Traditional finance approaches this problem by having multiple layers of specialized actors.&#x20;
+Traditional finance approaches this problem by having multiple layers of specialized actors.
 
-On the other hand, crypto markets primarily operate in silos and independent blockchains, leading to a highly fragmented ecosystem.&#x20;
+On the other hand, crypto markets primarily operate in silos and independent blockchains, leading to a highly fragmented ecosystem.
 
 There are over 200 notable exchanges and over 6000 cryptocurrencies. Around 100 use their own proprietary blockchain, making it hard to achieve secure interoperability.
 
 Despite the critical nature of blockchain interoperability, cross-chain systems still face several hurdles when transacting assets or data between chains. These difficulties include transaction rate bottlenecks and disparities in trust.
 
-These silos and sub-ecosystems hinder scalability, efficiency, and mass adoption.&#x20;
+These silos and sub-ecosystems hinder scalability, efficiency, and mass adoption.
 
 *[Image placeholder: Traditional finance vs. Crypto finance comparison diagram]*
 
 ### Security <a href="#rpdroawe59eb" id="rpdroawe59eb"></a>
 
-Certain scalability projects such as [bridges](https://www.coindesk.com/learn/are-blockchain-bridges-safe-why-bridges-are-targets-of-hacks/) increasingly suffer from fraudulent attacks and exploits. This impacts trust, acts as a major roadblock for many traders, and traps them within chain ecosystems, further hindering scalability.&#x20;
+Certain scalability projects such as [bridges](https://www.coindesk.com/learn/are-blockchain-bridges-safe-why-bridges-are-targets-of-hacks/) increasingly suffer from fraudulent attacks and exploits. This impacts trust, acts as a major roadblock for many traders, and traps them within chain ecosystems, further hindering scalability.
 
-Market places like [centralized exchanges](the-problem.md#centralized-exchanges-cex) that offer custody provide ease of access, but their custody solutions can put user funds at risk if hacked.&#x20;
+Market places like [centralized exchanges](the-problem.md#centralized-exchanges-cex) that offer custody provide ease of access, but their custody solutions can put user funds at risk if hacked.
 
-Decentralized exchanges eliminate the custody risk but introduce a subset of [other threats](the-problem.md#decentralized-exchanges-dex).&#x20;
+Decentralized exchanges eliminate the custody risk but introduce a subset of [other threats](the-problem.md#decentralized-exchanges-dex).
 
 ### Decentralization
 

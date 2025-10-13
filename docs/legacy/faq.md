@@ -18,11 +18,11 @@ Moreover, the Openware partner network will ensure the adoption and integration 
 
 Assetum is a market-making company that would contribute to the project’s liquidity via the widespread network of partnerships. Yellow Connect brings new exciting Blockchain solutions and crypto projects through the Yellow Incubator to ensure their native integration into the ecosystem.
 
-#### **About Openware, Inc.**&#x20;
+#### **About Openware, Inc.**
 
 Cloud Software Engineering company with experience of over ten years of servicing European retail banks, shifting their focus entirely to the blockchain industry with the release of open-source modular platform [NeoDAX™](https://github.com/openware/neodax) for building digital asset trading systems. Over the past years, Openware has shipped over 150 trading platforms to their clients.
 
-#### About Yellow.com, Inc.&#x20;
+#### About Yellow.com, Inc.
 
 Crypto Market Maker that provides startup seed funding, mentorship, advisory, data analytics, and fintech software solutions. Yellow is also a lifestyle with a vibrant blockchain community through its co-working hub in Chiang Mai (Thailand), conferences, meet-ups, and entertainment for digital nomads.
 
@@ -89,7 +89,7 @@ Yes, correct.
 
 Yes. Community funds and 55% of the tokens are DAO-driven.
 
-&#x20;**❓ How does your company treasury work?**
+**❓ How does your company treasury work?**
 
 The company treasury is created to expand any group-related company, but it will most likely be inter-company loans, as those tokens are on the Seychelles balance sheet.
 
@@ -123,11 +123,11 @@ All Finex nodes can show the same depth; how deep they go depends on their state
 
 Finex nodes can run stand-alone with non-network orderbooks.
 
-&#x20;**❓ Is the Finex network based on blockchain architecture or other distributed architecture?**
+**❓ Is the Finex network based on blockchain architecture or other distributed architecture?**
 
 Using LibP2P (think ipfs) it is a new network with gateways being state channels Smart-Contracts on each Layer-1,2
 
-&#x20;**❓ If the Finex network crashes, how to ensure the security of users’ assets based on this architecture?**
+**❓ If the Finex network crashes, how to ensure the security of users’ assets based on this architecture?**
 
 Users’ assets are in the smart contract custody, a crash would not affect them, they could withdraw their funds even if the broker never comes back.
 

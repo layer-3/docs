@@ -14,15 +14,15 @@ Dr. Quackers has created a laboratory and is mixing (melding) Ducklings left and
 
 ## Types and Rarities of Dr. Quacker’s Creations
 
-Your objective is to get ahead of Dr. Quackers and create the ultimate Mythic Duckling species before he can. To do so, you must collect as many Legendary Ducklings as possible and meld them to create new and powerful Mythics. Melding cards requires careful planning, as the input cards are destroyed and a new card is created.&#x20;
+Your objective is to get ahead of Dr. Quackers and create the ultimate Mythic Duckling species before he can. To do so, you must collect as many Legendary Ducklings as possible and meld them to create new and powerful Mythics. Melding cards requires careful planning, as the input cards are destroyed and a new card is created.
 
 Be wary of failed melding attempts, as they'll result in the creation of special cards called Zombeaks that form their own collection.
 
-To start your duckling breeding journey, you can get **Ducklings Booster Packs** containing 1, 5, 10, 25, or 50 cards.&#x20;
+To start your duckling breeding journey, you can get **Ducklings Booster Packs** containing 1, 5, 10, 25, or 50 cards.
 
 ## **Ducklings Booster Pack**
 
-****Rarity probability distribution per booster pack: 85% common, 12% rare, 2.5% epic, and 0.5% legendary.****&#x20;
+****Rarity probability distribution per booster pack: 85% common, 12% rare, 2.5% epic, and 0.5% legendary.****
 
 ## Melding Ducklings
 
@@ -47,7 +47,7 @@ _**During the melding, the input cards are destroyed, and a new card is created.
 
 You had 5 legendaries, all with the same color and different families? It is now time to meld them, and the laboratory will bore the ultimate masterpiece, the **MYTHIC**!!
 
-As a Mythic NFT holder, you'll be ranked based on the rarity of your Mythic NFT (1-60), with higher ranks giving you access to exclusive benefits such as yields of our native token, $DUCKIES, as well as $YELLOW, and other partner tokens. But it's not just about the rewards—owning a Mythic NFT is a mark of distinction and status within our community.&#x20;
+As a Mythic NFT holder, you'll be ranked based on the rarity of your Mythic NFT (1-60), with higher ranks giving you access to exclusive benefits such as yields of our native token, $DUCKIES, as well as $YELLOW, and other partner tokens. But it's not just about the rewards—owning a Mythic NFT is a mark of distinction and status within our community.
 
 Mythic NFTs also have a place in our official Ambassador Program. You'll gain even more perks, including early access to new features and products, the chance to participate in our expansion strategies, and access to private sales that are not available to everyone.
 
@@ -62,13 +62,13 @@ Now is the time to mint and meld Ducklings, bring the ultimate reward ‘’Myth
 
 ## ![](https://lh5.googleusercontent.com/E2qIXyJ4gQ6eFESy3jcfZ-0lz6qGBRIAFLfCTEA2zDgXlR2R9cCDiKvkDyBhY3SDSH1Ln7DQuKeOMcTyE3YN8D5fVtC-mo134nR_i-qi5sEo3JE-hx1SzK5yp1CjSxbNHX6exjTY9bqKkwqvb9DVuLc)Zombeaks: Duckie-Mutants
 
-If a melding attempt fails, the player receives a neutral card called a Zombeak.&#x20;
+If a melding attempt fails, the player receives a neutral card called a Zombeak.
 
 Zombeaks cannot be used for further melding with other cards; however, they form a unique collection and can be melded between each other to create a rarer Zombeak!
 
-* When melding Common cards, there is a 15% probability of getting a Zombeak.&#x20;
-* When melding Rare cards, there is a 10% probability of getting a Zombeak.&#x20;
-* When melding Epic cards, there is a 5% probability of getting a Zombeak.&#x20;
+* When melding Common cards, there is a 15% probability of getting a Zombeak.
+* When melding Rare cards, there is a 10% probability of getting a Zombeak.
+* When melding Epic cards, there is a 5% probability of getting a Zombeak.
 * When melding Legendary cards, there is a 1% probability of getting a Zombeak.
 
 Just as nature fails sometimes, your meld can fail as well as there is nothing you can do apart from accepting this fact and melding mutants between each other to create an even rarer breed of them 🙂

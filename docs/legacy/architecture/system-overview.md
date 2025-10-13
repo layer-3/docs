@@ -27,7 +27,7 @@ Demo Version - [alpha.yellow.org](http://alpha.yellow.org/)
 3. Spot Trading (local node, network trading in progress).
 4. Broker Admin Panel (Supabase Studio).
 
-#### Modular Architecture&#x20;
+#### Modular Architecture
 
 A great fit for exchange businesses allows deep customization.
 
@@ -44,8 +44,8 @@ Features supported in _Finex_ spot matching engine:
 * **Bulk orders** to post or cancel many orders in a single request
 * **Post-only order:**  advanced limit order which will not match immediately; it guarantees that it will be filled or canceled
 * **Fill or kill order:** an advanced limit order which must be fully filled or gets automatically canceled
-* **Stop-loss:** advanced market order used to buy or sell a specific asset once the market reaches the limit price. Once the predefined limit price is achieved, the system creates a spot market order.&#x20;
-* **Stop-limit:** advanced limit order used to buy or sell a specific asset at a predefined limit.  Contrary to the stop-loss order, a stop-limit order creates a limit order instead of buying the asset outright once the limit price is achieved.&#x20;
+* **Stop-loss:** advanced market order used to buy or sell a specific asset once the market reaches the limit price. Once the predefined limit price is achieved, the system creates a spot market order.
+* **Stop-limit:** advanced limit order used to buy or sell a specific asset at a predefined limit.  Contrary to the stop-loss order, a stop-limit order creates a limit order instead of buying the asset outright once the limit price is achieved.
 * **API Rate limit**: a rate limiter configurable depending on user roles; it can be configured at the API server level and the trading engine level
 * **Bi-directional WebSocket API**: allows end-users and brokers' bots to create and cancel orders and be notified about trades in real-time
 * [**gRPC API** with JS and go libraries to speed up the development of bots](https://docs.openware.com/neodax/developers-guides/api-documentation/grpc-protocol)
@@ -72,14 +72,14 @@ Yellow Network implements a mesh and decentralized ECN.
 
 An electronic communication network (ECN) is a computerized system that automatically matches buy and sell orders for securities in the market. ECN trading is especially helpful when participants in different geographical areas wish to complete a secure transaction without the use of a third party.
 
-The ECN aggregates the books of brokers and market makers in different locations. This leads to deeper liquidity and larger order books and thus a tighter bid-ask spread and faster order execution. Traders can get more attractive spreads and better order flow.&#x20;
+The ECN aggregates the books of brokers and market makers in different locations. This leads to deeper liquidity and larger order books and thus a tighter bid-ask spread and faster order execution. Traders can get more attractive spreads and better order flow.
 
-An additional benefit of the ECN's order aggregation is better price transparency for all participating brokers and market makers.&#x20;
+An additional benefit of the ECN's order aggregation is better price transparency for all participating brokers and market makers.
 
-Using an ECN counters market fragmentation issues, while maintaining the decentralization aspect of the crypto trading market.&#x20;
+Using an ECN counters market fragmentation issues, while maintaining the decentralization aspect of the crypto trading market.
 
 _\[INSERT: ECN Deal Flow Graphic (in preparation)]_
 
 ECN provides brokers access to global financial markets; the Yellow Network protocol forms a decentralized ECN for digital assets.
 
-## &#x20;<a href="#o8p3zt8mxh94" id="o8p3zt8mxh94"></a>
+## <a href="#o8p3zt8mxh94" id="o8p3zt8mxh94"></a>

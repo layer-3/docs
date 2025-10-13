@@ -17,7 +17,7 @@ A Clearing Fee is due whenever Broker positions are cleared/settled on the Yello
 **Beneficiary:**      Yellow Clearing House\
 **Payment Ccy:**    $YELLOW\
 **Periodicity:**        Periodicity: Calculated and paid on settlement \
-&#x20;                           (min. every 24h, or on a  specific settlement request by the Broker)
+                           (min. every 24h, or on a  specific settlement request by the Broker)
 
 | Broker Tier\* | $YELLOW Stacked | Clearing Fee |
 | ------------- | --------------- | ------------ |

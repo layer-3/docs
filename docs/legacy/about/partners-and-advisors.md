@@ -5,18 +5,18 @@ description: Meet some of our trusted partners and advisors
 # 👥 Partners & Advisors
 
 :::info
-Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.&#x20;
+Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
 For more information, visit the [Roadmap](about/roadmap.md)
 :::
 
 We are proud to have a strong and ever-expanding network of Advisors, Backers, and Partners from different fields and industries. These partnerships allow us to achieve far-reaching impact and scale.
 
-If you are interested in partnering with Yellow Network, reach out to us via our [social media](#).&#x20;
+If you are interested in partnering with Yellow Network, reach out to us via our [social media](#).
 
 ## **Advisors**
 
-Learn more about our trusted advisors who help to promote Yellow Network and provide us with decades of expertise:&#x20;
+Learn more about our trusted advisors who help to promote Yellow Network and provide us with decades of expertise:
 
 **Chris Larsen -** [Co-founder and Chairman, Ripple](https://ripple.com/company/leadership/)
 
@@ -34,7 +34,7 @@ Learn more about our cornerstone backers:
 
 Founded in 2013, GSR is a crypto market maker with 300 employees across the globe. GSR specializes in providing liquidity, risk management strategies, and structured products to sophisticated global investors in the digital assets industry. A leadership team of veteran finance and technology executives from Goldman Sachs, Citadel, J.P. Morgan, and Two Sigma, among others, has created one of the world’s fastest and most robust digital asset trading systems.
 
-GSR is deeply embedded in every major sector of the cryptocurrency ecosystem. GRS works with leading cryptocurrency projects, exchanges, funds, and miners as well as financial institutions taking their first steps into the world of digital assets.&#x20;
+GSR is deeply embedded in every major sector of the cryptocurrency ecosystem. GRS works with leading cryptocurrency projects, exchanges, funds, and miners as well as financial institutions taking their first steps into the world of digital assets.
 
 </details>
 
@@ -70,7 +70,7 @@ More on [https://medium.com/yellow-blog/moonrock-capital-enter-a-strategic-partn
 
 <summary>Bitmart</summary>
 
-A fifth-generation blockchain that aims to bring a paradigm shift from a for-profit to a for-benefit economy.&#x20;
+A fifth-generation blockchain that aims to bring a paradigm shift from a for-profit to a for-benefit economy.
 
 5ire intends to be the leading blockchain ecosystem to solve sustainability issues with its proprietary nPoS-based algorithm. 5ireChain’s network acts as a governance structure that democratically empowers and incentivizes DAOs and Working Groups that accelerate the implementation of the UN 2030 Agenda. 5ire technology stack offers protocol-level SDG oracles, cross-chain interoperability, Metaverses, WebAssembly and EVM smart contracts, Real-time economy data collection and telemetry with IoT, AR/VR, smart sensors, and incentivized AI SDG analysis.
 
@@ -142,7 +142,7 @@ ConsenSys is the leading Ethereum software company. We enable developers, enterp
 
 <summary>Mesh</summary>
 
-ConsenSys Mesh (a.k.a. MESH) is an accelerator, incubator, investor and enabler of blockchain technology solutions. Founded in 2015 by Ethereum co-founder Joseph Lubin, MESH is a network of loosely coupled, tightly aligned teams, products and investments with a single mission to champion global adoption and awareness of groundbreaking technologies in Web3.&#x20;
+ConsenSys Mesh (a.k.a. MESH) is an accelerator, incubator, investor and enabler of blockchain technology solutions. Founded in 2015 by Ethereum co-founder Joseph Lubin, MESH is a network of loosely coupled, tightly aligned teams, products and investments with a single mission to champion global adoption and awareness of groundbreaking technologies in Web3.
 
 [https://www.mesh.xyz/](https://www.mesh.xyz/)
 
@@ -198,7 +198,7 @@ Web3 Cybersecurity Auditor
 
 <summary>Magmo</summary>
 
-Web3 scalability solutions&#x20;
+Web3 scalability solutions
 
 [https://magmo.com/](https://magmo.com/)
 

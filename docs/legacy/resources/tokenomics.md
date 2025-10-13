@@ -15,7 +15,7 @@ Yellow Network is a project in development. Not all solutions presented in the f
 
 ## **Token Utility**[**​**](https://www.yellow.org/docs/litepaper/yellow-token#token-usage)
 
-We are committed to giving our token simple yet effective utility right out of the gate. Over time we intend to broaden the use of $YELLOW with our partners and more.&#x20;
+We are committed to giving our token simple yet effective utility right out of the gate. Over time we intend to broaden the use of $YELLOW with our partners and more.
 
 
 
@@ -44,7 +44,7 @@ Learn more about the [Clearing Fee](../fees/clearing-fee.md)
 
 ### ➤ Yellow Community Vault
 
-The Yellow Reserve Vault or (Yellow Community Vault) is our concept of a treasury to secure Yellow Network. As the network is growing so will the Reserve Vault, providing security and comfort to all participants.&#x20;
+The Yellow Reserve Vault or (Yellow Community Vault) is our concept of a treasury to secure Yellow Network. As the network is growing so will the Reserve Vault, providing security and comfort to all participants.
 
 Learn more about the [Reserve Vault](../yellow-reserve-vault.md)
 
@@ -52,7 +52,7 @@ Learn more about the [Reserve Vault](../yellow-reserve-vault.md)
 
 * 30% will be dedicated to ecosystem projects development (Community Fund)
 * Funds from that pool will be allocated based on community proposals; 25% will be allocated for growth-hacking rewards.
-* 20% will be proportionally vested to the investors over a three-year period&#x20;
-* 10% will be proportionally vested to the founders and team over a five-year period&#x20;
-* 12.5% will be allocated for Yellow Treasury and for future growth&#x20;
+* 20% will be proportionally vested to the investors over a three-year period
+* 10% will be proportionally vested to the founders and team over a five-year period
+* 12.5% will be allocated for Yellow Treasury and for future growth
 * 2.5% will be allocated for liquidity provision.

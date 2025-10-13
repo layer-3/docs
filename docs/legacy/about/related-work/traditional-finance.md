@@ -20,7 +20,7 @@ This is the principal role of the clearinghouse. It means that all trades that t
 
 Besides its function as an overseeing body, the clearinghouse also drastically reduces the number of payments between parties through a "Netting" process. Brokers usually carry out thousands of transactions a day. Settling each transaction would be a logistical nightmare. Netting allows brokers only to pay for the actual outstanding balance of their trading account.
 
-#### **3) Margin Accounts & Payments**&#x20;
+#### **3) Margin Accounts & Payments**
 
 Margin accounts are accounts the brokers hold with the clearinghouse. The amount required to be held on these accounts is often defined by mathematical formulas that consider the risk of the broker's open positions. The margin amount is the collateral a broker must maintain at all times to ensure his open positions.
 
@@ -32,7 +32,7 @@ At the agreed time of exchange, the clearinghouse ensures that the seller delive
 
 If the required margin amount exceeds the balance, the clearinghouse will issue a margin call, i.e., a request to top up the account.
 
-#### **5) Reporting**&#x20;
+#### **5) Reporting**
 
 The clearinghouse is tasked with reporting all activity to regulators and governing bodies. This facilitates oversight since controlling entities don’t have to work out each broker's activity but can view the market as a whole.
 

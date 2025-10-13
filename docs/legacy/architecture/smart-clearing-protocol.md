@@ -14,15 +14,15 @@ Conflict of interest whereby many traditional crypto exchanges not only act as a
 
 Introducing a dedicated smart clearing protocol will de-risk the existing landscape and open the market for new participants while simultaneously comforting regulators.
 
-Liquidity aggregation helps smaller, specialized exchanges and brokers to offer better pricing and handle larger trade volumes.&#x20;
+Liquidity aggregation helps smaller, specialized exchanges and brokers to offer better pricing and handle larger trade volumes.
 
-Clients from large exchanges can trade additional token pairings for which they otherwise would have to move custodied assets.&#x20;
+Clients from large exchanges can trade additional token pairings for which they otherwise would have to move custodied assets.
 
-By holding margin accounts with the clearing house, brokers and exchanges can use margin netting to allow for more efficient use of capital.&#x20;
+By holding margin accounts with the clearing house, brokers and exchanges can use margin netting to allow for more efficient use of capital.
 
-This greatly reduces the risk of overexposure and helps to streamline liquidity management and capital efficiency.&#x20;
+This greatly reduces the risk of overexposure and helps to streamline liquidity management and capital efficiency.
 
-The Clearing Protocol can accurately report order flow data to regulators. This lowers the reporting burden for traders and brokers while simultaneously increasing the marketplace's safety and transparency, and helping to identify and exclude bad actors.&#x20;
+The Clearing Protocol can accurately report order flow data to regulators. This lowers the reporting burden for traders and brokers while simultaneously increasing the marketplace's safety and transparency, and helping to identify and exclude bad actors.
 
 ![The Yellow Network brings these functionalities using cutting-edge state channel technology and settlement via smart contracts.](/img/placeholder.png)
 
@@ -93,7 +93,7 @@ Settlement is the act of clearing each state channel participant's liabilities.
 
 Clearing or reducing the liabilities of participants is achieved by moving funds between each participant's [custodian](custodial-layer.md).
 
-The settlement is an atomic, multi-chain, and multi-asset transfer process which is written on the respective blockchains.&#x20;
+The settlement is an atomic, multi-chain, and multi-asset transfer process which is written on the respective blockchains.
 
 #### Settlement trigger
 
@@ -103,7 +103,7 @@ Situations that trigger a settlement:
 
 * [Closing a state channel](smart-clearing-protocol.md#close-a-channel).
 * Automated daily settlement at 0.00 am UTC.
-* The risk exposure of open trades is considered too high by a participant node, i.e. the open net liabilities exceed the [collateral thresholds](risk-management.md#collateral-thresholds).&#x20;
+* The risk exposure of open trades is considered too high by a participant node, i.e. the open net liabilities exceed the [collateral thresholds](risk-management.md#collateral-thresholds).
 * An end-user requests a withdrawal of an asset that is not in the broker's custody but still in a trading channel's liabilities.
 
 #### Hash Timelocked Contracts (HTLC)
@@ -120,19 +120,19 @@ See also: [https://en.bitcoin.it/wiki/Hash\_Time\_Locked\_Contracts](https://en.
 
 ## Disputes
 
-Disputes occur when participating brokers fail to meet their liabilities within Yellow Network. We divide disputes into two categories: State Channel Disputes and Settlement Disputes.&#x20;
+Disputes occur when participating brokers fail to meet their liabilities within Yellow Network. We divide disputes into two categories: State Channel Disputes and Settlement Disputes.
 
-In the case of a dispute, trading activity on the channel in question is halted until the dispute is resolved.&#x20;
+In the case of a dispute, trading activity on the channel in question is halted until the dispute is resolved.
 
 ### Settlement Disputes
 
 A settlement dispute occurs when a broker cannot fulfill his obligation at the [time of settlement](smart-clearing-protocol.md#settlement-trigger). In this case, the smart clearing contract will access the deposited collateral to satisfy the settlement process.
 
-After a settlement dispute is resolved, the broker has to ensure that he has sufficient fresh collateral before the state channel is reopened for activity.&#x20;
+After a settlement dispute is resolved, the broker has to ensure that he has sufficient fresh collateral before the state channel is reopened for activity.
 
 ### State Channel Disputes
 
-A state channel dispute is triggered manually by a broker and signals an issue between the broker and the protocol; for example, when a broker discovers a bug in the smart clearing protocol.&#x20;
+A state channel dispute is triggered manually by a broker and signals an issue between the broker and the protocol; for example, when a broker discovers a bug in the smart clearing protocol.
 
-State channel disputes trigger a halt of the trading channel and a manual intervention from the Yellow Network support team. If the dispute can be resolved the state channel is reopened for trading. If no solution is found the channel is closed and all open positions are reverted, using brokers' collateral if necessary.&#x20;
+State channel disputes trigger a halt of the trading channel and a manual intervention from the Yellow Network support team. If the dispute can be resolved the state channel is reopened for trading. If no solution is found the channel is closed and all open positions are reverted, using brokers' collateral if necessary.
 

@@ -8,7 +8,7 @@ Yellow leverages Layer-2 chains for a clearing house implementation on-chain.
 
 The clearing house enters the picture after a buyer and a seller execute a trade. Its role is to accomplish the steps that finalize, and therefore validate, the transaction. In acting as a middleman, the clearinghouse provides the security and efficiency that is integral to stability in a financial market.
 
-A traditional Clearing House is tasked with five crucial roles that add stability, security and transparency to markets;&#x20;
+A traditional Clearing House is tasked with five crucial roles that add stability, security and transparency to markets;
 
 #### 1) Clearing & Finalizing Trades
 
@@ -18,7 +18,7 @@ This is the principal role of the clearinghouse. It means that all trades that t
 
 Besides its function as an overseeing body the clearinghouse also drastically reduces the number of payments between parties through a process called Netting. Brokers usually commit thousands of transactions a day. Settling each transaction would be a logistical nightmare. Netting allows brokers only to pay for the actual outstanding balance of their trading account.
 
-#### **3) Margin Accounts & Payments**&#x20;
+#### **3) Margin Accounts & Payments**
 
 Margin accounts are accounts that the brokers hold with the clearinghouse. The amount required to be held on these accounts is often defined by mathematical formulas that take into consideration the risk of the broker's open positions. The margin amount is the collateral that a broker needs to maintain at all times to ensure his open positions.
 
@@ -30,7 +30,7 @@ At the agreed time of exchange, the clearinghouse ensures that the seller delive
 
 If the required margin amount exceeds the balance the clearinghouse will issue a margin call, i.e. a request to top up the account.
 
-#### **5) Reporting**&#x20;
+#### **5) Reporting**
 
 The clearinghouse is also tasked to report all activity to oversee regulators and governing bodies. This facilitates the oversight since controlling entities don’t have to work out the activity of each broker but instead can view the market as a whole.
 
@@ -48,15 +48,15 @@ _**Conflict of Interest**_ whereby many traditional crypto exchanges not only ac
 
 Overall the introduction of a dedicated Crypto Clearinghouse will de-risk the existing landscape and open the market for new participants while at the same time comforting regulators.
 
-**Liquidity aggregation** helps smaller, specialized exchanges and brokers to offer **better pricing** and handle **larger trade volumes**.&#x20;
+**Liquidity aggregation** helps smaller, specialized exchanges and brokers to offer **better pricing** and handle **larger trade volumes**.
 
-Clients from large exchanges will be able to trade **additional token pairings** for which they otherwise would have to move custodied assets.&#x20;
+Clients from large exchanges will be able to trade **additional token pairings** for which they otherwise would have to move custodied assets.
 
-By holding **margin accounts** with the clearinghouse, brokers and exchanges can use **margin netting** to allow for a more **efficient use of capital**.&#x20;
+By holding **margin accounts** with the clearinghouse, brokers and exchanges can use **margin netting** to allow for a more **efficient use of capital**.
 
-This greatly **reduces the risk of overexposure** and helps to **streamline liquidity management** **and capital efficiency**.&#x20;
+This greatly **reduces the risk of overexposure** and helps to **streamline liquidity management** **and capital efficiency**.
 
-The Clearing House can **accurately report order flow data to regulators** and thus **lower the reporting burden for traders and brokers** while at the same time **increasing the safety and transparency** of the marketplace, as well as helping to **identify and exclude bad actors**.&#x20;
+The Clearing House can **accurately report order flow data to regulators** and thus **lower the reporting burden for traders and brokers** while at the same time **increasing the safety and transparency** of the marketplace, as well as helping to **identify and exclude bad actors**.
 
 ![Role of a Clearinghouse in Crypto](/img/placeholder.jpg)
 

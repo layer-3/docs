@@ -206,22 +206,22 @@ To open a state channel, brokers need to agree on a specific amount of YELLOW to
 
 #### Centralized Exchange (CEX)
 
-Centralized cryptocurrency exchanges act as an intermediary between a buyer and a seller and make money through commissions and transaction fees. Imagine a [CEX](../../about/the-problem.md#centralized-exchanges-cex)as similar to a stock exchange but for digital assets. Generally, a [CEX](../../about/the-problem.md#centralized-exchanges-cex)not only acts as a marketplace but also requires users to custody assets.&#x20;
+Centralized cryptocurrency exchanges act as an intermediary between a buyer and a seller and make money through commissions and transaction fees. Imagine a [CEX](../../about/the-problem.md#centralized-exchanges-cex)as similar to a stock exchange but for digital assets. Generally, a [CEX](../../about/the-problem.md#centralized-exchanges-cex)not only acts as a marketplace but also requires users to custody assets.
 
 #### Clearing / Smart Clearing
 
 Clearing is the correct and timely transfer of funds to the seller and securities to the buyer.
 
-[Smart Clearing](../../../legacy/architecture-and-design/smart-clearing-protocol.md) is a term we derived from traditional finance. The "smart" component indicates that instead of a trusted intermediary, the clearing process is conducted by a fully automated digital protocol.&#x20;
+[Smart Clearing](../../../legacy/architecture-and-design/smart-clearing-protocol.md) is a term we derived from traditional finance. The "smart" component indicates that instead of a trusted intermediary, the clearing process is conducted by a fully automated digital protocol.
 
 #### Collateral
 
-Brokers have to lock collateral in order to guarantee their solvency for the other peer.&#x20;
+Brokers have to lock collateral in order to guarantee their solvency for the other peer.
 
-We define two types of collateral that have to be provided:&#x20;
+We define two types of collateral that have to be provided:
 
-* [Network Access Collateral:](glossary.md#network-access-collateral) required to open state channels and become an accredited Yellow Network participant. It acts as a last resort for disputes between brokers.&#x20;
-* [Trading Collateral:](glossary.md#trading-collateral) Agreed on a P2P level when a state channel is opened. Secures day-to-day trading activities between brokers and prevents overexposure. It acts as the first line of defense in disputes between brokers.&#x20;
+* [Network Access Collateral:](glossary.md#network-access-collateral) required to open state channels and become an accredited Yellow Network participant. It acts as a last resort for disputes between brokers.
+* [Trading Collateral:](glossary.md#trading-collateral) Agreed on a P2P level when a state channel is opened. Secures day-to-day trading activities between brokers and prevents overexposure. It acts as the first line of defense in disputes between brokers.
 
 #### Custodians
 
@@ -263,15 +263,15 @@ The second layer [(Layer 2)](../../../legacy/fees/clearing-fee.md) is a **Cleari
 
 The term [Hashed Time Lock Contract (HTLC)](https://academy.binance.com/en/glossary/hashed-timelock-contract) refers to a special feature used to create [smart contracts](https://academy.binance.com/en/glossary/smart-contract) that are able to modify payment channels. Technically, the HTLC feature enables the implementation of time-bound transactions between two users. In practice, the recipient of a HTLC transaction has to acknowledge the payment by submitting a cryptographic proof within a specified timeframe (number of blocks). If the recipient forfeits or fails to claim the payment, the funds will be returned to the original sender.
 
-At Yellow Network we use [HTLC](../../../legacy/architecture-and-design/#how-p2p-trading-works)to settle trades off-chain.&#x20;
+At Yellow Network we use [HTLC](../../../legacy/architecture-and-design/#how-p2p-trading-works)to settle trades off-chain.
 
 #### High Frequency Trading (HFT)
 
 High-frequency trading, also known as HFT, is a method of trading that uses powerful computer programs to transact a large number of orders in fractions of a second. It uses complex [algorithms](https://www.investopedia.com/terms/a/algorithm.asp) to analyze multiple markets and execute orders based on market conditions.
 
-## I&#x20;
+## I
 
-## J&#x20;
+## J
 
 ## K
 
@@ -279,11 +279,11 @@ High-frequency trading, also known as HFT, is a method of trading that uses powe
 
 Know Your Customer (KYC) is a standard in the investment industry that ensures [advisors](https://www.investopedia.com/terms/f/financial-advisor.asp) can verify a client's identity and know their client's investment knowledge and financial profile. For participants in Yellow Network, the end-user[KYC](../../../legacy/architecture-and-design/supported-technologies.md#kyc-know-your-customer) is the responsibility of each broker. Yellow Network will allow brokers to integrate their own third-party KYC provider.
 
-## L&#x20;
+## L
 
 #### Layer (0-3)
 
-Layers in the blockchain space refer to scaling solutions that aim to solve the trilemma of Decentralization, Security, and Scalability.&#x20;
+Layers in the blockchain space refer to scaling solutions that aim to solve the trilemma of Decentralization, Security, and Scalability.
 
 Layer-0 = Technical components (Hardware, Internet, etc.)
 
@@ -297,7 +297,7 @@ Layer-3 = Application layer, acts as user interface (UI)
 
 Liquidity aggregation refers to technology that allows participants to simultaneously obtain streamed prices from several liquidity providers/pools.
 
-## M&#x20;
+## M
 
 #### Market Makers
 
@@ -323,7 +323,7 @@ Yellow Network embodies a decentralized Layer-3 peer-to-peer mesh network allowi
 
 #### Policies
 
-Our policies set the foundation of our work and are readily available to everyone. They can be found under the [Legal](#) section.&#x20;
+Our policies set the foundation of our work and are readily available to everyone. They can be found under the [Legal](#) section.
 
 #### Protocol
 
@@ -352,9 +352,9 @@ A small exchange located in a specific country or region that complies with loca
 
 #### Settlement
 
-Yellow Network initiates a daily automatic settlement at 0:00 UTC. The settlement process can also be triggered by a broker at any time (ad-hoc); for example, if the broker requires liquidity to honor a withdrawal request from an end-user.&#x20;
+Yellow Network initiates a daily automatic settlement at 0:00 UTC. The settlement process can also be triggered by a broker at any time (ad-hoc); for example, if the broker requires liquidity to honor a withdrawal request from an end-user.
 
-If a broker's position has insufficient collateral he will be prevented from further B2B trades. Frequent broker-initiated settlements can prevent that situation.&#x20;
+If a broker's position has insufficient collateral he will be prevented from further B2B trades. Frequent broker-initiated settlements can prevent that situation.
 
 #### State Channel
 
@@ -364,15 +364,15 @@ If a broker's position has insufficient collateral he will be prevented from fur
 
 #### Tokenomics
 
-Tokenomics is a term that captures a token’s economics. It describes the factors that impact a token’s use and value, including but not limited to the token’s creation and distribution, supply and demand, incentive mechanisms, and token burn schedules. You can find the Yellow Network Tokenomics [here](../../../legacy/usdyellow/tokenomics.md).&#x20;
+Tokenomics is a term that captures a token’s economics. It describes the factors that impact a token’s use and value, including but not limited to the token’s creation and distribution, supply and demand, incentive mechanisms, and token burn schedules. You can find the Yellow Network Tokenomics [here](../../../legacy/usdyellow/tokenomics.md).
 
 #### Tiers
 
-Tiers are used to define the number of [trading channels](glossary.md#trading-channel) a participant can use. Tiers are based on the number of [$YELLOW](glossary.md#usdyellow) the participant locks with the [Yellow Network](glossary.md#yellow-network). Tiers are also used to determine the applicable [fee layer](glossary.md#fees) of a participant.&#x20;
+Tiers are used to define the number of [trading channels](glossary.md#trading-channel) a participant can use. Tiers are based on the number of [$YELLOW](glossary.md#usdyellow) the participant locks with the [Yellow Network](glossary.md#yellow-network). Tiers are also used to determine the applicable [fee layer](glossary.md#fees) of a participant.
 
 #### Trading Channel
 
-Participating brokers and liquidity providers can open trading channels to use and share liquidity with others. Opening trading channels requires [$YELLOW](glossary.md#usdyellow) tokens and the use of channels is subject to a [clearing fee](glossary.md#fees).&#x20;
+Participating brokers and liquidity providers can open trading channels to use and share liquidity with others. Opening trading channels requires [$YELLOW](glossary.md#usdyellow) tokens and the use of channels is subject to a [clearing fee](glossary.md#fees).
 
 ## U
 
@@ -382,7 +382,7 @@ Participating brokers and liquidity providers can open trading channels to use a
 
 #### Whitepaper
 
-A whitepaper is an informational document issued by a company or [not-for-profit](https://www.investopedia.com/terms/n/not-for-profit.asp)organization to promote or highlight the features of a solution, product, or service that it offers or plans to offer. Our Whitepaper can be found [here](../../docs-hub/whitepaper.md).&#x20;
+A whitepaper is an informational document issued by a company or [not-for-profit](https://www.investopedia.com/terms/n/not-for-profit.asp)organization to promote or highlight the features of a solution, product, or service that it offers or plans to offer. Our Whitepaper can be found [here](../../docs-hub/whitepaper.md).
 
 ## X
 
@@ -390,6 +390,6 @@ A whitepaper is an informational document issued by a company or [not-for-profit
 
 #### $YELLOW
 
-[$YELLOW](../../../legacy/usdyellow/) is our ERC-20 token. The use of Yellow Network requires participants to hold $YELLOW.&#x20;
+[$YELLOW](../../../legacy/usdyellow/) is our ERC-20 token. The use of Yellow Network requires participants to hold $YELLOW.
 
 ## Z

@@ -26,7 +26,7 @@ Running an exchange with many markets imposes maintaining order books with tight
 
 **Short history**
 
-Uniswap is a decentralized exchange application launched in 2018 \[@uniswap-history]. It is the first DEX to gain significant traction on the Ethereum Mainnet by August 2020. Since then, many clones and other decentralized applications have been launched on many blockchains and used by millions of users to swap tokens, lend or borrow cryptocurrencies assets, bridge funds between blockchains, and many more use cases.&#x20;
+Uniswap is a decentralized exchange application launched in 2018 \[@uniswap-history]. It is the first DEX to gain significant traction on the Ethereum Mainnet by August 2020. Since then, many clones and other decentralized applications have been launched on many blockchains and used by millions of users to swap tokens, lend or borrow cryptocurrencies assets, bridge funds between blockchains, and many more use cases.
 
 Uniswap paved the way for DeFi (Decentralized Finance).
 
@@ -36,7 +36,7 @@ It brought many advantages compared to centralized exchanges. The exchange softw
 
 **Automatic market making**
 
-Anyone can provide liquidity to Uniswap markets (AKA pools) and receive a revenue share from fees collected during trading (AKA swaps). Moreover, the price of assets is managed automatically; every trade impacts the price up or down depending if it is an ask or a bid. Since version one, the protocol evolved to be more resilient in v2 and to use more effectively the liquidity in v3 \[@angeris2020improved].&#x20;
+Anyone can provide liquidity to Uniswap markets (AKA pools) and receive a revenue share from fees collected during trading (AKA swaps). Moreover, the price of assets is managed automatically; every trade impacts the price up or down depending if it is an ask or a bid. Since version one, the protocol evolved to be more resilient in v2 and to use more effectively the liquidity in v3 \[@angeris2020improved].
 
 Uniswap protocol provided an elegant solution to the problem of market making and access to liquidity.
 
@@ -46,7 +46,7 @@ The success of those applications has led to congestion in the Ethereum network,
 
 **Front running bots**
 
-Transparency of blockchain transactions and the fact that Ethereum orders transactions by gas price expose users of DEXes to front-run bots. \[@daian2019flash].&#x20;
+Transparency of blockchain transactions and the fact that Ethereum orders transactions by gas price expose users of DEXes to front-run bots. \[@daian2019flash].
 
 Such bots are monitoring the blockchain and the in-memory transactions pool (containing transactions not yet mined in a block) for incoming swap transactions. They check the slippage tolerance allowed by the user and calculate the cost of front-running transactions. When profitable, they execute a transaction just before the user by setting a higher gas price, and finalize this transaction just after the user takes the profit.
 
@@ -72,4 +72,4 @@ The Lightning Network is a Layer-2 solution for the Bitcoin network. It was prop
 
 LayerZero provides an SDK that enables cross-chain transactions, but it requires modifying existing smart contracts and does not solve performance issues. It actually increases the number of transactions on already congested chains.
 
-### &#x20;<a href="#_udybe2pc46jg" id="_udybe2pc46jg"></a>
+### <a href="#_udybe2pc46jg" id="_udybe2pc46jg"></a>

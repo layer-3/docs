@@ -24,7 +24,7 @@ _\*planned, release date tba_
 
 ## **KYC (Know Your Customer)**
 
-End-user identity verification is the responsibility of each participating broker.&#x20;
+End-user identity verification is the responsibility of each participating broker.
 
 Yellow Network allows brokers to integrate their own third-party KYC provider.\*\
 Examples: \
@@ -47,16 +47,16 @@ List of supported blockchain networks:
 * [Solana](https://solana.com/)
 * [Polkadot](https://polkadot.network/)
 
-We aim to continuously add new networks and blockchains into the future. If you have a specific request, please reach out to us via our [Discord](https://discord.gg/YA2xKdJj).&#x20;
+We aim to continuously add new networks and blockchains into the future. If you have a specific request, please reach out to us via our [Discord](https://discord.gg/YA2xKdJj).
 
 ## **Currencies and Markets**
 
 * The number of supported currencies depends on each broker. Brokers have the ability to add currencies and appropriate markets at their own discretion from the admin panel.
 * **Broker-to-Broker Trading is available to brokers only for approved markets and currencies with assets matching from both sides.**
 
-_**Note: A list of supported currencies and trading pairs will be made available shortly**_&#x20;
+_**Note: A list of supported currencies and trading pairs will be made available shortly**_
 
-## **Support**&#x20;
+## **Support**
 
 #### **For End-Users**[**​**](https://www.yellow.org/docs/litepaper/product#decentralized-support)
 

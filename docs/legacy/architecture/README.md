@@ -16,7 +16,7 @@ Brokers running on Yellow Network are non-custodial participants. This approach 
 
 All order book transactions are open for audit and review, instead of being stored inside a single server of a centralized exchange platform without any accountability or transparency.
 
-When a broker opens a trading channel, he agrees on the state of the order book and broadcasts updates to it. When the channel is closed, positions are settled and written on the chain.&#x20;
+When a broker opens a trading channel, he agrees on the state of the order book and broadcasts updates to it. When the channel is closed, positions are settled and written on the chain.
 
 Through our state channel approach, we combine multiple different blockchains without bridging them. The absence of bridging improves architectural security, minimizing asset movement and the risk of human errors and losses.
 

@@ -22,21 +22,21 @@ Yellow Network serves as a clearing and settlement system that facilitates the c
 
 By adopting a decentralized approach and incorporating a smart clearing protocol, Yellow Network revolutionizes the way digital assets are traded and settled. It provides participants with increased autonomy, transparency, and efficiency, aligning with the evolving needs and expectations of the financial ecosystem.
 
-## Scalability&#x20;
+## Scalability
 
-The use of state channels in Yellow Network is a game-changer for scalability. It connects brokers and exchanges, enabling swift, efficient off-chain trading and clearing. This facilitates high-frequency trading without overburdening the blockchain, making it highly scalable for complex trading activities.&#x20;
+The use of state channels in Yellow Network is a game-changer for scalability. It connects brokers and exchanges, enabling swift, efficient off-chain trading and clearing. This facilitates high-frequency trading without overburdening the blockchain, making it highly scalable for complex trading activities.
 
-Moreover, the network amplifies the capabilities of smaller, specialized participants, allowing them to offer more competitive pricing and handle larger trade volumes. This benefit stems from the network's extensive reach and capabilities. Another key feature is the implementation of margin accounts within the clearing network. Participants can utilize margin netting, significantly optimizing capital utilization and allowing for more strategic capital management. This aspect is particularly advantageous in managing multiple transactions, enhancing overall trading efficiency.&#x20;
+Moreover, the network amplifies the capabilities of smaller, specialized participants, allowing them to offer more competitive pricing and handle larger trade volumes. This benefit stems from the network's extensive reach and capabilities. Another key feature is the implementation of margin accounts within the clearing network. Participants can utilize margin netting, significantly optimizing capital utilization and allowing for more strategic capital management. This aspect is particularly advantageous in managing multiple transactions, enhancing overall trading efficiency.
 
 Furthermore, Yellow Network simplifies the settlement process by consolidating numerous trades into a single blockchain transaction, thus streamlining millions of trades into one settlement transaction, which reduces transaction fees and processing time.
 
-Yellow Network participants hold trading accounts that they use [margin netting](../../legacy/architecture-and-design/smart-clearing-protocol.md), allowing for more efficient use of their capital.&#x20;
+Yellow Network participants hold trading accounts that they use [margin netting](../../legacy/architecture-and-design/smart-clearing-protocol.md), allowing for more efficient use of their capital.
 
 ## Liquidity
 
 On the liquidity front, Yellow Network effectively breaks down the traditional silos, enabling seamless liquidity exchange across platforms and chains. This directly addresses market fragmentation, increasing market depth, and ensuring stable trading conditions. The increased depth is essential for a healthy market, offering better price discovery for assets. The network's ability to unify disparate liquidity sources is pivotal in reducing conflicts arising from fragmented markets.
 
-&#x20;Traders gain access to a cohesive and comprehensive liquidity pool, leading to a more efficient trading experience. In essence, Yellow Network's unification of liquidity is instrumental in creating an integrated market where assets are traded more fluidly, and prices reflect a broader market sentiment.
+Traders gain access to a cohesive and comprehensive liquidity pool, leading to a more efficient trading experience. In essence, Yellow Network's unification of liquidity is instrumental in creating an integrated market where assets are traded more fluidly, and prices reflect a broader market sentiment.
 
 ## Decentralization
 
@@ -44,7 +44,7 @@ Yellow Network embraces decentralization through its implementation of a fully d
 
 ## Counterparty Risks
 
-Yellow Network minimizes counterparty risks by allowing trades to be settled across different brokers and exchanges without the need to transfer assets to other chains or platforms. This automated netting process significantly lowers the risk of being excessively exposed to any specific party.&#x20;
+Yellow Network minimizes counterparty risks by allowing trades to be settled across different brokers and exchanges without the need to transfer assets to other chains or platforms. This automated netting process significantly lowers the risk of being excessively exposed to any specific party.
 
 Additionally, Yellow Network operates collateral and safety deposits to efficiently address and settle any settlement disputes that may arise among participants. This ensures a secure and reliable settlement process for all involved parties.
 

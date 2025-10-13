@@ -24,7 +24,7 @@ For more information, visit the [Roadmap](about/roadmap.md).
 
 ## A Solution for Everyone
 
-Cutting-edge state channel technology enables fast trading and reaching assets locked on isolated networks without directly bridging them.&#x20;
+Cutting-edge state channel technology enables fast trading and reaching assets locked on isolated networks without directly bridging them.
 
 ### **For Broker Startups**
 
@@ -54,7 +54,7 @@ Cutting-edge state channel technology enables fast trading and reaching assets l
 * Link between CEX and DEX
 * Access to new markets
 
-## Security&#x20;
+## Security
 
 Security is ensured by dividing responsibilities between custodians, brokers, and exchanges.
 
@@ -66,8 +66,8 @@ Yellow Network also ensures the security of the users' funds by requiring each b
 
 Today, we see hacks occurring everywhere and witness how various bottlenecks and flaws lead to huge token steals. State channel technology proves effective in fighting this dangerous trend. The funds belong to either a state channel or the user's wallet. On both sides, it is impossible to break into the wallet without the secure private key or avoid two-sided confirmation for the final status update on the state channel.
 
-### For End-Users&#x20;
+### For End-Users
 
-Yellow Network is non-custodial. End-users deposit funds to the smart contract through their personal hard/software wallet. This resolves major end-user concerns about the improper storage of funds and the safety of their assets.&#x20;
+Yellow Network is non-custodial. End-users deposit funds to the smart contract through their personal hard/software wallet. This resolves major end-user concerns about the improper storage of funds and the safety of their assets.
 
 The security of the end-users' funds is also ensured by the amount of collateral that brokers have to deposit before opening a trading channel. As soon as any fraud or malicious activity is detected on the state channel, the dispute system will ensure the return of assets to their rightful owners.

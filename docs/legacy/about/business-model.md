@@ -40,10 +40,10 @@ Transaction fees are collected from clearing and trading fees and collected into
 ## Key Stakeholders
 
 * **Existing Customers**\
-  Over 50 exchanges are ready to engage with the beta launch of our native trading NeoDAX v4 trading platform with immediate effect.&#x20;
+  Over 50 exchanges are ready to engage with the beta launch of our native trading NeoDAX v4 trading platform with immediate effect.
 * **Fintech Entrepreneurs**\
   For those interested in opening an exchange, our new solution fits every budget and is radically more simple than a standard centralized exchange. Head to [www.yellow.org](https://www.yellow.org/) for more information.
 * **Financial Institutions**\
-  Become part of our ecosystem, co-invest with us, and sell your services through Yellow Network.&#x20;
+  Become part of our ecosystem, co-invest with us, and sell your services through Yellow Network.
 * **Crypto-Enthusiasts, Miners, and Traders**\
   Quickly deploy our node software on any cloud and start liquidity-mining with your exchange accounts.

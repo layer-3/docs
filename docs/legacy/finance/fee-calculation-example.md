@@ -4,8 +4,8 @@
 
 * Liquidity Fee is charged at the end of each clearing cycle
 * Clearing Fee is charged at the end of each clearing cycle
-* Liquidity Fee as agreed between Brokers is 0.01%&#x20;
-* Price BTC/USDT = 20,000&#x20;
+* Liquidity Fee as agreed between Brokers is 0.01%
+* Price BTC/USDT = 20,000
 * Price $YELLOW/USDT = 10
 * Transaction; Broker A buys 20 BTC vs. USDT from Broker B
 * Agreed Liquidity Fee between Brokers = 0.05%
@@ -19,7 +19,7 @@
 #### Broker B
 
 * Acts as Market Taker and is thus entitled to **receive** the Liquidity Fee
-* 8 open State Channels = 80bps Clearing Fee&#x20;
+* 8 open State Channels = 80bps Clearing Fee
 * Liability Broker B; 10 BTC (will have to settle/send BTC to Broker A)
 
 **Fee Calculation**

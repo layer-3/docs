@@ -2,10 +2,10 @@
 description: 'General Terms & Conditions of Yellow Network. Last revised: Nov 18, 2022'
 ---
 
-# 📝 General T\&C
+# 📝 General T&C
 
 :::info
-Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change. &#x20;
+Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
 For more information, visit the [Roadmap](../about/roadmap.md)
 
@@ -97,13 +97,13 @@ In these Terms and all documents incorporated herein by reference, the following
 
 3.1 **Right to Use the Website and the Services**. If you (a) have a Digital Assets Wallet, (b) are not a Prohibited Person, (c) do not operate your Digital Assets Wallet for the benefit of a Prohibited Person and (d) comply with these Terms, Layer3 Fintech Ltd. grants you the limited right to use the Services. The right to use the Services is a personal, restricted, non-exclusive, non-transferable, non-sublicensable, revocable, limited license, and it is subject to the limitations and obligations in these Terms of Service. Nothing in these Terms of Service gives you any license (other than as set out in this paragraph), right, title, or ownership of, in, or to the Website, any of the Services, the Copyrights or the Marks. Layer3 Fintech Ltd. may suspend or terminate the provision of Services to you, your Digital Assets, Digital Assets Wallet, or to any of your Digital Assets Address, or to freeze or terminate your Digital Assets Wallet, at its sole discretion, as required by applicable Laws or where Layer3 Fintech Ltd. determines that you have violated, breached, or acted inconsistently with any of these Terms of Service.
 
-3.2 **Prohibited Use of the Website and the Services**. You are strictly prohibited to&#x20;
+3.2 **Prohibited Use of the Website and the Services**. You are strictly prohibited to
 
-a) use the Website or any of the Services if you are a Prohibited Person.&#x20;
+a) use the Website or any of the Services if you are a Prohibited Person.
 
-b) operate Digital Assets Wallet for and make orders or transactions in a Digital Assets Wallet for the financial or other benefits of a Prohibited Person.&#x20;
+b) operate Digital Assets Wallet for and make orders or transactions in a Digital Assets Wallet for the financial or other benefits of a Prohibited Person.
 
-c) use the Website or any of the Services in order to disguise the origin or nature of illicit proceeds of, or to further, any breach of applicable Laws, or to transact or deal in, any contraband Digital Assets, Fiat Currencies, funds, property, or proceeds.&#x20;
+c) use the Website or any of the Services in order to disguise the origin or nature of illicit proceeds of, or to further, any breach of applicable Laws, or to transact or deal in, any contraband Digital Assets, Fiat Currencies, funds, property, or proceeds.
 
 d) use the Website or any of the Services if any applicable Laws, including, but not limited to, AML Laws, CTF Laws, Anti-Corruption Laws and Economic Sanctions Laws, prohibit, penalize, sanction, or expose the Operator to liability for any Services furnished or offered to you or your Digital Assets Wallet(s) or Digital Assets Address(es) under these Terms of Service.
 
@@ -111,13 +111,13 @@ e) use the Website or any of the Services, or any financial services of a U.S. F
 
 f) use the Website or any of the Services to evade taxes under the Laws of the British Virgin Islands or any other jurisdiction(s) applicable to you or the Website.
 
-g) trade on the Website or use any Services, with anything other than Fiat Currencies, keys, property, or Digital Assets that have been legally obtained by you and that belong to you.&#x20;
+g) trade on the Website or use any Services, with anything other than Fiat Currencies, keys, property, or Digital Assets that have been legally obtained by you and that belong to you.
 
-h) use the Website or any Services to interfere with or subvert the rights or obligations of the Operator or the rights or obligations of any other Website user or any other Person.&#x20;
+h) use the Website or any Services to interfere with or subvert the rights or obligations of the Operator or the rights or obligations of any other Website user or any other Person.
 
 i) post, submit, publish, display, or transmit any User Submission that violates the Terms of Service or the rights of any Person, including, but not limited to, the intellectual property rights of any Person.
 
-j) trade using misleading or inaccurate information presented to the Website or to the Operator or take advantage of any technical glitch, malfunction, failure, delay, default, or security breach.&#x20;
+j) trade using misleading or inaccurate information presented to the Website or to the Operator or take advantage of any technical glitch, malfunction, failure, delay, default, or security breach.
 
 k) use the Website or any Services to engage in conduct that is detrimental to the Operator or to any other Website user or any other Person.
 
@@ -125,9 +125,9 @@ l) use the Website or any Services to: (i) engage or attempt to engage in wash t
 
 m) falsify any Digital Assets Wallet, Digital Assets Address, Website registration, exchange, or administration details provided to the Operator or any of its Associates, impersonate another person or misrepresent your affiliation with a person.
 
-n)  post, submit, publish, display, or transmit any User Submission that is likely to deceive any Person.&#x20;
+n)  post, submit, publish, display, or transmit any User Submission that is likely to deceive any Person.
 
-o) falsify or materially omit any information or provide misleading or inaccurate information requested by the Operator or any of its Associates, including, but not limited to, at Website registration or during the course of administering any Services to you.&#x20;
+o) falsify or materially omit any information or provide misleading or inaccurate information requested by the Operator or any of its Associates, including, but not limited to, at Website registration or during the course of administering any Services to you.
 
 p) cause injury to, or attempt to harm, the Operator, any of its Associates or any person through your access to the Website or any Services, including, but not limited to, posting, submitting, publishing, displaying, or transmitting any User Submission that is defamatory, obscene, indecent, abusive, offensive, harassing, violent, hateful, inflammatory, or otherwise objectionable.
 
@@ -135,15 +135,15 @@ q) promote discrimination based on race, religion, nationality, disability, sexu
 
 r) give the impression that a User Submission emanates from or is endorsed by the Operator or its Associates or any other Person if that is not the case.
 
-s) have more than one registered identity on the Website, or use any Digital Assets Wallet on a one-time, "throwaway" basis; any such additional Digital Assets Wallets or one-time "throwaway" Digital Assets Wallet may be frozen, terminated or suspended at the absolute discretion of the Operator.&#x20;
+s) have more than one registered identity on the Website, or use any Digital Assets Wallet on a one-time, "throwaway" basis; any such additional Digital Assets Wallets or one-time "throwaway" Digital Assets Wallet may be frozen, terminated or suspended at the absolute discretion of the Operator.
 
 t) where you are subject to prohibitions or restrictions as set forth in these Terms, access the Website or use any Services utilizing any virtual private network, proxy service, or any other third-party service, network, or product with the effect of disguising your IP address or location, or access the Website or use any Services using a Digital Assets Address in or subject to the jurisdiction of any Prohibited Jurisdiction or Government or Government Official thereof.
 
-u) post, submit, publish, display, or transmit any advertising or promotional material without the prior written consent of the Operator or its Affiliate.&#x20;
+u) post, submit, publish, display, or transmit any advertising or promotional material without the prior written consent of the Operator or its Affiliate.
 
-v) utilize a Digital Assets Wallet, any Services or the Website for the financial or other benefits of a Prohibited Person; or&#x20;
+v) utilize a Digital Assets Wallet, any Services or the Website for the financial or other benefits of a Prohibited Person; or
 
-w) violate, promote, cause a violation of, or conspire or attempt to violate these Terms of Service or applicable Laws.&#x20;
+w) violate, promote, cause a violation of, or conspire or attempt to violate these Terms of Service or applicable Laws.
 
 Any use as described in this paragraph shall constitute a “**Prohibited Use**”. If Layer3 Fintech Ltd. determines or suspects that you have engaged in any Prohibited Use, Layer3 Fintech Ltd. may address such Prohibited Use through an appropriate sanction, in its sole and absolute discretion. Such sanction may include, but is not limited to, removing or declining to post any User Submissions you provide, making a report to any Government, law enforcement, or other authorities, without providing any notice of you about any such report; confiscation of any Fiat Currencies, property, proceeds, or Digital Assets in any Digital Assets Wallet that you have on the Website; and, suspending or terminating your access to any Services or Fiat Currencies, property, or Digital Assets from any Digital Assets Address or Digital Assets Wallet. The Operator may, at its sole and absolute discretion, seize and deliver your property to any applicable Government, law enforcement, or other authorities where circumstances warrant. In addition, should your actions or inaction result in Loss being suffered by the Operator or any of its Associates, you shall pay an amount to the Operator or the Associate so as to render the Operator or the Associate whole, including, but not limited to, the amount of taxes or penalties that might be imposed on the Operator or the Associate.
 
@@ -158,57 +158,57 @@ Any use as described in this paragraph shall constitute a “**Prohibited Use**�
 **4. Your Eligibility to Use the Website and the Services**
 
 4.1 **Your Representations and Warranties** \
-You represent and warrant to the Operator on the date of your acceptance or deemed acceptance of these Terms and each day on which you access the Website and/or utilize the Services, in each case with reference to the facts and circumstances existing at such date, as follows:&#x20;
+You represent and warrant to the Operator on the date of your acceptance or deemed acceptance of these Terms and each day on which you access the Website and/or utilize the Services, in each case with reference to the facts and circumstances existing at such date, as follows:
 
 a) that, if you are an individual user, you are 21 years of age or older and that you have the capacity to contract under applicable Laws.
 
-b) that, if you are registering to use or using the Website on behalf of a legal entity, (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization; and (ii) you are duly authorized by such legal entity to act on its behalf.&#x20;
+b) that, if you are registering to use or using the Website on behalf of a legal entity, (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization; and (ii) you are duly authorized by such legal entity to act on its behalf.
 
 c) that you understand the risks associated with using the Website, that you are not prohibited or restricted from using the Website by these Terms, that you are not otherwise prohibited by applicable Laws from using the Website and that you have had the opportunity to seek legal, accounting, taxation and other professional advice regarding these Terms of Service and the Services;
 
-d) that you will not use the Website or any Services in order to conceal or disguise the origin or nature of proceeds of crime or terrorist financing, or to further, any breach of applicable AML Laws or CTF Laws, or to deal in any unlawful Digital Assets, Fiat Currencies, property, funds, or proceeds;&#x20;
+d) that you will not use the Website or any Services in order to conceal or disguise the origin or nature of proceeds of crime or terrorist financing, or to further, any breach of applicable AML Laws or CTF Laws, or to deal in any unlawful Digital Assets, Fiat Currencies, property, funds, or proceeds;
 
-e) that you will not trade or otherwise transact on the Website or use any Services with anything other than Fiat Currencies, or Digital Assets that have been legally obtained by you and that belong to you;&#x20;
+e) that you will not trade or otherwise transact on the Website or use any Services with anything other than Fiat Currencies, or Digital Assets that have been legally obtained by you and that belong to you;
 
-f) that you are currently in compliance with, and must, at your own cost and expense, comply with all Laws that relate to or affect the Services conducted under these Terms of Service;&#x20;
+f) that you are currently in compliance with, and must, at your own cost and expense, comply with all Laws that relate to or affect the Services conducted under these Terms of Service;
 
-g) that you consent to any and all tax and information reporting under AML Laws, CTF Laws, Anti-Corruption Laws, Economic Sanctions Laws, Tax Information Exchange Laws or other tax Laws as the Operator may reasonably determine;&#x20;
+g) that you consent to any and all tax and information reporting under AML Laws, CTF Laws, Anti-Corruption Laws, Economic Sanctions Laws, Tax Information Exchange Laws or other tax Laws as the Operator may reasonably determine;
 
-h) that neither you nor any of your Affiliates shall use any Digital Assets, Fiat Currencies, property, proceeds or funds subject to the Services of the Website directly or indirectly (i) on behalf of or for the benefit of a Prohibited Person or any Person subject to the jurisdiction of a Prohibited Jurisdiction, except where authorized under any Government Approval or not restricted by applicable Laws; (ii) in violation of or as prohibited, restricted, or penalized under applicable Economic Sanctions Laws; or (iii) in any way that would violate, be inconsistent with, penalized under, or cause the omission of filing of any report required under applicable AML Laws, CTF Laws, or Economic Sanctions Laws;&#x20;
+h) that neither you nor any of your Affiliates shall use any Digital Assets, Fiat Currencies, property, proceeds or funds subject to the Services of the Website directly or indirectly (i) on behalf of or for the benefit of a Prohibited Person or any Person subject to the jurisdiction of a Prohibited Jurisdiction, except where authorized under any Government Approval or not restricted by applicable Laws; (ii) in violation of or as prohibited, restricted, or penalized under applicable Economic Sanctions Laws; or (iii) in any way that would violate, be inconsistent with, penalized under, or cause the omission of filing of any report required under applicable AML Laws, CTF Laws, or Economic Sanctions Laws;
 
-i) that you have not (i) violated; (ii) been fined, debarred, sanctioned, the subject of Economic Sanctions-related restrictions, or otherwise penalized under; (iii) received any oral or written notice from any Government concerning actual or possible violation by you under; or (iv) received any other report that you are the subject or target of sanctions, restrictions, penalties, or enforcement action or investigation under, any applicable Laws, including, but not limited to, AML Laws, CTF Laws, Anti-Corruption Laws, or Economic Sanctions Laws;&#x20;
+i) that you have not (i) violated; (ii) been fined, debarred, sanctioned, the subject of Economic Sanctions-related restrictions, or otherwise penalized under; (iii) received any oral or written notice from any Government concerning actual or possible violation by you under; or (iv) received any other report that you are the subject or target of sanctions, restrictions, penalties, or enforcement action or investigation under, any applicable Laws, including, but not limited to, AML Laws, CTF Laws, Anti-Corruption Laws, or Economic Sanctions Laws;
 
-j) that neither you nor any of your Affiliates are (i) itself or owned (beneficially or of record) or controlled by a Sanctioned Person; (ii) involved in any transaction, transfer, or conduct, whether or not by using or receiving the Services from any Digital Assets Wallet or Digital Assets Address, that is likely to result in you or your Associates becoming a Sanctioned Person; (iii) residing or domiciled in, or transferring Digital Assets, Fiat Currencies, funds, or property to, from, or through any Digital Assets Wallet, or Digital Assets Address, or engaging in any transaction on the Website from a Prohibited Jurisdiction; or (iv) a Government or Government Official of a Prohibited Jurisdiction;&#x20;
+j) that neither you nor any of your Affiliates are (i) itself or owned (beneficially or of record) or controlled by a Sanctioned Person; (ii) involved in any transaction, transfer, or conduct, whether or not by using or receiving the Services from any Digital Assets Wallet or Digital Assets Address, that is likely to result in you or your Associates becoming a Sanctioned Person; (iii) residing or domiciled in, or transferring Digital Assets, Fiat Currencies, funds, or property to, from, or through any Digital Assets Wallet, or Digital Assets Address, or engaging in any transaction on the Website from a Prohibited Jurisdiction; or (iv) a Government or Government Official of a Prohibited Jurisdiction;
 
 k) that neither you nor any of your Associates have directly or indirectly offered, promised, given, or authorized any payment, or offered, promised, given, or authorized the giving of anything else of value, including, but not limited to, any Digital Assets or Fiat Currencies, to a Government Official or individual employed by another entity in the private sector in violation of any applicable Anti-Corruption Laws;
 
-l) that you will not falsify any Digital Assets Wallet or registration or administration details provided to the Operator;&#x20;
+l) that you will not falsify any Digital Assets Wallet or registration or administration details provided to the Operator;
 
-m) that you will not falsify or materially omit any information or provide misleading or inaccurate information requested by the Operator in the course of, directly or indirectly relating to, or arising from your activities on the Website or use of any Services, including, but not limited to, at registration or during administration or other due diligence processes, and that if any information provided to the Operator becomes incorrect or outdated, including, but not limited to, information relating to your beneficial ownership, you will promptly provide corrected information to the Operator;&#x20;
+m) that you will not falsify or materially omit any information or provide misleading or inaccurate information requested by the Operator in the course of, directly or indirectly relating to, or arising from your activities on the Website or use of any Services, including, but not limited to, at registration or during administration or other due diligence processes, and that if any information provided to the Operator becomes incorrect or outdated, including, but not limited to, information relating to your beneficial ownership, you will promptly provide corrected information to the Operator;
 
-n) that you shall employ reasonable anti-virus, anti-malware and other software and techniques to protect you and your Digital Assets Wallet from being the victim of a hack or of other malicious actions, so as to protect the integrity of your Digital Assets Wallet and to keep such Digital Assets Wallet and the access to the Website out of the reach of other Persons;&#x20;
+n) that you shall employ reasonable anti-virus, anti-malware and other software and techniques to protect you and your Digital Assets Wallet from being the victim of a hack or of other malicious actions, so as to protect the integrity of your Digital Assets Wallet and to keep such Digital Assets Wallet and the access to the Website out of the reach of other Persons;
 
-o) that you acknowledge and agree that Fiat Currencies, Digital Assets or other property reflected in your Digital Assets Wallet are not segregated assets held in your name or for your benefit but reflected only in the books and records of the Operator;&#x20;
+o) that you acknowledge and agree that Fiat Currencies, Digital Assets or other property reflected in your Digital Assets Wallet are not segregated assets held in your name or for your benefit but reflected only in the books and records of the Operator;
 
 p) that you acknowledge and agree that any trading or other instructions received or undertaken through your login credentials or from your authorized email address on file with the Operator are deemed to be valid, binding, and conclusive, and that the Operator may act upon those instructions without any liability or responsibility attaching to it;
 
-q) that you will fairly and promptly report all income associated with your activity on the Website pursuant to applicable Laws and pay any and all taxes thereon;&#x20;
+q) that you will fairly and promptly report all income associated with your activity on the Website pursuant to applicable Laws and pay any and all taxes thereon;
 
 r) that you will accurately and promptly inform the Operator if you know or have reason to know whether any of the foregoing representations or warranties no longer is correct or becomes incorrect.
 
 4.2 **Due Diligence, Anti-Money Laundering and Counter-Terrorist Financing**. The Operator is committed to providing safe, compliant, and reputable services to identify, detect, prevent, and report on money laundering, terrorist financing, and other improper activities under applicable AML Laws, CTF Laws, Anti-Corruption Laws, and Economic Sanctions Laws. Accordingly, the Operator insists on a comprehensive and thorough user due diligence process implementation and ongoing analysis and reporting. By agreeing to these Terms, you shall affirmatively certify that (i) you are not a Prohibited Person and (ii) are not utilizing a Digital Assets Wallet for the benefit of a Prohibited Person, and (iii) must provide promptly all information requested and necessary to satisfy due diligence requirements and obligations pursuant to applicable Laws and the compliance policies or procedures of the Operator or any of its Associates. The Operator reserves the right to bar transactions from or to, to undertake enhanced due diligence, or to freeze, suspend or terminate the administration of Services, or the creation or administration of any Digital Assets Wallet for or with, any user for any reason (or for no reason) at any time, subject to any limitations imposed by applicable Laws. Without limiting the generality of the foregoing, this includes, but is not limited to, any transfer, transaction, business, or dealing with
 
-a) a Sanctioned Person;&#x20;
+a) a Sanctioned Person;
 
 b) a Prohibited Jurisdiction or a citizen or resident of, Government or Government Official of, or Person in or subject to the jurisdiction of, any Prohibited Jurisdiction;
 
-c) a Person from or in any jurisdiction that does not meet international AML–CTF standards;&#x20;
+c) a Person from or in any jurisdiction that does not meet international AML–CTF standards;
 
-d) a Person that is a Government Official or Politically Exposed Person;&#x20;
+d) a Person that is a Government Official or Politically Exposed Person;
 
-e) a Person that presents a risk of any exposure to penalties, sanctions, or other liabilities under AML Laws, CTF Laws, Anti-Corruption Laws, Economic Sanctions Laws, or tax Laws that may apply;&#x20;
+e) a Person that presents a risk of any exposure to penalties, sanctions, or other liabilities under AML Laws, CTF Laws, Anti-Corruption Laws, Economic Sanctions Laws, or tax Laws that may apply;
 
-f) a U.S. Person;&#x20;
+f) a U.S. Person;
 
 g) a Person that the Operator determines is acting in the United States or territory or insular possession of the United States (whether or not by, to, through, or from a U.S. Financial Institution) in violation of, causing any other Person, including, but not limited to, any of the Associates, to violate, attempting or conspiring to violate, or evading or circumventing these Terms of Service or applicable Laws; and
 
@@ -218,23 +218,23 @@ h) a Person that fails to meet any user due-diligence standards, requests, or re
 
 **5.1 Risks and Limitation of Liability**. Trading in Digital Assets is volatile and markets shift quickly in terms of price, liquidity, market depth, and trading dynamics. The information presented on or through the Website is made available solely for general information purposes and the Operator does not warrant the accuracy, completeness, or usefulness of this information. You are solely responsible and liable: for any and all trading and non-trading activity on the Website and for your Digital Assets Wallet on the Website, even if presented incorrectly by the Website at any time. In the event of any conflict between the information reflected in your Digital Assets Wallet or elsewhere on the Website and information on the books and records of the Operator, the books and records of the Operator shall control, even if this results in Losses to you or increases your Losses. You acknowledge and agree: to be fully responsible and liable for your trading and non-trading actions and inactions on the Website and all gains and Losses sustained from your use of the Website and any of the Services; to be responsible for any negative balance in your Digital Assets Wallet on the Website and to be fully responsible for safeguarding access to, and any information provided through, the Website and any of the Services, including, but not limited to, Digital Assets Wallet, Digital Assets Address, private keys, usernames, passwords, and bank account details. You have no right whatsoever to claim damages, specific performance, or compensation in any form from the Operator as a result of actions it takes in its administration of the Digital Token market. There is no guarantee against Losses on the Website.
 
-**5.2 Limitation of Liability and Release**. The Operator assumes no liability or responsibility for and shall have no liability or responsibility for any Losses directly or indirectly arising out of or related to:&#x20;
+**5.2 Limitation of Liability and Release**. The Operator assumes no liability or responsibility for and shall have no liability or responsibility for any Losses directly or indirectly arising out of or related to:
 
-a) these Terms of Service;&#x20;
+a) these Terms of Service;
 
-b) the Website, and your use of it;&#x20;
+b) the Website, and your use of it;
 
-c) the Services, and your use of any of them;&#x20;
+c) the Services, and your use of any of them;
 
-d) any information or materials available through the Website, whether originating from the Operator, its Associates or any other Person;&#x20;
+d) any information or materials available through the Website, whether originating from the Operator, its Associates or any other Person;
 
-e) the real or perceived value of any currencies or Digital Assets traded or utilized on the Website, or the price of any Digital Token displayed on the Website at any time;&#x20;
+e) the real or perceived value of any currencies or Digital Assets traded or utilized on the Website, or the price of any Digital Token displayed on the Website at any time;
 
-f) any inaccurate, misleading, or incomplete statement by the Operator or on the Website regarding your Digital Assets Wallet, whether caused by the Operator’s negligence or otherwise;&#x20;
+f) any inaccurate, misleading, or incomplete statement by the Operator or on the Website regarding your Digital Assets Wallet, whether caused by the Operator’s negligence or otherwise;
 
 g) any failure, delay, malfunction, interruption, or decision (including, but not limited to, any decision by the Operator to vary or interfere with your rights) by the Operator in operating the Website or providing any Service;
 
-h) any stolen, lost, or unauthorized use of your Digital Assets Wallet information, any breach of security or data breach related to your Digital Assets Wallet information, or any criminal or other third-party act affecting the Operator or any Associate; or,&#x20;
+h) any stolen, lost, or unauthorized use of your Digital Assets Wallet information, any breach of security or data breach related to your Digital Assets Wallet information, or any criminal or other third-party act affecting the Operator or any Associate; or,
 
 i) any offer, representation, suggestion, statement, or claim made about the Operator, the Website, or any Service by any Associate.
 

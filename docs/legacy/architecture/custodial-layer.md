@@ -11,7 +11,7 @@ The Yellow Network Smart Clearing Protocol does not custody assets of participat
 1. [Network access collateral.](smart-clearing-protocol.md#network-access-collateral) Stacked Yellow Tokens which brokers lock with the Yellow Network protocol in order to gain access to state channels.
 2. [Trading collateral.](smart-clearing-protocol.md#trading-collateral) Assets locked in the smart contracts between participating brokers to secure trading.
 
-Yellow Network will have access to the Network Access Collateral and Trading Collateral for risk management purposes in the case of a dispute between brokers.&#x20;
+Yellow Network will have access to the Network Access Collateral and Trading Collateral for risk management purposes in the case of a dispute between brokers.
 
 ### Flexible Architecture
 
@@ -24,7 +24,7 @@ At this stage we plan to integrate the following third-party custody solutions:
 * [Cobo](https://cobo.com/)
 * [Fireblocks](https://www.fireblocks.com/)
 
-Technically, any custodial solution can be supported by Yellow Network, and we plan to expand our offer continuously. [Contact](#) our sales and development team for specific requests.&#x20;
+Technically, any custodial solution can be supported by Yellow Network, and we plan to expand our offer continuously. [Contact](#) our sales and development team for specific requests.
 
 ### Multi-Chain
 

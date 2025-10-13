@@ -4,11 +4,11 @@ description: Yellow Network seeks to revolutionize P2P brokerage for crypto asse
 
 # 📌 Summary
 
-As blockchain technology evolves, so does the complexity and the variety of solutions.&#x20;
+As blockchain technology evolves, so does the complexity and the variety of solutions.
 
-At Yellow Network we are committed to making cryptocurrency trading lean, efficient, and secure.&#x20;
+At Yellow Network we are committed to making cryptocurrency trading lean, efficient, and secure.
 
-A large amount of blockchains, tokens, and platforms has led to a silo approach that confronts users with inefficiencies and security issues, hindering scalability and mass adoption.&#x20;
+A large amount of blockchains, tokens, and platforms has led to a silo approach that confronts users with inefficiencies and security issues, hindering scalability and mass adoption.
 
 Yellow Network aims to address this issue with a P2P network that uses state channels to connect brokers across blockchains, allowing it to reach tokens locked in isolated networks without cross-chain bridging.
 
