@@ -88,12 +88,14 @@ To mitigate these risks, the project has taken several measures. The core smart 
 *   **Business Activity:** Layer3 FinTech Ltd. is a technology development company focused on building and maintaining the software components of the Yellow Network. It acts as a key contributor to the open-source ecosystem governed by the Layer-3 Foundation and serves as the offeror of the $YELLOW token in the European Union.
 
 ### Members of the Management Body
-*   **Alexis Yellow, Executive Chairman & Founder:** A veteran of the European Space Center and co-founder of the crypto market maker GSR, bringing deep expertise in both technology and financial markets.
-*   **Louis Bellet, CEO, Architect & Co-Founder:** A software architect and serial entrepreneur in the fintech and crypto spaces, founder of Openware, a leading provider of crypto exchange software. For the past ten years, Louis has been hands-on in the crypto industry building infrastructure for digital asset trading.
-*   **Camille Meulien, CTO:** A software architect with over 20 years of experience in FinTech security, distributed systems, and high-traffic systems.
-*   **Sergii Kashchenko, COO:** Ex-R&D Director of Bitfury with a 16-year track record of engineering leadership in software companies. Holds an Executive MBA degree from London Business School.
+*   **Alexis Yellow, Executive Chairman:** A veteran of the European Space Center and co-founder of the crypto market maker GSR, bringing deep expertise in both technology and financial markets.
+*   **Louis Bellet, Co-Founder and Chief Architect:** A software architect and serial entrepreneur in the fintech and crypto spaces, founder of Openware, a leading provider of crypto exchange software. For the past ten years, Louis has been hands-on in the crypto industry building infrastructure for digital asset trading.
+*   **Camille Meulien, CTO, Architect:** A software architect with over 20 years of experience in FinTech security, distributed systems, Big Data, and high-traffic systems.
+*   **Hongtao J, CTO, Ecosystem:** Former Head of Exchange Tech at BybitX and m2.com, expert in scaling, secure, real-time financial infrastructure.
+*   **Alessio Treglia, CTO, Protocol:** Ex CTO at Tendermint, the company that created the core infrastructure that powers the Cosmos ecosystem, including Tendermint Core and the Cosmos SDK.
 *   **Bakhtiyar Mamedov, CFO:** A financial expert with over 18 years of experience at PwC, specializing in banking, treasury management, and financial process implementation for the blockchain industry.
-*   **Anastasiia Bobeshko, Head of Business Development & Marketing:** A marketing professional with almost 10 years of experience in building global brands, holding a Master's degree in engineering.
+*   **Shyla Khan, CMO:** Veteran Web3 marketer who has shaped global strategy and storytelling for Polkadot, Kusama and DappRadar, bringing clarity to complex tech across markets.
+*   **Neil Meintjes, COO:** Web3 professional with over 25 years in the ITC space, launched over 50 Gaming and DeFi projects.
 
 ---
 
