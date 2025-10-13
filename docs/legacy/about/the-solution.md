@@ -33,7 +33,7 @@ Moreover, the network amplifies the capabilities of smaller, specialized partici
 
 Furthermore, Yellow Network simplifies the settlement process by consolidating numerous trades into a single blockchain transaction, thus streamlining millions of trades into one settlement transaction, which reduces transaction fees and processing time.
 
-Yellow Network participants hold trading accounts that they use [margin netting](../../legacy/architecture-and-design/smart-clearing-protocol.md), allowing for more efficient use of their capital.
+Yellow Network participants hold trading accounts that they use [margin netting](../architecture/smart-clearing-protocol.md), allowing for more efficient use of their capital.
 
 ## Liquidity
 

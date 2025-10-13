@@ -31,8 +31,8 @@ Network participants must meet the lock requirements set by their counterparts, 
 
 Tokens collected from the penalty are collected into the **Yellow Reserve Vault**.
 
-Learn more about [$YELLOW as Collateral](../architecture-and-design/risk-management.md#network-access-collateral)\
-Learn more about [Trading Channels](../architecture-and-design/smart-clearing-protocol.md#state-channels)
+Learn more about [$YELLOW as Collateral](../../architecture/risk-management.md#network-access-collateral)\
+Learn more about [Trading Channels](../../architecture/smart-clearing-protocol.md#state-channels)
 
 ### ➤ Clearing fees
 
@@ -40,13 +40,13 @@ When two participants execute a batch settlement, both sides pay a clearing fee 
 
 This Clearing fee is also an incentive to optimize the size of batching. Clearing fees are collected and locked into the Yellow Community Vault.
 
-Learn more about the [Clearing Fee](../fees/clearing-fee.md)
+Learn more about the [Clearing Fee](../../finance/fee-structure/layer-2-clearing-fee.md)
 
 ### ➤ Yellow Community Vault
 
 The Yellow Reserve Vault or (Yellow Community Vault) is our concept of a treasury to secure Yellow Network. As the network is growing so will the Reserve Vault, providing security and comfort to all participants.
 
-Learn more about the [Reserve Vault](../yellow-reserve-vault.md)
+Learn more about the [Reserve Vault](../../finance/yellow-reserve-vault.md)
 
 ## Token Distribution
 

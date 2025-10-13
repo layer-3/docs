@@ -7,7 +7,7 @@ description: 'Last revised: Nov 19, 2022'
 :::info
 Yellow Network is a project in development. Not all solutions presented in the following (sub)sections are implemented at this stage. The current, and all subsequent sub-pages, are subject to change.
 
-For more information, visit the [Roadmap](../about/roadmap.md)
+For more information, visit the [Roadmap](../../about/roadmap.md)
 :::
 
 Thank you for visiting [https://www.yellow.org/](https://www.yellow.org/) (**"Website"**)

@@ -167,7 +167,7 @@ description: >-
 
 #### Adjudicator
 
-Our state channel smart contract is called the [Adjudicator](../../../legacy/architecture-and-design/smart-clearing-protocol.md#adjudicator-smart-contract). Its role is to hold the [collateral](../../../legacy/architecture-and-design/risk-management.md#collateral) of each participant while the channel is open. In case of a [settlement](glossary.md#settlement)issue, the Adjudicator is also able to manage collateral to overcome the dispute.
+Our state channel smart contract is called the [Adjudicator](../architecture/smart-clearing-protocol.md#adjudicator-smart-contract). Its role is to hold the [collateral](../architecture/risk-management.md#collateral) of each participant while the channel is open. In case of a [settlement](glossary.md#settlement)issue, the Adjudicator is also able to manage collateral to overcome the dispute.
 
 #### Atomic Swap
 
@@ -211,7 +211,7 @@ Centralized cryptocurrency exchanges act as an intermediary between a buyer and 
 
 Clearing is the correct and timely transfer of funds to the seller and securities to the buyer.
 
-[Smart Clearing](../../../legacy/architecture-and-design/smart-clearing-protocol.md) is a term we derived from traditional finance. The "smart" component indicates that instead of a trusted intermediary, the clearing process is conducted by a fully automated digital protocol.
+[Smart Clearing](../architecture/smart-clearing-protocol.md) is a term we derived from traditional finance. The "smart" component indicates that instead of a trusted intermediary, the clearing process is conducted by a fully automated digital protocol.
 
 #### Collateral
 
@@ -224,7 +224,7 @@ We define two types of collateral that have to be provided:
 
 #### Custodians
 
-[Custodians](../../../legacy/architecture-and-design/custodial-layer.md) are in charge of holding customers' funds securely. They can be an external provider or a smart contract. Custodians use a set of rules to release funds, whereby each party can provide a different set of features to increase security and to make sure the user requesting a withdrawal is the real initiator of the request and free of fraud. Additionally, they allow the broker to easily connect to multiple blockchains, depending on their current supported blockchains.
+[Custodians](../architecture/custodial-layer.md) are in charge of holding customers' funds securely. They can be an external provider or a smart contract. Custodians use a set of rules to release funds, whereby each party can provide a different set of features to increase security and to make sure the user requesting a withdrawal is the real initiator of the request and free of fraud. Additionally, they allow the broker to easily connect to multiple blockchains, depending on their current supported blockchains.
 
 ## D
 
@@ -248,11 +248,11 @@ Exchanges are big players in the network; they usually target a global audience 
 
 #### Fees
 
-Yellow Network will charge fees and reward participants based on their activity. However, fees are not charged for profit; all collected fees are either redistributed to network participants or used to fund the [Reserve Vault](../../../legacy/yellow-reserve-vault.md).
+Yellow Network will charge fees and reward participants based on their activity. However, fees are not charged for profit; all collected fees are either redistributed to network participants or used to fund the [Reserve Vault](../finance/yellow-reserve-vault.md).
 
 The first layer [(Layer 1)](#) is a **Liquidity Fee**
 
-The second layer [(Layer 2)](../../../legacy/fees/clearing-fee.md) is a **Clearing Fee**
+The second layer [(Layer 2)](../finance/fee-structure/layer-2-clearing-fee.md) is a **Clearing Fee**
 
 ## G
 
@@ -262,7 +262,7 @@ The second layer [(Layer 2)](../../../legacy/fees/clearing-fee.md) is a **Cleari
 
 The term [Hashed Time Lock Contract (HTLC)](https://academy.binance.com/en/glossary/hashed-timelock-contract) refers to a special feature used to create [smart contracts](https://academy.binance.com/en/glossary/smart-contract) that are able to modify payment channels. Technically, the HTLC feature enables the implementation of time-bound transactions between two users. In practice, the recipient of a HTLC transaction has to acknowledge the payment by submitting a cryptographic proof within a specified timeframe (number of blocks). If the recipient forfeits or fails to claim the payment, the funds will be returned to the original sender.
 
-At Yellow Network we use [HTLC](../../../legacy/architecture-and-design/#how-p2p-trading-works)to settle trades off-chain.
+At Yellow Network we use [HTLC](../architecture/README.md#how-p2p-trading-works)to settle trades off-chain.
 
 #### High Frequency Trading (HFT)
 
@@ -276,7 +276,7 @@ High-frequency trading, also known as HFT, is a method of trading that uses powe
 
 #### Know Your Customer (KYC)
 
-Know Your Customer (KYC) is a standard in the investment industry that ensures [advisors](https://www.investopedia.com/terms/f/financial-advisor.asp) can verify a client's identity and know their client's investment knowledge and financial profile. For participants in Yellow Network, the end-user[KYC](../../../legacy/architecture-and-design/supported-technologies.md#kyc-know-your-customer) is the responsibility of each broker. Yellow Network will allow brokers to integrate their own third-party KYC provider.
+Know Your Customer (KYC) is a standard in the investment industry that ensures [advisors](https://www.investopedia.com/terms/f/financial-advisor.asp) can verify a client's identity and know their client's investment knowledge and financial profile. For participants in Yellow Network, the end-user[KYC](../architecture/supported-technologies.md#kyc-know-your-customer) is the responsibility of each broker. Yellow Network will allow brokers to integrate their own third-party KYC provider.
 
 ## L
 
@@ -338,7 +338,7 @@ When a user's order matches an order from a peer-broker, the platform will use t
 
 #### Reserve Vault
 
-The [Yellow Reserve Vault](../../../legacy/yellow-reserve-vault.md) is our treasury entity and is tasked with two main responsibilities:
+The [Yellow Reserve Vault](../finance/yellow-reserve-vault.md) is our treasury entity and is tasked with two main responsibilities:
 
 1. To provide stability for the [$YELLOW](glossary.md#usdyellow) token
 2. To build a diversified currency reserve to resolve settlement disputes between brokers.
@@ -363,7 +363,7 @@ If a broker's position has insufficient collateral he will be prevented from fur
 
 #### Tokenomics
 
-Tokenomics is a term that captures a token’s economics. It describes the factors that impact a token’s use and value, including but not limited to the token’s creation and distribution, supply and demand, incentive mechanisms, and token burn schedules. You can find the Yellow Network Tokenomics [here](../../../legacy/usdyellow/tokenomics.md).
+Tokenomics is a term that captures a token's economics. It describes the factors that impact a token's use and value, including but not limited to the token's creation and distribution, supply and demand, incentive mechanisms, and token burn schedules. You can find the Yellow Network Tokenomics [here](../resources/tokenomics.md).
 
 #### Tiers
 
@@ -389,6 +389,6 @@ A whitepaper is an informational document issued by a company or [not-for-profit
 
 #### $YELLOW
 
-[$YELLOW](../../../legacy/usdyellow/) is our ERC-20 token. The use of Yellow Network requires participants to hold $YELLOW.
+[$YELLOW](../resources/tokenomics.md) is our ERC-20 token. The use of Yellow Network requires participants to hold $YELLOW.
 
 ## Z

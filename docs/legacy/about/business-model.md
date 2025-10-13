@@ -32,7 +32,7 @@ Our solutions suggest significant cost reduction in R\&D as well as infrastructu
 
 ## Sustainable Token Ecosystem
 
-Our [$YELLOW](../../legacy/usdyellow/tokenomics.md) token serves as the gateway to Yellow Network. Participant must lock $YELLOW to access the state-channel infrastructure.
+Our [$YELLOW](../resources/tokenomics.md) token serves as the gateway to Yellow Network. Participant must lock $YELLOW to access the state-channel infrastructure.
 
 Participant collateral amount can be slashed in case of online dispute loss. Any participant can file a dispute against another participant for a filing fee. An independent arbitration board consult the audit trails available and enforce the outcome of the dispute which may result in a reputation fault, but also a token slash. Reputation and dispute are recorded on-chain in a participant registry.
 
