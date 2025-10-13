@@ -56,12 +56,14 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          routeBasePath: '/',
+          routeBasePath: '/docs',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
           sidebarCollapsed: false,
+          sidebarCollapsible: false,
+          breadcrumbs: true,
         },
         blog: false,
         theme: {
@@ -102,32 +104,32 @@ const config: Config = {
       },
       items: [
         {
-          to: '/learn',
+          to: '/docs/learn',
           label: 'Learn',
           position: 'left',
         },
         {
-          to: '/build/quick-start',
+          to: '/docs/build/quick-start',
           label: 'Build',
           position: 'left',
         },
         {
-          to: '/manuals',
+          to: '/docs/manuals',
           label: 'Manuals',
           position: 'left',
         },
         {
-          to: '/tutorials',
+          to: '/docs/tutorials',
           label: 'Tutorials',
           position: 'left',
         },
         {
-          to: '/api-reference',
+          to: '/docs/api-reference',
           label: 'API Reference',
           position: 'left',
         },
         {
-          to: '/legacy',
+          to: '/docs/legacy',
           label: 'Legacy',
           position: 'left',
         },
@@ -157,8 +159,28 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Documentation',
-              to: '/learn',
+              label: 'Learn',
+              to: '/docs/learn',
+            },
+            {
+              label: 'Build',
+              to: '/docs/build/quick-start',
+            },
+            {
+              label: 'Manuals',
+              to: '/docs/manuals',
+            },
+            {
+              label: 'Tutorials',
+              to: '/docs/tutorials',
+            },
+            {
+              label: 'API Reference',
+              to: '/docs/api-reference',
+            },
+            {
+              label: 'Legacy',
+              to: '/docs/legacy',
             },
           ],
         },
@@ -190,6 +212,8 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
+      defaultLanguage: 'javascript',
     },
   } satisfies Preset.ThemeConfig,
 };

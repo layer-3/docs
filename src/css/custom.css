@@ -58,6 +58,39 @@
   margin-bottom: 2px;
 }
 
+/* Sidebar text styling */
+.menu__link:not(.menu__link--active),
+.theme-doc-sidebar-item-link:not(.theme-doc-sidebar-item-link--active),
+.theme-doc-sidebar-item-category .menu__link:not(.menu__link--active) {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 300 !important;
+  font-style: normal !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  letter-spacing: 0.15px !important;
+  vertical-align: middle !important;
+}
+
+/* Active items styling */
+.menu__link--active,
+.theme-doc-sidebar-item-link--active,
+.theme-doc-sidebar-item-category .menu__link--active {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  letter-spacing: 0.15px !important;
+  vertical-align: middle !important;
+}
+
+/* Override font weight specifically for active items */
+.menu__link--active,
+.theme-doc-sidebar-item-link--active,
+a.menu__link--active {
+  font-weight: 500 !important;
+}
+
 /* Remove ALL hover background effects and add text darkening */
 .theme-doc-sidebar-item-link:hover,
 .menu__link:hover,
@@ -90,7 +123,7 @@
 .theme-doc-sidebar-item-link--active,
 .menu__link--active {
   color: #000000 !important;
-  font-weight: 600;
+  font-weight: 500 !important;
   background: transparent !important;
   position: relative;
 }
@@ -100,10 +133,106 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+  top: -8px;
+  bottom: -8px;
+  width: 2px;
   background-color: #EDEDED;
+}
+
+/* Add proper padding for all sidebar items with borders */
+.menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret) {
+  position: relative;
+}
+
+/* Add extra spacing only for sub-items (level-2 items under categories) */
+.theme-doc-sidebar-item-link-level-2 .menu__link {
+  text-indent: 8px !important;
+}
+
+/* Table of contents styling - use darker/lighter colors instead of theme colors */
+.tableOfContents_bqdL .table-of-contents__link--active,
+.tableOfContents_bqdL .table-of-contents__link--active code,
+.theme-doc-toc-desktop .table-of-contents__link--active,
+.theme-doc-toc-desktop .table-of-contents__link--active code,
+a.table-of-contents__link.table-of-contents__link--active,
+a.table-of-contents__link.table-of-contents__link--active code {
+  color: #000000 !important;
+  font-weight: 400 !important;
+  border-left-color: transparent !important;
+  background: transparent !important;
+}
+
+[data-theme='dark'] .tableOfContents_bqdL .table-of-contents__link--active,
+[data-theme='dark'] .tableOfContents_bqdL .table-of-contents__link--active code,
+[data-theme='dark'] .theme-doc-toc-desktop .table-of-contents__link--active,
+[data-theme='dark'] .theme-doc-toc-desktop .table-of-contents__link--active code,
+[data-theme='dark'] a.table-of-contents__link.table-of-contents__link--active,
+[data-theme='dark'] a.table-of-contents__link.table-of-contents__link--active code {
+  color: #ffffff !important;
+}
+
+.table-of-contents__link {
+  color: #666666 !important;
+  font-weight: 300 !important;
+}
+
+[data-theme='dark'] .table-of-contents__link {
+  color: #a0a0a0 !important;
+}
+
+/* Override hover colors separately */
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code {
+  color: #333333 !important;
+}
+
+[data-theme='dark'] .table-of-contents__link:hover,
+[data-theme='dark'] .table-of-contents__link:hover code {
+  color: #cccccc !important;
+}
+
+/* Pagination navigation styling */
+.pagination-nav__link {
+  border: 1px solid #e0e0e0 !important;
+  background: transparent !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.pagination-nav__link:hover {
+  border-color: #FDDA16 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.pagination-nav__sublabel {
+  color: #666666 !important;
+  font-weight: 300 !important;
+}
+
+.pagination-nav__label {
+  color: #000000 !important;
+  font-weight: 400 !important;
+}
+
+/* Dark mode pagination */
+[data-theme='dark'] .pagination-nav__link {
+  border-color: #404040 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme='dark'] .pagination-nav__link:hover {
+  border-color: #FDDA16 !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme='dark'] .pagination-nav__sublabel {
+  color: #a0a0a0 !important;
+}
+
+[data-theme='dark'] .pagination-nav__label {
+  color: #ffffff !important;
 }
 
 /* Active left border color override */
@@ -191,30 +320,8 @@
   color: #cccccc !important;
 }
 
-/* Nuclear option - override ALL possible menu link hover combinations */
-a.menu__link:hover,
-a.menu__link.menu__link--sublist:hover,
-a.menu__link.menu__link--active:hover,
-a.menu__link.menu__link--sublist.menu__link--active:hover,
-.menu__list-item > a.menu__link:hover,
-.menu__list-item > a.menu__link.menu__link--sublist:hover,
-.menu__list-item > a.menu__link.menu__link--active:hover,
-.menu__list-item > a.menu__link.menu__link--sublist.menu__link--active:hover {
-  background: transparent !important;
-  background-color: transparent !important;
-  color: #333333 !important;
-}
 
-[data-theme='dark'] a.menu__link:hover,
-[data-theme='dark'] a.menu__link.menu__link--sublist:hover,
-[data-theme='dark'] a.menu__link.menu__link--active:hover,
-[data-theme='dark'] a.menu__link.menu__link--sublist.menu__link--active:hover,
-[data-theme='dark'] .menu__list-item > a.menu__link:hover,
-[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--sublist:hover,
-[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--active:hover,
-[data-theme='dark'] .menu__list-item > a.menu__link.menu__link--sublist.menu__link--active:hover {
-  color: #cccccc !important;
-}
+
 
 /* Remove black border and styling for parent categories (categories with subcategories) */
 .menu__link--sublist.menu__link--active,
@@ -244,7 +351,8 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 }
 
 /* Move expand/collapse icon to the left side of text */
-.menu__link--sublist {
+.menu__link--sublist,
+.menu__list-item-collapsible > .menu__link {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -261,6 +369,38 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
   left: auto !important;
   top: auto !important;
   transform: none !important;
+}
+
+/* Add arrow icon before sidebar items with subitems */
+.menu__link--sublist::before,
+.menu__list-item-collapsible > .menu__link::before {
+  content: '>' !important;
+  margin-right: 8px !important;
+  font-size: 24px !important;
+  color: #666666 !important;
+  transition: transform 0.2s ease !important;
+  display: inline-block !important;
+  width: 24px !important;
+  text-align: center !important;
+  background: none !important;
+  background-color: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+  vertical-align: middle !important;
+  line-height: 24px !important;
+  top: -2px !important;
+}
+
+/* Rotate arrow when expanded */
+.menu__link--sublist[aria-expanded="true"]::before,
+.menu__list-item-collapsible:not(.menu__list-item--collapsed) > .menu__link::before {
+  transform: rotate(90deg) !important;
+}
+
+/* Dark mode arrow color */
+[data-theme='dark'] .menu__link--sublist::before,
+[data-theme='dark'] .menu__list-item-collapsible > .menu__link::before {
+  color: #a0a0a0 !important;
 }
 
 
@@ -499,6 +639,24 @@ input[type="search"],
   background-color: transparent !important;
 }
 
+/* Active navbar menu item styling */
+.navbar__item .navbar__link--active:not(.header-github-link),
+.navbar__link--active:not(.header-github-link) {
+  position: relative !important;
+}
+
+.navbar__item .navbar__link--active:not(.header-github-link)::after,
+.navbar__link--active:not(.header-github-link)::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 80% !important;
+  height: 3px !important;
+  background-color: #FCD002 !important;
+}
+
 [data-theme='dark'] .navbar__item .navbar__link,
 [data-theme='dark'] .navbar__link {
   color: #BBBBBB !important;
@@ -606,14 +764,66 @@ button[title*="Search"] path,
   color: #6D6D6D !important;
 }
 
+/* Admonition styling */
+.theme-admonition.theme-admonition-note {
+  background-color: #FFFFFF !important;
+  border-left: 3px solid #A6A6A6 !important;
+}
+
+.theme-admonition.theme-admonition-tip {
+  background-color: #E8FCF1 !important;
+  border-left: 3px solid #419E6A !important;
+}
+
 .theme-admonition.theme-admonition-info {
   background-color: #DBE9FE !important;
   border-left: 3px solid #60A5FA !important;
 }
 
+.theme-admonition.theme-admonition-caution {
+  background-color: #FFF5D5 !important;
+  border-left: 3px solid #EEB107 !important;
+}
+
+.theme-admonition.theme-admonition-danger {
+  background-color: #FEEDEE !important;
+  border-left: 3px solid #F56666 !important;
+}
+
+.theme-admonition.theme-admonition-warning {
+  background-color: #FFF5D5 !important;
+  border-left: 3px solid #EEB107 !important;
+}
+
+/* Dark mode admonitions */
+[data-theme='dark'] .theme-admonition.theme-admonition-note {
+  background-color: #2A2A2A !important;
+  border-left: 3px solid #A6A6A6 !important;
+}
+
+[data-theme='dark'] .theme-admonition.theme-admonition-tip {
+  background-color: #1A2E20 !important;
+  border-left: 3px solid #419E6A !important;
+}
+
 [data-theme='dark'] .theme-admonition.theme-admonition-info {
   background-color: #182B6A !important;
   border-left: 3px solid #1656E6 !important;
+}
+
+[data-theme='dark'] .theme-admonition.theme-admonition-caution {
+  background-color: #3A3318 !important;
+  border-left: 3px solid #EEB107 !important;
+}
+
+[data-theme='dark'] .theme-admonition.theme-admonition-danger {
+  background-color: #3A1F1F !important;
+  border-left: 3px solid #F56666 !important;
+}
+
+[data-theme='dark'] .theme-admonition.theme-admonition-warning {
+  background-color: #3A3318 !important;
+  border-left: 3px solid #EEB107 !important;
 }
 
 .breadcrumbs__item--active,
@@ -714,4 +924,205 @@ code {
   font-style: normal !important;
   font-weight: 400 !important;
 }
+
+/* Custom code block background colors */
+.codeBlockContent_QJqH pre[style*="background-color"],
+.theme-code-block .codeBlockContent pre[style*="background-color"],
+pre.prism-code[style*="background-color"],
+pre.codeBlock_bY9V[style*="background-color"],
+.theme-code-block pre[style],
+.codeBlockContent_QJqH pre[style] {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+/* Dark theme code block background */
+[data-theme='dark'] .codeBlockContent_QJqH pre[style*="background-color"],
+[data-theme='dark'] .theme-code-block .codeBlockContent pre[style*="background-color"],
+[data-theme='dark'] pre.prism-code[style*="background-color"],
+[data-theme='dark'] pre.codeBlock_bY9V[style*="background-color"],
+[data-theme='dark'] .theme-code-block pre[style],
+[data-theme='dark'] .codeBlockContent_QJqH pre[style] {
+  background: #242424 !important;
+  background-color: #242424 !important;
+}
+
+/* Code block styling */
+.theme-code-block {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: visible;
+  border: 1px solid #e9ecef;
+}
+
+[data-theme='dark'] .theme-code-block {
+  border: 1px solid #404040;
+}
+
+/* Code block header */
+.theme-code-block .codeBlockTitle,
+.codeBlockTitle_OeMC {
+  background: #F8F8F8 !important;
+  background-color: #F8F8F8 !important;
+  color: #272727 !important;
+  border: none !important;
+  border-bottom: 1px solid #e9ecef !important;
+  border-radius: 8px 8px 0 0 !important;
+  font-family: 'Menlo', monospace !important;
+  font-size: 15.2px !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  line-height: 22.8px !important;
+  letter-spacing: 0% !important;
+  vertical-align: middle !important;
+  padding: 12px 80px 12px 16px !important;
+  margin: 0 !important;
+}
+
+[data-theme='dark'] .theme-code-block .codeBlockTitle,
+[data-theme='dark'] .codeBlockTitle_OeMC {
+  background: #292929 !important;
+  background-color: #292929 !important;
+  color: #a8a8a8 !important;
+  border-bottom: 1px solid #404040 !important;
+}
+
+/* Code block with title adjustments */
+.theme-code-block .codeBlockTitle + .codeBlockContent .prism-code {
+  border-radius: 0 0 8px 8px !important;
+  margin-top: 0 !important;
+}
+
+/* Line numbers styling */
+.codeLineNumber_Tfdd,
+.prism-code .token-line .linenumber {
+  width: 3em !important;
+  min-width: 3em !important;
+  color: #666 !important;
+  text-align: right !important;
+  user-select: none !important;
+  border-right: none !important;
+  margin-right: 1.5em !important;
+  padding-right: 1em !important;
+  font-size: 0.9em !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+[data-theme='dark'] .codeLineNumber_Tfdd,
+[data-theme='dark'] .prism-code .token-line .linenumber {
+  color: #888 !important;
+  border-right: none !important;
+  background: #242424 !important;
+  background-color: #242424 !important;
+}
+
+/* Move button group to header area - always visible */
+.theme-code-block .buttonGroup_M5ko,
+.theme-code-block:hover .buttonGroup_M5ko,
+.buttonGroup_M5ko {
+  position: absolute !important;
+  top: 12px !important;
+  right: 16px !important;
+  z-index: 10 !important;
+  background: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+}
+
+/* Copy button positioning - inside header */
+.theme-code-block .clean-btn {
+  background: transparent !important;
+  border: 1px solid #d0d7de !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  color: #656d76 !important;
+  cursor: pointer !important;
+  margin: 0 2px !important;
+}
+
+.theme-code-block .clean-btn:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #24292e !important;
+}
+
+[data-theme='dark'] .theme-code-block .clean-btn {
+  background: transparent !important;
+  border: 1px solid #666 !important;
+  color: #a8a8a8 !important;
+}
+
+[data-theme='dark'] .theme-code-block .clean-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* COMPREHENSIVE SIDEBAR FIX - Force ALL sections to remain visible */
+
+/* Override Docusaurus contextual sidebar behavior completely */
+.theme-doc-sidebar-menu .menu__list > .menu__list-item {
+  display: list-item !important;
+  visibility: visible !important;
+}
+
+/* Force all menu lists to display */
+.menu__list {
+  display: block !important;
+  overflow: visible !important;
+  height: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Prevent any hiding of sidebar sections */
+.theme-doc-sidebar-menu .menu__list-item,
+.theme-doc-sidebar-item-category,
+.theme-doc-sidebar-item-link {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force list items to display properly */
+.menu__list .menu__list-item {
+  display: list-item !important;
+}
+
+/* Override any dynamic hiding with !important */
+.theme-doc-sidebar-menu [hidden],
+.menu__list-item[hidden],
+.menu__list[hidden] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force expand all collapsed categories */
+.menu__link--sublist[aria-expanded="false"] + .menu__list,
+.menu__list-item--collapsed > .menu__list {
+  display: block !important;
+  overflow: visible !important;
+  height: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure collapsed items show as expanded */
+.menu__list-item--collapsed .menu__caret::before {
+  transform: rotate(90deg) !important;
+}
+
+/* Override any JavaScript-based hiding */
+.theme-doc-sidebar-menu * {
+  visibility: visible !important;
+}
+
+/* Force root level items to always show */
+nav.menu > .menu__list > .menu__list-item {
+  display: list-item !important;
+}
+
 

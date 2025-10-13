@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: Advanced Guide
 description: Advanced topics for experienced developers
+displayed_sidebar: learnSidebar
 ---
 
 # Advanced Guide

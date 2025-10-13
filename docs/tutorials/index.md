@@ -1,6 +1,7 @@
 ---
 title: Tutorials
 description: Step-by-step tutorials and guides
+displayed_sidebar: tutorialsSidebar
 ---
 
 # Tutorials

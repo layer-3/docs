@@ -1,6 +1,7 @@
 ---
 title: Manuals
 description: Comprehensive manuals and documentation
+displayed_sidebar: manualsSidebar
 ---
 
 # Manuals

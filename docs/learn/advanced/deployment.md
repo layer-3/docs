@@ -3,6 +3,7 @@ sidebar_position: 5
 title: Production Deployment
 description: Deploy Yellow Apps to production with confidence - configuration, optimization, and best practices
 keywords: [production, deployment, configuration, optimization, mainnet, scaling]
+displayed_sidebar: learnSidebar
 ---
 
 import Tabs from '@theme/Tabs';

@@ -3,6 +3,7 @@ sidebar_position: 2
 title: Architecture Deep Dive
 description: Understanding state channel fundamentals and SDK architecture
 keywords: [state channels, architecture, nitrolite, sdk, blockchain scaling]
+displayed_sidebar: learnSidebar
 ---
 
 # Architecture Deep Dive
