@@ -105,23 +105,23 @@ docker compose down
 
 ### Environment Variables
 
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `BROKER_PRIVATE_KEY` | Private key used for signing broker messages | Yes | - |
-| `DATABASE_DRIVER` | Database driver to use (postgres/sqlite) | No | sqlite |
-| `CLEARNODE_CONFIG_DIR_PATH` | Path to directory containing configuration files | No | . |
-| `CLEARNODE_DATABASE_URL` | Database connection string | No | clearnode.db |
-| `CLEARNODE_LOG_LEVEL` | Logging level (debug, info, warn, error) | No | info |
-| `HTTP_PORT` | Port for the HTTP/WebSocket server | No | 8000 |
-| `METRICS_PORT` | Port for Prometheus metrics | No | 4242 |
-| `MSG_EXPIRY_TIME` | Time in seconds for message timestamp validation | No | 60 |
-| `<BLOCKCHAIN_NAME>_BLOCKCHAIN_RPC` | RPC endpoint for each enabled blockchain | Yes (per enabled blockchain) | - |
+| Variable                           | Description                                      | Required | Default      |
+|------------------------------------|--------------------------------------------------|----------|--------------|
+| `BROKER_PRIVATE_KEY`               | Private key used for signing broker messages     | Yes      | -            |
+| `DATABASE_DRIVER`                  | Database driver to use (postgres/sqlite)         | No       | sqlite       |
+| `CLEARNODE_CONFIG_DIR_PATH`        | Path to directory containing configuration files | No       | .            |
+| `CLEARNODE_DATABASE_URL`           | Database connection string                       | No       | clearnode.db |
+| `CLEARNODE_LOG_LEVEL`              | Logging level (debug, info, warn, error)         | No       | info         |
+| `HTTP_PORT`                        | Port for the HTTP/WebSocket server               | No       | 8000         |
+| `METRICS_PORT`                     | Port for Prometheus metrics                      | No       | 4242         |
+| `MSG_EXPIRY_TIME`                  | Time in seconds for message timestamp validation | No       | 60           |
+| `<BLOCKCHAIN_NAME>_BLOCKCHAIN_RPC` | RPC endpoint for each enabled blockchain         | Yes      | -            |
 
 ### Blockchain Configuration (blockchains.yaml)
 
 **Configuration Structure:**
 
-- **default_contract_addresses**: Default contract addresses applied to all blockchains unless overridden
+- **default_contract_addresses**: That's the optional set of default contract addresses applied to all blockchains unless overridden
   - `custody`: Custody contract address
   - `adjudicator`: Adjudicator contract address
   - `balance_checker`: Balance checker contract address
@@ -129,9 +129,16 @@ docker compose down
 - **blockchains**: Array of blockchain configurations
   - `name`: Blockchain name (required; lowercase, underscores allowed)
   - `id`: Chain ID for validation (required)
-  - `disabled`: Whether to connect to this blockchain
+  - `disabled`: Whether to connect to this blockchain (optional, default: false)
   - `block_step`: Block range for scanning (optional, default: 10000)
-  - `contract_addresses`: Override default addresses for this specific blockchain
+  - `contract_addresses`: Override default addresses for this specific blockchain (optional)
+    - `custody`: Custody contract address
+    - `adjudicator`: Adjudicator contract address
+    - `balance_checker`: Balance checker contract address
+
+:::warning
+Even though both `default_contract_addresses` and blockchain-specific `contract_addresses` are described as optional, each blockchain must have all required contract addresses set. If no defaults are provided under `default_contract_addresses`, you must specify `custody`, `adjudicator`, and `balance_checker` addresses for every blockchain in its `contract_addresses` section. Otherwise, Clearnode will fail to start due to missing contract address configuration.
+:::
 
 RPC endpoints follow the pattern: `<BLOCKCHAIN_NAME_UPPERCASE>_BLOCKCHAIN_RPC`
 
@@ -147,12 +154,12 @@ MY_NETWORK_BLOCKCHAIN_RPC=wss://my-network-rpc.example.com
 - **assets**: Array of asset configurations
   - `name`: Human-readable name of the asset (e.g., "USD Coin")
   - `symbol`: Ticker symbol for the asset (required; lowercase, e.g., "usdc")
-  - `disabled`: Whether to skip processing this asset
+  - `disabled`: Whether to skip processing this asset (optional, default: false)
   - `tokens`: Array of blockchain-specific token implementations
     - `name`: Token name on this blockchain (optional, inherits from asset)
     - `symbol`: Token symbol on this blockchain (optional, inherits from asset)
     - `blockchain_id`: Chain ID where this token is deployed (required)
-    - `disabled`: Whether to skip processing this token
+    - `disabled`: Whether to skip processing this token (optional, default: false)
     - `address`: Token's contract address (required)
     - `decimals`: Number of decimal places for the token (required)
 
