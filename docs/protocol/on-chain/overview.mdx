@@ -1,0 +1,49 @@
+---
+sidebar_position: 1
+title: "Overview"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+
+# On-Chain Protocol Overview
+
+The on-chain protocol defines the smart contract interfaces and data structures that form the foundation of <Tooltip content="The on-chain smart contract protocol.">Nitrolite's</Tooltip> security guarantees. This layer operates on the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> and handles:
+
+- **Fund Custody**: Secure locking and unlocking of <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> assets
+- **Dispute Resolution**: Challenge-response mechanism for disagreements
+- **Final Settlement**: Distribution of funds according to validated <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip>
+- **<Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">Channel</Tooltip> Lifecycle**: State transitions from creation to closure
+
+## Key Responsibilities
+
+The on-chain layer MUST provide:
+
+1. **Deterministic <Tooltip content="A unique identifier for a channel, computed as the hash of the channel configuration.">channel identifiers</Tooltip>** computed from channel configuration
+2. **Signature verification** to authenticate <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates
+3. **State validation** through <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicator</Tooltip> contracts
+4. **Challenge periods** to ensure fair dispute resolution
+5. **Fund safety** guaranteeing users can always recover their assets
+
+:::info EVM Compatibility
+The initial version of Nitrolite is designed for EVM-compatible blockchains including Ethereum, Polygon, Arbitrum, Optimism, and Base.
+:::
+
+## Contract Interfaces
+
+The protocol defines three primary contract interfaces:
+
+- **IChannel**: Core <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> lifecycle operations (create, join, challenge, close)
+- **IDeposit**: Token deposit and withdrawal management
+- **IChannelReader**: Read-only queries for channel <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> and status
+
+These interfaces are implemented by the <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure.">**Custody Contract**</Tooltip>, which serves as the main entry point for on-chain operations.
+
+
+## Next Steps
+
+The following sections detail:
+
+- [Data Structures](./data-structures.mdx): Core types and identifier computation
+- [Channel Lifecycle](./channel-lifecycle.mdx): Complete state machine and operations
+- [Security Considerations](./security.mdx): Threat model and best practices
+

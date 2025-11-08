@@ -1,0 +1,286 @@
+---
+sidebar_position: 4
+title: "Security Considerations"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+
+# Security Considerations
+
+## Threat Model
+
+### Assumptions
+
+The protocol operates under the following security assumptions:
+
+- **At least one honest party per <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>** willing to enforce their rights
+- **<Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">Blockchain</Tooltip> is secure and censorship-resistant** within reasonable bounds
+- **Cryptographic primitives are secure** (ECDSA, keccak256)
+- **<Tooltip content="An entity (identified by an address) that is part of a channel.">Participants</Tooltip> have access to the blockchain** to submit challenges within the challenge period
+
+:::info Trust Model
+<Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip> is designed as a **trustless protocol** - no single party can steal funds or prevent others from recovering their legitimate share.
+:::
+
+### Protected Against
+
+The protocol provides protection against:
+
+- **Replay attacks** via version numbers in adjudicator logic
+- **State withholding** via challenge mechanism
+- **Unauthorized state transitions** via signature verification
+- **Funds theft** - all transitions require valid signatures from appropriate parties
+
+### Not Protected Against
+
+The protocol cannot protect against:
+
+- **All <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> colluding** to violate application rules
+- **<Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">Blockchain</Tooltip>-level attacks** (51% attacks, MEV exploitation, etc.)
+- **Denial of service by blockchain congestion** - may affect ability to respond to challenges
+
+:::warning Blockchain Dependency
+The security of <Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip> <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channels</Tooltip> depends on the underlying <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain's</Tooltip> liveness and security. Extended blockchain downtime during a challenge period could prevent parties from responding.
+:::
+
+## Security Properties
+
+### Funds Safety
+
+**Property**: <Tooltip content="An entity (identified by an address) that is part of a channel.">Participants</Tooltip> can always recover their funds according to the latest valid signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>, even if other participants become unresponsive.
+
+**Mechanism**: The challenge-response system ensures that:
+1. Any party can initiate closure unilaterally
+2. Challenge period allows time for others to respond with newer states
+3. Newest valid state always wins
+4. Funds are distributed according to the final accepted state
+
+```mermaid
+graph TB
+    A[User has latest<br/>signed state] --> B{Broker responsive?}
+    B -->|Yes| C[Cooperative close<br/>Fast & cheap]
+    B -->|No| D[Challenge with<br/>latest state]
+    D --> E[Wait challenge<br/>period]
+    E --> F{Counter-challenge?}
+    F -->|No| G[Close & recover funds]
+    F -->|Yes, newer| H[Submit even<br/>newer state]
+    H --> E
+    
+    style C fill:#90EE90
+    style G fill:#90EE90
+```
+
+### State Validity
+
+**Property**: Only <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip> signed by the required <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> (as determined by the <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicator</Tooltip>) can be accepted.
+
+**Mechanism**:
+- Every state update requires cryptographic signatures
+- Signatures are verified against the <Tooltip content="A cryptographic hash of a channel state, used for signature verification.">stateHash</Tooltip>
+- Adjudicator validates state transitions according to application rules
+- Invalid states are rejected on-chain
+
+:::success Cryptographic Security
+State validity is enforced through ECDSA signatures on the secp256k1 curve, the same cryptographic foundation as Ethereum itself.
+:::
+
+### Liveness
+
+**Property**: As long as the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> is live and accepts transactions within the challenge period, honest <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> can enforce their rights.
+
+**Requirements**:
+- Blockchain must be operational
+- Participant must be able to submit transactions
+- Challenge period must be sufficient for transaction confirmation
+
+**Recommended Challenge Periods**:
+- **High-value <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channels</Tooltip>**: 24-48 hours (default: 24 hours / 86400 seconds)
+- **Medium-value channels**: 12-24 hours
+- **Low-value rapid channels**: 6-12 hours
+
+:::caution Challenge Period Trade-offs
+Longer challenge periods provide more security but slower dispute resolution. Shorter periods enable faster closure but require more vigilant monitoring.
+:::
+
+### Censorship Resistance
+
+**Property**: Since anyone can submit challenges and responses, censorship of a single <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> does not prevent <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> closure.
+
+**Mechanism**:
+- Any participant can initiate challenge
+- Any participant can respond to challenge
+- Multiple participants can attempt the same operation
+- As long as one honest party can transact, the channel can be resolved
+
+## Attack Vectors and Mitigations
+
+### Replay Attacks
+
+**Attack**: Resubmitting old signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip> to revert <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> to a previous favorable allocation.
+
+**Mitigation**: 
+- <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">Adjudicators</Tooltip> MUST implement version checking
+- Higher version numbers supersede lower versions
+- On-chain contract tracks the highest version seen
+- Old states are automatically rejected
+
+```mermaid
+graph LR
+    A[State v10 submitted] --> B{Compare versions}
+    B -->|v10 > v5| C[Accept new state]
+    B -->|v10 < v20| D[Reject old state]
+    
+    style C fill:#90EE90
+    style D fill:#FFB6C1
+```
+
+:::tip Version Monotonicity
+Always ensure state versions increase monotonically. Never sign two different states with the same version number.
+:::
+
+### State Withholding
+
+**Attack**: Refusing to cooperate in closing <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>, holding funds hostage.
+
+**Mitigation**: 
+- Challenge mechanism allows unilateral closure
+- Challenge period ensures fair dispute resolution
+- Latest signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> always prevails
+
+**Example Scenario**:
+```
+1. Alice and Bob have channel with $1000 each
+2. After trading, valid state shows Alice: $1500, Bob: $500
+3. Bob refuses to cooperate in cooperative close
+4. Alice initiates challenge with latest signed state
+5. Bob can respond only with older (less favorable) state
+6. After challenge period, Alice's state wins
+7. Alice recovers her $1500
+```
+
+### Challenge Griefing
+
+**Attack**: Repeatedly challenging with old states to delay closure and grief the counterparty.
+
+**Mitigation**:
+- Each valid newer state resets the challenge period
+- Attacker must pay gas for each challenge attempt
+- Eventually attacker runs out of old states
+- Newest state always wins regardless of challenge count
+
+:::note Economic Disincentive
+Challenge griefing is economically costly for the attacker (gas fees) while only causing time delay, not fund loss, for the victim.
+:::
+
+### Front-Running
+
+**Attack**: Observing pending challenge transaction and front-running with a newer state.
+
+**Mitigation**: 
+- **This is actually desired behavior** in Nitrolite
+- The newest state should always win
+- Front-running helps ensure the most recent state is used
+- Both parties benefit from accurate state resolution
+
+## Best Practices
+
+### For Users
+
+**Essential Practices**:
+
+1. **Never sign duplicate versions**: Never sign two different <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip> with the same version number
+2. **Keep records**: Maintain a record of the latest state you've signed
+3. **Monitor events**: Watch the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> events (Challenged, Closed)
+4. **Respond promptly**: React to challenges within the challenge period
+5. **Verify adjudicators**: Only use <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicator</Tooltip> contracts from trusted sources
+
+:::danger Critical Rule
+**NEVER sign two different states with the same version number.** This creates ambiguity about the true latest state and can lead to disputes.
+:::
+
+### For Implementers
+
+**Implementation Requirements**:
+
+1. **Validate thoroughly**: Check all inputs before submitting transactions
+2. **Use adjudicators wisely**: Leverage <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicators</Tooltip> to enforce application rules
+3. **Set appropriate challenge periods**: Balance security needs with user experience
+4. **Implement proper key management**: Secure storage for <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> private keys
+5. **Log state transitions**: Maintain audit trail of all <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates
+
+**Sample Validation Checklist**:
+
+```markdown
+Before submitting state on-chain:
+☐ Verify all required signatures present
+☐ Verify signatures are valid for expected participants
+☐ Verify state version is sequential
+☐ Verify allocations sum correctly
+☐ Verify magic numbers (CHANOPEN/CHANCLOSE) if applicable
+☐ Verify channelId matches expected value
+☐ Test with small amounts first
+```
+
+### For Adjudicator Developers
+
+**Critical Requirements**:
+
+1. **Implement strict version comparison**: Ensure newer states always supersede older ones
+2. **Validate state transitions**: Enforce application-specific rules correctly
+3. **Optimize for gas efficiency**: Validation happens on-chain during disputes
+4. **Consider edge cases**: Handle all possible state transition scenarios
+5. **Audit thoroughly**: Security review before deployment is essential
+
+:::warning Adjudicator Responsibility
+<Tooltip content="A smart contract that validates state transitions according to application-specific rules.">Adjudicators</Tooltip> are critical to <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> security. A flawed adjudicator can undermine the entire channel's safety guarantees.
+:::
+
+**Adjudicator Development Checklist**:
+
+```markdown
+☐ Version comparison logic is correct and strict
+☐ All state transition rules are validated
+☐ Gas usage is optimized
+☐ Edge cases are handled (empty allocations, zero amounts, etc.)
+☐ Fallback behavior is safe (reject on ambiguity)
+☐ Code is audited by security professionals
+☐ Test coverage includes adversarial scenarios
+```
+
+## Security Guarantees Summary
+
+| Property | Guarantee | Mechanism |
+|----------|-----------|-----------|
+| **Funds Safety** | Cannot lose funds with valid signed state | Challenge-response + signatures |
+| **State Validity** | Only properly signed states accepted | ECDSA signature verification |
+| **Liveness** | Can always close if blockchain is live | Unilateral challenge mechanism |
+| **Censorship Resistance** | Any party can enforce closure | Multiple submission paths |
+| **No Replay** | Old states cannot be reused | Version number validation |
+
+:::success Strong Security Model
+<Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip> provides **strong security guarantees** equivalent to Layer 1 <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> security, while enabling Layer 2 scalability and efficiency.
+:::
+
+## Emergency Procedures
+
+### If <Tooltip content="An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.">Broker</Tooltip> Becomes Unresponsive
+
+1. **Retrieve latest signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>** from local storage
+2. **Initiate challenge** on-chain with latest state
+3. **Monitor for counter-challenges** during challenge period
+4. **Submit newer states** if counterparty challenges with older version
+5. **Close <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>** after challenge period expires
+6. **Funds are recovered** according to latest valid state
+
+### If Challenge Period May Expire
+
+1. **Ensure <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> access** - check network connectivity
+2. **Prepare transactions in advance** - have signed transactions ready
+3. **Monitor mempool** - watch for conflicting transactions
+4. **Use appropriate gas prices** - ensure timely confirmation
+5. **Have backup RPC endpoints** - don't rely on single provider
+
+:::tip Monitoring Best Practice
+Set up automated monitoring with alerts for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> events. This ensures you can respond quickly to challenges even if you're not actively watching.
+:::
+

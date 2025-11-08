@@ -1,0 +1,49 @@
+---
+sidebar_position: 2
+title: "Terminology"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+
+# Terminology
+
+## Core Concepts
+
+**Channel**: A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.
+
+**State**: A snapshot of the channel at a point in time, including fund allocations and application-specific data.
+
+**Participant**: An entity (identified by an address) that is part of a channel. Typically includes a Creator (user) and a Broker (service provider).
+
+**Adjudicator**: A smart contract that validates state transitions according to application-specific rules.
+
+**Broker**: An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.
+
+**Creator**: Most often a light client willing to fund a ledger account with the Broker.
+
+**Virtual Ledger Channel (VLC)**: Off-chain channels built on top of payment channels, also called App Sessions.
+
+**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by the Broker.
+
+**Session Key**: A temporary cryptographic key delegated by a user's main wallet to enable gasless transaction signing.
+
+## Identifiers
+
+**channelId**: A unique identifier for a channel, computed as the hash of the channel configuration.
+
+**stateHash**: A cryptographic hash of a channel state, used for signature verification.
+
+**requestId**: A unique identifier for an RPC request, used for correlating requests and responses.
+
+## Protocol Components
+
+**Nitrolite**: The on-chain smart contract protocol.
+
+**Nitro RPC**: The off-chain communication protocol.
+
+**Custody Contract**: The main on-chain contract implementing channel creation, joining, and closure.
+
+:::tip Quick Reference
+These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.
+:::
+
