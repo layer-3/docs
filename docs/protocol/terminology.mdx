@@ -13,19 +13,19 @@ import Tooltip from '@site/src/components/Tooltip';
 
 **State**: A snapshot of the channel at a point in time, including fund allocations and application-specific data.
 
-**Participant**: An entity (identified by an address) that is part of a channel. Typically includes a Creator (user) and a Broker (service provider).
+**Participant**: An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a clearnode or a Clearnode Operator.
 
 **Adjudicator**: A smart contract that validates state transitions according to application-specific rules.
 
-**Broker**: An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.
+**Clearnode**: A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
 
-**Creator**: Most often a light client willing to fund a ledger account with the Broker.
+**Creator**: Most often a light client willing to fund a ledger account with a clearnode.
 
-**Virtual Ledger Channel (VLC)**: Off-chain channels built on top of payment channels, also called App Sessions.
+**App Sessions**: Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.
 
-**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by the Broker.
+**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode.
 
-**Session Key**: A temporary cryptographic key delegated by a user's main wallet to enable gasless transaction signing.
+**Session Key**: A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps.
 
 ## Identifiers
 
@@ -41,7 +41,7 @@ import Tooltip from '@site/src/components/Tooltip';
 
 **Nitro RPC**: The off-chain communication protocol.
 
-**Custody Contract**: The main on-chain contract implementing channel creation, joining, and closure.
+**Custody Contract**: The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol.
 
 :::tip Quick Reference
 These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.

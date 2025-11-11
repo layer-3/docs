@@ -19,7 +19,7 @@ graph TB
     
     subgraph OffChain["Off-Chain Layer (Fast Updates)"]
         CLIENT[Client SDK]
-        BROKER[Broker Clear Node]
+        BROKER[Clearnode]
         RPC[Nitro RPC WebSocket]
     end
     
@@ -48,27 +48,27 @@ graph TB
 
 ### Channel Opening
 
-The <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content="An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.">broker</Tooltip>:
+The <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip>:
 
-1. Client requests channel creation from <Tooltip content="An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.">Broker</Tooltip> via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
-2. Broker returns signed initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>
+1. Client requests channel creation from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip> via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+2. The clearnode returns signed initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>
 3. Client submits transaction to <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip>
-4. Broker joins the channel on-chain
+4. The clearnode joins the channel on-chain
 5. Channel becomes active
 
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Broker
+    participant Clearnode
     participant Blockchain
     
-    Client->>Broker: create_channel request
-    Broker->>Client: signed initial state
+    Client->>Clearnode: create_channel request
+    Clearnode->>Client: signed initial state
     Client->>Blockchain: submit create() transaction
-    Blockchain->>Broker: Created event
-    Broker->>Blockchain: submit join() transaction
-    Blockchain->>Broker: Opened event
-    Broker->>Client: channel_update notification
+    Blockchain->>Clearnode: Created event
+    Clearnode->>Blockchain: submit join() transaction
+    Blockchain->>Clearnode: Opened event
+    Clearnode->>Client: channel_update notification
 ```
 
 :::success Cooperative Opening
@@ -77,7 +77,7 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 
 ### Off-Chain Updates
 
-Off-chain updates occur entirely between <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> without touching the blockchain:
+Off-chain updates occur entirely between <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> without touching the blockchain:
 
 1. Participants exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
 2. No blockchain transactions required
@@ -120,7 +120,7 @@ The following diagram illustrates how funds flow through the Nitrolite protocol:
 graph TB
     A[User Wallet<br/>ERC-20] -->|deposit| B[Custody Contract<br/>Available]
     B -->|create/join| C[Channel<br/>Locked]
-    C -->|off-chain updates| D[Unified Balance<br/>Broker]
+    C -->|off-chain updates| D[Unified Balance<br/>Clearnode]
     D -->|app sessions| E[Virtual Channels<br/>Application]
     E -->|close session| D
     D -->|close channel| B
@@ -137,13 +137,13 @@ graph TB
 
 1. **Deposit**: User deposits ERC-20 tokens into <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure.">Custody Contract</Tooltip>
 2. **Lock**: Funds move from "available" to "locked" when <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> is created/joined
-3. **Off-Chain**: Locked funds become part of <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by the Broker.">unified balance</Tooltip>, managed off-chain
-4. **App Sessions**: Funds can be allocated to <Tooltip content="Off-chain channels built on top of payment channels, also called App Sessions.">virtual channels</Tooltip> for applications
+3. **Off-Chain**: Locked funds become part of <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode.">unified balance</Tooltip>, managed off-chain
+4. **App Sessions**: Funds can be allocated to <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">app sessions</Tooltip> for applications
 5. **Release**: When app sessions close, funds return to unified balance
 6. **Unlock**: When channel closes, funds return to custody "available" balance
 7. **Withdraw**: User withdraws funds back to their wallet
 
 :::caution Security Guarantee
-At every stage, funds remain cryptographically secured. Users can always recover their funds according to the latest valid signed state, even if the broker becomes unresponsive.
+At every stage, funds remain cryptographically secured. Users can always recover their funds according to the latest valid signed state, even if the clearnode becomes unresponsive.
 :::
 

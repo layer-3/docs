@@ -9,7 +9,7 @@ import Tooltip from '@site/src/components/Tooltip';
 
 The on-chain protocol defines the smart contract interfaces and data structures that form the foundation of <Tooltip content="The on-chain smart contract protocol.">Nitrolite's</Tooltip> security guarantees. This layer operates on the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> and handles:
 
-- **Fund Custody**: Secure locking and unlocking of <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> assets
+- **Fund Custody**: Secure locking and unlocking of <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participant</Tooltip> assets
 - **Dispute Resolution**: Challenge-response mechanism for disagreements
 - **Final Settlement**: Distribution of funds according to validated <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip>
 - **<Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">Channel</Tooltip> Lifecycle**: State transitions from creation to closure
@@ -36,7 +36,7 @@ The protocol defines three primary contract interfaces:
 - **IDeposit**: Token deposit and withdrawal management
 - **IChannelReader**: Read-only queries for channel <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> and status
 
-These interfaces are implemented by the <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure.">**Custody Contract**</Tooltip>, which serves as the main entry point for on-chain operations.
+These interfaces are implemented by the <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol.">**Custody Contract**</Tooltip>, which serves as the main entry point for on-chain operations.
 
 
 ## Next Steps

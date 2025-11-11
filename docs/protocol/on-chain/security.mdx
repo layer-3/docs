@@ -16,7 +16,7 @@ The protocol operates under the following security assumptions:
 - **At least one honest party per <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>** willing to enforce their rights
 - **<Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">Blockchain</Tooltip> is secure and censorship-resistant** within reasonable bounds
 - **Cryptographic primitives are secure** (ECDSA, keccak256)
-- **<Tooltip content="An entity (identified by an address) that is part of a channel.">Participants</Tooltip> have access to the blockchain** to submit challenges within the challenge period
+- **<Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> have access to the blockchain** to submit challenges within the challenge period
 
 :::info Trust Model
 <Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip> is designed as a **trustless protocol** - no single party can steal funds or prevent others from recovering their legitimate share.
@@ -35,7 +35,7 @@ The protocol provides protection against:
 
 The protocol cannot protect against:
 
-- **All <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> colluding** to violate application rules
+- **All <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> colluding** to violate application rules
 - **<Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">Blockchain</Tooltip>-level attacks** (51% attacks, MEV exploitation, etc.)
 - **Denial of service by blockchain congestion** - may affect ability to respond to challenges
 
@@ -47,7 +47,7 @@ The security of <Tooltip content="The on-chain smart contract protocol.">Nitroli
 
 ### Funds Safety
 
-**Property**: <Tooltip content="An entity (identified by an address) that is part of a channel.">Participants</Tooltip> can always recover their funds according to the latest valid signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>, even if other participants become unresponsive.
+**Property**: <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> can always recover their funds according to the latest valid signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>, even if other participants become unresponsive.
 
 **Mechanism**: The challenge-response system ensures that:
 1. Any party can initiate closure unilaterally
@@ -72,7 +72,7 @@ graph TB
 
 ### State Validity
 
-**Property**: Only <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip> signed by the required <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> (as determined by the <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicator</Tooltip>) can be accepted.
+**Property**: Only <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">states</Tooltip> signed by the required <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> (as determined by the <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicator</Tooltip>) can be accepted.
 
 **Mechanism**:
 - Every state update requires cryptographic signatures
@@ -86,7 +86,7 @@ State validity is enforced through ECDSA signatures on the secp256k1 curve, the 
 
 ### Liveness
 
-**Property**: As long as the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> is live and accepts transactions within the challenge period, honest <Tooltip content="An entity (identified by an address) that is part of a channel.">participants</Tooltip> can enforce their rights.
+**Property**: As long as the <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> is live and accepts transactions within the challenge period, honest <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> can enforce their rights.
 
 **Requirements**:
 - Blockchain must be operational
@@ -104,7 +104,7 @@ Longer challenge periods provide more security but slower dispute resolution. Sh
 
 ### Censorship Resistance
 
-**Property**: Since anyone can submit challenges and responses, censorship of a single <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> does not prevent <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> closure.
+**Property**: Since anyone can submit challenges and responses, censorship of a single <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participant</Tooltip> does not prevent <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> closure.
 
 **Mechanism**:
 - Any participant can initiate challenge
@@ -205,7 +205,7 @@ Challenge griefing is economically costly for the attacker (gas fees) while only
 1. **Validate thoroughly**: Check all inputs before submitting transactions
 2. **Use adjudicators wisely**: Leverage <Tooltip content="A smart contract that validates state transitions according to application-specific rules.">adjudicators</Tooltip> to enforce application rules
 3. **Set appropriate challenge periods**: Balance security needs with user experience
-4. **Implement proper key management**: Secure storage for <Tooltip content="An entity (identified by an address) that is part of a channel.">participant</Tooltip> private keys
+4. **Implement proper key management**: Secure storage for <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participant</Tooltip> private keys
 5. **Log state transitions**: Maintain audit trail of all <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates
 
 **Sample Validation Checklist**:
@@ -263,7 +263,7 @@ Before submitting state on-chain:
 
 ## Emergency Procedures
 
-### If <Tooltip content="An RPC message broker (also called Clear Node or Yellow Node) responsible for managing the off-chain protocol and providing services to clients.">Broker</Tooltip> Becomes Unresponsive
+### If <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a Clearnode</Tooltip> Becomes Unresponsive
 
 1. **Retrieve latest signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>** from local storage
 2. **Initiate challenge** on-chain with latest state
