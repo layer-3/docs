@@ -1,0 +1,10 @@
+{
+    "label": "On-Chain Protocol",
+    "position": 4,
+    "link": {
+      "type": "generated-index",
+      "description": "The On-Chain Protocol (Nitrolite) defines the core smart contract logic for state channel management and fund flow."
+    }
+  }
+  
+  
