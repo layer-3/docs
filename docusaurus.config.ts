@@ -114,6 +114,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/docs/protocol/introduction',
+          label: 'Protocol',
+          position: 'left',
+        },
+        {
           to: '/docs/manuals',
           label: 'Manuals',
           position: 'left',
