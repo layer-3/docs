@@ -37,14 +37,18 @@ Represents a snapshot of <Tooltip content="A secure communication pathway betwee
 
 ```solidity
 struct State {
+    StateIntent intent;       // Intent of the state (INITIALIZE, OPERATE, RESIZE, FINALIZE)
+    uint256 version;          // State version incremental number to compare most recent
     bytes data;               // Application-specific data
     Allocation[] allocations; // Asset allocation for each participant
-    Signature[] sigs;         // Signatures from participants
+    bytes[] sigs;             // stateHash signatures from participants
 }
 ```
 
 **Fields**:
 
+- `intent`: The intent of this state, indicating its purpose (see <Tooltip content="An enum defining the purpose of a state: INITIALIZE (0), OPERATE (1), RESIZE (2), FINALIZE (3)">StateIntent</Tooltip> enum).
+- `version`: Incremental version number used to compare and validate state freshness. Higher versions supersede lower versions.
 - `data`: Application-specific data. For funding states, contains magic numbers (CHANOPEN = 7877, CHANCLOSE = 7879).
 - `allocations`: Array of allocations defining how funds are distributed.
 - `sigs`: Array of signatures, one per <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participant</Tooltip>. Order corresponds to participants array in Channel.
@@ -130,10 +134,12 @@ stateDiagram-v2
 ## Protocol Constants
 
 ```solidity
-constant uint256 CREATOR = 0;      // Creator's participant index
-constant uint256 BROKER = 1;       // Broker's participant index
-constant uint32 CHANOPEN = 7877;   // Magic number for funding state
-constant uint32 CHANCLOSE = 7879;  // Magic number for closing state
+constant uint256 CLIENT_IDX = 0;   // Client/Creator participant index
+constant uint256 SERVER_IDX = 1;   // Server/Clearnode participant index
+constant uint256 PART_NUM = 2;     // Number of participants (always 2)
+
+constant uint16 CHANOPEN = 7877;   // 0x1EC5 - Magic number for funding state
+constant uint16 CHANCLOSE = 7879;  // 0x1EC7 - Magic number for closing state
 ```
 
 :::tip Magic Numbers
@@ -172,6 +178,8 @@ The <Tooltip content="A cryptographic hash of a channel state, used for signatur
 stateHash = keccak256(
     abi.encode(
         channelId,
+        state.intent,
+        state.version,
         state.data,
         state.allocations
     )

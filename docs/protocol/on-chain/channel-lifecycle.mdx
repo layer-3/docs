@@ -49,7 +49,15 @@ The caller (EOA or contract) is usually different from the <Tooltip content="An 
 
 ## Joining Phase
 
-**Purpose**: Allow other <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> to join and fund the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>.
+:::info Two Channel Opening Flows
+There are two ways to open a channel:
+1. **Modern/Recommended**: Provide ALL signatures in `create()` → channel immediately ACTIVE (see [Architecture](../architecture#channel-opening))
+2. **Legacy/Manual**: Provide only creator's signature in `create()` → status INITIAL → separate `join()` calls → ACTIVE
+
+This section documents flow #2. Most implementations use flow #1.
+:::
+
+**Purpose**: Allow other participants to join and fund the channel (when using separate join flow).
 
 **Process**:
 
@@ -223,7 +231,7 @@ sequenceDiagram
 ### Response Process
 
 During the challenge period, any participant MAY:
-- Submit a more recent valid state by calling `challenge` again
+- Submit a more recent valid state by calling `checkpoint()`
 - If the new state is valid and more recent (as determined by the adjudicator or IComparable interface), the contract MUST update the stored state and reset the challenge period
 
 ```mermaid
@@ -268,46 +276,63 @@ stateDiagram-v2
     note right of Dispute: Challenge period active<br/>Parties can submit<br/>newer states
 ```
 
-## Reset Protocol (Resize)
+## Resize Protocol
 
-**Purpose**: Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> capacity by closing current channel and opening a new one atomically.
+**Purpose**: Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> capacity by locking or unlocking funds **without closing the channel**.
 
 **Process**:
 
 1. Any <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participant</Tooltip> MAY:
-   - Call the `reset` function with:
-     - The current <Tooltip content="A unique identifier for a channel, computed as the hash of the channel configuration.">channelId</Tooltip>
-     - A valid closing <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> with all signatures
-     - Any required proofs
-     - A new Channel configuration
-     - A new initial State with the `CHANOPEN` magic number
+   - Call the `resize` function with:
+     - The <Tooltip content="A unique identifier for a channel, computed as the hash of the channel configuration.">channelId</Tooltip> (remains unchanged)
+     - A candidate <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">State</Tooltip> with:
+       - `intent` = `StateIntent.RESIZE` (2)
+       - `version` = precedingState.version + 1
+       - `data` = ABI-encoded `int256[]` containing delta amounts (positive for deposit, negative for withdrawal)
+       - `allocations` = final Allocation[] after resize (absolute amounts)
+       - Signatures from **ALL participants** (consensus required)
+     - An array of proof States supporting the candidate
 
 2. The contract MUST:
-   - Close the existing channel as per the cooperative close process
-   - Create a new channel following the creation process
-   - Return the new channelId
+   - Verify the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> is in ACTIVE status
+   - Verify all participants have signed the resize state
+   - Decode delta amounts from `candidate.data`
+   - Validate adjudicator approves the preceding state
+   - For positive deltas: Lock additional funds from custody account
+   - For negative deltas: Unlock funds back to custody account
+   - Update expected deposits to match new allocations
+   - Emit `Resized(channelId, deltaAllocations)` event
+
+3. The <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip>:
+   - **channelId remains UNCHANGED** (same channel persists)
+   - Status remains **ACTIVE** throughout
+   - Version increments by 1
+   - No new channel is created
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Contract
     
-    User->>Contract: reset(oldChannelId, closeState, newChannel, newState)
-    Contract->>Contract: Verify & close old channel
-    Contract->>Contract: Create new channel
-    Contract->>Contract: Return new channelId
-    Contract->>User: New channel active
+    User->>Contract: resize(channelId, resizeState, proofs)
+    Note right of Contract: Same channelId<br/>State version + 1<br/>Intent = RESIZE
+    Contract->>Contract: Verify signatures (all participants)
+    Contract->>Contract: Decode delta amounts from state.data
+    Contract->>Contract: Lock funds (positive deltas)
+    Contract->>Contract: Unlock funds (negative deltas)
+    Contract->>Contract: Update expected deposits
+    Contract->>User: Resized(channelId, deltas)
+    Note right of User: Same channelId<br/>Channel still ACTIVE
 ```
 
 **Use Cases**:
-- Increasing channel capacity (adding funds)
-- Decreasing channel capacity (removing funds)
-- Adjusting participant allocations
+- Increasing channel capacity (positive delta: adding funds)
+- Decreasing channel capacity (negative delta: removing funds)
+- Adjusting allocations while maintaining channel continuity
 
-:::tip Atomic Operation
-The reset operation is atomic - either both close and create succeed, or both revert. This ensures funds are never lost during capacity adjustments.
+:::tip In-Place Update
+The resize operation updates the channel **in place**. The channelId stays the same, and the channel remains ACTIVE throughout. This differs from closing and reopening, which would create a new channel.
 :::
-
 ## State Transition Summary
 
 The complete channel lifecycle state machine:

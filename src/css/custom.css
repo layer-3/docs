@@ -1185,3 +1185,18 @@ pre.codeBlock_bY9V[style*="background-color"],
 nav.menu > .menu__list > .menu__list-item {
   display: list-item !important;
 }
+
+/* Mermaid diagrams - ensure white background in all modes */
+.docusaurus-mermaid-container {
+  background-color: #ffffff !important;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container {
+  background-color: #ffffff !important;
+}
+
+.docusaurus-mermaid-container svg {
+  background-color: #ffffff !important;
+}

@@ -13,17 +13,17 @@ import Tooltip from '@site/src/components/Tooltip';
 
 **State**: A snapshot of the channel at a point in time, including fund allocations and application-specific data.
 
-**Participant**: An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a clearnode or a Clearnode Operator.
+**Participant**: An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a Clearnode or Clearnode Operator.
 
 **Adjudicator**: A smart contract that validates state transitions according to application-specific rules.
 
 **Clearnode**: A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
 
-**Creator**: Most often a light client willing to fund a ledger account with a clearnode.
+**Creator**: The participant at index 0 in a channel who initiates channel creation. The Creator constructs the channel configuration, prepares the initial funding state, signs it (signature at position 0), and calls the on-chain `create()` function to lock their funds and establish the channel. Typically a user or light client opening a payment channel with a clearnode.
 
 **App Sessions**: Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.
 
-**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode.
+**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode.
 
 **Session Key**: A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps.
 
@@ -34,6 +34,18 @@ import Tooltip from '@site/src/components/Tooltip';
 **stateHash**: A cryptographic hash of a channel state, used for signature verification.
 
 **requestId**: A unique identifier for an RPC request, used for correlating requests and responses.
+
+**appSessionId**: A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes). Used for all subsequent operations on that specific app session.
+
+**accountId**: An identifier for an account or app session within the unified ledger. Can be either a 0x-prefixed hex string or a wallet address.
+
+**chainId**: A blockchain network identifier (uint64). Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
+
+**assetSymbol**: A lowercase string identifier for a supported asset (e.g., "usdc", "eth", "weth", "usdt", "dai", "wbtc"). Asset symbols are consistent across chains.
+
+**walletAddress**: A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds. Used to identify participants in channels and app sessions.
+
+**userId**: Identifies a user after authentication with a clearnode. Currently, this is always equivalent to the user's walletAddress.
 
 ## Protocol Components
 

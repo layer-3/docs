@@ -13,35 +13,45 @@ The <Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip>
 
 ```mermaid
 graph TB
-    subgraph Application["Application Layer"]
-        APP[Chess, DEX, Gaming, Payments, Custom Logic]
-    end
-    
-    subgraph OffChain["Off-Chain Layer (Fast Updates)"]
-        CLIENT[Client SDK]
-        BROKER[Clearnode]
-        RPC[Nitro RPC WebSocket]
-    end
-    
-    subgraph OnChain["On-Chain Layer (Smart Contracts)"]
-        CONTRACTS[Custody Contracts]
-    end
-    
-    subgraph Blockchain["Blockchain Layer"]
-        CHAIN[Ethereum, Polygon, etc.]
-    end
-    
-    APP --> CLIENT
-    APP --> BROKER
-    CLIENT <-->|Nitro RPC| BROKER
-    CLIENT --> CONTRACTS
-    BROKER --> CONTRACTS
-    CONTRACTS --> CHAIN
-    
-    style Application fill:#e1f5ff
-    style OffChain fill:#fff4e1
-    style OnChain fill:#ffe1f5
-    style Blockchain fill:#f0f0f0
+
+  %% Layered architecture with legible fills for light/dark modes
+
+  subgraph Application["Application Layer"]
+    direction TB
+    APP["Chess, DEX, Gaming, Payments, Custom Logic"]
+  end
+
+  subgraph OffChain["Off-Chain Layer (Fast Updates)"]
+    direction LR
+    CLIENT["Client SDK"]
+    BROKER["Broker (Clearnode)"]
+  end
+
+  subgraph OnChain["On-Chain Layer (Smart Contracts)"]
+    direction TB
+    CONTRACTS["Custody / App Contracts"]
+  end
+
+  subgraph Blockchain["Blockchain Layer"]
+    direction TB
+    CHAIN["Ethereum, Polygon, etc."]
+  end
+
+  APP --> CLIENT
+  APP --> BROKER
+  CLIENT <-->|"Nitro RPC (WebSocket)"| BROKER
+  CLIENT -. "Checkpoint / Settle" .-> CONTRACTS
+  BROKER -. "Join / Verify" .-> CONTRACTS
+  CONTRACTS --> CHAIN
+
+  %% Subgraph fills (kept light for both themes)
+  style Application fill:#e1f5ff,stroke:#9ad7ff,color:#111
+  style OffChain fill:#fff4e1,stroke:#ffd497,color:#111
+  style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
+  style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
+
+  %% Emphasize the RPC link (index 2 in the edge list above)
+  linkStyle 2 stroke:#0ea5e9,stroke-width:2px
 ```
 
 ## Communication Patterns
@@ -51,10 +61,12 @@ graph TB
 The <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip>:
 
 1. Client requests channel creation from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip> via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
-2. The clearnode returns signed initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip>
-3. Client submits transaction to <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip>
-4. The clearnode joins the channel on-chain
-5. Channel becomes active
+2. The clearnode returns signed initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> (signature at index 1)
+3. Client signs the initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> (signature at index 0)
+4. Client submits transaction to <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> with both signatures
+5. Contract verifies signatures and emits `Opened` event
+6. Channel becomes ACTIVE immediately
+7. The clearnode monitors the `Opened` event and updates its internal state
 
 ```mermaid
 sequenceDiagram
@@ -63,11 +75,12 @@ sequenceDiagram
     participant Blockchain
     
     Client->>Clearnode: create_channel request
-    Clearnode->>Client: signed initial state
-    Client->>Blockchain: submit create() transaction
-    Blockchain->>Clearnode: Created event
-    Clearnode->>Blockchain: submit join() transaction
-    Blockchain->>Clearnode: Opened event
+    Clearnode->>Client: signed initial state (clearnode signature)
+    Client->>Client: Add own signature
+    Client->>Blockchain: create() with BOTH signatures
+    Blockchain->>Blockchain: Verify signatures<br/>Set status = ACTIVE
+    Blockchain->>Blockchain: Emit Opened event
+    Blockchain-->>Clearnode: Opened event (monitored)
     Clearnode->>Client: channel_update notification
 ```
 
@@ -77,12 +90,19 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 
 ### Off-Chain Updates
 
-Off-chain updates occur entirely between <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">participants</Tooltip> without touching the blockchain:
+**Off-Chain Updates**:
 
-1. Participants exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+1. <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+
+   - *Note for <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">App Sessions</Tooltip>*: The exchange of states is handled by the App itself. Once the App Session state has enough signatures to satisfy quorum, a responsible party submits this signed state to the <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>.
+
 2. No blockchain transactions required
+
 3. Latest valid state maintained off-chain
+
 4. Can be checkpointed on-chain at any time
+
+   - *Current Implementation Note*: While this is the ideal design goal, the current implementation does not store off-chain state that is not related to on-chain state, so checkpointing is not currently supported. This functionality is under development and will be more enforced in the next version of the protocol.
 
 :::tip Zero Gas Fees
 Off-chain updates are instant (< 1 second) and incur zero gas fees, enabling high-frequency operations.
@@ -108,8 +128,8 @@ graph LR
     B -->|Yes| C[Cooperative Close<br/>Fast, Cheap]
     B -->|No| D[Challenge-Response<br/>Slow, Secure]
     
-    style C fill:#90EE90
-    style D fill:#FFB6C1
+    style C fill:#90EE90,stroke:#333,color:#111
+    style D fill:#FFB6C1,stroke:#333,color:#111
 ```
 
 ## Fund Flow
@@ -119,18 +139,18 @@ The following diagram illustrates how funds flow through the Nitrolite protocol:
 ```mermaid
 graph TB
     A[User Wallet<br/>ERC-20] -->|deposit| B[Custody Contract<br/>Available]
-    B -->|create/join| C[Channel<br/>Locked]
+    B -->|create/resize| C[Channel<br/>Locked]
     C -->|off-chain updates| D[Unified Balance<br/>Clearnode]
-    D -->|app sessions| E[Virtual Channels<br/>Application]
+    D -->|open/deposit| E[App Sessions<br/>Application]
     E -->|close session| D
     D -->|close channel| B
     B -->|withdraw| A
     
-    style A fill:#90EE90
-    style B fill:#87CEEB
-    style C fill:#FFD700
-    style D fill:#DDA0DD
-    style E fill:#FFA07A
+    style A fill:#90EE90,stroke:#333,color:#111
+    style B fill:#87CEEB,stroke:#333,color:#111
+    style C fill:#FFD700,stroke:#333,color:#111
+    style D fill:#DDA0DD,stroke:#333,color:#111
+    style E fill:#FFA07A,stroke:#333,color:#111
 ```
 
 **Flow Explanation**:

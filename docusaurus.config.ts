@@ -220,6 +220,12 @@ const config: Config = {
       additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
       defaultLanguage: 'javascript',
     },
+    mermaid: {
+      theme: {
+        light: 'default',
+        dark: 'default',
+      },
+    },
   } satisfies Preset.ThemeConfig,
 };
 

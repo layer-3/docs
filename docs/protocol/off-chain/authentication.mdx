@@ -87,7 +87,7 @@ This pattern ensures that:
 
 ### Usage
 
-Initiates authentication with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> by registering a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>. The client sends this request signed by their main wallet (e.g., MetaMask) to authorize a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> to act on their behalf. The <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
+Initiates authentication with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> by registering a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>. The client sends this request signed by their main wallet to authorize a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> to act on their behalf. The <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
 
 ### When to Use
 
@@ -142,40 +142,6 @@ Client must call `auth_verify` with the challenge signed by the <Tooltip content
 | **Signature verification failed** | -32602 | Signature doesn't match provided address | Re-sign with correct wallet |
 | **Session key already registered** | 1008 | This session key is already in use | Generate a new session keypair |
 
-### Implementation Example
-
-**Step-by-Step Client Implementation**:
-
-```javascript
-// 1. Generate session keypair (client-side, never transmitted)
-const sessionKeyPair = generateKeyPair() // e.g., secp256k1
-const sessionAddress = deriveAddress(sessionKeyPair.publicKey)
-
-// 2. Create request parameters
-const params = {
-  address: userMainWalletAddress,
-  session_key: sessionAddress,
-  application: "my-dapp",
-  allowances: [
-    { asset: "usdc", amount: "100.0" },
-    { asset: "eth", amount: "0.1" }
-  ],
-  expire: "3600" // 1 hour
-}
-
-// 3. Create request payload
-const requestId = generateUniqueId()
-const req = [requestId, "auth_request", params, 0] // timestamp filled by server
-
-// 4. User signs with main wallet (e.g., MetaMask prompt)
-const signature = await userWallet.signMessage(keccak256(JSON.stringify(req)))
-
-// 5. Send request
-const response = await sendToC learnode({ req, sig: [signature] })
-
-// 6. Extract challenge
-const challenge = response.result.challenge_message
-```
 
 ---
 
@@ -284,44 +250,6 @@ Session is authenticated. All subsequent private method calls should be signed w
 | **Session key not registered** | 1001 | Session key not found in pending auths | Ensure `auth_request` succeeded first |
 | **Challenge mismatch** | -32602 | Challenge doesn't match pending auth | Use exact challenge from `auth_challenge` |
 
-### Implementation Example
-
-**Step-by-Step Client Implementation**:
-
-```javascript
-// Continuing from auth_request example...
-
-// 7. Sign challenge with session key (NOT main wallet)
-const verifyParams = {
-  challenge: challenge, // From auth_challenge response
-  session_key: sessionAddress
-}
-
-const verifyReq = [requestId + 1, "auth_verify", verifyParams, 0]
-
-// Sign with SESSION KEY private key
-const challengeSignature = sign(keccak256(JSON.stringify(verifyReq)), sessionKeyPair.privateKey)
-
-// 8. Send verification
-const verifyResponse = await sendToClearnode({ req: verifyReq, sig: [challengeSignature] })
-
-// 9. Authentication complete!
-const { address, session_key, expire } = verifyResponse.result
-
-// Store session info
-storeSession({
-  mainAddress: address,
-  sessionKey: session_key,
-  sessionPrivateKey: sessionKeyPair.privateKey, // Store securely!
-  expiresAt: expire
-})
-
-// 10. Use session key for all subsequent requests
-// Example:
-const channelReq = [requestId + 2, "create_channel", {...}, 0]
-const channelSig = sign(keccak256(JSON.stringify(channelReq)), sessionKeyPair.privateKey)
-await sendToClearnode({ req: channelReq, sig: [channelSig] })
-```
 
 ---
 
@@ -369,27 +297,13 @@ stateDiagram-v2
 
 ### Checking Session Status
 
-Use `get_session_keys` to view active sessions and their remaining allowances:
-
-```javascript
-const sessions = await clearnode.call("get_session_keys", {})
-
-sessions.forEach(session => {
-  console.log(`Session: ${session.session_key}`)
-  console.log(`Expires: ${new Date(session.expire * 1000)}`)
-  console.log(`Allowances:`)
-  session.allowances.forEach(allowance => {
-    const remaining = allowance.allowance - allowance.used
-    console.log(`  ${allowance.asset}: ${remaining} of ${allowance.allowance} remaining`)
-  })
-})
-```
+Use `get_session_keys` to view active sessions and their remaining allowances. The response includes session details with current allowance usage.
 
 ### Session Expiration Handling
 
 When a session expires, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> will reject requests with error code `1001`:
 
-```javascript
+```json
 {
   "error": {
     "code": 1001,
@@ -404,16 +318,19 @@ When a session expires, <Tooltip content="A virtual ledger layer that provides a
 
 <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> tracks spending by monitoring all ledger debit operations:
 
-```javascript
-Initial: allowance = 100 USDC, used = 0 USDC
+```
+Initial state:
+  allowance = specified_limit
+  used = 0
+  remaining = specified_limit
 
-After transfer of 45 USDC:
-  allowance = 100 USDC
-  used = 45 USDC
-  remaining = 55 USDC
+After operations:
+  allowance = specified_limit (unchanged)
+  used = sum_of_all_debits
+  remaining = allowance - used
 
-If next operation requires 60 USDC:
-  Error: "Session key allowance exceeded: 60 required, 55 available"
+When operation exceeds remaining:
+  Error: "Session key allowance exceeded: amount_required, remaining_available"
 ```
 
 :::warning Allowance Enforcement
