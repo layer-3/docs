@@ -337,7 +337,7 @@ Contract deployment addresses are stored in the repository.
 └── metadata.json     # Contract metadata
 ```
 
-**Example Path** (Polygon USDC <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody</Tooltip>):
+**Example Path** (Polygon USDC <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody</Tooltip>):
 ```
 /contract/deployments/137/USDCCustody/address.txt
 ```
@@ -440,7 +440,7 @@ Ethereum Improvement Proposals referenced or used by the protocol.
 **Status**: Required for all assets  
 **Link**: https://eips.ethereum.org/EIPS/eip-20
 
-**Usage**: All assets must be ERC-20 compliant tokens. The <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip> uses `transferFrom` and `transfer` methods.
+**Usage**: All assets must be ERC-20 compliant tokens. The <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip> uses `transferFrom` and `transfer` methods.
 
 :::note Standards Compliance
 While the protocol references these EIPs, implementation details may vary. Always consult the specific smart contract code for authoritative behavior.

@@ -26,7 +26,7 @@ The protocol operates under the following security assumptions:
 
 The protocol provides protection against:
 
-- **Replay attacks** via version numbers in adjudicator logic
+- **Replay attacks** via version number checking in <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip>
 - **State withholding** via challenge mechanism
 - **Unauthorized state transitions** via signature verification
 - **Funds theft** - all transitions require valid signatures from appropriate parties

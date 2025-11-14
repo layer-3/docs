@@ -15,8 +15,6 @@ import Tooltip from '@site/src/components/Tooltip';
 
 **Participant**: An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a Clearnode or Clearnode Operator.
 
-**Adjudicator**: A smart contract that validates state transitions according to application-specific rules.
-
 **Clearnode**: A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
 
 **Creator**: The participant at index 0 in a channel who initiates channel creation. The Creator constructs the channel configuration, prepares the initial funding state, signs it (signature at position 0), and calls the on-chain `create()` function to lock their funds and establish the channel. Typically a user or light client opening a payment channel with a clearnode.
@@ -47,13 +45,17 @@ import Tooltip from '@site/src/components/Tooltip';
 
 **userId**: Identifies a user after authentication with a clearnode. Currently, this is always equivalent to the user's walletAddress.
 
+## On-Chain Contracts
+
+**Custody Contract**: The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol that locks funds, tracks channel state, and coordinates with adjudicators to validate state transitions.
+
+**Adjudicator**: A smart contract that defines the rules for validating state transitions during disputes. The adjudicator's `adjudicate()` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
+
 ## Protocol Components
 
 **Nitrolite**: The on-chain smart contract protocol.
 
 **Nitro RPC**: The off-chain communication protocol.
-
-**Custody Contract**: The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol.
 
 :::tip Quick Reference
 These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.

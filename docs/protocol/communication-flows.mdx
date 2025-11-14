@@ -185,7 +185,7 @@ Open a payment <Tooltip content="A secure communication pathway between particip
 
 - **Client**: User application or SDK
 - **Clearnode**: Off-chain service provider
-- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
+- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
 - **Blockchain**: Ethereum-compatible network
 
 ### Sequence Diagram
@@ -311,7 +311,7 @@ Contract:
 - Verifies user's signature is valid
 - Verifies user has sufficient token balance
 - Verifies magic number is CHANOPEN
-- Transfers tokens from user to <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody</Tooltip>
+- Transfers tokens from user to <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody</Tooltip>
 - Sets <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> status to `INITIAL`
 - Stores funding state hash
 - Emits `Created` event
@@ -335,7 +335,7 @@ Custody.join(channelId, 1, clearnode_signature)
 Contract:
 - Verifies clearnode's signature matches
 - Verifies index is 1 (clearnode's position)
-- Transfers tokens from clearnode to <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody</Tooltip> (0 in this case)
+- Transfers tokens from clearnode to <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody</Tooltip> (0 in this case)
 - Updates <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> metadata with actual deposits
 - Sets status to `ACTIVE`
 - Emits `Opened` event
@@ -585,7 +585,7 @@ Close <Tooltip content="A secure communication pathway between participants that
 
 - **Client**: User application
 - **Clearnode**: Off-chain service provider
-- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
+- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
 - **Blockchain**: Ethereum-compatible network
 
 ### Key Points
@@ -608,7 +608,7 @@ Close <Tooltip content="A secure communication pathway between participants that
 
 - **Client**: User application
 - **Clearnode**: Off-chain service provider (may be unresponsive)
-- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
+- **Smart Contract**: <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip>
 - **Blockchain**: Ethereum-compatible network
 
 ### Key Points
