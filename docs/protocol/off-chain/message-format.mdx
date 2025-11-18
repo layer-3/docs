@@ -198,146 +198,133 @@ The response payload as a 4-element array:
 
 ## Error Response
 
-When an error occurs, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> sends an error message following the JSON-RPC 2.0 error format.
+When an error occurs, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> sends an error response with method set to `"error"`.
 
 ### Structure
 
 ```json
 {
-  "id": requestId,
-  "error": {
-    "code": errorCode,
-    "message": "Error description"
-  }
+  "res": [
+    requestId,
+    "error",
+    {
+      "error": "Error description message"
+    },
+    timestamp
+  ],
+  "sig": ["0xServerSignature..."]
 }
 ```
 
-### Error Codes
-
-Nitro RPC uses standard JSON-RPC error codes plus application-specific codes.
-
-#### Standard JSON-RPC Errors
-
-| Code | Name | Description |
-|------|------|-------------|
-| **-32700** | Parse error | Invalid JSON received by server |
-| **-32600** | Invalid request | Request structure is invalid |
-| **-32601** | Method not found | Requested method does not exist |
-| **-32602** | Invalid params | Method parameters are invalid |
-| **-32603** | Internal error | Internal server error |
-
-#### Application-Specific Errors (1000+)
-
-| Code | Name | Description |
-|------|------|-------------|
-| **1001** | Authentication required | Operation requires authenticated session |
-| **1002** | Insufficient balance | User doesn't have enough available funds |
-| **1003** | Channel not found | Specified channel_id does not exist |
-| **1004** | App session not found | Specified app_session_id does not exist |
-| **1005** | Quorum not met | Signatures don't meet quorum requirement |
-| **1006** | Version conflict | <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">State</Tooltip> version doesn't match expected |
-| **1007** | Invalid allocation | Allocation sum doesn't match rules |
-| **1008** | Session key allowance exceeded | Operation would exceed spending cap |
-| **1009** | Unsupported chain | Specified chain_id not supported |
-| **1010** | Unsupported token | Specified token not supported |
-
-:::info Error Handling Best Practice
-Clients should implement proper error handling for both standard JSON-RPC errors (protocol-level) and application-specific errors (business logic-level). Always check the error code to determine appropriate recovery action.
-:::
+The result object at position 2 contains a single `"error"` field with a descriptive error message string.
 
 ### Error Examples
 
 **Authentication Required**:
 ```json
 {
-  "id": 5,
-  "error": {
-    "code": 1001,
-    "message": "Authentication required: session not established"
-  }
+  "res": [
+    5,
+    "error",
+    {
+      "error": "Authentication required: session not established"
+    },
+    1699123456789
+  ],
+  "sig": ["0xServerSignature..."]
 }
 ```
 
 **Insufficient Balance**:
 ```json
 {
-  "id": 12,
-  "error": {
-    "code": 1002,
-    "message": "Insufficient balance: required 100 USDC, available 75 USDC"
-  }
+  "res": [
+    12,
+    "error",
+    {
+      "error": "Insufficient balance: required 100 USDC, available 75 USDC"
+    },
+    1699123456790
+  ],
+  "sig": ["0xServerSignature..."]
 }
 ```
 
 **Method Not Found**:
 ```json
 {
-  "id": 8,
-  "error": {
-    "code": -32601,
-    "message": "Method not found: 'invalid_method'"
-  }
+  "res": [
+    8,
+    "error",
+    {
+      "error": "Method not found: 'invalid_method'"
+    },
+    1699123456791
+  ],
+  "sig": ["0xServerSignature..."]
 }
 ```
 
+:::tip Error Handling
+Check the response method field (position 1 in `res` array). If it equals `"error"`, extract the error message from the result object's `error` field. The error message provides human-readable context about what went wrong.
+:::
+
 ---
 
-## State Hash Computation
+## Payload Hash Computation
 
-For requests and responses that involve <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> updates, an RPC <Tooltip content="Cryptographic hash of a state, used for signature verification">stateHash</Tooltip> is computed and signed by <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip>.
+Every RPC message (request or response) has a **payload hash** that is computed and signed. The payload is everything inside the `req` or `res` field.
 
-### When State Hash is Used
+### What is the Payload
 
-- <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">App session</Tooltip> creation
-- <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">App session</Tooltip> state updates
-- Multi-signature operations
+- **For requests**: The `req` array: `[requestId, method, params, timestamp]`
+- **For responses**: The `res` array: `[requestId, method, result, timestamp]`
 
-### Computation Formula
+### Hash Formula
 
 ```javascript
-rpcStateHash = keccak256(
-    abi.encode(
-        requestId,
-        method,
-        params,
-        result,
-        timestamp
-    )
-)
+payloadHash = keccak256(JSON.stringify(payload))
 ```
 
-:::note State Hash Purpose
-The RPC <Tooltip content="Cryptographic hash of a state, used for signature verification">stateHash</Tooltip> is distinct from the on-chain <Tooltip content="Cryptographic hash of a state, used for signature verification">stateHash</Tooltip> used in smart contracts. The RPC version ensures integrity of the entire request/response exchange, while the on-chain version ensures integrity of <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> states.
+Where `payload` is the `req` or `res` array.
+
+### JSON Encoding Requirements
+
+The JSON encoding MUST contain **spaces only inside string values**. No spaces between structural elements (arrays, objects, commas, colons).
+
+**Correct encoding** for hashing:
+```json
+[1,"transfer",{"amount":"100","asset":"usdc","destination":"0x..."},1699123456]
+```
+
+**Incorrect encoding** (would produce different hash):
+```json
+[  1,  "transfer",  { "amount": "100", "asset": "usdc" },  1699123456  ]
+```
+
+:::caution Encoding Consistency
+The JSON encoding logic (no spaces except in string values) may be reconsidered in the next version of the protocol. For now, all implementations MUST follow this exact encoding to ensure signature compatibility.
 :::
 
 ### Example
 
 **Request Payload**:
 ```javascript
-[
-  42,
-  "create_app_session",
-  {
-    "definition": {...},
-    "allocations": [...]
-  },
-  1699123456789
-]
+[42, "create_app_session", {"definition":{...}, "allocations":[...]}, 1699123456789]
 ```
 
-**State Hash**:
+**Payload Hash**:
 ```javascript
-keccak256(abi.encode(
+payloadHash = keccak256(JSON.stringify([
   42,
   "create_app_session",
-  {...params...},
-  null,  // result is null for requests
+  {"definition":{...}, "allocations":[...]},
   1699123456789
-))
+]))
 // Result: 0xabcdef1234567890...
 ```
 
-This hash is then signed by all required <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip>.
+This hash is then signed by the sender (client's session key for requests, clearnode for responses).
 
 ---
 
@@ -355,7 +342,7 @@ sequenceDiagram
     end
 
     Note over Client: Generate Request
-    Client->>Client: Create payload: [reqId, method, params, 0]
+    Client->>Client: Create payload: [request_id, method, params, 0]
     Client->>Client: Sign payload with session key
 
     Client->>Clearnode: Send Request {req, sig}
@@ -367,14 +354,14 @@ sequenceDiagram
     Clearnode->>Clearnode: Generate result
 
     Note over Clearnode: Generate Response
-    Clearnode->>Clearnode: Create response: [reqId, method, result, timestamp]
+    Clearnode->>Clearnode: Create response: [request_id, method, result, timestamp]
     Clearnode->>Clearnode: Sign response
 
     Clearnode->>Client: Send Response {res, sig}
 
     Note over Client: Process Response
     Client->>Client: Verify Clearnode signature
-    Client->>Client: Correlate by requestId
+    Client->>Client: Correlate by request_id
     Client->>Client: Handle result
 
 ```
@@ -399,8 +386,8 @@ Both clients and <Tooltip content="A virtual ledger layer that provides a unifie
 3. **Recover Address**: Use `sig` to recover signer address
 4. **Verify**: Confirm recovered address matches authenticated user or registered <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>
 
-:::warning Signature Verification is Mandatory
-**ALL** messages MUST be cryptographically signed and verified. Unsigned or invalidly signed messages MUST be rejected immediately. This is critical for security and non-repudiation.
+:::warning Signature Verification Requirements
+**Most** messages MUST be cryptographically signed and verified. All state-changing operations (channel creation/closure, transfers, app sessions) and authenticated methods require valid signatures. However, **some query methods** (such as `get_config`) may be accessed without signatures. Refer to individual method specifications for signature requirements.
 :::
 
 ---

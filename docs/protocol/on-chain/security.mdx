@@ -118,9 +118,7 @@ Sign Message:
 
 **Implementation Note**: The protocol accepts **all three formats** (raw ECDSA, EIP-191, EIP-712) for maximum compatibility, but EIP-712 is **strongly recommended** for production applications due to its superior security and UX properties.
 
-:::tip Protocol Differentiator
-Supporting EIP-712 signatures for state channel operations is a key differentiating feature of <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip>, setting it apart from protocols that only support raw message signing. This makes <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip> more accessible to end users and reduces integration friction for wallet providers.
-:::
+Supporting EIP-712 signatures also differentiates <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip> by keeping state channel operations wallet-friendly and lowering integration friction compared to protocols limited to raw message signing.
 
 ### Liveness
 
@@ -321,4 +319,3 @@ Before submitting state on-chain:
 :::tip Monitoring Best Practice
 Set up automated monitoring with alerts for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> events. This ensures you can respond quickly to challenges even if you're not actively watching.
 :::
-
