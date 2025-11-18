@@ -17,7 +17,7 @@ The transfer system allows users to send funds to each other instantly using the
 
 ### Why Use Transfers?
 
-**Instant Settlement**: Transfers complete in under 1 second with immediate finality.
+**Instant Settlement**: Transfers complete immediately with instant finality.
 
 **Zero Gas Fees**: No blockchain transactions means zero gas costs for both sender and recipient.
 
@@ -39,7 +39,7 @@ Transfers provide the speed and convenience of traditional payment networks whil
 
 ### Usage
 
-Transfers funds from the authenticated user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> to another user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>, resulting in instant settlement (typically under 1 second) with zero gas fees. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. Both sender and recipient must be connected to the same <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip> (have open channels). The security guarantee comes from the underlying on-chain channels that back the <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>.
+Transfers funds from the authenticated user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> to another user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>, resulting in instant settlement with zero gas fees. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. Both sender and recipient must be connected to the same <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip> (have open channels). The security guarantee comes from the underlying on-chain channels that back the <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>.
 
 ### When to Use
 
@@ -314,7 +314,7 @@ entries.forEach(entry => {
 ## Implementation Notes
 
 **Performance**:
-- Transfers are instant (< 1 second) and atomic
+- Transfers are instant and atomic
 - No blockchain transaction required
 - Zero gas fees
 
@@ -344,6 +344,6 @@ Explore other off-chain operations:
 - **[Channel Methods](./channel-methods)** - Manage payment channels
 
 For protocol fundamentals:
-- **[Authentication](./authentication)** - Understand session management
+- **[Authentication](./authentication)** - Understand authorization and session management
 - **[Message Format](./message-format)** - Learn request/response structure
 

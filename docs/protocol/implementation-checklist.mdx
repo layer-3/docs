@@ -104,7 +104,7 @@ Smart contract interactions for <Tooltip content="A secure communication pathway
 - [ ] **Listen to contract events**
   - `Created(channelId, channel, deposits)` - Channel initiated
   - `Opened(channelId)` - Channel fully funded and active
-  - `Challenged(channelId, version, expires_at)` - Dispute started
+  - `Challenged(channelId, state, expiration)` - Dispute started (expiration = challenge period end)
   - `Closed(channelId, allocations)` - Channel finalized
 
 - [ ] **Process events in order**
@@ -164,7 +164,7 @@ WebSocket-based communication with <Tooltip content="A virtual ledger layer that
   - Implement key rotation strategy
 
 - [ ] **Track session expiration**
-  - Monitor session expire timestamp
+  - Monitor session `expires_at` timestamp
   - Re-authenticate before expiration
   - Handle expired session errors
 

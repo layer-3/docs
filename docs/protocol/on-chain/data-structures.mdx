@@ -71,9 +71,9 @@ struct Allocation {
 - `token`: Contract address of the ERC-20 token (or zero address for native currency).
 - `amount`: Amount in the token's smallest unit (wei for ETH, considering decimals for ERC-20).
 
-## Signature
+## Signatures
 
-ECDSA signature components.
+Signatures in <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip> are represented as variable-length byte arrays to support multiple signature schemes.
 
 ```solidity
 struct Signature {
@@ -83,10 +83,36 @@ struct Signature {
 }
 ```
 
-Signatures follow the secp256k1 curve standard used in Ethereum. The protocol is chain-agnostic and signatures are computed over the raw stateHash without EIP-191 prefix.
+### Supported Signature Types
 
-:::caution Chain-Agnostic Signatures
-Signatures in Nitrolite are computed over raw stateHash without EIP-191 prefix, ensuring chain-agnostic compatibility.
+Since v0.3.0, the protocol supports three signature formats:
+
+**ECDSA (EOA Signatures)**
+- Standard 65-byte signatures for Externally Owned Accounts
+- Used when the signer is a regular wallet address (not a contract)
+- Computed over the raw <Tooltip content="A cryptographic hash of a channel state, used for signature verification">stateHash</Tooltip> without EIP-191 prefix for chain-agnostic compatibility
+
+**ERC-1271 (Smart Contract Signatures)**
+- For smart contract wallets
+- Verified by calling the contract's `isValidSignature()` function
+- Detected when the signer address has contract code
+
+**ERC-6492 (Counterfactual Signatures)**
+- For contracts not yet deployed (counterfactual addresses)
+- Contains deployment bytecode along with the signature
+- Identified by the ERC-6492 detection suffix (`0x6492...6492`)
+- Protocol deploys the contract if needed, then verifies via ERC-1271
+
+The <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> verifies signatures in the following order:
+
+1. Check for ERC-6492 detection suffix → verify counterfactual signature
+2. Check if signer has contract code → verify ERC-1271 signature  
+3. Otherwise → verify ECDSA signature from EOA
+
+This flexible signature format enables compatibility with various wallet types while maintaining chain-agnostic principles.
+
+:::tip Smart Wallet Support
+The `bytes[]` signature format allows Nitrolite to work seamlessly with smart contract wallets, multi-signature wallets, and counterfactual contracts without requiring changes to the core protocol.
 :::
 
 ## Amount

@@ -278,7 +278,7 @@ stateDiagram-v2
 
 ## Resize Protocol
 
-**Purpose**: Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> capacity by locking or unlocking funds **without closing the channel**.
+**Purpose**: Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> allocations by locking or unlocking funds **without closing the channel**.
 
 **Process**:
 
@@ -326,9 +326,9 @@ sequenceDiagram
 ```
 
 **Use Cases**:
-- Increasing channel capacity (positive delta: adding funds)
-- Decreasing channel capacity (negative delta: removing funds)
-- Adjusting allocations while maintaining channel continuity
+- Increasing allocations (positive delta: adding funds)
+- Decreasing allocations (negative delta: removing funds)
+- Adjusting fund distribution while maintaining channel continuity
 
 :::tip In-Place Update
 The resize operation updates the channel **in place**. The channelId stays the same, and the channel remains ACTIVE throughout. This differs from closing and reopening, which would create a new channel.

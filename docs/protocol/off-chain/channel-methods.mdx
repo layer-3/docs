@@ -269,7 +269,7 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 | Parameter | Type | Required | Description | Default | Format | Example | Notes |
 |-----------|------|----------|-------------|---------|--------|---------|-------|
 | `channel_id` | string | Yes | Identifier of the channel to close | - | 0x-prefixed hex string (32 bytes) | `"0xabcdef1234567890..."` | Source: From get_channels or stored after creation |
-| `allocations` | Allocation[] | No | Proposed final allocation of funds<br/><br/>**Structure (per allocation)**:<br/>• `destination` (wallet address) - Where funds should go<br/>• `token` (wallet address) - Token contract address<br/>• `amount` (string) - Amount in smallest unit | The clearnode will use current unified balance if not provided | See structure | `[{"destination": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "105000000"}, {"destination": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}]` | Total must not exceed channel capacity<br/>Validation: The clearnode verifies against unified balance |
+| `allocations` | Allocation[] | No | Proposed final allocation of funds<br/><br/>**Structure (per allocation)**:<br/>• `destination` (wallet address) - Where funds should go<br/>• `token` (wallet address) - Token contract address<br/>• `amount` (string) - Amount in smallest unit | The clearnode will use current unified balance if not provided | See structure | `[{"destination": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "105000000"}, {"destination": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}]` | Total must not exceed total locked funds<br/>Validation: The clearnode verifies against unified balance |
 
 ### Response
 
@@ -284,7 +284,7 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 1. **Verify Final Allocations**
    - Check allocations match expectations
-   - Verify total matches channel capacity
+   - Verify total matches total locked funds
    - Ensure your allocation is correct
 
 2. **Verify the Clearnode's Signature**
@@ -361,14 +361,14 @@ Challenge closure requires waiting for the challenge period to expire before fun
 
 ### Usage
 
-Adjusts the capacity of an existing <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> by locking or unlocking funds **without closing the channel**. Unlike older implementations, this uses the `resize()` function on the <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> to perform an **in-place update** of the channel's capacity. The same <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> persists throughout the operation, and the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> remains in ACTIVE status. <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> prepares a resize state with delta amounts (positive for deposit, negative for withdrawal) that all participants must sign before submitting on-chain.
+Adjusts the allocations of an existing <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> by locking or unlocking funds **without closing the channel**. Unlike older implementations, this uses the `resize()` function on the <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> to perform an **in-place update** of the channel's allocations. The same <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> persists throughout the operation, and the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> remains in ACTIVE status. <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> prepares a resize state with delta amounts (positive for deposit, negative for withdrawal) that all participants must sign before submitting on-chain.
 
 ### When to Use
 
-When a user wants to adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> capacity while keeping the same channel active. This is more efficient than closing and reopening, and maintains the channel's history and state version continuity.
+When a user wants to adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> allocations while keeping the same channel active. This is more efficient than closing and reopening, and maintains the channel's history and state version continuity.
 
 :::tip In-Place Update
-The resize operation updates the channel **in place**. The <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> **stays the same**, and the channel remains ACTIVE throughout. This is the current implementation of channel capacity adjustment.
+The resize operation updates the channel **in place**. The <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> **stays the same**, and the channel remains ACTIVE throughout. This is the current implementation of channel allocation adjustment.
 :::
 
 ### Prerequisites
@@ -675,7 +675,7 @@ Explore other off-chain operations:
 - **[Queries](./queries)** - Check <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> status, balances, and history
 
 For protocol fundamentals:
-- **[Authentication](./authentication)** - Understand session management
+- **[Authentication](./authentication)** - Understand authorization and session management
 - **[Message Format](./message-format)** - Learn request/response structure
 - **[On-Chain Protocol](/docs/protocol/on-chain/overview)** - Deep dive into smart contracts
 

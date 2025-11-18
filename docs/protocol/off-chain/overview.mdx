@@ -13,7 +13,7 @@ The Off-Chain RPC Protocol defines how clients communicate with <Tooltip content
 
 ## What is Nitro RPC?
 
-**Nitro RPC** is a lightweight, WebSocket-based RPC protocol designed for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">state channel</Tooltip> communication. It uses a compact JSON array format for efficiency and includes signature-based authentication.
+**Nitro RPC** is a lightweight RPC protocol designed for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">state channel</Tooltip> communication. It uses a compact JSON array format for efficiency and includes signature-based authentication.
 
 :::info Protocol Purpose
 Nitro RPC enables clients to interact with a clearnode for channel management, fund transfers, and application-specific operations—all happening off-chain with instant finality and zero gas costs.
@@ -111,7 +111,7 @@ Nitro RPC has evolved to support advanced features while maintaining backward co
 
 ## Communication Architecture
 
-Nitro RPC operates over WebSocket connections, enabling bidirectional real-time communication between clients and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>.
+Nitro RPC enables bidirectional real-time communication between clients and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>.
 
 ```mermaid
 graph TB
@@ -138,7 +138,7 @@ graph TB
 2. **Authentication**: Complete 3-step auth flow (auth_request → auth_challenge → auth_verify)
 3. **RPC Communication**: Send requests, receive responses
 4. **Notifications**: Receive real-time updates (balance changes, <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> events)
-5. **Keep-Alive**: Periodic ping/pong to maintain connection
+5. **Keep-Alive**: Periodic ping/pong to maintain connection (optional, depends upon the implementation chosen)
 
 ---
 
@@ -149,16 +149,15 @@ Nitro RPC methods are organized into functional categories:
 ### 1. Authentication Methods
 
 Establish and manage authenticated sessions:
-- `auth_request` - Initiate authentication
-- `auth_challenge` - Receive challenge from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>
-- `auth_verify` - Complete authentication
+- `auth_request` - Initiate authentication (response: `auth_challenge`)
+- `auth_verify` - Complete authentication with challenge response
 
 ### 2. Channel Management Methods
 
 Create and manage payment channels:
 - `create_channel` - Open new <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>
 - `close_channel` - Cooperatively close <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>
-- `resize_channel` - Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> capacity
+- `resize_channel` - Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> allocations
 
 ### 3. Transfer Methods
 
@@ -176,7 +175,7 @@ Manage multi-party application channels:
 
 Read state and configuration:
 - `get_config`, `get_assets`, `get_channels`, `get_app_sessions`
-- `get_balance`, `get_ledger_entries`, `get_ledger_transactions`
+- `get_ledger_balances`, `get_ledger_entries`, `get_ledger_transactions`
 - `get_user_tag`, `get_session_keys`, `ping`
 
 ### 6. Notifications (Server-to-Client)
@@ -210,7 +209,6 @@ The Off-Chain RPC Protocol provides multiple layers of security:
 
 - **WebSocket over TLS**: Encrypted communication channel
 - **Origin Validation**: Prevent unauthorized connections
-- **Rate Limiting**: Protection against DoS attacks
 
 :::success Strong Security Model
 The combination of cryptographic signatures, challenge-response authentication, and spending allowances ensures that even if a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> is compromised, damage is limited by spending caps and expiration times.

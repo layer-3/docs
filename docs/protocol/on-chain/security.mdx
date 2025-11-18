@@ -81,7 +81,45 @@ graph TB
 - Invalid states are rejected on-chain
 
 :::success Cryptographic Security
-State validity is enforced through ECDSA signatures on the secp256k1 curve, the same cryptographic foundation as Ethereum itself.
+State validity is enforced through cryptographic signatures supporting multiple formats (ECDSA, ERC-1271, ERC-6492), enabling compatibility with EOA wallets, smart contract wallets, and counterfactual contracts.
+:::
+
+#### EIP-712 Signature Support
+
+<Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip> supports **EIP-712 (Typed Structured Data)** signatures in addition to raw ECDSA and EIP-191. This provides significant security and user experience advantages:
+
+**Security Benefits**:
+- **Domain Separation**: Signatures are bound to a specific contract and chain, preventing replay attacks across different applications or networks
+- **Type Safety**: Structured data hashing ensures only valid state structures can be signed, preventing malformed data injection
+- **Semantic Clarity**: Each field's type and purpose is cryptographically enforced, reducing ambiguity attacks
+
+**User Experience Benefits**:
+- **Human-Readable**: Modern wallets (MetaMask, Ledger, etc.) display EIP-712 signatures as structured fields instead of opaque hex strings
+- **Transparency**: Users see exactly what `channelId`, `intent`, `version`, `allocations`, and `data` they're signing
+- **Trust**: Clear presentation reduces phishing risks and increases user confidence
+
+**Example Wallet Display**:
+```
+Sign Typed Data:
+  channelId: 0xabcd1234...
+  intent: OPERATE (1)
+  version: 5
+  allocations:
+    [0] destination: 0x742d35Cc..., token: USDC, amount: 100.00
+    [1] destination: 0x123456Cc..., token: USDC, amount: 0.00
+```
+
+Compared to EIP-191 which would show:
+```
+Sign Message:
+0x1ec5000000000000000000000000000000000000000000000000000000001234abcd...
+[500+ more hex characters]
+```
+
+**Implementation Note**: The protocol accepts **all three formats** (raw ECDSA, EIP-191, EIP-712) for maximum compatibility, but EIP-712 is **strongly recommended** for production applications due to its superior security and UX properties.
+
+:::tip Protocol Differentiator
+Supporting EIP-712 signatures for state channel operations is a key differentiating feature of <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip>, setting it apart from protocols that only support raw message signing. This makes <Tooltip content="The on-chain smart contract protocol">Nitrolite</Tooltip> more accessible to end users and reduces integration friction for wallet providers.
 :::
 
 ### Liveness

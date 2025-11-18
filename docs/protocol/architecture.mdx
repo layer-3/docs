@@ -39,7 +39,7 @@ graph TB
 
   APP --> CLIENT
   APP --> BROKER
-  CLIENT <-->|"Nitro RPC (WebSocket)"| BROKER
+  CLIENT <-->|"Nitro RPC"| BROKER
   CLIENT -. "Checkpoint / Settle" .-> CONTRACTS
   BROKER -. "Join / Verify" .-> CONTRACTS
   CONTRACTS --> CHAIN
@@ -92,9 +92,11 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 
 **Off-Chain Updates**:
 
-1. <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+1. <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates:
 
-   - *Note for <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">App Sessions</Tooltip>*: The exchange of states is handled by the App itself. Once the App Session state has enough signatures to satisfy quorum, a responsible party submits this signed state to the <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>.
+   - **For Payment Channels** (User ↔ <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>): States are exchanged directly via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+   
+   - **For <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>
 
 2. No blockchain transactions required
 
@@ -102,7 +104,7 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 
 4. Can be checkpointed on-chain at any time
 
-   - *Current Implementation Note*: While this is the ideal design goal, the current implementation does not store off-chain state that is not related to on-chain state, so checkpointing is not currently supported. This functionality is under development and will be more enforced in the next version of the protocol.
+   - *Current Implementation Note*: While this is the ideal design goal, the current implementation does not store the state off-chain, so checkpointing is not currently supported. This functionality is under development and will be more enforced in the next version of the protocol.
 
 :::tip Zero Gas Fees
 Off-chain updates are instant (< 1 second) and incur zero gas fees, enabling high-frequency operations.

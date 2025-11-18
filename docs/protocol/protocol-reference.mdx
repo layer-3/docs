@@ -273,18 +273,22 @@ Always check the `error` field in responses. Successful responses have a `res` o
 
 ### On-Chain Signatures (Solidity)
 
-Used in smart contract transactions (`create`, `join`, `close`, `challenge`).
+Used in smart contract transactions (`create`, `join`, `close`, `challenge`, `resize`).
 
-**Format**: ECDSA over secp256k1 curve
+**Format**: Variable-length byte arrays supporting multiple signature types (since v0.3.0)
 
 **Structure**:
 ```solidity
-struct Signature {
-    uint8 v;      // Recovery identifier (27 or 28)
-    bytes32 r;    // First 32 bytes of signature
-    bytes32 s;    // Second 32 bytes of signature
+struct State {
+    // ... other fields ...
+    bytes[] sigs;  // Array of signatures from participants
 }
 ```
+
+**Supported Types**:
+- **ECDSA** (65 bytes): Standard signatures from EOA wallets
+- **ERC-1271**: Smart contract wallet signatures
+- **ERC-6492**: Counterfactual contract signatures (not yet deployed)
 
 **Hash**: Raw <Tooltip content="Cryptographic hash of a channel state, used for signature verification">stateHash</Tooltip> (no EIP-191 prefix for chain-agnostic compatibility)
 
@@ -298,9 +302,9 @@ signature = sign(stateHash, participantPrivateKey) // Raw hash, no prefix
 
 Used in RPC requests and responses over WebSocket.
 
-**Format**: 0x-prefixed hex string
+**Format**: 0x-prefixed hex string (typically ECDSA from session keys)
 
-**Length**: 65 bytes
+**Typical Length**: 65 bytes for ECDSA
 - `r`: 32 bytes
 - `s`: 32 bytes  
 - `v`: 1 byte
@@ -309,7 +313,7 @@ Used in RPC requests and responses over WebSocket.
 
 **Example**:
 ```javascript
-signature = "0x1234567890abcdef...xyz" // 132 characters total
+signature = "0x1234567890abcdef...xyz" // 132 characters total (ECDSA)
 ```
 
 **Computed Over**:
@@ -317,6 +321,10 @@ signature = "0x1234567890abcdef...xyz" // 132 characters total
 rpcHash = keccak256(JSON.stringify(req))
 signature = sign(rpcHash, sessionPrivateKey)
 ```
+
+:::info Session Key Signatures
+Off-chain RPC signatures are typically ECDSA from session keys (EOA wallets), but the protocol supports other signature types for future flexibility.
+:::
 
 :::caution Chain-Agnostic Signatures
 On-chain signatures do NOT use EIP-191 or EIP-712 prefixes to maintain chain-agnostic compatibility. This differs from typical Ethereum signing patterns.
