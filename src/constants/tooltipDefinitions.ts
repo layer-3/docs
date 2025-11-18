@@ -12,8 +12,6 @@ export const tooltipDefinitions = {
     "The underlying distributed ledger technology (e.g., Ethereum).",
   participant:
     "An entity (identified by a wallet address) that is part of a channel.",
-  participantExtended:
-    "An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a clearnode or a Clearnode Operator.",
   appChannel:
     "Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.",
   custodyContract:
