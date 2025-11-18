@@ -1,6 +1,6 @@
 :root[data-theme='light'] .tippy-box[data-theme~='docusaurus'] {
-    --tooltip-bg: #111;         /* near-black */
-    --tooltip-fg: #fff;         /* white text */
+    --tooltip-bg: #f0f0f0;      /* light grey */
+    --tooltip-fg: #2c2c2c;      /* dark text */
     --tooltip-border: rgba(0,0,0,.15);
   }
   

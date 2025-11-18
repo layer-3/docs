@@ -4,16 +4,17 @@ title: Channel Management Methods
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Channel Management Methods
 
-Channel management methods enable clients to create, modify, and close payment channels with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> on various blockchain networks.
+Channel management methods enable clients to create, modify, and close payment channels with <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> on various blockchain networks.
 
 ---
 
 ## Overview
 
-Payment channels are the foundation of the Nitrolite protocol. They lock funds on-chain while enabling instant off-chain operations within a <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>.
+Payment channels are the foundation of the Nitrolite protocol. They lock funds on-chain while enabling instant off-chain operations within a <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
 
 ### Channel Lifecycle Summary
 
@@ -45,25 +46,25 @@ stateDiagram-v2
 
 ### Usage
 
-Initiates the creation of a payment <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> between user and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> on a specific blockchain. <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> validates the request, generates a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> configuration with a unique <Tooltip content="Unique number ensuring channel identifier uniqueness">nonce</Tooltip>, prepares the initial funding state with the CHANOPEN magic number, and signs it. The user receives the complete <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> data and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> signature, which they must then submit to the blockchain's <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> via the `create()` function to finalize <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> creation and lock funds on-chain. This two-step process (off-chain preparation, on-chain execution) ensures <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> is ready to join before the user commits funds.
+Initiates the creation of a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> between user and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> on a specific blockchain. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> validates the request, generates a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> configuration with a unique <Tooltip content={tooltipDefinitions.channelNonce}>nonce</Tooltip>, prepares the initial funding state with the CHANOPEN magic number, and signs it. The user receives the complete <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> data and <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature, which they must then submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `create()` function to finalize <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> creation and lock funds on-chain. This two-step process (off-chain preparation, on-chain execution) ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is ready to join before the user commits funds.
 
 ### When to Use
 
-When a user wants to deposit funds and establish a payment <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> on a specific blockchain network. This is typically the first operation after authentication.
+When a user wants to deposit funds and establish a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> on a specific blockchain network. This is typically the first operation after authentication.
 
 :::info Two-Step Process
 Channel creation is intentionally split into two steps:
-1. **Off-chain preparation**: <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> prepares and signs channel configuration
+1. **Off-chain preparation**: <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> prepares and signs channel configuration
 2. **On-chain execution**: User submits transaction to lock funds
 
-This ensures <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> is ready to join before the user risks their funds.
+This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is ready to join before the user risks their funds.
 :::
 
 ### Prerequisites
 
-- User must be [authenticated](./authentication) (<Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> registered)
+- User must be [authenticated](./authentication) (<Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> registered)
 - User must have sufficient token balance in their wallet
-- Target blockchain and token must be supported by <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>
+- Target blockchain and token must be supported by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>
 - User must have native currency for gas fees
 
 ### Request
@@ -136,7 +137,7 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 | `amount` | string | Amount in smallest unit (e.g., `"100000000"` for 100 USDC with 6 decimals) |
 
 :::tip Clearnode Signature First
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> provides its signature BEFORE the user commits funds on-chain. This ensures both parties have committed to the channel before any on-chain transaction occurs.
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> provides its signature BEFORE the user commits funds on-chain. This ensures both parties have committed to the channel before any on-chain transaction occurs.
 :::
 
 ### Next Steps After Receiving Response
@@ -150,10 +151,10 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 2. **Verify the Clearnode's Signature**
    - Compute `stateHash` = `keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
    - Recover signer from `broker_signature`
-   - Verify signer is <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> known wallet address
+   - Verify signer is <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> known wallet address
 
 3. **Sign State with Your Key**
-   - Sign `stateHash` with your <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participant</Tooltip> key
+   - Sign `stateHash` with your <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
    - Add your signature at `state.sigs[0]`
 
 4. **Approve Token Spending** (if needed)
@@ -165,11 +166,11 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
    - Wait for transaction confirmation
 
 6. **Monitor for Channel Opening**
-   - Listen for `Opened` event (emitted when <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> joins)
+   - Listen for `Opened` event (emitted when <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> joins)
    - Or poll `get_channels` until status is "active"
 
 7. **Channel Active**
-   - Channel appears in <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>
+   - Channel appears in <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
    - Can now perform off-chain operations
 
 ### Error Cases
@@ -187,10 +188,10 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 
 ### Implementation Notes
 
-- The <Tooltip content="Unique number ensuring channel identifier uniqueness">nonce</Tooltip> is generated by <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> to ensure uniqueness
+- The <Tooltip content={tooltipDefinitions.channelNonce}>nonce</Tooltip> is generated by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> to ensure uniqueness
 - The channelId can be computed client-side: `keccak256(abi.encode(channel))`
-- The <Tooltip content="Cryptographic hash of a state, used for signature verification">stateHash</Tooltip> should be verified: `keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
-- Users should verify <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> signature before proceeding
+- The <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> should be verified: `keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
+- Users should verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature before proceeding
 - The challenge period can be customized but most users should use defaults
 
 ### Sequence Diagram
@@ -247,22 +248,22 @@ sequenceDiagram
 
 ### Usage
 
-Initiates cooperative closure of an active payment <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>. <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> signs a final state with the CHANCLOSE magic number reflecting the current balance distribution. The user receives this clearnode-signed final state which they must submit to the blockchain's <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> via the `close()` function. This is the preferred and most efficient way to close a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> as it requires only one on-chain transaction and completes immediately without a challenge period. Both parties must agree on the final allocation for cooperative closure to work.
+Initiates cooperative closure of an active payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> signs a final state with the CHANCLOSE magic number reflecting the current balance distribution. The user receives this clearnode-signed final state which they must submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `close()` function. This is the preferred and most efficient way to close a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> as it requires only one on-chain transaction and completes immediately without a challenge period. Both parties must agree on the final allocation for cooperative closure to work.
 
 ### When to Use
 
-When a user wants to withdraw funds from an active <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> and both user and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> agree on the final balance distribution. This should be the default closure method when both parties are online and cooperative.
+When a user wants to withdraw funds from an active <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> and both user and <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> agree on the final balance distribution. This should be the default closure method when both parties are online and cooperative.
 
 :::success Preferred Closure Method
-Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **immediate (no waiting period)**. Always use this method when possible. Challenge-response closure should only be used when <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> is unresponsive or disputes the final state.
+Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **immediate (no waiting period)**. Always use this method when possible. Challenge-response closure should only be used when <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is unresponsive or disputes the final state.
 :::
 
 ### Prerequisites
 
-- <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">Channel</Tooltip> must exist and be in ACTIVE status
+- <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> must exist and be in ACTIVE status
 - User must be authenticated
 - User must have native currency for gas fees
-- Both parties must agree on final allocations (implicitly, by <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> signing)
+- Both parties must agree on final allocations (implicitly, by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> signing)
 
 ### Request
 
@@ -289,10 +290,10 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 2. **Verify the Clearnode's Signature**
    - Compute `stateHash` = `keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
-   - Verify signature is from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>
+   - Verify signature is from <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>
 
 3. **Sign Final State**
-   - Sign `stateHash` with your <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participant</Tooltip> key
+   - Sign `stateHash` with your <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
    - Add signature at `state.sigs[0]`
 
 4. **Submit On-Chain**
@@ -304,7 +305,7 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
    - Funds distributed according to allocations
 
 6. **Channel Closed**
-   - <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">Channel</Tooltip> deleted from chain
+   - <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> deleted from chain
    - Funds in your wallet or custody available balance
 
 7. **Withdraw if Needed**
@@ -335,8 +336,8 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 :::caution When to Use Challenge Closure
 Only use challenge closure (on-chain `challenge()` function) when:
-- <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> is unresponsive
-- <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> disputes the final allocation
+- <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> is unresponsive
+- <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> disputes the final allocation
 - Cooperative closure fails repeatedly
 
 Challenge closure requires waiting for the challenge period to expire before funds are released.
@@ -345,10 +346,10 @@ Challenge closure requires waiting for the challenge period to expire before fun
 ### Implementation Notes
 
 - The magic number CHANCLOSE (7879) signals this is a final state
-- All <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> must sign the final state for it to be accepted on-chain
-- The allocations determine where funds go when <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closes
-- <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> will only sign if the allocations match the current state of the <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>
-- After closing, funds return to "available" balance in <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip>
+- All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign the final state for it to be accepted on-chain
+- The allocations determine where funds go when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes
+- <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> will only sign if the allocations match the current state of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- After closing, funds return to "available" balance in <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip>
 - Users must call `withdraw()` separately to move funds back to their wallet
 
 ---
@@ -361,23 +362,23 @@ Challenge closure requires waiting for the challenge period to expire before fun
 
 ### Usage
 
-Adjusts the allocations of an existing <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> by locking or unlocking funds **without closing the channel**. Unlike older implementations, this uses the `resize()` function on the <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody contract</Tooltip> to perform an **in-place update** of the channel's allocations. The same <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> persists throughout the operation, and the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> remains in ACTIVE status. <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> prepares a resize state with delta amounts (positive for deposit, negative for withdrawal) that all participants must sign before submitting on-chain.
+Adjusts the allocations of an existing <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> by locking or unlocking funds **without closing the channel**. Unlike older implementations, this uses the `resize()` function on the <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> to perform an **in-place update** of the channel's allocations. The same <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> persists throughout the operation, and the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> remains in ACTIVE status. <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> prepares a resize state with delta amounts (positive for deposit, negative for withdrawal) that all participants must sign before submitting on-chain.
 
 ### When to Use
 
-When a user wants to adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> allocations while keeping the same channel active. This is more efficient than closing and reopening, and maintains the channel's history and state version continuity.
+When a user wants to adjust <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> allocations while keeping the same channel active. This is more efficient than closing and reopening, and maintains the channel's history and state version continuity.
 
 :::tip In-Place Update
-The resize operation updates the channel **in place**. The <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> **stays the same**, and the channel remains ACTIVE throughout. This is the current implementation of channel allocation adjustment.
+The resize operation updates the channel **in place**. The <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> **stays the same**, and the channel remains ACTIVE throughout. This is the current implementation of channel allocation adjustment.
 :::
 
 ### Prerequisites
 
-- <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">Channel</Tooltip> must exist and be in ACTIVE status
+- <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> must exist and be in ACTIVE status
 - User must be authenticated
 - For **positive delta** (deposit): User must have sufficient additional tokens
 - For **negative delta** (withdrawal): Channel must have sufficient allocated funds
-- All <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> must sign the resize state (consensus required)
+- All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign the resize state (consensus required)
 - User must have native currency for gas fees
 
 ### Request
@@ -528,7 +529,7 @@ The client must submit the resize state to the blockchain:
 
 7. **Update local state**
    - Channel_id remains the same (no replacement needed)
-   - <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">Unified balance</Tooltip> automatically updated
+   - <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> automatically updated
    - Version incremented
 
 ### Error Cases
@@ -536,8 +537,8 @@ The client must submit the resize state to the blockchain:
 | Error | Cause | Resolution |
 |-------|-------|------------|
 | Authentication required | Not authenticated | Complete authentication flow |
-| Channel not found | Invalid channel_id | Verify <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channel ID</Tooltip> with `get_channels` |
-| Channel not in ACTIVE status | Channel closed or in dispute | Cannot resize non-active <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channels</Tooltip> |
+| Channel not found | Invalid channel_id | Verify <Tooltip content={tooltipDefinitions.channelId}>channel ID</Tooltip> with `get_channels` |
+| Channel not in ACTIVE status | Channel closed or in dispute | Cannot resize non-active <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip> |
 | Insufficient balance | Not enough available for deposit | Check `get_balance` for available amount |
 | Exceeds channel capacity | Withdrawal exceeds allocated funds | Reduce withdrawal amount |
 | Invalid signatures | Missing or incorrect signatures | All participants must sign resize state |
@@ -653,7 +654,7 @@ Multi-chain rebalancing with `allocate_amount` is an advanced feature. For simpl
 ### Implementation Notes
 
 - The `resize()` function operates **in place** on the same channel
-- <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> **never changes** (no new channel created)
+- <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> **never changes** (no new channel created)
 - Channel remains in **ACTIVE** status throughout
 - State **version increments** like any state update
 - Delta amounts are encoded as **int256[]** in state.data
@@ -661,7 +662,7 @@ Multi-chain rebalancing with `allocate_amount` is an advanced feature. For simpl
 - Negative deltas → `_unlockAllocation()`
 - **All participants must sign** the resize state (consensus required)
 - More gas-efficient than close + reopen
-- <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">Unified balance</Tooltip> automatically updated by clearnode
+- <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> automatically updated by clearnode
 - Channel history and state continuity preserved
 
 ---
@@ -670,9 +671,9 @@ Multi-chain rebalancing with `allocate_amount` is an advanced feature. For simpl
 
 Explore other off-chain operations:
 
-- **[Transfers](./transfers)** - Send instant off-chain payments using <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>
+- **[Transfers](./transfers)** - Send instant off-chain payments using <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - **[App Sessions](./app-sessions)** - Create multi-party application channels
-- **[Queries](./queries)** - Check <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> status, balances, and history
+- **[Queries](./queries)** - Check <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status, balances, and history
 
 For protocol fundamentals:
 - **[Authentication](./authentication)** - Understand authorization and session management

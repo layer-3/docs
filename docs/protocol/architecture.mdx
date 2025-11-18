@@ -4,12 +4,13 @@ title: "Architecture"
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Architecture
 
 ## System Overview
 
-The <Tooltip content="The on-chain smart contract protocol.">Nitrolite</Tooltip> protocol architecture consists of multiple layers working together to enable scalable, secure <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">state channel</Tooltip> operations:
+The <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol architecture consists of multiple layers working together to enable scalable, secure <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations:
 
 ```mermaid
 graph TB
@@ -58,12 +59,12 @@ graph TB
 
 ### Channel Opening
 
-The <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip>:
+The <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>:
 
-1. Client requests channel creation from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">a clearnode</Tooltip> via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
-2. The clearnode returns signed initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> (signature at index 1)
-3. Client signs the initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> (signature at index 0)
-4. Client submits transaction to <Tooltip content="The underlying distributed ledger technology (e.g., Ethereum).">blockchain</Tooltip> with both signatures
+1. Client requests channel creation from <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
+2. The clearnode returns signed initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> (signature at index 1)
+3. Client signs the initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> (signature at index 0)
+4. Client submits transaction to <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> with both signatures
 5. Contract verifies signatures and emits `Opened` event
 6. Channel becomes ACTIVE immediately
 7. The clearnode monitors the `Opened` event and updates its internal state
@@ -92,11 +93,11 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 
 **Off-Chain Updates**:
 
-1. <Tooltip content="An entity (identified by a wallet address) that is part of a channel.">Participants</Tooltip> exchange signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates:
+1. <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> exchange signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates:
 
-   - **For Payment Channels** (User ↔ <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>): States are exchanged directly via <Tooltip content="The off-chain communication protocol.">Nitro RPC</Tooltip>
+   - **For Payment Channels** (User ↔ <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>): States are exchanged directly via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
    
-   - **For <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.">Clearnode</Tooltip>
+   - **For <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
 
 2. No blockchain transactions required
 
@@ -157,10 +158,10 @@ graph TB
 
 **Flow Explanation**:
 
-1. **Deposit**: User deposits ERC-20 tokens into <Tooltip content="The main on-chain contract implementing channel creation, joining, and closure.">Custody Contract</Tooltip>
-2. **Lock**: Funds move from "available" to "locked" when <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">channel</Tooltip> is created/joined
-3. **Off-Chain**: Locked funds become part of <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode.">unified balance</Tooltip>, managed off-chain
-4. **App Sessions**: Funds can be allocated to <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.">app sessions</Tooltip> for applications
+1. **Deposit**: User deposits ERC-20 tokens into <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip>
+2. **Lock**: Funds move from "available" to "locked" when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is created/joined
+3. **Off-Chain**: Locked funds become part of <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, managed off-chain
+4. **App Sessions**: Funds can be allocated to <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for applications
 5. **Release**: When app sessions close, funds return to unified balance
 6. **Unlock**: When channel closes, funds return to custody "available" balance
 7. **Withdraw**: User withdraws funds back to their wallet

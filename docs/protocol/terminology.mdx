@@ -4,44 +4,45 @@ title: "Terminology"
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Terminology
 
 ## Core Concepts
 
-**Channel**: A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.
+**Channel**: {tooltipDefinitions.channel}
 
-**State**: A snapshot of the channel at a point in time, including fund allocations and application-specific data.
+**State**: {tooltipDefinitions.channelState}
 
-**Participant**: An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and Clearnode.
+**Participant**: {tooltipDefinitions.participantExtended}
 
-**Clearnode**: A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
+**Clearnode**: {tooltipDefinitions.clearnode}
 
-**Creator**: The participant at index 0 in a channel who initiates channel creation.
+**Creator**: {tooltipDefinitions.creatorParticipant}
 
-**App Sessions**: Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.
+**App Sessions**: {tooltipDefinitions.appChannel}
 
-**Unified Balance**: An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode.
+**Unified Balance**: {tooltipDefinitions.unifiedBalance}
 
-**Session Key**: A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps.
+**Session Key**: {tooltipDefinitions.sessionKey}
 
 ## Identifiers
 
-**channelId**: A unique identifier for a channel, computed as the hash of the channel configuration.
+**channelId**: {tooltipDefinitions.channelId}
 
-**stateHash**: A cryptographic hash of a channel state, used for signature verification.
+**stateHash**: {tooltipDefinitions.stateHash}
 
 **requestId**: A unique identifier for an RPC request, used for correlating requests and responses.
 
-**appSessionId**: A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes). Used for all subsequent operations on that specific app session.
+**appSessionId**: {tooltipDefinitions.appSessionId} Used for all subsequent operations on that specific app session.
 
 **accountId**: An identifier for an account or app session within the unified ledger. Can be either a 0x-prefixed hex string or a wallet address.
 
-**chainId**: A blockchain network identifier (uint32). Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
+**chainId**: {tooltipDefinitions.chainId} Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
 
-**assetSymbol**: A lowercase string identifier for a supported asset (e.g., "usdc", "eth", "usdt", "dai"). Asset symbols are consistent across chains.
+**assetSymbol**: {tooltipDefinitions.assetSymbol} Asset symbols are consistent across chains.
 
-**walletAddress**: A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds. Used to identify participants in channels and app sessions.
+**walletAddress**: {tooltipDefinitions.walletAddress} Used to identify participants in channels and app sessions.
 
 **userId**: Identifies a user after authentication to the Clearnode. Currently, this is always equivalent to the user's walletAddress.
 
@@ -60,4 +61,3 @@ import Tooltip from '@site/src/components/Tooltip';
 :::tip Quick Reference
 These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.
 :::
-

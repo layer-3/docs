@@ -4,10 +4,11 @@ title: Authentication
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Authentication
 
-Authentication with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> can be done in two ways: using your **main wallet as a root signer** for all requests, or delegating to <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session keys</Tooltip> via a secure 3-step challenge-response protocol.
+Authentication with <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> can be done in two ways: using your **main wallet as a root signer** for all requests, or delegating to <Tooltip content={tooltipDefinitions.sessionKey}>session keys</Tooltip> via a secure 3-step challenge-response protocol.
 
 ---
 
@@ -17,7 +18,7 @@ There are two authentication approaches:
 
 1. **Main Wallet (Root Signer)**: Sign every request with your main wallet. Simple but requires user interaction for each operation.
 
-2. **Session Keys (Delegated)**: Establish an authenticated session once, then use a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> for subsequent operations without repeatedly prompting the main wallet.
+2. **Session Keys (Delegated)**: Establish an authenticated session once, then use a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> for subsequent operations without repeatedly prompting the main wallet.
 
 :::info Main Wallet as Root Signer
 You can **skip the session key flow entirely** and use your main wallet to sign all requests. This provides maximum security but requires wallet interaction for every operation. Simply sign each request with your main wallet's private key instead of creating a session key.
@@ -25,16 +26,16 @@ You can **skip the session key flow entirely** and use your main wallet to sign 
 
 ### Why Session Keys?
 
-<Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">Session keys</Tooltip> provide **flexible security management**:
+<Tooltip content={tooltipDefinitions.sessionKey}>Session keys</Tooltip> provide **flexible security management**:
 
-- **Granular Permissions**: Specify which operations the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> can perform
+- **Granular Permissions**: Specify which operations the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> can perform
 - **Spending Allowances**: Set maximum spending limits per asset
 - **Time-Bounded**: Automatic expiration reduces risk of key compromise
 - **Application-Scoped**: Different keys for different apps
 - **User Experience**: No repeated wallet prompts during active session
 
 :::success Flexible Security Management
-<Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">Session keys</Tooltip> give users a flexible way to manage security of their funds by providing specific permissions and allowances for specific apps, balancing convenience with security.
+<Tooltip content={tooltipDefinitions.sessionKey}>Session keys</Tooltip> give users a flexible way to manage security of their funds by providing specific permissions and allowances for specific apps, balancing convenience with security.
 :::
 
 ### Choosing Your Approach
@@ -96,7 +97,7 @@ sequenceDiagram
 :::info Challenge-Response Pattern
 This pattern ensures that:
 1. User owns the main wallet (Step 1 signature)
-2. Client controls the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> private key (Step 3 signature)
+2. Client controls the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private key (Step 3 signature)
 3. No private keys are ever transmitted
 4. Replay attacks are prevented (unique challenge per session)
 :::
@@ -111,11 +112,11 @@ This pattern ensures that:
 
 ### Usage
 
-Initiates authentication with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> by registering a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>. The client sends this request signed by their main wallet to authorize a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> to act on their behalf. The <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
+Initiates authentication with <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> by registering a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>. The client sends this request signed by their main wallet to authorize a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> to act on their behalf. The <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
 
 ### When to Use
 
-**Optional**: Use this when you want to delegate signing to a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> instead of using your main wallet for every request. This is the first step in establishing an authenticated session with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip>.
+**Optional**: Use this when you want to delegate signing to a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> instead of using your main wallet for every request. This is the first step in establishing an authenticated session with <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>.
 
 If you prefer to use your main wallet as a root signer for all operations, you can skip this entire authentication flow.
 
@@ -137,7 +138,7 @@ If you prefer to use your main wallet as a root signer for all operations, you c
 | `expires_at` | number | No | Unix timestamp when the session key expires<br/><br/>**Format**: Unix timestamp (seconds since epoch) | 1 hour from authentication | `1762417328` | Absolute timestamp, not relative duration |
 
 :::tip Spending Allowances
-Always specify `allowances` when creating <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session keys</Tooltip>. If a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> is compromised, allowances limit the maximum damage to the specified amounts.
+Always specify `allowances` when creating <Tooltip content={tooltipDefinitions.sessionKey}>session keys</Tooltip>. If a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised, allowances limit the maximum damage to the specified amounts.
 :::
 
 ### Response
@@ -148,7 +149,7 @@ Always specify `allowances` when creating <Tooltip content="A temporary cryptogr
 
 ### Signature
 
-Request **MUST** be signed by the main <Tooltip content="An entity (identified by a wallet address) that is part of a channel">wallet address</Tooltip> to prove ownership and authorize the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>.
+Request **MUST** be signed by the main <Tooltip content={tooltipDefinitions.participant}>wallet address</Tooltip> to prove ownership and authorize the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
 
 **Signing Process**:
 1. Client creates request payload: `[requestId, "auth_request", params, timestamp]`
@@ -157,7 +158,7 @@ Request **MUST** be signed by the main <Tooltip content="An entity (identified b
 
 ### Next Step
 
-Client must call `auth_verify` with the challenge signed by the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>.
+Client must call `auth_verify` with the challenge signed by the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
 
 ### Error Cases
 
@@ -179,11 +180,11 @@ Client must call `auth_verify` with the challenge signed by the <Tooltip content
 
 ### Usage
 
-Server-generated response to `auth_request` containing a challenge that the client must sign to prove control of the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>. This implements a challenge-response authentication pattern to prevent replay attacks and verify the client controls the private key of the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> they registered.
+Server-generated response to `auth_request` containing a challenge that the client must sign to prove control of the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>. This implements a challenge-response authentication pattern to prevent replay attacks and verify the client controls the private key of the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> they registered.
 
 ### When to Use
 
-Automatically sent by <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> in response to valid `auth_request`. Client does not explicitly call this; it's part of the authentication flow.
+Automatically sent by <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> in response to valid `auth_request`. Client does not explicitly call this; it's part of the authentication flow.
 
 ### Request
 
@@ -197,16 +198,16 @@ N/A (server-initiated response to `auth_request`)
 
 ### Signature
 
-Response is signed by <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>.
+Response is signed by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>.
 
 **Verification**:
-- Client SHOULD verify <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> signature on the response
+- Client SHOULD verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature on the response
 - Ensures challenge authenticity
 - Prevents man-in-the-middle attacks
 
 ### Next Step
 
-Client signs the challenge with <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> private key and calls `auth_verify`.
+Client signs the challenge with <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private key and calls `auth_verify`.
 
 :::info Challenge Uniqueness
 Each challenge is unique and single-use. It expires after 5 minutes if not verified. This prevents replay attacks where an attacker might try to reuse a captured challenge signature.
@@ -222,7 +223,7 @@ Each challenge is unique and single-use. It expires after 5 minutes if not verif
 
 ### Usage
 
-Completes the authentication flow by submitting the signed challenge from `auth_challenge`. If the signature is valid and matches the registered <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>, the authentication is complete and the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> can be used to sign subsequent requests. This proves the client controls the private key without ever transmitting it.
+Completes the authentication flow by submitting the signed challenge from `auth_challenge`. If the signature is valid and matches the registered <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>, the authentication is complete and the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> can be used to sign subsequent requests. This proves the client controls the private key without ever transmitting it.
 
 ### When to Use
 
@@ -232,7 +233,7 @@ Immediately after receiving `auth_challenge` response. This is the final step in
 
 - Completed `auth_request` and received `auth_challenge`
 - Have the challenge_message
-- Have the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> private key (client-side only)
+- Have the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private key (client-side only)
 
 ### Request
 
@@ -251,7 +252,7 @@ Immediately after receiving `auth_challenge` response. This is the final step in
 
 ### Signature
 
-Request **MUST** be signed by the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> (NOT the main wallet) to prove ownership.
+Request **MUST** be signed by the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> (NOT the main wallet) to prove ownership.
 
 **Signing Process**:
 1. Client creates request payload: `[requestId, "auth_verify", params, timestamp]`
@@ -264,7 +265,7 @@ The `auth_verify` request MUST be signed by the **session key**, not the main wa
 
 ### Next Step
 
-Session is authenticated. All subsequent private method calls should be signed with the <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>.
+Session is authenticated. All subsequent private method calls should be signed with the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
 
 ### Error Cases
 
@@ -319,7 +320,7 @@ stateDiagram-v2
 2. **Active**: Can perform operations until expiration or allowance exceeded
 3. **Expiration**: Automatic after specified duration
 4. **Invalidation**: When spending allowances exhausted
-5. **Revocation**: User or <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> can revoke manually
+5. **Revocation**: User or <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> can revoke manually
 
 ### Checking Session Status
 
@@ -327,7 +328,7 @@ Use `get_session_keys` to view active sessions and their remaining allowances. T
 
 ### Session Expiration Handling
 
-When a session expires, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> will reject requests with error code `1001`:
+When a session expires, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> will reject requests with error code `1001`:
 
 ```json
 {
@@ -342,7 +343,7 @@ When a session expires, <Tooltip content="A virtual ledger layer that provides a
 
 ### Spending Allowance Tracking
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> tracks spending by monitoring all ledger debit operations:
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> tracks spending by monitoring all ledger debit operations:
 
 ```
 Initial state:
@@ -360,7 +361,7 @@ When operation exceeds remaining:
 ```
 
 :::warning Allowance Enforcement
-When a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> reaches its spending cap, all further operations are rejected. The user must create a new session with fresh allowances or use their main wallet directly.
+When a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> reaches its spending cap, all further operations are rejected. The user must create a new session with fresh allowances or use their main wallet directly.
 :::
 
 ---
@@ -377,11 +378,11 @@ When a <Tooltip content="A temporary cryptographic key delegated by a user's mai
 
 ### For Developers
 
-1. **Secure Storage**: Store <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> private keys securely (encrypted storage, secure enclaves)
-2. **Never Transmit**: Never send <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> private keys over network
+1. **Secure Storage**: Store <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private keys securely (encrypted storage, secure enclaves)
+2. **Never Transmit**: Never send <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private keys over network
 3. **Handle Expiration**: Implement automatic re-authentication on session expiry
 4. **Clear on Logout**: Delete session keys when user logs out
-5. **Verify Signatures**: Always verify <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> signatures on responses
+5. **Verify Signatures**: Always verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signatures on responses
 
 ---
 

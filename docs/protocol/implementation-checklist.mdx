@@ -4,10 +4,11 @@ title: Implementation Checklist
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Implementation Checklist
 
-Comprehensive checklist for building a compliant <Tooltip content="The on-chain smart contract protocol for state channels">Nitrolite</Tooltip> client with security best practices.
+Comprehensive checklist for building a compliant <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> client with security best practices.
 
 :::tip Progressive Implementation
 You don't need to implement everything at once. Start with Core Protocol and On-Chain Integration, then add Off-Chain RPC and advanced features progressively.
@@ -17,16 +18,16 @@ You don't need to implement everything at once. Start with Core Protocol and On-
 
 ## Core Protocol Support
 
-Foundation requirements for any <Tooltip content="The on-chain smart contract protocol for state channels">Nitrolite</Tooltip> implementation.
+Foundation requirements for any <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> implementation.
 
 ### Identifier Computation
 
-- [ ] **Compute <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> from Channel struct**
+- [ ] **Compute <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> from Channel struct**
   - Hash participants, adjudicator, challenge, nonce using keccak256
   - Verify deterministic computation (same inputs = same output)
   - Reference: [Data Structures](../protocol/on-chain/data-structures#channel-identifier)
 
-- [ ] **Compute <Tooltip content="Cryptographic hash of a channel state, used for signature verification">stateHash</Tooltip> from channel state**
+- [ ] **Compute <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> from channel state**
   - Hash channelId, state.data, state.allocations using keccak256
   - Ensure proper ABI encoding
   - Reference: [Data Structures](../protocol/on-chain/data-structures#state-hash)
@@ -40,7 +41,7 @@ Foundation requirements for any <Tooltip content="The on-chain smart contract pr
 
 - [ ] **Verify ECDSA signatures**
   - Recover signer address from signature
-  - Validate signer matches expected <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participant</Tooltip>
+  - Validate signer matches expected <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>
   - Handle EIP-1271 for contract wallets (optional but recommended)
 
 - [ ] **Implement magic numbers**
@@ -57,7 +58,7 @@ Do NOT use EIP-191 or EIP-712 prefixes for on-chain signatures. The protocol use
 
 ## On-Chain Integration
 
-Smart contract interactions for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> lifecycle management.
+Smart contract interactions for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle management.
 
 ### Blockchain Connection
 
@@ -68,8 +69,8 @@ Smart contract interactions for <Tooltip content="A secure communication pathway
   - Implement retry logic for failed connections
 
 - [ ] **Load contract ABIs**
-  - <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip> ABI
-  - <Tooltip content="A smart contract that validates state transitions according to application-specific rules">Adjudicator</Tooltip> contracts (SimpleConsensus, Remittance, etc.)
+  - <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> ABI
+  - <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> contracts (SimpleConsensus, Remittance, etc.)
   - ERC-20 token ABI
 
 ### Channel Operations
@@ -83,7 +84,7 @@ Smart contract interactions for <Tooltip content="A secure communication pathway
 
 - [ ] **Call Custody.join() if implementing clearnode role**
   - Wait for `Created` event
-  - Verify <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> parameters match expectations
+  - Verify <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> parameters match expectations
   - Submit join transaction with participant signature
   - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#joining-phase)
 
@@ -113,8 +114,8 @@ Smart contract interactions for <Tooltip content="A secure communication pathway
   - Implement event replay for recovery
 
 - [ ] **Update internal state based on events**
-  - Sync <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> status (INITIAL → ACTIVE → DISPUTE → FINAL)
-  - Update <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip> when channels open/close
+  - Sync <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status (INITIAL → ACTIVE → DISPUTE → FINAL)
+  - Update <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> when channels open/close
   - Notify users of status changes
 
 :::tip Event Recovery
@@ -125,7 +126,7 @@ Implement event recovery for when your application restarts or loses connection.
 
 ## Off-Chain RPC
 
-WebSocket-based communication with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip>.
+WebSocket-based communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>.
 
 ### Connection Management
 
@@ -151,7 +152,7 @@ WebSocket-based communication with <Tooltip content="A virtual ledger layer that
 ### Authentication
 
 - [ ] **Implement auth_request/challenge/verify flow**
-  - Generate <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session keypair</Tooltip> locally
+  - Generate <Tooltip content={tooltipDefinitions.sessionKey}>session keypair</Tooltip> locally
   - Sign auth_request with main wallet
   - Sign auth_verify with session key
   - Store session credentials securely
@@ -204,14 +205,14 @@ Off-chain state tracking and synchronization.
   - Implement atomic updates
 
 - [ ] **Track state versions**
-  - Maintain version counter per <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> and <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>
+  - Maintain version counter per <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> and <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
   - Reject states with version ≤ current version
   - Increment version for each new state
 
 - [ ] **Implement unified balance tracking**
   - Aggregate funds across all chains
   - Track available vs locked amounts
-  - Update on <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> open/close and transfers
+  - Update on <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> open/close and transfers
   - Reference: [Unified Balance](../off-chain/transfers#unified-balance-mechanics)
 
 - [ ] **Handle app session state updates**
@@ -225,7 +226,7 @@ Off-chain state tracking and synchronization.
 - [ ] **Verify signatures before accepting states**
   - Check all required signatures present
   - Validate each signature against expected signer
-  - Ensure quorum met for <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>
+  - Ensure quorum met for <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
 
 - [ ] **Validate state transitions**
   - For OPERATE: sum unchanged
@@ -234,7 +235,7 @@ Off-chain state tracking and synchronization.
   - For closure: allocations valid and complete
 
 - [ ] **Maintain state history**
-  - Keep N most recent states per <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>
+  - Keep N most recent states per <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>
   - Useful for dispute resolution
   - Implement pruning strategy for old states
 

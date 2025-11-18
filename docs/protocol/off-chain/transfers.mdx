@@ -4,16 +4,17 @@ title: Transfer Methods
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Transfer Methods
 
-Transfer methods enable instant, off-chain fund movement between users connected to the same <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip>.
+Transfer methods enable instant, off-chain fund movement between users connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>.
 
 ---
 
 ## Overview
 
-The transfer system allows users to send funds to each other instantly using their <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>, without any on-chain transactions. Transfers are backed by the security of underlying payment channels and use double-entry bookkeeping for accounting accuracy.
+The transfer system allows users to send funds to each other instantly using their <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, without any on-chain transactions. Transfers are backed by the security of underlying payment channels and use double-entry bookkeeping for accounting accuracy.
 
 ### Why Use Transfers?
 
@@ -39,18 +40,18 @@ Transfers provide the speed and convenience of traditional payment networks whil
 
 ### Usage
 
-Transfers funds from the authenticated user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> to another user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip>, resulting in instant settlement with zero gas fees. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. Both sender and recipient must be connected to the same <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip> (have open channels). The security guarantee comes from the underlying on-chain channels that back the <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip>.
+Transfers funds from the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to another user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>, resulting in instant settlement with zero gas fees. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. Both sender and recipient must be connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip> (have open channels). The security guarantee comes from the underlying on-chain channels that back the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
 
 ### When to Use
 
-When sending funds to another Yellow Network user who is connected to the same <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">clearnode</Tooltip>. Common use cases include peer-to-peer payments, merchant payments, tipping, and rapid fund redistribution between users.
+When sending funds to another Yellow Network user who is connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>. Common use cases include peer-to-peer payments, merchant payments, tipping, and rapid fund redistribution between users.
 
 ### Prerequisites
 
 - Sender must be [authenticated](./authentication)
-- Sender must have sufficient available balance (not locked in <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>)
-- Recipient must have at least one open <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> (be connected)
-- Recipient must be identified by valid <Tooltip content="An entity (identified by a wallet address) that is part of a channel">wallet address</Tooltip> or user tag
+- Sender must have sufficient available balance (not locked in <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>)
+- Recipient must have at least one open <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> (be connected)
+- Recipient must be identified by valid <Tooltip content={tooltipDefinitions.participant}>wallet address</Tooltip> or user tag
 
 ### Request
 
@@ -78,7 +79,7 @@ When sending funds to another Yellow Network user who is connected to the same <
 
 ## Off-Chain Processing
 
-When a transfer is executed, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> performs the following operations:
+When a transfer is executed, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> performs the following operations:
 
 ```mermaid
 sequenceDiagram
@@ -119,10 +120,10 @@ sequenceDiagram
 
 #### 1. Validates Request
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> performs comprehensive validation:
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> performs comprehensive validation:
 - Verifies authentication and signature
 - Checks sender has sufficient available balance
-- Verifies recipient exists (has open <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>)
+- Verifies recipient exists (has open <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>)
 - Validates allocations format and asset support
 
 #### 2. Updates Ledger (Double-Entry Bookkeeping)
@@ -180,7 +181,7 @@ Ledger Transaction:
 
 ## Unified Balance Mechanics
 
-The <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> aggregates funds from all chains, providing a seamless cross-chain experience.
+The <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> aggregates funds from all chains, providing a seamless cross-chain experience.
 
 ### Example: Multi-Chain Aggregation
 
@@ -197,16 +198,16 @@ Result: Transfer uses unified balance, no need to specify chain
 ```
 
 :::tip Cross-Chain Abstraction
-Users don't need to know or care which chain their funds are on. Clearnode manages the underlying <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> allocations internally. When channels close, funds are distributed according to the final <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> state.
+Users don't need to know or care which chain their funds are on. Clearnode manages the underlying <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> allocations internally. When channels close, funds are distributed according to the final <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> state.
 :::
 
 ### Balance States
 
-<Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">Unified balance</Tooltip> has three components:
+<Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> has three components:
 
 1. **Total**: Sum of available + locked
 2. **Available**: Funds that can be transferred or withdrawn
-3. **Locked**: Funds currently in <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>
+3. **Locked**: Funds currently in <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
 
 **Only available balance can be transferred**.
 
@@ -219,7 +220,7 @@ Users don't need to know or care which chain their funds are on. Clearnode manag
 **Backed by On-Chain Channels**:
 - Transfers are backed by on-chain channels holding the funds
 - Clearnode tracks all balances in database
-- When <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closes, final on-chain distribution reflects all transfers
+- When <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes, final on-chain distribution reflects all transfers
 
 **Double-Entry Bookkeeping**:
 - Mathematical proof of accounting accuracy
@@ -227,22 +228,22 @@ Users don't need to know or care which chain their funds are on. Clearnode manag
 - All transfers logged for audit trail
 
 **Cannot Steal Funds**:
-- <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">A clearnode</Tooltip> cannot steal funds (would be evident when <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closes)
-- Users can always challenge-close with last signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>
+- <Tooltip content={tooltipDefinitions.clearnode}>A clearnode</Tooltip> cannot steal funds (would be evident when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes)
+- Users can always challenge-close with last signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
 
 :::caution Security Guarantee
-At every stage, funds remain cryptographically secured by the underlying payment channels. Users can always recover their funds according to the latest valid signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>, even if <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> becomes unresponsive.
+At every stage, funds remain cryptographically secured by the underlying payment channels. Users can always recover their funds according to the latest valid signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>, even if <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> becomes unresponsive.
 :::
 
 ### What If a Clearnode Disappears?
 
 **Recovery Process**:
-- Users can challenge-close their <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> with last known <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>
-- Funds are recovered according to last signed <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>
+- Users can challenge-close their <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with last known <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
+- Funds are recovered according to last signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
 - Worst case: lose value of un-checkpointed transfers
 
 **Best Practice**:
-- Periodically checkpoint important <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">states</Tooltip> on-chain for large balances
+- Periodically checkpoint important <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip> on-chain for large balances
 - Keep local records of recent transfer history
 
 ---
@@ -256,7 +257,7 @@ At every stage, funds remain cryptographically secured by the underlying payment
 | **Recipient not found** | 1003 | No channels with clearnode | Verify recipient address, ensure they're connected |
 | **Invalid destination address** | -32602 | Malformed wallet address | Verify address format (0x + 40 hex) |
 | **Invalid allocation format** | -32602 | Negative amount or unsupported asset | Check allocation structure |
-| **Amount exceeds available** | 1002 | Exceeds available (not total) balance | Reduce amount or close <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip> |
+| **Amount exceeds available** | 1002 | Exceeds available (not total) balance | Reduce amount or close <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> |
 | **Cannot transfer to self** | -32602 | sender == recipient | Use different recipient |
 | **Asset not supported** | 1010 | Asset not available | Use `get_assets` to see supported assets |
 | **Amount too small** | -32602 | Below minimum transfer amount | Increase amount |
@@ -324,7 +325,7 @@ entries.forEach(entry => {
 - Recipient sees updated balance when they reconnect
 
 **Features**:
-- <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">Unified balance</Tooltip> is updated immediately
+- <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> is updated immediately
 - Transfer can include multiple assets in one operation
 - The transaction_id can be used to track and query the transfer status
 

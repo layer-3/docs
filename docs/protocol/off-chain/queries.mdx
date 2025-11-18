@@ -4,10 +4,11 @@ title: Query Methods & Notifications
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Query Methods & Notifications
 
-Query methods retrieve information from <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>, while notifications provide real-time updates about <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> changes.
+Query methods retrieve information from <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>, while notifications provide real-time updates about <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> changes.
 
 ---
 
@@ -15,12 +16,12 @@ Query methods retrieve information from <Tooltip content="A virtual ledger layer
 
 The Nitro RPC protocol provides two types of information retrieval:
 
-**Query Methods**: Client-initiated requests to retrieve current <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> information (balances, channels, sessions, transactions).
+**Query Methods**: Client-initiated requests to retrieve current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> information (balances, channels, sessions, transactions).
 
-**Notifications**: Server-initiated messages sent via WebSocket when events occur (balance changes, <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> updates, incoming transfers).
+**Notifications**: Server-initiated messages sent via WebSocket when events occur (balance changes, <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> updates, incoming transfers).
 
 :::tip Real-Time Updates
-Combine query methods for initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> retrieval with notifications for ongoing monitoring. This pattern ensures your application always reflects the latest <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> without constant polling.
+Combine query methods for initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> retrieval with notifications for ongoing monitoring. This pattern ensures your application always reflects the latest <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> without constant polling.
 :::
 
 ---
@@ -54,7 +55,7 @@ Combine query methods for initial <Tooltip content="A snapshot of the channel at
 
 ### Usage
 
-Retrieves <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> configuration including supported blockchains, protocol versions, challenge periods, and operational parameters.
+Retrieves <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> configuration including supported blockchains, protocol versions, challenge periods, and operational parameters.
 
 ### Request
 
@@ -113,7 +114,7 @@ Retrieves all supported assets and their configurations across supported blockch
 
 ### Usage
 
-Lists all channels for a specific <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participant</Tooltip> address across all supported chains.
+Lists all channels for a specific <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> address across all supported chains.
 
 ### Request
 
@@ -144,7 +145,7 @@ Lists all channels for a specific <Tooltip content="An entity (identified by a w
 
 ### Usage
 
-Lists all <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip> for a <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participant</Tooltip>, sorted by creation date (newest first by default). Optionally filter by status (open/closed). Returns complete session information including <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip>, governance configuration, protocol version, and current <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>. Supports pagination for large result sets.
+Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for a <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>, sorted by creation date (newest first by default). Optionally filter by status (open/closed). Returns complete session information including <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>, governance configuration, protocol version, and current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>. Supports pagination for large result sets.
 
 ### Request
 
@@ -187,7 +188,7 @@ Lists all <Tooltip content="Off-chain channels built on top of payment channels,
 - Paginate through large session lists
 
 :::tip Pagination Best Practice
-When dealing with users who have many <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>, use pagination with reasonable `limit` values (10-50) to improve performance and user experience.
+When dealing with users who have many <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>, use pagination with reasonable `limit` values (10-50) to improve performance and user experience.
 :::
 
 ---
@@ -200,7 +201,7 @@ When dealing with users who have many <Tooltip content="Off-chain channels built
 
 ### Usage
 
-Retrieves the current balance for an account. If no parameters are provided, returns the authenticated user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> by providing the app_session_id. Returns all assets with non-zero balances.
+Retrieves the current balance for an account. If no parameters are provided, returns the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> by providing the app_session_id. Returns all assets with non-zero balances.
 
 ### Request
 
@@ -299,7 +300,7 @@ The double-entry system ensures that the total of all debits always equals the t
 
 ### Usage
 
-Retrieves user-facing transaction history showing transfers, deposits, withdrawals, and <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> operations. Unlike ledger entries (which show accounting details), this provides a simplified view of financial activity with sender, receiver, amount, and transaction type. Supports filtering by asset and transaction type. Sorted by creation date (newest first by default).
+Retrieves user-facing transaction history showing transfers, deposits, withdrawals, and <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> operations. Unlike ledger entries (which show accounting details), this provides a simplified view of financial activity with sender, receiver, amount, and transaction type. Supports filtering by asset and transaction type. Sorted by creation date (newest first by default).
 
 ### Request
 
@@ -323,11 +324,11 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 
 | Type | Description | Direction |
 |------|-------------|-----------|
-| **transfer** | Direct transfer between <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balances</Tooltip> | Off-chain ↔ Off-chain |
-| **deposit** | Funds deposited from <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> to <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> | On-chain → Off-chain |
-| **withdrawal** | Funds withdrawn from <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> to <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> | Off-chain → On-chain |
-| **app_deposit** | Funds moved from <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> into <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> | Available → Locked |
-| **app_withdrawal** | Funds released from <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> to <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> | Locked → Available |
+| **transfer** | Direct transfer between <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balances</Tooltip> | Off-chain ↔ Off-chain |
+| **deposit** | Funds deposited from <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> | On-chain → Off-chain |
+| **withdrawal** | Funds withdrawn from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> | Off-chain → On-chain |
+| **app_deposit** | Funds moved from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> into <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> | Available → Locked |
+| **app_withdrawal** | Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> | Locked → Available |
 
 **Use Cases**:
 - Display transaction history in UI
@@ -345,7 +346,7 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 
 ### Usage
 
-Retrieves the authenticated user's unique alphanumeric tag. User tags provide a human-readable alternative to addresses for [transfer](./transfers) operations, similar to username systems. Tags are automatically generated upon first interaction with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> and remain constant. This is a convenience feature for improving user experience.
+Retrieves the authenticated user's unique alphanumeric tag. User tags provide a human-readable alternative to addresses for [transfer](./transfers) operations, similar to username systems. Tags are automatically generated upon first interaction with <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> and remain constant. This is a convenience feature for improving user experience.
 
 ### Request
 
@@ -385,7 +386,7 @@ User tags make it easier for users to share their "address" verbally or in non-t
 
 ### Usage
 
-Retrieves all active (non-expired) <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session keys</Tooltip> for the authenticated user. Shows each <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key's</Tooltip> address, application name, spending allowances, current usage, expiration, and permissions. Used for managing delegated keys and monitoring spending caps. Only returns <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session keys</Tooltip> (not custody signers).
+Retrieves all active (non-expired) <Tooltip content={tooltipDefinitions.sessionKey}>session keys</Tooltip> for the authenticated user. Shows each <Tooltip content={tooltipDefinitions.sessionKey}>session key's</Tooltip> address, application name, spending allowances, current usage, expiration, and permissions. Used for managing delegated keys and monitoring spending caps. Only returns <Tooltip content={tooltipDefinitions.sessionKey}>session keys</Tooltip> (not custody signers).
 
 ### Authentication
 
@@ -439,7 +440,7 @@ No parameters required (empty object `{}`).
 
 ### Spending Tracking
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> tracks <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> spending by monitoring all ledger debit operations:
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> tracks <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> spending by monitoring all ledger debit operations:
 
 ```
 Initial: allowance = 100 USDC, used = 0 USDC
@@ -447,14 +448,14 @@ After transfer of 45 USDC: allowance = 100 USDC, used = 45 USDC
 Remaining = 55 USDC available for future operations
 ```
 
-When a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> reaches its spending cap, further operations are rejected:
+When a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> reaches its spending cap, further operations are rejected:
 
 ```
 Error: "operation denied: insufficient session key allowance: 60 required, 55 available"
 ```
 
 :::tip Spending Caps
-<Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">Session key</Tooltip> allowances provide important security: even if a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> is compromised, the maximum loss is limited to the allowance amount.
+<Tooltip content={tooltipDefinitions.sessionKey}>Session key</Tooltip> allowances provide important security: even if a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised, the maximum loss is limited to the allowance amount.
 :::
 
 **Use Cases**:
@@ -473,7 +474,7 @@ Error: "operation denied: insufficient session key allowance: 60 required, 55 av
 
 ### Usage
 
-Simple connectivity check to verify <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> is responsive and the WebSocket connection is alive. Returns immediately with success. Used for heartbeat, connection testing, and latency measurement.
+Simple connectivity check to verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is responsive and the WebSocket connection is alive. Returns immediately with success. Used for heartbeat, connection testing, and latency measurement.
 
 ### Authentication
 
@@ -526,7 +527,7 @@ const response = await clearnode.call("ping")
 
 ## Notifications (Server-to-Client)
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> sends unsolicited notifications to clients via WebSocket when certain events occur. These are not responses to requests, but asynchronous messages initiated by the server.
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> sends unsolicited notifications to clients via WebSocket when certain events occur. These are not responses to requests, but asynchronous messages initiated by the server.
 
 ```mermaid
 sequenceDiagram
@@ -575,7 +576,7 @@ sequenceDiagram
 
 ### When Sent
 
-Whenever the user's <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">unified balance</Tooltip> changes due to incoming transfers, <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> closure, or <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> operations.
+Whenever the user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> changes due to incoming transfers, <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> closure, or <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> operations.
 
 ### Structure
 
@@ -620,7 +621,7 @@ Whenever the user's <Tooltip content="An abstraction that aggregates a user's fu
 
 ### When Sent
 
-When a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel's</Tooltip> status changes (opened, challenged, closed).
+When a <Tooltip content={tooltipDefinitions.channel}>channel's</Tooltip> status changes (opened, challenged, closed).
 
 ### Structure
 
@@ -649,9 +650,9 @@ When a <Tooltip content="A secure communication pathway between participants tha
 ```
 
 **Use Cases**:
-- Update <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> status in UI
-- Alert user when <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> becomes active
-- Monitor for unexpected <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closures
+- Update <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status in UI
+- Alert user when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> becomes active
+- Monitor for unexpected <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closures
 
 ---
 
@@ -721,7 +722,7 @@ Combine `transfer_received` notifications with `balance_update` to provide immed
 
 ### When Sent
 
-When an <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> changes (new <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> submitted, session closed).
+When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> changes (new <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> submitted, session closed).
 
 ### Structure
 
@@ -756,7 +757,7 @@ When an <Tooltip content="Off-chain channels built on top of payment channels, i
 
 **Use Cases**:
 - Update game UI when opponent makes a move
-- Refresh session <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> in real-time
+- Refresh session <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> in real-time
 - Alert when session is closed
 - Sync multi-participant applications
 
@@ -767,7 +768,7 @@ When an <Tooltip content="Off-chain channels built on top of payment channels, i
 **Connection Management**:
 - Maintain persistent WebSocket connection for notifications
 - Implement automatic reconnection on disconnect
-- Re-fetch current <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> after reconnection
+- Re-fetch current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> after reconnection
 
 **Notification Handling**:
 - All notifications are asynchronous
@@ -775,7 +776,7 @@ When an <Tooltip content="Off-chain channels built on top of payment channels, i
 - Multiple notifications may arrive rapidly (batch if needed)
 
 **Best Practices**:
-- Use query methods for initial <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> retrieval
+- Use query methods for initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> retrieval
 - Use notifications for ongoing monitoring
 - Don't rely solely on notifications (could be missed during disconnect)
 - Implement periodic state refresh as backup

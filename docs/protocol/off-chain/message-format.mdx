@@ -4,10 +4,11 @@ title: Message Format
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Message Format
 
-The Nitro RPC protocol uses a compact, efficient message format for all communication between clients and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>.
+The Nitro RPC protocol uses a compact, efficient message format for all communication between clients and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>.
 
 ---
 
@@ -90,8 +91,8 @@ The request payload as a 4-element array containing:
 #### sig
 
 Array of ECDSA signatures, one or more depending on the operation:
-- **Single signature**: Most operations (signed by client's <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>)
-- **Multiple signatures**: Multi-party operations (e.g., <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> creation)
+- **Single signature**: Most operations (signed by client's <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>)
+- **Multiple signatures**: Multi-party operations (e.g., <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> creation)
 
 ### Signature Format
 
@@ -145,7 +146,7 @@ Signatures are computed over the keccak256 hash of the JSON-encoded `req` array.
 
 ## Response Message
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode</Tooltip> sends response messages with the same structure, replacing `params` with `result`.
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> sends response messages with the same structure, replacing `params` with `result`.
 
 ### Structure
 
@@ -171,7 +172,7 @@ The response payload as a 4-element array:
 
 #### sig
 
-<Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">The clearnode's</Tooltip> signature(s) over the response:
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode's</Tooltip> signature(s) over the response:
 - Proves response authenticity
 - Verifies response hasn't been tampered with
 - Enables non-repudiation
@@ -198,7 +199,7 @@ The response payload as a 4-element array:
 
 ## Error Response
 
-When an error occurs, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode</Tooltip> sends an error response with method set to `"error"`.
+When an error occurs, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> sends an error response with method set to `"error"`.
 
 ### Structure
 
@@ -370,21 +371,21 @@ sequenceDiagram
 
 ## Signature Verification Process
 
-Both clients and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> MUST verify signatures on all messages.
+Both clients and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> MUST verify signatures on all messages.
 
 ### Client Verifying a Clearnode Response
 
 1. **Extract Response**: Get `res` array from response
 2. **Compute Hash**: `hash = keccak256(JSON.stringify(res))`
 3. **Recover Address**: Use `sig` to recover signer address
-4. **Verify**: Confirm recovered address matches <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">the clearnode's</Tooltip> known address
+4. **Verify**: Confirm recovered address matches <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> known address
 
 ### A Clearnode Verifying Client Request
 
 1. **Extract Request**: Get `req` array from request
 2. **Compute Hash**: `hash = keccak256(JSON.stringify(req))`
 3. **Recover Address**: Use `sig` to recover signer address
-4. **Verify**: Confirm recovered address matches authenticated user or registered <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip>
+4. **Verify**: Confirm recovered address matches authenticated user or registered <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>
 
 :::warning Signature Verification Requirements
 **Most** messages MUST be cryptographically signed and verified. All state-changing operations (channel creation/closure, transfers, app sessions) and authenticated methods require valid signatures. However, **some query methods** (such as `get_config`) may be accessed without signatures. Refer to individual method specifications for signature requirements.
@@ -427,9 +428,9 @@ Use a JSON library that supports canonical JSON serialization, or implement stri
 Now that you understand the message format, explore how it's used in practice:
 
 - **[Authentication](./authentication)** - Learn the 3-step authentication flow
-- **[Channel Methods](./channel-methods)** - See request/response examples for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> operations
+- **[Channel Methods](./channel-methods)** - See request/response examples for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> operations
 - **[Transfers](./transfers)** - Understand transfer message structure
-- **[App Sessions](./app-sessions)** - Explore multi-signature <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> messages
+- **[App Sessions](./app-sessions)** - Explore multi-signature <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> messages
 
 For a high-level overview, return to **[Off-Chain RPC Overview](./overview)**.
 

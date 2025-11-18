@@ -4,16 +4,17 @@ title: Off-Chain RPC Overview
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Off-Chain RPC Protocol Overview
 
-The Off-Chain RPC Protocol defines how clients communicate with <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip> to perform state channel operations without touching the blockchain.
+The Off-Chain RPC Protocol defines how clients communicate with <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> to perform state channel operations without touching the blockchain.
 
 ---
 
 ## What is Nitro RPC?
 
-**Nitro RPC** is a lightweight RPC protocol designed for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">state channel</Tooltip> communication. It uses a compact JSON array format for efficiency and includes signature-based authentication.
+**Nitro RPC** is a lightweight RPC protocol designed for <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> communication. It uses a compact JSON array format for efficiency and includes signature-based authentication.
 
 :::info Protocol Purpose
 Nitro RPC enables clients to interact with a clearnode for channel management, fund transfers, and application-specific operations—all happening off-chain with instant finality and zero gas costs.
@@ -46,8 +47,8 @@ Every request and response is cryptographically signed, ensuring:
 ### 3. Multi-Signature Support
 
 Supports operations requiring multiple participants' signatures:
-- Channel creation (user + <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>)
-- <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">App session</Tooltip> state updates (multiple participants based on quorum)
+- Channel creation (user + <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>)
+- <Tooltip content={tooltipDefinitions.appChannel}>App session</Tooltip> state updates (multiple participants based on quorum)
 - Cooperative channel closure
 
 ### 4. Timestamp-Based Request Ordering
@@ -59,10 +60,10 @@ All messages include server-provided timestamps ensuring:
 
 ### 5. Channel-Aware Message Structure
 
-The protocol understands <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> concepts natively:
-- <Tooltip content="Cryptographic hash of a state, used for signature verification">State hashes</Tooltip>
+The protocol understands <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> concepts natively:
+- <Tooltip content={tooltipDefinitions.stateHash}>State hashes</Tooltip>
 - Multi-party signatures
-- <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">State</Tooltip> versioning
+- <Tooltip content={tooltipDefinitions.channelState}>State</Tooltip> versioning
 
 ---
 
@@ -83,13 +84,13 @@ Nitro RPC has evolved to support advanced features while maintaining backward co
 | **Recommended** | No | **Yes** |
 
 :::caution Version Recommendation
-**Always use NitroRPC/0.4** for new implementations. Version 0.2 is maintained for backward compatibility only and lacks the intent system required for flexible <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> management.
+**Always use NitroRPC/0.4** for new implementations. Version 0.2 is maintained for backward compatibility only and lacks the intent system required for flexible <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> management.
 :::
 
 ### NitroRPC/0.2 (Legacy)
 
 **Features**:
-- Basic state updates for <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>
+- Basic state updates for <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
 - All updates redistribute existing funds
 - Cannot add or remove funds from active sessions
 - Must close and recreate sessions to change total funds
@@ -100,7 +101,7 @@ Nitro RPC has evolved to support advanced features while maintaining backward co
 
 **Features**:
 - Intent-based state updates: **OPERATE**, **DEPOSIT**, **WITHDRAW**
-- Add funds to active <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip> (DEPOSIT)
+- Add funds to active <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> (DEPOSIT)
 - Remove funds from active sessions (WITHDRAW)
 - Better error handling and validation
 - Enhanced security checks
@@ -111,11 +112,11 @@ Nitro RPC has evolved to support advanced features while maintaining backward co
 
 ## Communication Architecture
 
-Nitro RPC enables bidirectional real-time communication between clients and <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>.
+Nitro RPC enables bidirectional real-time communication between clients and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>.
 
 ```mermaid
 graph TB
-    A[Client Application] <-->|WebSocket Connection| B[Clearnode]
+    A[Client Application] <-->|RPC Connection| B[Clearnode]
     B <-->|Event Monitoring| C[Blockchain]
     B <-->|State Management| D[Database]
     
@@ -134,10 +135,10 @@ graph TB
 
 ### Connection Flow
 
-1. **Client Establishes WebSocket**: Open persistent connection to <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>
+1. **Client Establishes Connection**: Open persistent connection to <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>
 2. **Authentication**: Complete 3-step auth flow (auth_request → auth_challenge → auth_verify)
 3. **RPC Communication**: Send requests, receive responses
-4. **Notifications**: Receive real-time updates (balance changes, <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> events)
+4. **Notifications**: Receive real-time updates (balance changes, <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> events)
 5. **Keep-Alive**: Periodic ping/pong to maintain connection (optional, depends upon the implementation chosen)
 
 ---
@@ -155,9 +156,9 @@ Establish and manage authenticated sessions:
 ### 2. Channel Management Methods
 
 Create and manage payment channels:
-- `create_channel` - Open new <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>
-- `close_channel` - Cooperatively close <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>
-- `resize_channel` - Adjust <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> allocations
+- `create_channel` - Open new <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>
+- `close_channel` - Cooperatively close <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>
+- `resize_channel` - Adjust <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> allocations
 
 ### 3. Transfer Methods
 
@@ -167,7 +168,7 @@ Move funds between users:
 ### 4. App Session Methods
 
 Manage multi-party application channels:
-- `create_app_session` - Create new <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>
+- `create_app_session` - Create new <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
 - `submit_app_state` - Update session state (with intents)
 - `close_app_session` - Finalize and distribute funds
 
@@ -182,9 +183,9 @@ Read state and configuration:
 
 Real-time updates:
 - `balance_update` - Balance changed
-- `channel_update` - <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">Channel</Tooltip> status changed
+- `channel_update` - <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> status changed
 - `transfer_received` - Incoming transfer
-- `app_session_update` - <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">App session</Tooltip> state changed
+- `app_session_update` - <Tooltip content={tooltipDefinitions.appChannel}>App session</Tooltip> state changed
 
 ---
 
@@ -201,17 +202,17 @@ The Off-Chain RPC Protocol provides multiple layers of security:
 ### Protocol-Level Security
 
 - **Request Ordering**: Timestamps prevent replay attacks
-- **Session Expiration**: <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">Session keys</Tooltip> have time limits
+- **Session Expiration**: <Tooltip content={tooltipDefinitions.sessionKey}>Session keys</Tooltip> have time limits
 - **Spending Allowances**: Limit session key spending power
 - **Signature Verification**: All operations require valid signatures
 
 ### Network Security
 
-- **WebSocket over TLS**: Encrypted communication channel
+- **TLS Encrypted Communication**: Encrypted communication channel
 - **Origin Validation**: Prevent unauthorized connections
 
 :::success Strong Security Model
-The combination of cryptographic signatures, challenge-response authentication, and spending allowances ensures that even if a <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">session key</Tooltip> is compromised, damage is limited by spending caps and expiration times.
+The combination of cryptographic signatures, challenge-response authentication, and spending allowances ensures that even if a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised, damage is limited by spending caps and expiration times.
 :::
 
 ---
@@ -233,11 +234,11 @@ Explore the detailed specifications for each part of the protocol:
 
 Before diving into specific methods, ensure you understand these core concepts from the protocol foundation:
 
-- <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">**Channel**</Tooltip> - Payment channel locking funds on-chain
-- <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">**State**</Tooltip> - Snapshot of <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> at a point in time
-- <Tooltip content="An entity (identified by a wallet address) that is part of a channel">**Participant**</Tooltip> - Entity in a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> (user, <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">a clearnode</Tooltip>)
-- <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by Clearnode">**Unified Balance**</Tooltip> - Aggregated balance across chains
-- <Tooltip content="A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps">**Session Key**</Tooltip> - Temporary key with spending limits
+- <Tooltip content={tooltipDefinitions.channel}>**Channel**</Tooltip> - Payment channel locking funds on-chain
+- <Tooltip content={tooltipDefinitions.channelState}>**State**</Tooltip> - Snapshot of <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> at a point in time
+- <Tooltip content={tooltipDefinitions.participant}>**Participant**</Tooltip> - Entity in a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> (user, <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>)
+- <Tooltip content={tooltipDefinitions.unifiedBalance}>**Unified Balance**</Tooltip> - Aggregated balance across chains
+- <Tooltip content={tooltipDefinitions.sessionKey}>**Session Key**</Tooltip> - Temporary key with spending limits
 
 Refer to the **[Terminology](/docs/protocol/terminology)** page for complete definitions.
 

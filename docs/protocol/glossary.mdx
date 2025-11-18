@@ -4,6 +4,7 @@ title: Glossary
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Glossary
 
@@ -19,7 +20,7 @@ This glossary provides concise definitions of all Nitrolite protocol terms. For 
 
 ### Adjudicator
 
-Smart contract that validates state transitions according to application-specific rules. Each <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> specifies an adjudicator that determines which state updates are valid.
+Smart contract that validates state transitions according to application-specific rules. Each <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> specifies an adjudicator that determines which state updates are valid.
 
 **Examples**: SimpleConsensus, RemittanceAdjudicator
 
@@ -29,7 +30,7 @@ Smart contract that validates state transitions according to application-specifi
 
 ### Allocation
 
-Specification of how funds are distributed, containing destination, token, and amount. Allocations define where funds should be sent when a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closes or how they're distributed within an <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>.
+Specification of how funds are distributed, containing destination, token, and amount. Allocations define where funds should be sent when a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes or how they're distributed within an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>.
 
 **Structure**:
 ```javascript
@@ -51,7 +52,7 @@ Off-chain channels built on top of payment channels, intended to be used by app 
 **Features**:
 - Multi-party participation
 - Custom governance rules (quorum, weights)
-- Fund locking from <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
+- Fund locking from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - Application-specific state management
 
 **Related**: [App Sessions Methods](../off-chain/app-sessions), [Communication Flows](./communication-flows#app-session-lifecycle-flow)
@@ -62,7 +63,7 @@ Off-chain channels built on top of payment channels, intended to be used by app 
 
 ### Challenge Period
 
-Duration (in seconds) that parties have to respond to a dispute. When a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> is challenged, all participants have this amount of time to submit a newer state before the challenged state becomes final.
+Duration (in seconds) that parties have to respond to a dispute. When a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is challenged, all participants have this amount of time to submit a newer state before the challenged state becomes final.
 
 **Typical Values**:
 - Default: 86400 seconds (24 hours)
@@ -85,7 +86,7 @@ A secure communication pathway between participants that locks funds in an on-ch
 
 ### channelId
 
-A unique identifier for a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Computed deterministically from the channel configuration.
+A unique identifier for a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Computed deterministically from the channel configuration.
 
 **Computation**:
 ```javascript
@@ -103,7 +104,7 @@ channelId = keccak256(abi.encode(
 
 ### Checkpoint
 
-Recording a state on-chain without entering dispute mode. Checkpointing creates an on-chain record of the current state but keeps the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> in ACTIVE status.
+Recording a state on-chain without entering dispute mode. Checkpointing creates an on-chain record of the current state but keeps the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> in ACTIVE status.
 
 **Benefits**:
 - Shortens effective challenge history
@@ -120,9 +121,9 @@ A virtual ledger layer that provides a unified ledger (through Nitro RPC) and co
 
 **Responsibilities**:
 - Manage off-chain RPC protocol
-- Provide <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
+- Provide <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - Join payment channels
-- Coordinate <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>
+- Coordinate <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
 
 **Related**: [Architecture](../protocol/architecture), [Off-Chain RPC Protocol](../off-chain/overview)
 
@@ -130,7 +131,7 @@ A virtual ledger layer that provides a unified ledger (through Nitro RPC) and co
 
 ### Creator
 
-The participant at index 0 in a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> who initiates channel creation. The Creator constructs the channel configuration, prepares the initial funding state, signs it (signature at position 0), and calls the on-chain `create()` function to lock their funds and establish the channel.
+The participant at index 0 in a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> who initiates channel creation. The Creator constructs the channel configuration, prepares the initial funding state, signs it (signature at position 0), and calls the on-chain `create()` function to lock their funds and establish the channel.
 
 **Typically**: A user or light client opening a payment channel with a clearnode.
 
@@ -155,12 +156,12 @@ The main on-chain contract implementing channel creation, joining, closure, and 
 
 ### Intent
 
-In NitroRPC/0.4, specifies the type of <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> state update. The intent system enables dynamic fund management within active sessions.
+In NitroRPC/0.4, specifies the type of <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> state update. The intent system enables dynamic fund management within active sessions.
 
 **Types**:
 - **OPERATE**: Redistribute existing funds (sum unchanged)
-- **DEPOSIT**: Add funds to session from <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
-- **WITHDRAW**: Remove funds from session to <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
+- **DEPOSIT**: Add funds to session from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- **WITHDRAW**: Remove funds from session to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 
 **Related**: [App Sessions](../off-chain/app-sessions#submit_app_state)
 
@@ -185,14 +186,14 @@ Double-entry bookkeeping record of a debit or credit. Every financial operation 
 
 ### Ledger Transaction
 
-User-facing transaction record showing transfers, deposits, withdrawals, and <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> operations. Provides a simplified view of financial activity.
+User-facing transaction record showing transfers, deposits, withdrawals, and <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> operations. Provides a simplified view of financial activity.
 
 **Types**:
 - `transfer` - Direct transfer between users
-- `deposit` - Funds deposited to <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
-- `withdrawal` - Funds withdrawn from <Tooltip content="An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode">unified balance</Tooltip>
-- `app_deposit` - Funds locked in <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>
-- `app_withdrawal` - Funds released from <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>
+- `deposit` - Funds deposited to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- `withdrawal` - Funds withdrawn from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- `app_deposit` - Funds locked in <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
+- `app_withdrawal` - Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
 
 **Related**: [Query Methods](../off-chain/queries#get_ledger_transactions)
 
@@ -216,7 +217,7 @@ Constant in `state.data` signaling special states. Magic numbers enable smart co
 
 ### Nonce
 
-Unique number ensuring <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channel identifier</Tooltip> uniqueness. Even with identical participants and configuration, different nonces create different channel IDs.
+Unique number ensuring <Tooltip content={tooltipDefinitions.channelId}>channel identifier</Tooltip> uniqueness. Even with identical participants and configuration, different nonces create different channel IDs.
 
 **Typical Value**: Timestamp in milliseconds
 
@@ -250,7 +251,7 @@ The on-chain smart contract protocol for state channels. Defines the structure o
 
 ### Participant
 
-An entity (identified by a <Tooltip content="A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds">wallet address</Tooltip>) that is part of a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>. Typically includes a Creator (user) and a Clearnode or Clearnode Operator.
+An entity (identified by a <Tooltip content={tooltipDefinitions.walletAddress}>wallet address</Tooltip>) that is part of a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>. Typically includes a Creator (user) and a Clearnode or Clearnode Operator.
 
 **In Payment Channels**:
 - Index 0: Creator (user)
@@ -264,7 +265,7 @@ An entity (identified by a <Tooltip content="A user's blockchain address (0x-pre
 
 ### Quorum
 
-Minimum total weight of signatures required to approve <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> state updates. The quorum defines the governance threshold for multi-party applications.
+Minimum total weight of signatures required to approve <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> state updates. The quorum defines the governance threshold for multi-party applications.
 
 **Example**:
 ```javascript
@@ -313,7 +314,7 @@ A temporary cryptographic key delegated by a user's main wallet that provides a 
 
 ### State
 
-A snapshot of the <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> at a point in time, including fund allocations and application-specific data. States are signed by participants to authorize transitions.
+A snapshot of the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> at a point in time, including fund allocations and application-specific data. States are signed by participants to authorize transitions.
 
 **Components**:
 - `intent` - Purpose of the state (INITIALIZE, OPERATE, RESIZE, FINALIZE)
@@ -328,7 +329,7 @@ A snapshot of the <Tooltip content="A secure communication pathway between parti
 
 ### stateHash
 
-Cryptographic hash of a <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip>, used for signature verification. The stateHash ensures all participants agree on the exact state before signing.
+Cryptographic hash of a <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>, used for signature verification. The stateHash ensures all participants agree on the exact state before signing.
 
 **Computation**:
 ```javascript
@@ -363,9 +364,9 @@ An abstraction that aggregates a user's funds across multiple blockchain network
 
 ### Weight
 
-Voting power assigned to a participant in an <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>. Weights determine how much influence each participant has in governance decisions.
+Voting power assigned to a participant in an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>. Weights determine how much influence each participant has in governance decisions.
 
-**Usage**: Sum of signer weights must meet <Tooltip content="Minimum total weight of signatures required to approve app session state updates">quorum</Tooltip> for state updates to be valid.
+**Usage**: Sum of signer weights must meet <Tooltip content={tooltipDefinitions.sessionThreshold}>quorum</Tooltip> for state updates to be valid.
 
 **Related**: [App Sessions](../off-chain/app-sessions#create_app_session)
 
@@ -375,7 +376,7 @@ Voting power assigned to a participant in an <Tooltip content="Off-chain channel
 
 ### appSessionId
 
-A unique identifier for an <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Used for all subsequent operations on that specific app session.
+A unique identifier for an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Used for all subsequent operations on that specific app session.
 
 ---
 
@@ -393,7 +394,7 @@ A lowercase string identifier for a supported asset (e.g., "usdc", "eth", "weth"
 
 ### walletAddress
 
-A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds. Used to identify participants in channels and <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>.
+A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds. Used to identify participants in channels and <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>.
 
 ---
 

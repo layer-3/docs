@@ -4,6 +4,7 @@ title: Protocol Reference
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Protocol Reference
 
@@ -44,19 +45,19 @@ Jump to a section:
 | **0.4** | Current | Intent system (OPERATE, DEPOSIT, WITHDRAW) |
 
 :::tip Version Recommendation
-**Always use NitroRPC/0.4** for new implementations. Version 0.4 adds the intent system for <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip>, enabling dynamic fund management (deposits and withdrawals) within active sessions.
+**Always use NitroRPC/0.4** for new implementations. Version 0.4 adds the intent system for <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>, enabling dynamic fund management (deposits and withdrawals) within active sessions.
 :::
 
 **Breaking Changes**:
 - NitroRPC/0.4 introduces the `intent` parameter in `submit_app_state`
 - NitroRPC/0.2 sessions cannot use DEPOSIT or WITHDRAW intents
-- Protocol version is set during <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app session</Tooltip> creation and cannot be changed
+- Protocol version is set during <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> creation and cannot be changed
 
 ---
 
 ## Magic Numbers
 
-Constants used in the protocol to signal special <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> types.
+Constants used in the protocol to signal special <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> types.
 
 ### CHANOPEN
 
@@ -65,13 +66,13 @@ Value (Decimal): 7877
 Value (Hex): 0x1EC5
 ```
 
-**Description**: Magic number in `state.data` for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> funding states.
+**Description**: Magic number in `state.data` for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> funding states.
 
 **Usage**: 
 - Signals this is an initial state during create/join phase
 - Used in `create_channel` RPC method
 - Required for `Custody.create()` on-chain transaction
-- Both <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> must sign state containing CHANOPEN
+- Both <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign state containing CHANOPEN
 
 **Example**:
 ```javascript
@@ -86,13 +87,13 @@ Value (Decimal): 7879
 Value (Hex): 0x1EC7
 ```
 
-**Description**: Magic number in `state.data` for <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> closing states.
+**Description**: Magic number in `state.data` for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closing states.
 
 **Usage**: 
 - Signals this is a final state for cooperative closure
 - Used in `close_channel` RPC method
 - Required for `Custody.close()` on-chain transaction
-- All <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> must sign state containing CHANCLOSE
+- All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign state containing CHANCLOSE
 
 **Example**:
 ```javascript
@@ -101,21 +102,21 @@ state.data = "0x0000000000000000000000000000000000000000000000000000000000001ec7
 ```
 
 :::caution Magic Number Validation
-Smart contracts validate these magic numbers to ensure proper <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> lifecycle. Using incorrect magic numbers will cause transactions to revert.
+Smart contracts validate these magic numbers to ensure proper <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle. Using incorrect magic numbers will cause transactions to revert.
 :::
 
 ---
 
 ## Participant Indices
 
-In a standard payment <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip>, <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> are identified by their array index.
+In a standard payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>, <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> are identified by their array index.
 
 ### Index 0: Creator (User)
 
-**Role**: <Tooltip content="The participant at index 0 in a channel who initiates channel creation">Creator</Tooltip>
+**Role**: <Tooltip content={tooltipDefinitions.creatorParticipant}>Creator</Tooltip>
 
 **Responsibilities**:
-- Initiates <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> creation
+- Initiates <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> creation
 - Typically the one depositing funds
 - First to sign states (`state.sigs[0]`)
 - Calls `Custody.create()` on-chain
@@ -141,7 +142,7 @@ channel.participants[1] = "0x123456789abcdef0123456789abcdef012345678" // Clearn
 ```
 
 :::warning Signature Order Critical
-Signatures array order **MUST** match <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> array order. Mismatched signatures will cause transaction failures.
+Signatures array order **MUST** match <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> array order. Mismatched signatures will cause transaction failures.
 
 ```javascript
 state.sigs[0] = creator_signature   // Must be from participants[0]
@@ -153,7 +154,7 @@ state.sigs[1] = clearnode_signature // Must be from participants[1]
 
 ## Channel Status State Machine
 
-<Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">Channel</Tooltip> lifecycle is governed by status transitions.
+<Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> lifecycle is governed by status transitions.
 
 ### Status Enumeration
 
@@ -210,15 +211,15 @@ stateDiagram-v2
 
 | From | To | Trigger | Notes |
 |------|----|---------|---------| 
-| `VOID` | `INITIAL` | `create()` | <Tooltip content="The participant at index 0 in a channel who initiates channel creation">Creator</Tooltip> submits first |
-| `INITIAL` | `ACTIVE` | `join()` | All <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip> joined |
+| `VOID` | `INITIAL` | `create()` | <Tooltip content={tooltipDefinitions.creatorParticipant}>Creator</Tooltip> submits first |
+| `INITIAL` | `ACTIVE` | `join()` | All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> joined |
 | `ACTIVE` | `DISPUTE` | `challenge()` | Dispute initiated |
 | `ACTIVE` | `FINAL` | `close()` | Cooperative closure |
 | `DISPUTE` | `ACTIVE` | `checkpoint()` | Newer state accepted |
 | `DISPUTE` | `FINAL` | `close()` | Challenge timeout |
 
 :::tip Quick Closure
-The fastest way to close a <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> is **ACTIVE → FINAL** via cooperative `close()`. This skips the challenge period entirely.
+The fastest way to close a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is **ACTIVE → FINAL** via cooperative `close()`. This skips the challenge period entirely.
 :::
 
 ---
@@ -235,21 +236,21 @@ Based on [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification).
 | `-32600` | Invalid request | Request structure invalid | Missing required fields |
 | `-32601` | Method not found | Method does not exist | Unknown RPC method |
 | `-32602` | Invalid params | Invalid method parameters | Wrong parameter types |
-| `-32603` | Internal error | Internal server error | <Tooltip content="A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users">Clearnode</Tooltip> error |
+| `-32603` | Internal error | Internal server error | <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> error |
 
 ### Application-Specific Errors (1000+)
 
 | Code | Name | Description | Resolution |
 |------|------|-------------|------------|
 | `1001` | Authentication required | Operation requires authenticated session | Call `auth_request`, `auth_challenge`, `auth_verify` |
-| `1002` | Insufficient balance | User doesn't have enough available funds | Deposit more or close <Tooltip content="Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain">app sessions</Tooltip> |
-| `1003` | Channel not found | Specified <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip> does not exist | Verify <Tooltip content="A unique identifier for a channel, formatted as a 0x-prefixed hex string (32 bytes)">channelId</Tooltip>, create new <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates">channel</Tooltip> |
-| `1004` | App session not found | Specified <Tooltip content="A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes)">appSessionId</Tooltip> does not exist | Verify ID, create new session |
+| `1002` | Insufficient balance | User doesn't have enough available funds | Deposit more or close <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> |
+| `1003` | Channel not found | Specified <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> does not exist | Verify <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip>, create new <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> |
+| `1004` | App session not found | Specified <Tooltip content={tooltipDefinitions.appSessionId}>appSessionId</Tooltip> does not exist | Verify ID, create new session |
 | `1005` | Quorum not met | Signatures don't meet quorum requirement | Collect more signatures |
 | `1006` | Version conflict | State version doesn't match expected | Fetch current state, retry with `version + 1` |
 | `1007` | Invalid allocation | Allocation sum doesn't match rules | Verify allocation math |
 | `1008` | Session key allowance exceeded | Operation would exceed spending cap | Increase allowance or use main wallet |
-| `1009` | Unsupported chain | Specified <Tooltip content="A blockchain network identifier (uint64)">chainId</Tooltip> not supported | Use `get_config` to see supported chains |
+| `1009` | Unsupported chain | Specified <Tooltip content={tooltipDefinitions.chainId}>chainId</Tooltip> not supported | Use `get_config` to see supported chains |
 | `1010` | Unsupported token | Specified token not supported | Use `get_assets` to see supported tokens |
 
 **Error Response Format**:
@@ -290,7 +291,7 @@ struct State {
 - **ERC-1271**: Smart contract wallet signatures
 - **ERC-6492**: Counterfactual contract signatures (not yet deployed)
 
-**Hash**: Raw <Tooltip content="Cryptographic hash of a channel state, used for signature verification">stateHash</Tooltip> (no EIP-191 prefix for chain-agnostic compatibility)
+**Hash**: Raw <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> (no EIP-191 prefix for chain-agnostic compatibility)
 
 **Example**:
 ```javascript
@@ -345,7 +346,7 @@ Contract deployment addresses are stored in the repository.
 └── metadata.json     # Contract metadata
 ```
 
-**Example Path** (Polygon USDC <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody</Tooltip>):
+**Example Path** (Polygon USDC <Tooltip content={tooltipDefinitions.custodyContract}>Custody</Tooltip>):
 ```
 /contract/deployments/137/USDCCustody/address.txt
 ```
@@ -413,7 +414,7 @@ get_assets() → {
 ```
 
 :::tip Asset Discovery
-Use `get_assets` RPC method to retrieve the complete list of supported assets with contract addresses for each <Tooltip content="A blockchain network identifier (uint64)">chain</Tooltip>. Asset support may vary by clearnode.
+Use `get_assets` RPC method to retrieve the complete list of supported assets with contract addresses for each <Tooltip content={tooltipDefinitions.chainId}>chain</Tooltip>. Asset support may vary by clearnode.
 :::
 
 ---
@@ -427,7 +428,7 @@ Ethereum Improvement Proposals referenced or used by the protocol.
 **Status**: Not used in on-chain signatures (chain-agnostic design)  
 **Link**: https://eips.ethereum.org/EIPS/eip-191
 
-**Why not used**: Nitrolite signatures are computed over raw <Tooltip content="Cryptographic hash of a channel state, used for signature verification">stateHash</Tooltip> without EIP-191 prefix to maintain compatibility across different EVM chains and potential non-EVM implementations.
+**Why not used**: Nitrolite signatures are computed over raw <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> without EIP-191 prefix to maintain compatibility across different EVM chains and potential non-EVM implementations.
 
 ### EIP-712: Typed Structured Data Hashing
 
@@ -438,17 +439,17 @@ Ethereum Improvement Proposals referenced or used by the protocol.
 
 ### EIP-1271: Contract Signature Validation
 
-**Status**: Supported by <Tooltip content="A smart contract that validates state transitions according to application-specific rules">adjudicators</Tooltip>  
+**Status**: Supported by <Tooltip content={tooltipDefinitions.adjudicator}>adjudicators</Tooltip>  
 **Link**: https://eips.ethereum.org/EIPS/eip-1271
 
-**Usage**: Enables smart contract wallets to sign <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data">state</Tooltip> updates as <Tooltip content="An entity (identified by a wallet address) that is part of a channel">participants</Tooltip>.
+**Usage**: Enables smart contract wallets to sign <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates as <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>.
 
 ### EIP-20 (ERC-20): Token Standard
 
 **Status**: Required for all assets  
 **Link**: https://eips.ethereum.org/EIPS/eip-20
 
-**Usage**: All assets must be ERC-20 compliant tokens. The <Tooltip content="The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol">Custody Contract</Tooltip> uses `transferFrom` and `transfer` methods.
+**Usage**: All assets must be ERC-20 compliant tokens. The <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> uses `transferFrom` and `transfer` methods.
 
 :::note Standards Compliance
 While the protocol references these EIPs, implementation details may vary. Always consult the specific smart contract code for authoritative behavior.

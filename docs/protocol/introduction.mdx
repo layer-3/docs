@@ -4,12 +4,13 @@ title: "Introduction"
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Introduction
 
 ## What is Nitrolite?
 
-Nitrolite is a chain-agnostic <Tooltip content="A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.">state channel</Tooltip> protocol that enables off-chain interactions between <Tooltip content="An entity (identified by a wallet address) that is part of a channel. Typically includes a Creator (user) and a clearnode or a Clearnode Operator.">participants</Tooltip> with minimal on-chain operations. The protocol forms a unified virtual ledger (called "clearnet") for applications to escrow funds while being fully abstracted from the underlying blockchain.
+Nitrolite is a <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> protocol that enables off-chain interactions between <Tooltip content={tooltipDefinitions.participantExtended}>participants</Tooltip> with minimal on-chain operations. The protocol forms a unified virtual ledger (called "clearnet") for applications to escrow funds while being fully abstracted from the underlying blockchain.
 
 The initial version of Nitrolite is EVM-compatible and designed for deployment on Layer 1 and Layer 2 Ethereum networks.
 
@@ -28,7 +29,7 @@ Nitrolite is designed with the following objectives:
 Nitrolite consists of three interconnected layers:
 
 1. **On-Chain Layer**: Smart contracts that handle fund custody, dispute resolution, and final settlement
-2. **Off-Chain Layer**: RPC protocol for fast, gasless <Tooltip content="A snapshot of the channel at a point in time, including fund allocations and application-specific data.">state</Tooltip> updates between participants
+2. **Off-Chain Layer**: RPC protocol for fast, gasless <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates between participants
 3. **Application Layer**: Arbitrary application logic built on top of the protocol
 
 ```mermaid
