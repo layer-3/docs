@@ -32,7 +32,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 **stateHash**: {tooltipDefinitions.stateHash}
 
-**requestId**: A unique identifier for an RPC request, used for correlating requests and responses.
+**requestId**: A unique identifier for an RPC request, used for correlating requests and responses formatted as a 0x-prefixed hex string (32 bytes).
 
 **appSessionId**: {tooltipDefinitions.appSessionId} Used for all subsequent operations on that specific app session.
 
@@ -48,9 +48,9 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 ## On-Chain Contracts
 
-**Custody Contract**: The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol that locks funds, tracks channel state, and coordinates with adjudicators to validate state transitions.
+**Custody Contract**: The main on-chain contract implementing the Nitrolite protocol. It provides the functionality to lock and unlock funds; create, close and challenge a channel; track channel state, and coordinate with adjudicators to validate state transitions on state updates.
 
-**Adjudicator**: A smart contract that defines the rules for validating state transitions during disputes. The adjudicator's `adjudicate()` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
+**Adjudicator**: A smart contract that defines the rules for validating state transitions during all channel lifecycle operations. The adjudicator's `adjudicate(...)` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
 
 ## Protocol Components
 

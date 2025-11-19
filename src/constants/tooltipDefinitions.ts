@@ -7,7 +7,7 @@ export const tooltipDefinitions = {
     "A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.",
   nitroRpc: "The off-chain communication protocol.",
   channelState:
-    "A snapshot of the channel at a point in time, including fund allocations and application-specific data.",
+    "A snapshot of the channel at any point in time, including fund allocations and application-specific data.",
   blockchain:
     "The underlying distributed ledger technology (e.g., Ethereum).",
   participant:
@@ -15,9 +15,9 @@ export const tooltipDefinitions = {
   appChannel:
     "Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.",
   custodyContract:
-    "The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol.",
+    "The primary Nitrolite contract that locks and unlocks funds, manages channel lifecycle (create/close/challenge), tracks channel state, and coordinates with adjudicators to validate transitions.",
   unifiedBalance:
-    "An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode.",
+    "An abstraction that aggregates users' funds across multiple blockchain networks, managed by a clearnode.",
   sessionKey:
     "A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps.",
   walletAddress:
@@ -25,11 +25,11 @@ export const tooltipDefinitions = {
   chainId: "A blockchain network identifier (uint64).",
   channelNonce: "Unique number ensuring channel identifier uniqueness.",
   adjudicator:
-    "A smart contract that validates state transitions according to application-specific rules.",
+    "A smart contract that validates state transitions according to application-specific rules during all channel lifecycle operations.",
   channelId:
-    "A unique identifier for a channel, computed as the hash of the channel configuration (0x-prefixed hex string, 32 bytes).",
+    "A unique identifier for a channel, computed as the hash of the channel configuration, formatted as a 0x-prefixed hex string (32 bytes).",
   stateHash:
-    "A cryptographic hash of a channel state, used for signature verification.",
+    "A cryptographic hash of the concatenated channelId and channel state, formatted as a 0x-prefixed hex string (32 bytes) and used for signature verification.",
   assetSymbol: "A lowercase string identifier for a supported asset.",
   sessionThreshold:
     "Minimum total weight of signatures required to approve app session state updates.",
