@@ -124,11 +124,6 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/docs/api-reference',
-          label: 'API Reference',
-          position: 'left',
-        },
-        {
           href: 'https://github.com/layer-3',
           position: 'right',
           className: 'header-github-link',
