@@ -1,9 +1,6 @@
 {
   "label": "Off-Chain RPC Protocol",
   "position": 5,
-  "link": {
-    "type": "generated-index",
-    "description": "The Off-Chain RPC Protocol (Nitro RPC) enables fast, gasless communication with a clearnode for state channel operations, transfers, and application-specific interactions."
-  }
+  "collapsible": true,
+  "collapsed": true
 }
-

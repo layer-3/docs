@@ -1121,70 +1121,7 @@ pre.codeBlock_bY9V[style*="background-color"],
   color: #ffffff !important;
 }
 
-/* COMPREHENSIVE SIDEBAR FIX - Force ALL sections to remain visible */
-
-/* Override Docusaurus contextual sidebar behavior completely */
-.theme-doc-sidebar-menu .menu__list > .menu__list-item {
-  display: list-item !important;
-  visibility: visible !important;
-}
-
-/* Force all menu lists to display */
-.menu__list {
-  display: block !important;
-  overflow: visible !important;
-  height: auto !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* Prevent any hiding of sidebar sections */
-.theme-doc-sidebar-menu .menu__list-item,
-.theme-doc-sidebar-item-category,
-.theme-doc-sidebar-item-link {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Force list items to display properly */
-.menu__list .menu__list-item {
-  display: list-item !important;
-}
-
-/* Override any dynamic hiding with !important */
-.theme-doc-sidebar-menu [hidden],
-.menu__list-item[hidden],
-.menu__list[hidden] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Force expand all collapsed categories */
-.menu__link--sublist[aria-expanded="false"] + .menu__list,
-.menu__list-item--collapsed > .menu__list {
-  display: block !important;
-  overflow: visible !important;
-  height: auto !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Ensure collapsed items show as expanded */
-.menu__list-item--collapsed .menu__caret::before {
-  transform: rotate(90deg) !important;
-}
-
-/* Override any JavaScript-based hiding */
-.theme-doc-sidebar-menu * {
-  visibility: visible !important;
-}
-
-/* Force root level items to always show */
-nav.menu > .menu__list > .menu__list-item {
-  display: list-item !important;
-}
+/* Removed legacy sidebar overrides to restore collapsible behavior */
 
 /* Mermaid diagrams - ensure white background in all modes */
 .docusaurus-mermaid-container {
