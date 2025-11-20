@@ -62,7 +62,39 @@ The recipient does not need to have an existing balance or account on the clearn
 |-----------|------|----------|-------------|--------|---------|-------|
 | `destination` | string (wallet address) | Yes (if `destination_user_tag` not provided) | Recipient's wallet address | 0x-prefixed hex string (20 bytes) | `"0x8B3192f2F7b1b34f2e4e7B8C9D1E0F2A3B4C5D6E"` | - |
 | `destination_user_tag` | string | Yes (if destination not provided) | Recipient's randomly generated user identifier | Alphanumeric string | `"UX123D"` | Alternative to address; internal feature, may change |
-| `allocations` | Allocation[] | Yes (minimum: 1) | Assets and amounts to transfer<br/><br/>**Structure (per allocation)**:<br/>• `asset` (string, required) - Asset identifier<br/>&nbsp;&nbsp;- Examples: "usdc", "eth", "weth", "btc"<br/>&nbsp;&nbsp;- Note: Must be lowercase; see get_assets for supported assets<br/>• `amount` (string, required) - Amount to transfer in human-readable format<br/>&nbsp;&nbsp;- Format: Decimal string (e.g., "50.0" for 50 USDC)<br/>&nbsp;&nbsp;- Note: Clearnode handles conversion to smallest unit internally | See structure | `[{"asset": "usdc", "amount": "50.0"}, {"asset": "eth", "amount": "0.01"}]` | Can send multiple assets in single transfer<br/><br/>:::note Allocation Structure<br/>For detailed allocation structure definitions, see [Data Structures](../on-chain/data-structures#allocation-structure).<br/>::: |
+| `allocations` | TransferAllocation[] | Yes (minimum: 1) | Assets and amounts to transfer | Array of allocation objects | `[{"asset": "usdc", "amount": "50.0"}]` | See structure below |
+
+#### TransferAllocation Structure
+
+Each allocation in the `allocations` array specifies an asset and amount to transfer:
+
+| Field | Type | Required | Description | Format | Example |
+|-------|------|----------|-------------|--------|---------|
+| `asset` | string | Yes | Asset symbol identifier | Lowercase string | `"usdc"`, `"eth"`, `"weth"`, `"btc"` |
+| `amount` | string | Yes | Amount to transfer in human-readable format | Decimal string | `"50.0"`, `"0.01"` |
+
+**Notes**:
+- Asset symbols must be lowercase
+- Use `get_assets` method to see all supported assets
+- Amounts are in human-readable format (e.g., "50.0" for 50 USDC)
+- Clearnode handles conversion to smallest unit internally
+- Multiple assets can be transferred in a single operation
+
+**Example**:
+```json
+{
+  "allocations": [
+    {
+      "asset": "usdc",
+      "amount": "50.0"
+    },
+    {
+      "asset": "eth",
+      "amount": "0.01"
+    }
+  ]
+}
+```
 
 ### Response
 
