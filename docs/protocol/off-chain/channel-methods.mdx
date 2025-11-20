@@ -22,11 +22,10 @@ Payment channels are the foundation of the Nitrolite protocol. They lock funds o
 stateDiagram-v2
     [*] --> Requesting: create_channel (off-chain)
     Requesting --> OnChain: User submits create() transaction
-    OnChain --> INITIAL: Contract locks user funds
-    INITIAL --> ACTIVE: Clearnode joins with join()
+    OnChain --> ACTIVE: Contract locks user funds (status: open)
 
     ACTIVE --> Resizing: resize_channel (optional)
-    Resizing --> ACTIVE: Atomic reset() completes
+    Resizing --> ACTIVE: User submits resize() transaction
 
     ACTIVE --> Closing: close_channel (cooperative)
     Closing --> [*]: Funds distributed
@@ -46,18 +45,18 @@ stateDiagram-v2
 
 ### Usage
 
-Initiates the creation of a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> between user and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> on a specific blockchain. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> validates the request, generates a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> configuration with a unique <Tooltip content={tooltipDefinitions.channelNonce}>nonce</Tooltip>, prepares the initial funding state with the CHANOPEN magic number, and signs it. The user receives the complete <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> data and <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature, which they must then submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `create()` function to finalize <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> creation and lock funds on-chain. This two-step process (off-chain preparation, on-chain execution) ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is ready to join before the user commits funds.
+Initiates the creation of a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> between user and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> on a specific blockchain. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> validates the request, generates a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> configuration with a unique <Tooltip content={tooltipDefinitions.channelNonce}>nonce</Tooltip>, prepares the initial funding state, and signs it. The user receives the complete <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> data and <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature, which they must then submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `create()` function to finalize <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> creation and lock funds on-chain. This two-step process (off-chain preparation, on-chain execution) ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> has agreed on channel creation and received an on-chain confirmation that it was created.
 
 ### When to Use
 
-When a user wants to deposit funds and establish a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> on a specific blockchain network. This is typically the first operation after authentication.
+When a user wants to establish a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> on a specific blockchain network. This is the first operation after authentication if the user doesn't have an open channel yet. On subsequent connections, users won't need to create a channel again unless they closed it.
 
 :::info Two-Step Process
 Channel creation is intentionally split into two steps:
-1. **Off-chain preparation**: <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> prepares and signs channel configuration
-2. **On-chain execution**: User submits transaction to lock funds
+1. **Off-chain preparation**: <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> prepares and signs the initial state
+2. **On-chain execution**: User submits transaction to create the channel
 
-This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is ready to join before the user risks their funds.
+This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> has committed to the channel before the user submits the on-chain transaction.
 :::
 
 ### Prerequisites
@@ -71,10 +70,13 @@ This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tool
 
 | Parameter | Type | Required | Description | Default | Example | Notes |
 |-----------|------|----------|-------------|---------|---------|-------|
-| `chain_id` | uint64 | Yes | Blockchain network identifier<br/><br/>**Examples**:<br/>• 1: Ethereum Mainnet<br/>• 137: Polygon<br/>• 8453: Base<br/>• 42161: Arbitrum One<br/>• 10: Optimism | - | `137` | Use get_config to see supported chains |
+| `chain_id` | uint32 | Yes | Blockchain network identifier<br/><br/>**Examples**:<br/>• 1: Ethereum Mainnet<br/>• 137: Polygon<br/>• 8453: Base<br/>• 42161: Arbitrum One<br/>• 10: Optimism | - | `137` | Use get_config to see supported chains |
 | `token` | string (wallet address) | Yes | ERC-20 token contract address on the specified chain<br/><br/>**Format**: 0x-prefixed hex string (20 bytes) | - | `"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"` (USDC on Polygon) | Must be a supported token; see get_assets for available tokens |
-| `amount` | string | Yes | Initial deposit amount in token's smallest unit<br/><br/>**Format**: Decimal string (not hex) | - | `"100000000"` represents 100 USDC (100 * 10^6) | Must account for token decimals (e.g., USDC has 6 decimals) |
-| `challenge` | uint64 | No | Challenge period duration in seconds | 86400 (24 hours) | `3600` (1 hour) | Longer periods are safer but slower to close in disputes<br/>Recommended: Use default unless specific requirements |
+| `session_key` | string (wallet address) | No | Session key address to authorize for this channel | Authenticated session key | `"0x9876543210fedcba9876543210fedcba98765432"` | Optional parameter to specify which session key can control the channel |
+
+:::info Initial Channel State
+Channels are created with **zero initial balance** for both participants. To add funds to the channel, use the `resize_channel` method after creation. The challenge period is set to 1 hour (3600 seconds) by default.
+:::
 
 ### Response
 
@@ -86,16 +88,16 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 |-----------|------|-------------|----------|
 | `channel` | Channel | Complete channel configuration to be submitted on-chain | [↓ Structure](#channel-structure) |
 | `state` | State | Initial funding state with the clearnode's signature | [↓ Structure](#state-structure) |
-| `broker_signature` | string | The clearnode's signature over the channel and state (0x-prefixed hex, 65 bytes) | — |
-| `channel_id` | string | Computed channel identifier: `keccak256(abi.encode(channel))` (0x-prefixed hex, 32 bytes)<br/>Client should compute this independently to verify | — |
+| `server_signature` | string | The clearnode's signature over the channel and state (0x-prefixed hex, 65 bytes) | — |
+| `channel_id` | string | Computed channel identifier (0x-prefixed hex, 32 bytes)<br/>Computed as: keccak256(abi.encode(channel))<br/>Client should compute this independently to verify | — |
 
-#### Channel {#channel-structure}
+#### Channel Structure
 
 | Field | Type | Description | Notes |
 |-------|------|-------------|-------|
-| `participants` | wallet address[] | `[User wallet address, Clearnode wallet address]` | Order: Index 0 = User, Index 1 = Clearnode<br/>Order is critical for signature verification |
+| `participants` | wallet address[] | Array of two wallet addresses: [User, Clearnode] | Order: Index 0 = User, Index 1 = Clearnode<br/>Order is critical for signature verification |
 | `adjudicator` | wallet address | Adjudicator contract address for this channel | Typically SimpleConsensus for payment channels<br/>Validates state transitions during disputes |
-| `challenge` | uint64 | Challenge period in seconds | Matches request or default |
+| `challenge` | uint64 | Challenge period in seconds | Default: 3600 seconds (1 hour) |
 | `nonce` | uint64 | Unique identifier for this channel | Ensures channelId uniqueness even with same participants<br/>Server-generated timestamp or counter |
 
 **Example**:
@@ -108,32 +110,34 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 }
 ```
 
-#### State {#state-structure}
+#### State Structure
 
 | Field | Type | Description | Notes |
 |-------|------|-------------|-------|
-| `data` | bytes | Contains CHANOPEN magic number (7877 / 0x1EC5) | Signals this is a funding state |
-| `allocations` | StateAllocation[] | Expected deposits from each participant | Order matches participants array<br/>See [StateAllocation](#stateallocation) below<br/>Clearnode typically deposits 0 initially |
-| `sigs` | Signature[] | Array of signatures; the clearnode's at index 1 | Order: Index matches participants array<br/>User must add their signature at index 0 before submitting on-chain |
+| `intent` | StateIntent | State purpose indicator | For creation: 1 (INITIALIZE) |
+| `version` | uint64 | State sequence number | For creation: 0 |
+| `state_data` | string | Application-specific state data (hex string) | For creation: "0x" (empty) |
+| `allocations` | StateAllocation[] | Fund allocations for each participant | Order matches participants array<br/>See [StateAllocation](#stateallocation) below<br/>For creation: both participants start with "0" |
 
 **Example**:
 ```json
 {
-  "data": "0x0000000000000000000000000000000000000000000000000000000000001ec5",
+  "intent": 1,
+  "version": 0,
+  "state_data": "0x",
   "allocations": [
-    {"destination": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "100000000"},
-    {"destination": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}
-  ],
-  "sigs": [null, "0xClearnodeSignature123..."]
+    {"participant": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "0"},
+    {"participant": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}
+  ]
 }
 ```
 
-#### StateAllocation {#stateallocation}
+#### StateAllocation Structure
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `destination` | wallet address | Participant's wallet address |
-| `token` | wallet address | Token contract address |
+| `participant` | string (wallet address) | Participant's wallet address |
+| `token` | string (wallet address) | Token contract address |
 | `amount` | string | Amount in smallest unit (e.g., `"100000000"` for 100 USDC with 6 decimals) |
 
 :::tip Clearnode Signature First
@@ -146,45 +150,47 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
    - Recompute `channelId` = `keccak256(abi.encode(channel))`
    - Verify computed ID matches response `channel_id`
    - Check participants[0] is your wallet address
-   - Verify token and amount match your request
+   - Verify token matches your request
 
 2. **Verify the Clearnode's Signature**
    - Compute `stateHash` = `keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
-   - Recover signer from `broker_signature`
+   - Recover signer from `server_signature`
    - Verify signer is <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> known wallet address
 
 3. **Sign State with Your Key**
    - Sign `stateHash` with your <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
-   - Add your signature at `state.sigs[0]`
+   - Include your signature when submitting to blockchain
 
-4. **Approve Token Spending** (if needed)
-   - Check token allowance: `token.allowance(yourAddress, custodyAddress)`
-   - If insufficient: `token.approve(custodyAddress, amount)`
-
-5. **Submit On-Chain Transaction**
-   - Call `Custody.create(channel, state)` with both signatures
+4. **Submit On-Chain Transaction**
+   - Call `Custody.create(channel, state, yourSignature, clearnodeSignature)`
    - Wait for transaction confirmation
 
-6. **Monitor for Channel Opening**
-   - Listen for `Opened` event (emitted when <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> joins)
-   - Or poll `get_channels` until status is "active"
+5. **Monitor for Channel Creation**
+   - Listen for `Opened` event (emitted right after transaction is mined)
+   - Or poll `get_channels` until channel appears with status "open"
 
-7. **Channel Active**
-   - Channel appears in <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
-   - Can now perform off-chain operations
+6. **Channel Active**
+   - Channel appears in `get_channels` with status "open"
+   - Channel starts with zero balance
+   - Use `resize_channel` to add funds to the channel
 
 ### Error Cases
 
-| Error | Code | Description | Recovery |
-|-------|------|-------------|----------|
-| **Authentication required** | 1001 | Not authenticated | Complete [authentication flow](./authentication) |
-| **Insufficient balance** | 1002 | User doesn't have enough tokens | Acquire more tokens or reduce amount |
-| **Unsupported chain** | 1009 | chain_id not supported | Use `get_config` to see supported chains |
-| **Unsupported token** | 1010 | Token not in asset config | Use `get_assets` to see supported tokens |
-| **Invalid amount** | -32602 | Zero, negative, or exceeds limits | Provide valid amount > 0 |
-| **Invalid chain_id format** | -32602 | Not a uint64 | Provide numeric chain ID |
-| **Invalid token address** | -32602 | Malformed wallet address | Verify token address format |
-| **Clearnode unavailable** | -32603 | Clearnode at capacity | Retry later or contact support |
+:::note Error Format
+The protocol does not use numeric error codes. Errors are returned as method `"error"` with descriptive messages.
+:::
+
+Common error scenarios:
+
+| Error | Description | Recovery |
+|-------|-------------|----------|
+| **Authentication required** | Not authenticated | Complete [authentication flow](./authentication) |
+| **Unsupported chain** | chain_id not supported | Use `get_config` to see supported chains |
+| **Unsupported token** | Token not in asset config | Use `get_assets` to see supported tokens |
+| **Invalid chain_id format** | Not a valid uint32 | Provide numeric chain ID |
+| **Invalid token address** | Malformed wallet address | Verify token address format |
+| **Channel already exists** | An open channel with clearnode already exists | Close existing channel first or use that channel |
+| **Clearnode unavailable** | Clearnode at capacity | Retry later or contact support |
 
 ### Implementation Notes
 
@@ -196,6 +202,7 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 
 ### Sequence Diagram
 
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -203,39 +210,33 @@ sequenceDiagram
     participant Blockchain
     
     Note over User: 1. Request Channel Creation
-    User->>Clearnode: create_channel(chain_id, token, amount)
+    User->>Clearnode: create_channel(chain_id, token)
     
     Note over Clearnode: 2. Prepare Channel
     Clearnode->>Clearnode: Generate unique nonce
     Clearnode->>Clearnode: Create channel config
-    Clearnode->>Clearnode: Create funding state (CHANOPEN)
+    Clearnode->>Clearnode: Create initial state (intent: INITIALIZE, version: 0)
     Clearnode->>Clearnode: Sign state
     
-    Clearnode->>User: {channel, state, broker_signature}
+    Clearnode->>User: {channel, state, server_signature, channel_id}
     
     Note over User: 3. Verify & Sign
     User->>User: Verify Clearnode signature
     User->>User: Sign state with participant key
     
     Note over User: 4. Submit On-Chain
-    User->>Blockchain: Custody.create(channel, state)
+    User->>Blockchain: Custody.create(channel, state, signatures)
     
-    Note over Blockchain: 5. Lock Funds
+    Note over Blockchain: 5. Create Channel (Status: ACTIVE)
     Blockchain->>Blockchain: Verify signatures
-    Blockchain->>Blockchain: Lock user's tokens
-    Blockchain->>Blockchain: Emit Created event
-    
-    Note over Clearnode: 6. Join Channel
-    Clearnode->>Blockchain: Custody.join(channelId, 1, signature)
-    Blockchain->>Blockchain: Set status = ACTIVE
+    Blockchain->>Blockchain: Create channel with status ACTIVE
     Blockchain->>Blockchain: Emit Opened event
     
-    Blockchain-->>User: Channel Active
-    Blockchain-->>Clearnode: Channel Active
+    Blockchain-->>User: Channel Active (zero balance)
+    Blockchain-->>Clearnode: Channel Active (zero balance)
     
-    style User fill:#e1f5ff
-    style Clearnode fill:#ffe1f5
-    style Blockchain fill:#e1ffe1
+    Note over User,Clearnode: Use resize_channel to add funds
+
 ```
 
 ---
@@ -248,7 +249,7 @@ sequenceDiagram
 
 ### Usage
 
-Initiates cooperative closure of an active payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> signs a final state with the CHANCLOSE magic number reflecting the current balance distribution. The user receives this clearnode-signed final state which they must submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `close()` function. This is the preferred and most efficient way to close a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> as it requires only one on-chain transaction and completes immediately without a challenge period. Both parties must agree on the final allocation for cooperative closure to work.
+Initiates cooperative closure of an active payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>. <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> signs a final state with StateIntent.FINALIZE reflecting the current balance distribution. The user receives this clearnode-signed final state which they must submit to the blockchain's <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> via the `close()` function. This is the preferred and most efficient way to close a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> as it requires only one on-chain transaction and completes immediately without a challenge period. Both parties must agree on the final allocation for cooperative closure to work.
 
 ### When to Use
 
@@ -267,19 +268,18 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 ### Request
 
-| Parameter | Type | Required | Description | Default | Format | Example | Notes |
-|-----------|------|----------|-------------|---------|--------|---------|-------|
-| `channel_id` | string | Yes | Identifier of the channel to close | - | 0x-prefixed hex string (32 bytes) | `"0xabcdef1234567890..."` | Source: From get_channels or stored after creation |
-| `allocations` | Allocation[] | No | Proposed final allocation of funds<br/><br/>**Structure (per allocation)**:<br/>• `destination` (wallet address) - Where funds should go<br/>• `token` (wallet address) - Token contract address<br/>• `amount` (string) - Amount in smallest unit | The clearnode will use current unified balance if not provided | See structure | `[{"destination": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "105000000"}, {"destination": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}]` | Total must not exceed total locked funds<br/>Validation: The clearnode verifies against unified balance |
+| Parameter | Type | Required | Description | Default | Example | Notes |
+|-----------|------|----------|-------------|---------|---------|-------|
+| `channel_id` | string | Yes | Identifier of the channel to close | - | `"0xabcdef1234567890..."` | From get_channels or stored after creation |
+| `funds_destination` | string (wallet address) | Yes | Address where your share of channel funds should be sent | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | Typically your wallet address; can also be used to send to custody ledger |
 
 ### Response
 
-| Parameter | Type | Description | Format/Structure | Example | Notes |
-|-----------|------|-------------|------------------|---------|-------|
-| `channel` | Channel | Channel configuration (same as creation) | - | - | For verification and on-chain submission |
-| `state` | State | Final state with CHANCLOSE magic number and the clearnode's signature<br/><br/>**Structure**:<br/>• `data` (bytes) - Contains CHANCLOSE magic number (7879 / 0x1EC7)<br/>&nbsp;&nbsp;- Purpose: Signals this is a final state for closure<br/>• `allocations` (Allocation[]) - Final allocation of funds<br/>&nbsp;&nbsp;- Note: Reflects current balances after all off-chain activity<br/>&nbsp;&nbsp;- Validation: Sum matches channel total funds<br/>• `sigs` (Signature[]) - Array of signatures; the clearnode's at index 1<br/>&nbsp;&nbsp;- Note: User must add their signature at index 0 | See structure | `data: "0x0000...1ec7"`<br/>`allocations: [{"destination": "0x742d35Cc...", "token": "0x2791Bca1...", "amount": "105000000"}, {"destination": "0x123456Cc...", "token": "0x2791Bca1...", "amount": "0"}]`<br/>`sigs: [null, "0xClearnodeFinalSignature..."]` | - |
-| `broker_signature` | string | The clearnode's signature over the final state | 0x-prefixed hex string (65 bytes) | `"0xabcdef987654..."` | Proves the clearnode agrees to this closure |
-| `channel_id` | string | Channel identifier for reference | - | `"0xabcdef1234..."` | - |
+| Parameter | Type | Description | Example | Notes |
+|-----------|------|-------------|---------|-------|
+| `channel_id` | string | Channel identifier | `"0xabcdef1234..."` | For reference |
+| `state` | State | Final state with FINALIZE intent<br/><br/>**Structure**:<br/>• `intent` - 3 (FINALIZE)<br/>• `version` - Incremented from current<br/>• `state_data` - Application-specific data<br/>• `allocations` - Final distribution of funds | See [State structure](#state-structure) | Clearnode determines final allocations based on unified balance |
+| `server_signature` | string | The clearnode's signature over the final state | `"0xabcdef987654..."` | 0x-prefixed hex string (65 bytes) |
 
 ### Next Steps After Receiving Response
 
@@ -294,10 +294,10 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 3. **Sign Final State**
    - Sign `stateHash` with your <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
-   - Add signature at `state.sigs[0]`
+   - Include your signature when submitting to blockchain
 
 4. **Submit On-Chain**
-   - Call `Custody.close(channelId, state, proofs)` on blockchain
+   - Call `Custody.close(channelId, state, yourSignature, clearnodeSignature)` on blockchain
    - Both signatures must be present
 
 5. **Wait for Confirmation**
@@ -313,16 +313,20 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 
 ### Error Cases
 
-| Error | Code | Description | Recovery |
-|-------|------|-------------|----------|
-| **Authentication required** | 1001 | Not authenticated | Re-authenticate |
-| **Channel not found** | 1003 | Invalid channel_id | Verify channel_id from get_channels |
-| **Channel not ACTIVE** | 1003 | Channel in wrong status | Check status; may already be closed |
-| **Channel already closed** | 1003 | Channel was closed | No action needed |
-| **User doesn't own channel** | 1003 | Not a participant | Verify you're using correct account |
-| **Allocations exceed capacity** | 1007 | Sum > channel total | Reduce allocation amounts |
-| **Allocations don't sum to total** | 1007 | Sum ≠ channel total | Adjust to match exactly |
-| **Invalid allocation format** | -32602 | Malformed allocation | Check structure |
+:::note Error Format
+The protocol does not use numeric error codes. Errors are returned as method `"error"` with descriptive messages.
+:::
+
+Common error scenarios:
+
+| Error | Description | Recovery |
+|-------|-------------|----------|
+| **Authentication required** | Not authenticated | Re-authenticate |
+| **Channel not found** | Invalid channel_id | Verify channel_id from get_channels |
+| **Channel not open** | Channel in wrong status | Check status; may already be closed or resizing |
+| **Channel already closed** | Channel was closed | No action needed |
+| **User doesn't own channel** | Not a participant | Verify you're using correct account |
+| **Invalid funds_destination** | Malformed wallet address | Verify address format |
 
 ### Comparison: Cooperative vs Challenge Closure
 
@@ -345,12 +349,12 @@ Challenge closure requires waiting for the challenge period to expire before fun
 
 ### Implementation Notes
 
-- The magic number CHANCLOSE (7879) signals this is a final state
+- The StateIntent.FINALIZE (3) signals this is a final state
 - All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign the final state for it to be accepted on-chain
 - The allocations determine where funds go when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes
 - <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> will only sign if the allocations match the current state of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
-- After closing, funds return to "available" balance in <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip>
-- Users must call `withdraw()` separately to move funds back to their wallet
+- After closing, funds are distributed according to the allocations specified
+- Users may need to call `withdraw()` separately to move funds from custody ledger to their wallet
 
 ---
 
@@ -376,103 +380,33 @@ The resize operation updates the channel **in place**. The <Tooltip content={too
 
 - <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> must exist and be in ACTIVE status
 - User must be authenticated
-- For **positive delta** (deposit): User must have sufficient additional tokens
+- For **positive delta** (deposit): Funds must be available in custody ledger
 - For **negative delta** (withdrawal): Channel must have sufficient allocated funds
 - All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign the resize state (consensus required)
 - User must have native currency for gas fees
 
 ### Request
 
-```javascript
-{
-  channel_id: string
-    Description: Identifier of the channel to resize (stays the same)
-    Required: Yes
-    Format: 0x-prefixed hex string (32 bytes)
-    Example: "0xabcdef1234567890..."
-    Note: This channel_id will NOT change after resize
-    
-  allocate_amount: string
-    Description: Amount to allocate within the unified balance before resize
-    Required: No
-    Format: Decimal string in human-readable format
-    Default: "0"
-    Example: "50.0"
-    Note: Used for complex multi-chain rebalancing scenarios
-    
-  resize_amount: string
-    Description: Delta amount to add (positive) or remove (negative)
-    Required: Yes
-    Format: Decimal string in human-readable format (can be negative)
-    Examples:
-      - "75.0" (deposit 75 more)
-      - "-100.0" (withdraw 100)
-    Validation:
-      - Positive: User must have this amount available
-      - Negative: Channel must have at least this amount allocated
-    
-  funds_destination: string (wallet address)
-    Description: Destination for withdrawn funds (if resize_amount is negative)
-    Required: Only if resize_amount < 0
-    Format: 0x-prefixed hex string (20 bytes)
-    Example: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-    Note: Typically the user's wallet address
-}
-```
+| Parameter | Type | Required | Description | Default | Example | Notes |
+|-----------|------|----------|-------------|---------|---------|-------|
+| `channel_id` | string | Yes | Identifier of the channel to resize (stays the same) | - | `"0xabcdef1234567890..."` | 0x-prefixed hex string (32 bytes)<br/>This channel_id will NOT change after resize |
+| `allocate_amount` | string (decimal) | No (mutually exclusive with resize_amount) | Amount to move from unified balance to channel before resize | - | `"50.0"` | Decimal string in human-readable format<br/>Used for multi-chain rebalancing |
+| `resize_amount` | string (decimal) | No (mutually exclusive with allocate_amount) | Delta amount to deposit from custody ledger (positive) or withdraw to custody ledger (negative) | - | `"75.0"` (deposit) or `"-100.0"` (withdraw) | Decimal string; can be negative<br/>Positive: funds must be available in custody ledger<br/>Negative: channel must have sufficient allocated funds |
+| `funds_destination` | string (wallet address) | Yes | Destination address for user's allocation in the resize state | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | 0x-prefixed hex string (20 bytes)<br/>Typically the user's wallet address |
+
+:::note Allocate vs Resize
+- **`allocate_amount`**: Moves funds from your unified balance on Clearnode to the channel
+- **`resize_amount`**: Deposits from or withdraws to the custody ledger on the smart contract
+- These parameters are **mutually exclusive** - provide only one per request
+:::
 
 ### Response
 
-```javascript
-{
-  channel_id: string
-    Description: Same channel identifier (unchanged)
-    Example: "0xabcdef1234567890..."
-    Important: This does NOT change (in-place update)
-    
-  state: State
-    Description: Resize state to be submitted on-chain
-    Structure:
-      intent: 2
-        Description: StateIntent.RESIZE
-        Note: Signals this is a resize operation
-        
-      version: number
-        Description: precedingState.version + 1
-        Example: If current version is 5, this will be 6
-        Note: Version increments like any state update
-        
-      data: bytes
-        Description: ABI-encoded int256[] delta amounts
-        Format: abi.encode(int256[])
-        Example: 
-          - For +50 USDC by user: [50000000, 0]
-          - For -30 USDC by user: [-30000000, 0]
-        Note: Deltas are per participant (user at index 0, clearnode at index 1)
-        
-      allocations: Allocation[]
-        Description: FINAL allocation state after resize
-        Example (after +50 USDC deposit by user):
-          Before: [{dest: user, amount: 100000000}, {dest: clearnode, amount: 0}]
-          After:  [{dest: user, amount: 150000000}, {dest: clearnode, amount: 0}]
-        Note: These are absolute amounts, not deltas
-        
-      sigs: Signature[]
-        Description: Array of signatures (clearnode's at index 1)
-        Example: [null, clearnodeSignature]
-        Note: User must add their signature at index 0
-    
-  proofs: State[]
-    Description: Array of preceding states to support the resize
-    Purpose: Allows adjudicator to validate the resize follows a valid state
-    Note: May be empty or contain preceding states depending on adjudicator
-    
-  clearnode_signature: string
-    Description: Clearnode's signature on the resize state
-    Format: 0x-prefixed hex string (65 bytes)
-    Example: "0x9876fedcba..."
-    Use: Already included in state.sigs[1]
-}
-```
+| Parameter | Type | Description | Example | Notes |
+|-----------|------|-------------|---------|-------|
+| `channel_id` | string | Same channel identifier (unchanged) | `"0xabcdef1234567890..."` | This does NOT change (in-place update) |
+| `state` | State | Resize state to be submitted on-chain<br/><br/>**Structure**:<br/>• `intent` - 2 (RESIZE)<br/>• `version` - Incremented from current (e.g., if current is 5, this will be 6)<br/>• `state_data` - ABI-encoded `int256[]` delta amounts (per participant)<br/>&nbsp;&nbsp;Example: For +50 USDC by user: `[50000000, 0]`<br/>&nbsp;&nbsp;Example: For -30 USDC by user: `[-30000000, 0]`<br/>• `allocations` - FINAL allocation state after resize (absolute amounts, not deltas) | See [State structure](#state-structure) | Clearnode prepares deltas and final allocations |
+| `server_signature` | string | The clearnode's signature over the resize state | `"0x9876fedcba..."` | 0x-prefixed hex string (65 bytes) |
 
 ### Next Steps After Receiving Response
 
@@ -494,23 +428,20 @@ The client must submit the resize state to the blockchain:
      state.allocations  // Final allocations
    ))
    user_signature = sign(stateHash, participant_private_key)
-   state.sigs[0] = user_signature
-   // state.sigs[1] already has clearnode signature
    ```
 
-3. **Approve additional token spending (if depositing)**
-   ```
-   if (resize_amount > 0) {
-     token.approve(custody_address, resize_amount)
-   }
-   ```
+3. **Ensure sufficient funds in custody ledger (if depositing)**
+   - For positive `resize_amount`, the requested amount must already be available in your custody ledger
+   - Funds are moved from custody ledger to the channel
+   - No token approval needed at this stage
 
 4. **Call `Custody.resize()` on-chain**
    ```
    custody.resize(
      channel_id,    // Same channel_id
-     state,         // Resize state with both signatures
-     proofs         // Preceding states for validation
+     state,         // Resize state
+     yourSignature,
+     clearnodeSignature
    )
    ```
 
@@ -539,11 +470,10 @@ The client must submit the resize state to the blockchain:
 | Authentication required | Not authenticated | Complete authentication flow |
 | Channel not found | Invalid channel_id | Verify <Tooltip content={tooltipDefinitions.channelId}>channel ID</Tooltip> with `get_channels` |
 | Channel not in ACTIVE status | Channel closed or in dispute | Cannot resize non-active <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip> |
-| Insufficient balance | Not enough available for deposit | Check `get_balance` for available amount |
+| Insufficient balance | Not enough available in custody ledger for deposit | Check `get_balance` for available amount in custody ledger |
 | Exceeds channel capacity | Withdrawal exceeds allocated funds | Reduce withdrawal amount |
 | Invalid signatures | Missing or incorrect signatures | All participants must sign resize state |
 | Version conflict | State version doesn't match expected | Fetch current state, retry with correct version |
-| Invalid proofs | Preceding states invalid | Ensure proofs chain correctly |
 
 ### Resize Scenarios
 
@@ -575,10 +505,10 @@ Same channel_id on Celo (unchanged)
 ```
 
 **On-Chain**:
-- User approves 75 USDC
+- User must have 75 USDC already available in custody ledger
 - Calls `resize()` with positive delta: `[+75000000, 0]`
-- Custody locks additional 75 USDC
-- Channel expected deposits updated: 5 USDC → 80 USDC
+- Custody locks additional 75 USDC from custody ledger to channel
+- Channel allocations updated: 5 USDC → 80 USDC
 - Emits `Resized(channelId, [+75000000, 0])`
 
 ---

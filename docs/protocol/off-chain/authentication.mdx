@@ -72,23 +72,26 @@ sequenceDiagram
 
     Note over Client: Step 1: Register Session Key
     Client->>Client: Generate session keypair (locally)
-    Client->>UW: Request signature for auth_request
-    UW-->>Client: Sign with main wallet
-    Client->>Clearnode: auth_request (signed by main wallet)
+    Client->>Client: Prepare auth parameters (address, session_key, application, allowances, expires_at)
+    Client->>Clearnode: auth_request (public endpoint, no signature)
 
     Note over Clearnode: Step 2: Challenge
-    Clearnode->>Clearnode: Validate main wallet signature
+    Clearnode->>Clearnode: Validate parameters
     Clearnode->>Clearnode: Generate challenge UUID
     Clearnode->>Client: auth_challenge (challenge_message)
 
     Note over Client: Step 3: Verify Session Key
-    Client->>Client: Sign challenge with session key
-    Client->>Clearnode: auth_verify (signed by session key)
+    Client->>Client: Create EIP-712 typed data with challenge
+    Client->>UW: Request EIP-712 signature
+    UW-->>Client: Sign with main wallet
+    Client->>Clearnode: auth_verify (EIP-712 signature by main wallet)
 
     Note over Clearnode: Complete
-    Clearnode->>Clearnode: Verify session key signature
+    Clearnode->>Clearnode: Recover address from EIP-712 signature
+    Clearnode->>Clearnode: Validate signature matches main wallet
     Clearnode->>Clearnode: Create session (with allowances)
-    Clearnode->>Client: Session established (address, expires_at)
+    Clearnode->>Clearnode: Generate JWT token
+    Clearnode->>Client: Session established (address, session_key, jwt_token, success)
 
     Note over Client,Clearnode: All subsequent requests signed with session key
 
@@ -96,10 +99,10 @@ sequenceDiagram
 
 :::info Challenge-Response Pattern
 This pattern ensures that:
-1. User owns the main wallet (Step 1 signature)
-2. Client controls the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private key (Step 3 signature)
+1. User owns the main wallet (EIP-712 signature in Step 3)
+2. Challenge is unique and cannot be replayed
 3. No private keys are ever transmitted
-4. Replay attacks are prevented (unique challenge per session)
+4. Session key is authorized by the main wallet
 :::
 
 ---
@@ -112,7 +115,9 @@ This pattern ensures that:
 
 ### Usage
 
-Initiates authentication with <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> by registering a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>. The client sends this request signed by their main wallet to authorize a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> to act on their behalf. The <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
+Initiates authentication with <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> by registering a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>. The client sends authentication parameters to register a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> that can act on their behalf. The <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> can have restricted permissions including spending limits (allowances), operation scope, and expiration time.
+
+**Important**: `auth_request` is a **public endpoint** and does not require a signature. The client simply needs to prepare and send the authentication parameters.
 
 ### When to Use
 
@@ -124,7 +129,7 @@ If you prefer to use your main wallet as a root signer for all operations, you c
 
 - User has a wallet with funds
 - Client can generate a keypair (e.g., secp256k1)
-- User can sign messages with their main wallet
+- Client can prepare authentication parameters locally
 
 ### Request
 
@@ -149,25 +154,36 @@ Always specify `allowances` when creating <Tooltip content={tooltipDefinitions.s
 
 ### Signature
 
-Request **MUST** be signed by the main <Tooltip content={tooltipDefinitions.participant}>wallet address</Tooltip> to prove ownership and authorize the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
+Request **does NOT require a signature** as `auth_request` is a public endpoint.
 
-**Signing Process**:
-1. Client creates request payload: `[requestId, "auth_request", params, timestamp]`
-2. User's wallet signs: `signature = sign(keccak256(payload), mainWalletPrivateKey)`
-3. Client sends request with signature in `sig` array
+**Process**:
+1. Client prepares authentication parameters (address, session_key, application, allowances, expires_at)
+2. Client stores these parameters locally for use in Step 3 (auth_verify)
+3. Client sends request to <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
+4. <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> validates all parameters before generating a challenge
+
+:::tip Parameter Storage
+Keep the authentication parameters (especially `address`, `session_key`, `application`, `allowances`, `scope`, and `expires_at`) stored locally until Step 3, as you'll need them to create the EIP-712 signature.
+:::
 
 ### Next Step
 
-Client must call `auth_verify` with the challenge signed by the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
+Upon receiving the `challenge_message`, client must prepare an EIP-712 signature and call `auth_verify`.
 
 ### Error Cases
 
-| Error | Code | Description | Recovery |
-|-------|------|-------------|----------|
-| **Invalid address format** | -32602 | Main wallet address is malformed | Verify address format (0x + 40 hex chars) |
-| **Invalid session key format** | -32602 | Session key address is malformed | Verify session key format |
-| **Signature verification failed** | -32602 | Signature doesn't match provided address | Re-sign with correct wallet |
-| **Session key already registered** | 1008 | This session key is already in use | Generate a new session keypair |
+:::note Error Codes
+Currently, the protocol does not use standardized error codes. Errors are returned as descriptive messages.
+:::
+
+Common error scenarios:
+
+| Error | Description | Recovery |
+|-------|-------------|----------|
+| **Invalid address format** | Main wallet address is malformed | Verify address format (0x + 40 hex chars) |
+| **Invalid session key format** | Session key address is malformed | Verify session key format |
+| **Invalid parameters** | One or more parameters are invalid or missing | Check all required parameters |
+| **Session key already registered** | This session key is already in use | Generate a new session keypair |
 
 
 ---
@@ -248,19 +264,56 @@ Immediately after receiving `auth_challenge` response. This is the final step in
 |-----------|------|-------------|---------|-------|
 | `address` | string (wallet address) | Authenticated user's main wallet address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | Confirms which account is authenticated |
 | `session_key` | string (wallet address) | Confirmed session key wallet address | `"0x9876543210fedcba9876543210fedcba98765432"` | The authorized session key |
-| `expires_at` | number | Session expiration Unix timestamp | `1699999999` | After this time, must re-authenticate |
+| `jwt_token` | string | JWT token for authenticated API calls | `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."` | Store securely for subsequent connections |
+| `success` | boolean | Authentication success indicator | `true` | Indicates if authentication completed successfully |
 
 ### Signature
 
-Request **MUST** be signed by the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> (NOT the main wallet) to prove ownership.
+Request **MUST** include an EIP-712 signature signed by the **main wallet** (NOT the session key).
+
+**EIP-712 Typed Data Structure**:
+
+```typescript
+{
+  types: {
+    EIP712Domain: [
+      { name: "name", type: "string" }
+    ],
+    Policy: [
+      { name: "challenge", type: "string" },
+      { name: "scope", type: "string" },
+      { name: "wallet", type: "address" },
+      { name: "session_key", type: "address" },
+      { name: "expires_at", type: "uint64" },
+      { name: "allowances", type: "Allowance[]" }
+    ],
+    Allowance: [
+      { name: "asset", type: "string" },
+      { name: "amount", type: "string" }
+    ]
+  },
+  primaryType: "Policy",
+  domain: {
+    name: <application_name>  // From auth_request
+  },
+  message: {
+    challenge: <challenge_message>,  // From auth_challenge
+    scope: <scope>,                  // From auth_request
+    wallet: <address>,               // From auth_request
+    session_key: <session_key>,      // From auth_request
+    expires_at: <expires_at>,        // From auth_request
+    allowances: <allowances>         // From auth_request
+  }
+}
+```
 
 **Signing Process**:
-1. Client creates request payload: `[requestId, "auth_verify", params, timestamp]`
-2. Client signs: `signature = sign(keccak256(payload), sessionKeyPrivateKey)`
-3. Client sends request with signature in `sig` array
+1. Client creates EIP-712 typed data with challenge and all parameters from Step 1
+2. User's wallet signs the typed data: `signature = signTypedData(typedData, mainWalletPrivateKey)`
+3. Client sends request with EIP-712 signature in `sig` array
 
 :::danger Critical Security Requirement
-The `auth_verify` request MUST be signed by the **session key**, not the main wallet. This proves the client controls the session key's private key. Signing with the wrong key will fail authentication.
+The `auth_verify` signature MUST be an **EIP-712 signature signed by the main wallet**, not the session key. This proves the main wallet owner authorizes the session key to act on their behalf. The signature binds the challenge to the session key authorization.
 :::
 
 ### Next Step
@@ -269,13 +322,19 @@ Session is authenticated. All subsequent private method calls should be signed w
 
 ### Error Cases
 
-| Error | Code | Description | Recovery |
-|-------|------|-------------|----------|
-| **Challenge signature invalid** | -32602 | Signature doesn't match session key | Verify session key private key used for signing |
-| **Challenge expired** | 1001 | Challenge older than 5 minutes | Restart auth flow from `auth_request` |
-| **Challenge already used** | 1001 | Challenge has been verified already | Generate new session or use existing if still valid |
-| **Session key not registered** | 1001 | Session key not found in pending auths | Ensure `auth_request` succeeded first |
-| **Challenge mismatch** | -32602 | Challenge doesn't match pending auth | Use exact challenge from `auth_challenge` |
+:::note Error Codes
+Currently, the protocol does not use standardized error codes. Errors are returned as descriptive messages.
+:::
+
+Common error scenarios:
+
+| Error | Description | Recovery |
+|-------|-------------|----------|
+| **Invalid signature** | EIP-712 signature doesn't match main wallet or is malformed | Verify main wallet private key used for signing, check EIP-712 structure |
+| **Challenge expired** | Challenge older than 5 minutes | Restart auth flow from `auth_request` |
+| **Challenge already used** | Challenge has been verified already | Generate new session or use existing if still valid |
+| **Invalid challenge** | Challenge not found in pending auths | Ensure `auth_request` succeeded first |
+| **Challenge mismatch** | Challenge doesn't match pending auth | Use exact challenge from `auth_challenge` |
 
 
 ---
@@ -288,13 +347,14 @@ Putting it all together:
 stateDiagram-v2
     [*] --> Unauthenticated
     
-    Unauthenticated --> RegisteringSessionKey: Generate session keypair
-    RegisteringSessionKey --> WaitingForChallenge: auth_request<br/>(signed by main wallet)
+    Unauthenticated --> PreparingAuth: Generate session keypair
+    PreparingAuth --> WaitingForChallenge: auth_request<br/>(public, no signature)
     
-    WaitingForChallenge --> ProvingOwnership: Receive challenge_message
-    ProvingOwnership --> WaitingForConfirmation: auth_verify<br/>(signed by session key)
+    WaitingForChallenge --> CreatingEIP712: Receive challenge_message
+    CreatingEIP712 --> SigningWithWallet: Create EIP-712 typed data
+    SigningWithWallet --> WaitingForConfirmation: auth_verify<br/>(EIP-712 sig by main wallet)
     
-    WaitingForConfirmation --> Authenticated: Session established
+    WaitingForConfirmation --> Authenticated: Session + JWT established
     
     Authenticated --> Authenticated: Use session key for requests
     Authenticated --> SessionExpired: Timeout (expires_at reached)
@@ -305,9 +365,10 @@ stateDiagram-v2
     SessionInvalidated --> Unauthenticated: Must re-authenticate
     SessionRevoked --> Unauthenticated: Must re-authenticate
     
-    RegisteringSessionKey --> Unauthenticated: Error (retry)
+    PreparingAuth --> Unauthenticated: Error (retry)
     WaitingForChallenge --> Unauthenticated: Timeout (5 min)
-    ProvingOwnership --> Unauthenticated: Error (retry)
+    CreatingEIP712 --> Unauthenticated: Error (retry)
+    SigningWithWallet --> Unauthenticated: Error (retry)
 ```
 
 ---
@@ -328,16 +389,25 @@ Use `get_session_keys` to view active sessions and their remaining allowances. T
 
 ### Session Expiration Handling
 
-When a session expires, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> will reject requests with error code `1001`:
+When a session expires, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> will return an error response:
 
 ```json
 {
-  "error": {
-    "code": 1001,
-    "message": "Authentication required: session expired"
-  }
+  "res": [
+    <requestId>,
+    "error",
+    {
+      "error": "session expired, please re-authenticate"
+    },
+    <timestamp>
+  ],
+  "sig": [<clearnode_signature>]
 }
 ```
+
+:::note Error Format
+The protocol does not use numeric error codes. Errors are returned as method `"error"` with a descriptive message in the params.
+:::
 
 **Recovery**: Re-authenticate by running the 3-step flow again.
 
