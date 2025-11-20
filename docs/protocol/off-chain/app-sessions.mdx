@@ -87,6 +87,29 @@ Common structures: [AppDefinition](#appdefinition) • [Allocation](#allocation)
 | `allocations` | Allocation[] | Yes | Initial funds to lock from participants' unified balances | [↓ Structure](#allocation) |
 | `session_data` | string | No | Application-specific initial state (JSON string, max 64KB recommended)<br/>This is application-specific; protocol doesn't validate content | — |
 
+#### Session Identifier {#session-identifier}
+
+`app_session_id` is derived deterministically from the entire <Tooltip content={tooltipDefinitions.appDefinition}>App definition</Tooltip>:
+
+```javascript
+appSessionId = keccak256(JSON.stringify({
+  application: "...",
+  protocol: "NitroRPC/0.4",
+  participants: [...],
+  weights: [...],
+  quorum: 100,
+  challenge: 86400,
+  nonce: 123456
+}))
+```
+
+- Includes `application`, `protocol`, `participants`, `weights`, `quorum`, `challenge`, and `nonce`
+- Does **not** include `chainId` because sessions live entirely off-chain
+- Client can recompute locally to verify <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip> responses
+- `nonce` uniqueness is critical: same definition ⇒ same ID
+
+Implementation reference: `clearnode/app_session_service.go`.
+
 #### AppDefinition {#appdefinition}
 
 | Field | Type | Required | Description | Default | Allowed Values | Notes |

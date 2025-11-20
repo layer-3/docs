@@ -41,6 +41,8 @@ export const tooltipDefinitions = {
     "The participant at index 0 in a channel who initiates channel creation.",
   appSessionId:
     "A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes).",
+  packedState:
+    "A specific encoding of a channelId, state.intent, state.version, state.data, state.allocations, used for signing and signature verification.",
 } as const;
 
 export type TooltipDefinitionKey = keyof typeof tooltipDefinitions;
