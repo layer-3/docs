@@ -182,9 +182,9 @@ sequenceDiagram
 
     Note over Clearnode: 4. Send Responses & Notifications
     Clearnode->>Alice: {ledger_transactions}
-    Clearnode->>Alice: balance_update notification
+    Clearnode->>Alice: bu (balance update) notification
     Clearnode->>Bob: tr (transfer) notification
-    Clearnode->>Bob: balance_update notification
+    Clearnode->>Bob: bu (balance update) notification
 
     Note over Bob: 5. Balance Updated
     Bob->>Bob: Balance +50 USDC
@@ -216,7 +216,7 @@ A user-facing transaction record is created for each asset being transferred, co
 
 - **Sender** receives response with transaction details
 - **Both parties** receive `tr` (transfer) notification with transaction details
-- **Both parties** receive `balance_update` notification with updated balances
+- **Both parties** receive `bu` (balance update) notification with updated balances
 
 ---
 

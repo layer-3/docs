@@ -18,7 +18,7 @@ The Nitro RPC protocol provides two types of information retrieval:
 
 **Query Methods**: Client-initiated requests to retrieve current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> information (balances, channels, sessions, transactions).
 
-**Notifications**: Server-initiated messages sent via WebSocket when events occur (balance changes, <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> updates, incoming transfers).
+**Notifications**: Server-initiated messages sent to all relevant active connections when events occur (balance changes, <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> updates, incoming transfers).
 
 :::tip Real-Time Updates
 Combine query methods for initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> retrieval with notifications for ongoing monitoring. This pattern ensures your application always reflects the latest <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> without constant polling.
@@ -63,17 +63,23 @@ No parameters required (empty object `{}`).
 
 ### Response
 
-| Parameter | Type | Description | Structure | Example |
-|-----------|------|-------------|-----------|---------|
-| `broker_address` | string | Clearnode's primary address | - | `"0xClearnode123..."` |
-| `supported_chains` | array\<ChainConfig\> | List of supported blockchain networks<br/><br/>**Structure per chain**:<br/>• `chain_id` (number) - Network identifier (e.g., 1 for Ethereum)<br/>• `name` (string) - Network name<br/>• `rpc_url` (string) - RPC endpoint<br/>• `contracts` (object) - Deployed contract addresses | See structure | - |
-| `protocol_versions` | array\<string\> | Supported Nitro RPC versions | - | `["NitroRPC/0.2", "NitroRPC/0.4"]` |
-| `features` | object | Enabled features and capabilities | - | `{"app_sessions": true, "cross_chain": true, "max_session_duration": 86400}` |
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `broker_address` | string | Clearnode's wallet address | `"0xbbbb567890abcdef..."` |
+| `networks` | array\<BlockchainInfo\> | List of supported blockchain networks | See structure below |
+
+#### BlockchainInfo Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `chain_id` | uint32 | Network identifier | `137` (Polygon) |
+| `name` | string | Human-readable blockchain name | `"Polygon"` |
+| `custody_address` | string | Custody contract address on this chain | `"0xCustodyContractAddress..."` |
+| `adjudicator_address` | string | Adjudicator contract address on this chain | `"0xAdjudicatorAddress..."` |
 
 **Use Cases**:
 - Verify clearnode capabilities before connecting
-- Discover supported chains and assets
-- Check protocol version compatibility
+- Discover supported chains and contract addresses
 
 ---
 
@@ -95,9 +101,18 @@ Retrieves all supported assets and their configurations across supported blockch
 
 ### Response
 
-| Parameter | Type | Description | Structure | Example |
-|-----------|------|-------------|-----------|---------|
-| `assets` | array\<AssetConfig\> | List of supported assets<br/><br/>**Structure per asset**:<br/>• `symbol` (string) - Asset symbol<br/>• `name` (string) - Full asset name<br/>• `decimals` (uint8) - Token decimals<br/>• `chains` (array\<ChainDeployment\>) - Deployed addresses per chain<br/>&nbsp;&nbsp;- Structure per deployment:<br/>&nbsp;&nbsp;&nbsp;&nbsp;▪ `chain_id` (number) - Network identifier<br/>&nbsp;&nbsp;&nbsp;&nbsp;▪ `token_address` (string) - Contract address on this chain | See structure | symbol: `"USDC"`<br/>name: `"USD Coin"`<br/>decimals: `6`<br/>chains: `[{"chain_id": 1, "token_address": "0xA0b8..."}, {"chain_id": 137, "token_address": "0x2791..."}]` |
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `assets` | array\<Asset\> | List of supported assets | See structure below |
+
+#### Asset Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `token` | string | Token contract address | `"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"` |
+| `chain_id` | uint32 | Blockchain network identifier | `137` |
+| `symbol` | string | Token symbol | `"usdc"` |
+| `decimals` | uint8 | Number of decimal places | `6` |
 
 **Use Cases**:
 - Display supported assets in UI
@@ -118,17 +133,39 @@ Lists all channels for a specific <Tooltip content={tooltipDefinitions.participa
 
 ### Request
 
-| Parameter | Type | Required | Description | Default | Allowed Values | Example |
-|-----------|------|----------|-------------|---------|----------------|---------|
-| `address` | string | No | Address to query | Authenticated user | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
-| `status` | string | No | Filter by status | - | "active" \| "closed" \| "disputed" | `"active"` |
-| `chain_id` | uint64 | No | Filter by chain | - | - | `137` |
+| Parameter | Type | Required | Description | Default | Example |
+|-----------|------|----------|-------------|---------|---------|
+| `participant` | string | No | Participant wallet address to query | Authenticated user | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
+| `status` | string | No | Filter by status | - | `"active"` |
+| `offset` | number | No | Pagination offset | `0` | `42` |
+| `limit` | number | No | Number of channels to return | `100` | `10` |
+| `sort` | string | No | Sort order by created_at | `"desc"` | `"desc"` |
+
+**Allowed status values**: `"open"` \| `"closed"` \| `"challenged"` \| `"resizing"`
 
 ### Response
 
-| Parameter | Type | Description | Structure | Example |
-|-----------|------|-------------|-----------|---------|
-| `channels` | array\<ChannelInfo\> | List of channels<br/><br/>**Structure per channel**:<br/>• `channel_id` (string) - Unique channel identifier<br/>• `chain_id` (uint64) - Blockchain network<br/>• `status` (string) - Current status<br/>&nbsp;&nbsp;- Values: "active" \| "closed" \| "disputed"<br/>• `participants` (array\<address\>) - Channel participants (wallet addresses)<br/>• `allocations` (array\<Allocation\>) - Current fund distribution<br/>• `created_at` (number) - Creation timestamp<br/>• `closed_at` (number, if closed) - Closure timestamp | See structure | channel_id: `"0xabcdef..."`<br/>chain_id: `137`<br/>participants: `["0x742d35Cc...", "0xClearnode..."]`<br/>created_at: `1699123456789`<br/>closed_at: `1699999999999` |
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `channels` | array\<Channel\> | List of channels | See structure below |
+
+#### Channel Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `channel_id` | string | Unique channel identifier | `"0xabcdef..."` |
+| `participant` | string | User's wallet address | `"0x742d35Cc..."` |
+| `status` | string | Channel status | `"open"` |
+| `token` | string | Asset contract address | `"0x2791Bca1..."` |
+| `wallet` | string | Participant's wallet address | `"0x742d35Cc..."` |
+| `amount` | string | Total channel capacity (human-readable) | `"100.0"` |
+| `chain_id` | uint32 | Blockchain network identifier | `137` |
+| `adjudicator` | string | Dispute resolution contract address | `"0xAdjudicator..."` |
+| `challenge` | uint64 | Dispute timeout period (seconds) | `3600` |
+| `nonce` | uint64 | Unique nonce ensuring channel uniqueness | `1699123456789` |
+| `version` | uint64 | Current state version | `5` |
+| `created_at` | string | Channel creation timestamp (ISO 8601) | `"2023-05-01T12:00:00Z"` |
+| `updated_at` | string | Last modification timestamp (ISO 8601) | `"2023-05-01T14:30:00Z"` |
 
 **Use Cases**:
 - Display user's open channels
@@ -151,20 +188,21 @@ Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip
 
 | Parameter | Type | Required | Description | Default | Allowed Values | Example |
 |-----------|------|----------|-------------|---------|----------------|---------|
-| `participant` | string (address) | No | Filter by participant wallet address | Authenticated user's address | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
-| `status` | string | No | Filter by status | - | "open" \| "closed" | `"open"` |
+| `participant` | string (address) | No | Filter by participant wallet address | Authenticated user's address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
+| `status` | string | No | Filter by status | - | `"open"` |
 | `offset` | number | No | Pagination offset | 0 | - | `42` |
 | `limit` | number | No | Number of sessions to return | 100 | - | `10` |
-| `sort` | string | No | Sort order by created_at | "desc" | "asc" \| "desc" | `"desc"` |
+| `sort` | string | No | Sort order by created_at | "desc" | `"desc"` |
+
+**Allowed status values**: `"open"` \| `"closed"` \| `"challenged"` \| `"resizing"`
 
 ### Response
 
 | Parameter | Type | Description | See Also |
 |-----------|------|-------------|----------|
-| `app_sessions` | array\<AppSessionInfo\> | List of app sessions | [↓ AppSessionInfo](#appsessioninfo) |
-| `metadata` | object | Pagination metadata (optional): `page` • `per_page` • `total_count` • `page_count` | — |
+| `app_sessions` | array\<AppSessionInfo\> | List of app sessions | See structure below |
 
-#### AppSessionInfo {#appsessioninfo}
+#### AppSessionInfo
 
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
@@ -193,40 +231,41 @@ When dealing with users who have many <Tooltip content={tooltipDefinitions.appCh
 
 ---
 
-## get_balance
+## get_ledger_balances
 
 ### Name
 
-`get_balance` (also known as `get_ledger_balances`)
+`get_ledger_balances`
 
 ### Usage
 
-Retrieves the current balance for an account. If no parameters are provided, returns the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> by providing the app_session_id. Returns all assets with non-zero balances.
+Retrieves the ledger balances for an account. If no parameters are provided, returns the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> by providing the app_session_id. Returns all assets with non-zero balances.
 
 ### Request
 
-| Parameter | Type | Required | Description | Format | Example | Notes |
-|-----------|------|----------|-------------|--------|---------|-------|
-| `account_id` | string | No | Account or app session identifier | 0x-prefixed hex string or wallet address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | For app session balance, use app_session_id |
-| `participant` | string (address) | No (deprecated) | Legacy parameter, use account_id instead | - | `"0x742d35Cc..."` | - |
+| Parameter | Type | Required | Description | Format | Example |
+|-----------|------|----------|-------------|--------|---------|
+| `account_id` | string | No | Account or app session identifier | 0x-prefixed hex string or wallet address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
+
+:::info App Session Balances
+To query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>, provide the `app_session_id` as the `account_id`.
+:::
 
 ### Response
 
-| Parameter | Type | Description | Structure | Example |
-|-----------|------|-------------|-----------|---------|
-| `ledger_balances` | array\<Balance\> | Balance per asset<br/><br/>**Structure per balance**:<br/>• `asset` (string) - Asset identifier<br/>• `amount` (string) - Balance in human-readable format<br/>• `available` (string, optional) - Available balance (if unified balance query)<br/>&nbsp;&nbsp;- Note: Excludes funds locked in app sessions<br/>• `locked` (string, optional) - Funds locked in app sessions | See structure | `[{"asset": "usdc", "amount": "100.0", "available": "75.0", "locked": "25.0"}, {"asset": "eth", "amount": "0.5", "available": "0.5", "locked": "0.0"}]` |
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `ledger_balances` | array\<Balance\> | Balance per asset | See structure below |
 
-**Balance Components**:
+#### Balance Structure
 
-```
-Total Balance = Available + Locked
-
-Available: Can be transferred or used for new app sessions
-Locked: Currently in active app sessions
-```
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `asset` | string | Asset identifier | `"usdc"` |
+| `amount` | string | Balance in human-readable format | `"100.0"` |
 
 **Use Cases**:
-- Display user's current balance
+- Display user's current balances
 - Check available funds before operations
 - Monitor balance changes in real-time
 
@@ -257,8 +296,20 @@ Retrieves detailed ledger entries for an account, providing a complete audit tra
 
 | Parameter | Type | Description | Structure | Example |
 |-----------|------|-------------|-----------|---------|
-| `ledger_entries` | array\<LedgerEntry\> | List of ledger entries<br/><br/>**Structure per entry**:<br/>• `id` (number) - Unique entry identifier<br/>• `account_id` (string) - Account this entry belongs to<br/>• `account_type` (number) - Type of account<br/>&nbsp;&nbsp;- Values: 0 (wallet), 1 (app session), 2 (channel)<br/>• `asset` (string) - Asset identifier<br/>• `participant` (string address) - Participant wallet address<br/>• `credit` (string) - Credit amount (incoming funds)<br/>&nbsp;&nbsp;- Note: "0.0" if this is a debit entry<br/>• `debit` (string) - Debit amount (outgoing funds)<br/>&nbsp;&nbsp;- Note: "0.0" if this is a credit entry<br/>• `created_at` (string timestamp) - Entry creation timestamp | See structure | id: `123`<br/>account_id: `"0x742d35Cc..."`<br/>asset: `"usdc"`<br/>credit: `"100.0"`<br/>debit: `"25.0"`<br/>created_at: `"2023-05-01T12:00:00Z"` |
-| `metadata` | object | Pagination metadata (optional)<br/><br/>**Structure**:<br/>• `page` (number)<br/>• `per_page` (number)<br/>• `total_count` (number)<br/>• `page_count` (number) | See structure | - |
+| `ledger_entries` | array\<LedgerEntry\> | List of ledger entries | See structure below |
+
+#### LedgerEntry Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `id` | number | Unique entry identifier | `123` |
+| `account_id` | string | Account this entry belongs to | `"0x742d35Cc..."` |
+| `account_type` | number | Type of account (0=Unified, 1=App Session, 2=Channel Escrow) | `0` |
+| `asset` | string | Asset symbol | `"usdc"` |
+| `participant` | string | Participant wallet address | `"0x742d35Cc..."` |
+| `credit` | string | Credit amount (incoming funds, "0.0" if debit) | `"100.0"` |
+| `debit` | string | Debit amount (outgoing funds, "0.0" if credit) | `"25.0"` |
+| `created_at` | string | Entry creation timestamp (ISO 8601) | `"2023-05-01T12:00:00Z"` |
 
 ### Double-Entry Bookkeeping
 
@@ -315,10 +366,23 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 
 ### Response
 
-| Parameter | Type | Description | Structure | Example |
-|-----------|------|-------------|-----------|---------|
-| `ledger_transactions` | array\<Transaction\> | List of transactions<br/><br/>**Structure per transaction**:<br/>• `id` (string) - Unique transaction identifier<br/>• `tx_type` (string) - Transaction type<br/>&nbsp;&nbsp;- Values: "transfer" \| "deposit" \| "withdrawal" \| "app_deposit" \| "app_withdrawal"<br/>• `from_account` (string address) - Sender wallet address<br/>• `from_account_tag` (string) - Sender's user tag (if any)<br/>&nbsp;&nbsp;- Note: Empty for non-user accounts<br/>• `to_account` (string address) - Receiver wallet address<br/>• `to_account_tag` (string) - Receiver's user tag (if any)<br/>• `asset` (string) - Asset identifier<br/>• `amount` (string) - Transaction amount<br/>• `note` (string, optional) - Transaction memo/note<br/>• `created_at` (string timestamp) - Transaction timestamp | See structure | id: `"txn_123456"`<br/>tx_type: `"transfer"`<br/>from_account: `"0x742d35Cc..."`<br/>from_account_tag: `"NQKO7C"`<br/>to_account: `"0x8B3192f2..."`<br/>to_account_tag: `"UX123D"`<br/>asset: `"usdc"`<br/>amount: `"50.0"`<br/>note: `"Payment for services"`<br/>created_at: `"2023-05-01T12:00:00Z"` |
-| `metadata` | object | Pagination metadata (optional) | - | - |
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `ledger_transactions` | array\<LedgerTransaction\> | List of transactions | See structure below |
+
+#### LedgerTransaction Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `id` | string | Unique transaction identifier | `"1"` |
+| `tx_type` | string | Transaction type | `"transfer"` |
+| `from_account` | string | Sender wallet address | `"0x742d35Cc..."` |
+| `from_account_tag` | string | Sender's user tag (empty if none) | `"NQKO7C"` |
+| `to_account` | string | Receiver wallet address | `"0x8B3192f2..."` |
+| `to_account_tag` | string | Receiver's user tag (empty if none) | `"UX123D"` |
+| `asset` | string | Asset symbol | `"usdc"` |
+| `amount` | string | Transaction amount | `"50.0"` |
+| `created_at` | string | Transaction timestamp (ISO 8601) | `"2023-05-01T12:00:00Z"` |
 
 ### Transaction Types
 
@@ -327,8 +391,10 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 | **transfer** | Direct transfer between <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balances</Tooltip> | Off-chain ↔ Off-chain |
 | **deposit** | Funds deposited from <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> | On-chain → Off-chain |
 | **withdrawal** | Funds withdrawn from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> | Off-chain → On-chain |
-| **app_deposit** | Funds moved from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> into <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> | Available → Locked |
-| **app_withdrawal** | Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> | Locked → Available |
+| **app_deposit** | Funds moved from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> into <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> | Unified → App Session |
+| **app_withdrawal** | Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> | App Session → Unified |
+| **escrow_lock** | Funds temporarily locked for blockchain operations | Unified → Escrow |
+| **escrow_unlock** | Funds released from escrow after blockchain confirmation | Escrow → Unified |
 
 **Use Cases**:
 - Display transaction history in UI
@@ -400,16 +466,16 @@ No parameters required (empty object `{}`).
 
 | Parameter | Type | Description | See Also |
 |-----------|------|-------------|----------|
-| `session_keys` | array\<SessionKeyInfo\> | List of active session keys | [↓ SessionKeyInfo](#sessionkeyinfo) |
+| `session_keys` | array\<SessionKeyInfo\> | List of active session keys | See structure below |
 
-#### SessionKeyInfo {#sessionkeyinfo}
+#### SessionKeyInfo Structure
 
 | Field | Type | Description | Default | Notes |
 |-------|------|-------------|---------|-------|
 | `id` | number | Internal identifier | — | — |
 | `session_key` | string (address) | Session key address | — | — |
 | `application` | string | Application name for this session | `"clearnode"` | — |
-| `allowances` | array\<Allowance\> | Spending limits and usage | — | See [Allowance](#allowance-structure) below |
+| `allowances` | array\<Allowance\> | Spending limits and usage | — | See Allowance structure below |
 | `scope` | string | Permission scope | — | Future feature, not fully enforced yet |
 | `expires_at` | string (timestamp) | Session expiration time (ISO 8601 format) | — | — |
 | `created_at` | string (timestamp) | Session creation time (ISO 8601 format) | — | — |
@@ -421,7 +487,7 @@ No parameters required (empty object `{}`).
   "session_key": "0x9876543210fedcba...",
   "application": "Chess Game",
   "allowances": [
-    {"asset": "usdc", "allowance": "100.0", "used": "45.0", "remaining": "55.0"}
+    {"asset": "usdc", "allowance": "100.0", "used": "45.0"}
   ],
   "scope": "app.create,transfer",
   "expires_at": "2023-05-02T12:00:00Z",
@@ -429,14 +495,13 @@ No parameters required (empty object `{}`).
 }
 ```
 
-#### Allowance {#allowance-structure}
+#### Allowance
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `asset` | string | Asset identifier (e.g., `"usdc"`) |
 | `allowance` | string | Total spending limit |
 | `used` | string | Amount already spent |
-| `remaining` | string | Remaining allowance (computed: `allowance - used`) |
 
 ### Spending Tracking
 
@@ -486,11 +551,11 @@ No parameters required (empty object `{}`).
 
 ### Response
 
+The response method should be `"pong"`.
+
 | Parameter | Type | Description | Value/Example | Notes |
 |-----------|------|-------------|---------------|-------|
-| `pong` | boolean | Confirmation response | `true` | - |
-| `timestamp` | number | Server timestamp (optional) | `1699123456789` | - |
-| `broker_id` | string | Clearnode identifier (optional) | `"broker-01"` | - |
+| (empty) | object | Empty object or confirmation data | `{}` | Response indicates successful connection |
 
 ### Use Cases
 
@@ -543,68 +608,54 @@ sequenceDiagram
 
     Note over Client,Clearnode: WebSocket Connection Established
 
-    Event->>Clearnode: Transfer received
-    Clearnode->>Client: transfer_received notification
+    Event->>Clearnode: Transfer (incoming/outgoing)
+    Clearnode->>Client: tr (transfer) notification
 
     Event->>Clearnode: Balance changed
-    Clearnode->>Client: balance_update notification
+    Clearnode->>Client: bu (balance update) notification
 
     Event->>Clearnode: Channel opened
-    Clearnode->>Client: channel_update notification
+    Clearnode->>Client: cu (channel update) notification
 
     Event->>Clearnode: App session updated
-    Clearnode->>Client: app_session_update notification
+    Clearnode->>Client: asu (app session update) notification
 
 ```
 
 ### Notification Types
 
-| Event | Trigger | Data Included |
-|-------|---------|---------------|
-| `balance_update` | Balance changes | Address, balances, trigger reason |
-| `channel_update` | Channel status changes | Channel ID, status, chain ID |
-| `transfer_received` | Incoming transfer | Transaction ID, from, amount, note |
-| `app_session_update` | App session state changes | Session ID, version, status, intent |
+| Method | Description | Data Structure |
+|--------|-------------|----------------|
+| `bu` | Balance update | `balance_updates` array with updated balances |
+| `cu` | Channel update | Full `Channel` object |
+| `tr` | Transfer (incoming/outgoing) | `transactions` array with transfer details |
+| `asu` | App session update | `app_session` object and `participant_allocations` |
 
 ---
 
-## balance_update
+## bu (Balance Update)
 
-### Event
+### Method
 
-`balance_update`
+`bu`
 
 ### When Sent
 
-Whenever the user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> changes due to incoming transfers, <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> closure, or <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> operations.
+Whenever account balances change due to transfers, <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> operations, or <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> operations.
 
 ### Structure
 
-```javascript
-{
-  event: "balance_update"
-  data: {
-    address: string
-      Description: User's wallet address
-      Example: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-      
-    balances: array<Balance>
-      Description: Updated balances
-      Example: [
-        {"asset": "usdc", "amount": "150.0", "available": "125.0", "locked": "25.0"}
-      ]
-      
-    trigger: string
-      Description: Reason for update
-      Values: "transfer" | "app_close" | "channel_open" | "channel_close"
-      Example: "transfer"
-      
-    timestamp: number
-      Description: Event timestamp
-      Example: 1699123456789
-  }
-}
-```
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `balance_updates` | array\<LedgerBalance\> | Updated balances for affected accounts | See structure below |
+
+#### LedgerBalance Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `account_id` | string | Account identifier | `"0x742d35Cc..."` |
+| `asset` | string | Asset symbol | `"usdc"` |
+| `amount` | string | New balance amount | `"150.0"` |
 
 **Use Cases**:
 - Update balance display in real-time
@@ -613,41 +664,19 @@ Whenever the user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified
 
 ---
 
-## channel_update
+## cu (Channel Update)
 
-### Event
+### Method
 
-`channel_update`
+`cu`
 
 ### When Sent
 
-When a <Tooltip content={tooltipDefinitions.channel}>channel's</Tooltip> status changes (opened, challenged, closed).
+When a <Tooltip content={tooltipDefinitions.channel}>channel's</Tooltip> state changes (opened, resized, challenged, closed).
 
 ### Structure
 
-```javascript
-{
-  event: "channel_update"
-  data: {
-    channel_id: string
-      Description: Channel identifier
-      Example: "0xabcdef..."
-      
-    status: string
-      Description: New status
-      Values: "active" | "disputed" | "closed"
-      Example: "active"
-      
-    chain_id: uint64
-      Description: Blockchain network
-      Example: 137
-      
-    timestamp: number
-      Description: Event timestamp
-      Example: 1699123456789
-  }
-}
-```
+The notification contains the complete updated `Channel` object. See [Channel Structure](#channel-structure) in the `get_channels` section for the full field list.
 
 **Use Cases**:
 - Update <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status in UI
@@ -656,104 +685,59 @@ When a <Tooltip content={tooltipDefinitions.channel}>channel's</Tooltip> status 
 
 ---
 
-## transfer_received
+## tr (Transfer)
 
-### Event
+### Method
 
-`transfer_received`
+`tr`
 
 ### When Sent
 
-When the user receives a transfer from another user.
+When a transfer affects the user's account (both incoming and outgoing transfers).
 
 ### Structure
 
-```javascript
-{
-  event: "transfer_received"
-  data: {
-    transaction_id: string
-      Description: Transaction identifier
-      Example: "txn_123456"
-      
-    from: string (address)
-      Description: Sender's wallet address
-      Example: "0x8B3192f2..."
-      
-    from_tag: string
-      Description: Sender's user tag
-      Example: "NQKO7C"
-      
-    asset: string
-      Description: Asset identifier
-      Example: "usdc"
-      
-    amount: string
-      Description: Transfer amount
-      Example: "50.0"
-      
-    note: string (optional)
-      Description: Transfer memo
-      Example: "Payment for coffee"
-      
-    timestamp: number
-      Description: Event timestamp
-      Example: 1699123456789
-  }
-}
-```
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `transactions` | array\<LedgerTransaction\> | Array of transaction objects for the transfer | See structure below |
+
+The `LedgerTransaction` structure is identical to the one returned by `get_ledger_transactions`. See [LedgerTransaction Structure](#ledgertransaction-structure) for the full field list.
 
 **Use Cases**:
-- Display incoming payment notifications
-- Play sound/show toast for received funds
+- Display incoming/outgoing payment notifications
+- Play sound/show toast for transfers
 - Update transaction history in real-time
 
 :::success Real-Time Payments
-Combine `transfer_received` notifications with `balance_update` to provide immediate feedback when users receive funds, similar to traditional payment apps.
+Combine `tr` notifications with `bu` (balance update) to provide immediate feedback when users send or receive funds.
 :::
 
 ---
 
-## app_session_update
+## asu (App Session Update)
 
-### Event
+### Method
 
-`app_session_update`
+`asu`
 
 ### When Sent
 
-When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> changes (new <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> submitted, session closed).
+When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> state changes (new state submitted, session closed, deposits/withdrawals).
 
 ### Structure
 
-```javascript
-{
-  event: "app_session_update"
-  data: {
-    app_session_id: string
-      Description: Session identifier
-      Example: "0x9876543210fedcba..."
-      
-    version: number
-      Description: New state version
-      Example: 5
-      
-    status: string
-      Description: Session status
-      Values: "open" | "closed"
-      Example: "open"
-      
-    intent: string (optional)
-      Description: Update intent (if applicable)
-      Values: "operate" | "deposit" | "withdraw"
-      Example: "operate"
-      
-    timestamp: number
-      Description: Event timestamp
-      Example: 1699123456789
-  }
-}
-```
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `app_session` | AppSession | Complete app session object | See `get_app_sessions` for structure |
+| `participant_allocations` | array\<AppAllocation\> | Current allocations for each participant | See structure below |
+
+#### AppAllocation Structure
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `participant` | string | Participant wallet address | `"0x742d35Cc..."` |
+| `asset` | string | Asset symbol | `"usdc"` |
+| `amount` | string | Allocated amount | `"50.0"` |
 
 **Use Cases**:
 - Update game UI when opponent makes a move
@@ -766,7 +750,7 @@ When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> <
 ## Implementation Notes
 
 **Connection Management**:
-- Maintain persistent WebSocket connection for notifications
+- Maintain persistent connection for notifications
 - Implement automatic reconnection on disconnect
 - Re-fetch current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> after reconnection
 
@@ -784,7 +768,6 @@ When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> <
 **Pagination**:
 - For methods with pagination, use reasonable `limit` values
 - Store `metadata.total_count` for progress indicators
-- Implement infinite scroll or "load more" patterns
 
 ---
 
