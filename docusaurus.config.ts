@@ -129,16 +129,6 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/docs/api-reference',
-          label: 'API Reference',
-          position: 'left',
-        },
-        {
-          to: '/docs/legacy',
-          label: 'Legacy',
-          position: 'left',
-        },
-        {
           href: 'https://github.com/layer-3',
           position: 'right',
           className: 'header-github-link',
@@ -182,10 +172,6 @@ const config: Config = {
             {
               label: 'API Reference',
               to: '/docs/api-reference',
-            },
-            {
-              label: 'Legacy',
-              to: '/docs/legacy',
             },
           ],
         },
