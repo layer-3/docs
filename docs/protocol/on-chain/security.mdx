@@ -8,6 +8,24 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Security Considerations
 
+## Current Limitations
+
+The current <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> implementation has the following limitations:
+
+- **Two-participant channels only**: Channels support exactly 2 <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>
+- **Participant role constraint**: First participant must always be a client, while second must be a <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
+- **Single allocation per participant**: Each participant can have only 1 allocation
+- **Same-token allocations**: Both allocations must be for the same token
+- **Minimum challenge duration**: Challenge duration is set to be no less than 1 hour
+- **No re-challenge**: It is not possible to challenge an already challenged <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>
+- **No direct EOA resize**: It is not possible to resize directly from or to your EOA; you must deposit to or withdraw funds from the Custody contract first
+- **Channel required for withdrawal**: It is not possible to withdraw your funds from the <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified Balance</Tooltip> on a chain with no open channel without opening a channel first. In a future major release, we plan to merge these steps in one operation
+- **Separate resize and balance operations**: It is not possible to top-up a Unified Balance from or withdraw to your EOA balance in the same `resize(...)` operation. You must deposit your funds prior to or withdraw after the `resize(...)` operation. In a future major release, we plan to merge these steps in one operation
+
+:::note Future Improvements
+Many of these limitations are implementation-specific and are planned to be addressed in future major releases. They do not represent fundamental protocol constraints.
+:::
+
 ## Threat Model
 
 ### Assumptions
@@ -58,13 +76,13 @@ The security of <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolit
 
 ```mermaid
 graph TB
-    A[User has latest<br/>signed state] --> B{Broker responsive?}
+    A[User has latest<br/>signed state] --> B{Other participant responsive?}
     B -->|Yes| C[Cooperative close<br/>Fast & cheap]
     B -->|No| D[Challenge with<br/>latest state]
     D --> E[Wait challenge<br/>period]
-    E --> F{Counter-challenge?}
+    E --> F{Communication continuation suggested?}
     F -->|No| G[Close & recover funds]
-    F -->|Yes, newer| H[Submit even<br/>newer state]
+    F -->|Yes| H[Create and submit a<br/>newer state via `checkpoint(...)`]
     H --> E
     
     style C fill:#90EE90
@@ -77,12 +95,12 @@ graph TB
 
 **Mechanism**:
 - Every state update requires cryptographic signatures
-- Signatures are verified against the <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip>
+- Signatures are verified against the <Tooltip content={tooltipDefinitions.packedState}>packedState</Tooltip>
 - Adjudicator validates state transitions according to application rules
 - Invalid states are rejected on-chain
 
 :::success Cryptographic Security
-State validity is enforced through cryptographic signatures supporting multiple formats (ECDSA, ERC-1271, ERC-6492), enabling compatibility with EOA wallets, smart contract wallets, and counterfactual contracts.
+State validity is enforced through [supported signatures](./signature-formats), all of which are supported by Ethereum itself.
 :::
 
 #### EIP-712 Signature Support
@@ -156,7 +174,7 @@ Longer challenge periods provide more security but slower dispute resolution. Sh
 **Attack**: Resubmitting old signed <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip> to revert <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> to a previous favorable allocation.
 
 **Mitigation**: 
-- <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicators</Tooltip> MUST implement version checking
+- <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicators</Tooltip> MUST implement version checking to verify that a supplied "candidate" is indeed supported by a supplied "proof".
 - Higher version numbers supersede lower versions
 - On-chain contract tracks the highest version seen
 - Old states are automatically rejected
@@ -190,8 +208,8 @@ Always ensure state versions increase monotonically. Never sign two different st
 2. After trading, valid state shows Alice: $1500, Bob: $500
 3. Bob refuses to cooperate in cooperative close
 4. Alice initiates challenge with latest signed state
-5. Bob can respond only with older (less favorable) state
-6. After challenge period, Alice's state wins
+5. Bob has access only to an older state, meaning he is unable to resolve the challenge
+6. After challenge period elapses, Alice's state becomes the final one
 7. Alice recovers her $1500
 ```
 
@@ -204,6 +222,7 @@ Always ensure state versions increase monotonically. Never sign two different st
 - Attacker must pay gas for each challenge attempt
 - Eventually attacker runs out of old states
 - Newest state always wins regardless of challenge count
+- The party being griefed can checkpoint with the latest valid <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>, impeding the griefer from challenging with any intermediate state
 
 :::note Economic Disincentive
 Challenge griefing is economically costly for the attacker (gas fees) while only causing time delay, not fund loss, for the victim.
@@ -272,30 +291,22 @@ Before submitting state on-chain:
 <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicators</Tooltip> are critical to <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> security. A flawed adjudicator can undermine the entire channel's safety guarantees.
 :::
 
-**Adjudicator Development Checklist**:
-
-```markdown
-☐ Version comparison logic is correct and strict
-☐ All state transition rules are validated
-☐ Gas usage is optimized
-☐ Edge cases are handled (empty allocations, zero amounts, etc.)
-☐ Fallback behavior is safe (reject on ambiguity)
-☐ Code is audited by security professionals
-☐ Test coverage includes adversarial scenarios
-```
+:::caution Before Implementing Your Own Adjudicator
+The <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> is an incredibly important part of the <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol. Yellow Network is built on top of a specific adjudicator, which if changed, will render interoperability and security guarantees impossible. Before starting to implement your own Adjudicator, please be sure to advise the Nitrolite developer team, so that your work is not left out.
+:::
 
 ## Security Guarantees Summary
 
 | Property | Guarantee | Mechanism |
 |----------|-----------|-----------|
 | **Funds Safety** | Cannot lose funds with valid signed state | Challenge-response + signatures |
-| **State Validity** | Only properly signed states accepted | ECDSA signature verification |
+| **State Validity** | Only properly signed states accepted | Signature verification |
 | **Liveness** | Can always close if blockchain is live | Unilateral challenge mechanism |
 | **Censorship Resistance** | Any party can enforce closure | Multiple submission paths |
 | **No Replay** | Old states cannot be reused | Version number validation |
 
 :::success Strong Security Model
-<Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> provides **strong security guarantees** equivalent to Layer 1 <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> security, while enabling Layer 2 scalability and efficiency.
+<Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> provides **strong security guarantees** built on top of Layer 1 <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> security, while enabling Layer 2 scalability and efficiency.
 :::
 
 ## Emergency Procedures
@@ -304,18 +315,15 @@ Before submitting state on-chain:
 
 1. **Retrieve latest signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>** from local storage
 2. **Initiate challenge** on-chain with latest state
-3. **Monitor for counter-challenges** during challenge period
-4. **Submit newer states** if counterparty challenges with older version
-5. **Close <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>** after challenge period expires
-6. **Funds are recovered** according to latest valid state
+3. **Close the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>** after challenge period expires
+4. **Funds are recovered** according to latest valid state
 
-### If Challenge Period May Expire
+### If You Have Been Challenged
 
-1. **Ensure <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> access** - check network connectivity
-2. **Prepare transactions in advance** - have signed transactions ready
-3. **Monitor mempool** - watch for conflicting transactions
-4. **Use appropriate gas prices** - ensure timely confirmation
-5. **Have backup RPC endpoints** - don't rely on single provider
+1. **Check for the latest <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>** - make sure the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> was challenged with the latest state. If not, you should checkpoint it with one to avoid funds loss
+2. **Ensure <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> access** - check network connectivity
+3. **Use appropriate gas prices** - ensure timely confirmation
+4. **Have backup RPC endpoints** - don't rely on single provider
 
 :::tip Monitoring Best Practice
 Set up automated monitoring with alerts for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> events. This ensures you can respond quickly to challenges even if you're not actively watching.
