@@ -1,14 +1,14 @@
 ---
 sidebar_position: 5
-title: Transfer Methods
+title: Transfer Method
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
 import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
-# Transfer Methods
+# Transfer Method
 
-Transfer methods enable instant, off-chain fund movement between users connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>.
+Transfer method enable instant, off-chain fund movement between users.
 
 ---
 
@@ -16,13 +16,13 @@ Transfer methods enable instant, off-chain fund movement between users connected
 
 The transfer system allows users to send funds to each other instantly using their <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, without any on-chain transactions. Transfers are backed by the security of underlying payment channels and use double-entry bookkeeping for accounting accuracy.
 
-### Why Use Transfers?
+### Why Use Transfer?
 
 **Instant Settlement**: Transfers complete immediately with instant finality.
 
-**Zero Gas Fees**: No blockchain transactions means zero gas costs for both sender and recipient.
+**No Blockchain Fees**: No blockchain transactions means no gas costs for both sender and recipient.
 
-**Cross-Chain Unified**: Send from your aggregated balance across multiple chains without specifying which chain.
+**Cross-Chain Unified**: Send from your <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across multiple chains.
 
 **Auditable**: Complete transaction history with double-entry ledger tracking.
 
@@ -40,40 +40,82 @@ Transfers provide the speed and convenience of traditional payment networks whil
 
 ### Usage
 
-Transfers funds from the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to another user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>, resulting in instant settlement with zero gas fees. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. Both sender and recipient must be connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip> (have open channels). The security guarantee comes from the underlying on-chain channels that back the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
+Transfer funds from the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to another user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>, resulting in instant settlement. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. The security guarantee comes from the underlying on-chain channels that back the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
 
 ### When to Use
 
-When sending funds to another Yellow Network user who is connected to the same <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>. Common use cases include peer-to-peer payments, merchant payments, tipping, and rapid fund redistribution between users.
+When sending funds to another Yellow Network user. Common use cases include peer-to-peer payments, merchant payments, tipping, and rapid fund redistribution between users.
 
 ### Prerequisites
 
 - Sender must be [authenticated](./authentication)
-- Sender must have sufficient available balance (not locked in <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>)
-- Recipient must have at least one open <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> (be connected)
+- Sender must have sufficient available balance in <Tooltip content={tooltipDefinitions.unifiedBalance}>unified account</Tooltip>
 - Recipient must be identified by valid <Tooltip content={tooltipDefinitions.participant}>wallet address</Tooltip> or user tag
+
+:::info Recipient Requirements
+The recipient does not need to have an existing balance or account on the clearnode. Transfers can be sent to any valid wallet address, and the recipient's account will be created automatically if it doesn't exist.
+:::
 
 ### Request
 
 | Parameter | Type | Required | Description | Format | Example | Notes |
 |-----------|------|----------|-------------|--------|---------|-------|
-| `destination` | string (wallet address) | Yes (if destination_user_tag not provided) | Recipient's wallet address | 0x-prefixed hex string (20 bytes) | `"0x8B3192f2F7b1b34f2e4e7B8C9D1E0F2A3B4C5D6E"` | Recipient must be connected to this clearnode |
-| `destination_user_tag` | string | Yes (if destination not provided) | Recipient's human-readable identifier | Alphanumeric string | `"alice.yellow"` | Alternative to address; internal feature, may change |
-| `allocations` | Allocation[] | Yes (minimum: 1) | Assets and amounts to transfer<br/><br/>**Structure (per allocation)**:<br/>• `asset` (string, required) - Asset identifier<br/>&nbsp;&nbsp;- Examples: "usdc", "eth", "weth", "btc"<br/>&nbsp;&nbsp;- Note: Must be lowercase; see get_assets for supported assets<br/>• `amount` (string, required) - Amount to transfer in human-readable format<br/>&nbsp;&nbsp;- Format: Decimal string (e.g., "50.0" for 50 USDC)<br/>&nbsp;&nbsp;- Note: Clearnode handles conversion to smallest unit internally | See structure | `[{"asset": "usdc", "amount": "50.0"}, {"asset": "eth", "amount": "0.01"}]` | Can send multiple assets in single transfer |
-| `note` | string | No | Optional memo or note for the transfer | Max length: 256 characters | `"Payment for coffee"` | Visible to both parties in transaction history |
+| `destination` | string (wallet address) | Yes (if `destination_user_tag` not provided) | Recipient's wallet address | 0x-prefixed hex string (20 bytes) | `"0x8B3192f2F7b1b34f2e4e7B8C9D1E0F2A3B4C5D6E"` | - |
+| `destination_user_tag` | string | Yes (if destination not provided) | Recipient's randomly generated user identifier | Alphanumeric string | `"UX123D"` | Alternative to address; internal feature, may change |
+| `allocations` | Allocation[] | Yes (minimum: 1) | Assets and amounts to transfer<br/><br/>**Structure (per allocation)**:<br/>• `asset` (string, required) - Asset identifier<br/>&nbsp;&nbsp;- Examples: "usdc", "eth", "weth", "btc"<br/>&nbsp;&nbsp;- Note: Must be lowercase; see get_assets for supported assets<br/>• `amount` (string, required) - Amount to transfer in human-readable format<br/>&nbsp;&nbsp;- Format: Decimal string (e.g., "50.0" for 50 USDC)<br/>&nbsp;&nbsp;- Note: Clearnode handles conversion to smallest unit internally | See structure | `[{"asset": "usdc", "amount": "50.0"}, {"asset": "eth", "amount": "0.01"}]` | Can send multiple assets in single transfer<br/><br/>:::note Allocation Structure<br/>For detailed allocation structure definitions, see [Data Structures](../on-chain/data-structures#allocation-structure).<br/>::: |
 
 ### Response
 
-| Parameter | Type | Description | Format/Structure | Example | Notes |
-|-----------|------|-------------|------------------|---------|-------|
-| `transaction_id` | string | Unique identifier for this transfer | UUID or hash | `"txn_a1b2c3d4e5f6..."` | Use this to query transaction status |
-| `status` | string | Transfer status | Value: "confirmed" (transfers are instant) | `"confirmed"` | - |
-| `sender` | string (wallet address) | Sender's wallet address (authenticated user) | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | - |
-| `recipient` | string (wallet address) | Recipient's wallet address | - | `"0x8B3192f2F7b1b34f2e4e7B8C9D1E0F2A3B4C5D6E"` | Resolved from destination_user_tag if that was provided |
-| `allocations` | Allocation[] | Confirmed transfer amounts | - | `[{"asset": "usdc", "amount": "50.0"}]` | - |
-| `sender_balance` | object | Sender's updated balance<br/><br/>**Structure**: asset: Balance per asset after transfer | See structure | `{"usdc": {"total": "50.0", "available": "50.0", "locked": "0"}}` | - |
-| `timestamp` | number | Unix timestamp of transfer execution | - | `1699123456789` | - |
-| `ledger_entries` | array | References to created ledger entries<br/><br/>**Structure**: [debitEntryId, creditEntryId] | See structure | - | For audit trail and reconciliation |
+The response contains an array of transactions, with one transaction for each asset being transferred:
+
+| Parameter | Type | Description | Example | Notes |
+|-----------|------|-------------|---------|-------|
+| `transactions` | LedgerTransaction[] | Array of transaction objects for each asset | See below | One transaction per asset transferred |
+
+**LedgerTransaction Structure** (per transaction):
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `id` | string | Unique transaction reference | `"1"` |
+| `tx_type` | string | Transaction type | `"transfer"` |
+| `from_account` | string | Sender's wallet address | `"0x1234567890abcdef..."` |
+| `from_account_tag` | string | Sender's user tag (if exists) | `"NQKO7C"` |
+| `to_account` | string | Recipient's wallet address | `"0x9876543210abcdef..."` |
+| `to_account_tag` | string | Recipient's user tag (if exists) | `"UX123D"` |
+| `asset` | string | Asset symbol that was transferred | `"usdc"` |
+| `amount` | string | Amount transferred for this asset | `"50.0"` |
+| `created_at` | string | ISO 8601 timestamp | `"2023-05-01T12:00:00Z"` |
+
+**Example Response**:
+
+```json
+{
+  "transactions": [
+    {
+      "id": "1",
+      "tx_type": "transfer",
+      "from_account": "0x1234567890abcdef...",
+      "from_account_tag": "NQKO7C",
+      "to_account": "0x9876543210abcdef...",
+      "to_account_tag": "UX123D",
+      "asset": "usdc",
+      "amount": "50.0",
+      "created_at": "2023-05-01T12:00:00Z"
+    },
+    {
+      "id": "2",
+      "tx_type": "transfer",
+      "from_account": "0x1234567890abcdef...",
+      "from_account_tag": "NQKO7C",
+      "to_account": "0x9876543210abcdef...",
+      "to_account_tag": "UX123D",
+      "asset": "eth",
+      "amount": "0.1",
+      "created_at": "2023-05-01T12:00:00Z"
+    }
+  ]
+}
+```
 
 ---
 
@@ -99,7 +141,6 @@ sequenceDiagram
     Note over Clearnode: 2. Validate
     Clearnode->>Clearnode: Verify authentication
     Clearnode->>Clearnode: Check available balance
-    Clearnode->>Clearnode: Verify recipient exists
     Clearnode->>Clearnode: Validate allocations
 
     Note over Clearnode: 3. Update Ledger
@@ -107,9 +148,11 @@ sequenceDiagram
     Clearnode->>Clearnode: Create credit entry (Bob +50 USDC)
     Clearnode->>Clearnode: Record transaction
 
-    Note over Clearnode: 4. Send Responses
-    Clearnode->>Alice: {transaction_id, status: "confirmed", sender_balance}
-    Clearnode->>Bob: transfer_received notification
+    Note over Clearnode: 4. Send Responses & Notifications
+    Clearnode->>Alice: {ledger_transactions}
+    Clearnode->>Alice: balance_update notification
+    Clearnode->>Bob: tr (transfer) notification
+    Clearnode->>Bob: balance_update notification
 
     Note over Bob: 5. Balance Updated
     Bob->>Bob: Balance +50 USDC
@@ -122,66 +165,32 @@ sequenceDiagram
 
 <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> performs comprehensive validation:
 - Verifies authentication and signature
-- Checks sender has sufficient available balance
-- Verifies recipient exists (has open <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>)
+- Checks sender has sufficient available balance in <Tooltip content={tooltipDefinitions.unifiedBalance}>unified account</Tooltip>
 - Validates allocations format and asset support
 
 #### 2. Updates Ledger (Double-Entry Bookkeeping)
 
-Every transfer creates two ledger entries:
-
-**Debit Entry (Sender)**:
-```
-account: sender_address
-asset: "usdc"
-amount: -50.0
-type: "DEBIT"
-related_account: recipient_address
-reference_id: transaction_id
-description: "Transfer to [recipient]"
-```
-
-**Credit Entry (Recipient)**:
-```
-account: recipient_address
-asset: "usdc"
-amount: +50.0
-type: "CREDIT"
-related_account: sender_address
-reference_id: transaction_id
-description: "Transfer from [sender]"
-```
+Every transfer creates two ledger entries - one for the sender and one for the recipient. The ledger uses double-entry bookkeeping principles where each entry has both `credit` and `debit` fields, with amounts always recorded as positive values.
 
 :::info Double-Entry Bookkeeping
-The double-entry system ensures that the total of all debits always equals the total of all credits, providing mathematical proof of accounting accuracy. Every transaction is recorded twice - once as a debit and once as a credit.
+The double-entry system ensures that the total of all debits always equals the total of all credits, providing mathematical proof of accounting accuracy. Every transfer is recorded twice - once as a debit to the sender's account and once as a credit to the recipient's account.
 :::
 
 #### 3. Records Transaction
 
-A user-facing transaction record is created:
-
-```
-Ledger Transaction:
-  transaction_id: unique_id
-  type: "TRANSFER"
-  sender: sender_address
-  recipient: recipient_address
-  asset: "usdc"
-  amount: "50.0"
-  status: "CONFIRMED"
-  timestamp: current_time
-```
+A user-facing transaction record is created for each asset being transferred, containing information about the sender, recipient, asset, and amount.
 
 #### 4. Sends Notifications
 
-- **Sender** receives confirmation with updated balance
-- **Recipient** receives notification via WebSocket with balance update
+- **Sender** receives response with transaction details
+- **Both parties** receive `tr` (transfer) notification with transaction details
+- **Both parties** receive `balance_update` notification with updated balances
 
 ---
 
 ## Unified Balance Mechanics
 
-The <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> aggregates funds from all chains, providing a seamless cross-chain experience.
+The <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> aggregates funds from all chains.
 
 ### Example: Multi-Chain Aggregation
 
@@ -194,140 +203,158 @@ User deposited:
 Unified Balance: $18 USDC total
 
 User can transfer: Any amount up to $18 USDC
-Result: Transfer uses unified balance, no need to specify chain
 ```
 
-:::tip Cross-Chain Abstraction
-Users don't need to know or care which chain their funds are on. Clearnode manages the underlying <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> allocations internally. When channels close, funds are distributed according to the final <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> state.
-:::
+### Account Types
 
-### Balance States
+The ledger system maintains three types of accounts:
 
-<Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> has three components:
+1. **Unified Account**: Main account identified by wallet address. This is where user funds are stored and can be transferred or withdrawn.
 
-1. **Total**: Sum of available + locked
-2. **Available**: Funds that can be transferred or withdrawn
-3. **Locked**: Funds currently in <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
+2. **App Session Account**: Identified by app session ID. Participant wallets are beneficiaries of this account. Funds in app sessions are locked for the duration of the session.
 
-**Only available balance can be transferred**.
-
----
-
-## Security Considerations
-
-### How Are Off-Chain Transfers Secure?
-
-**Backed by On-Chain Channels**:
-- Transfers are backed by on-chain channels holding the funds
-- Clearnode tracks all balances in database
-- When <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes, final on-chain distribution reflects all transfers
-
-**Double-Entry Bookkeeping**:
-- Mathematical proof of accounting accuracy
-- Debits always equal credits
-- All transfers logged for audit trail
-
-**Cannot Steal Funds**:
-- <Tooltip content={tooltipDefinitions.clearnode}>A clearnode</Tooltip> cannot steal funds (would be evident when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes)
-- Users can always challenge-close with last signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
-
-:::caution Security Guarantee
-At every stage, funds remain cryptographically secured by the underlying payment channels. Users can always recover their funds according to the latest valid signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>, even if <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> becomes unresponsive.
-:::
-
-### What If a Clearnode Disappears?
-
-**Recovery Process**:
-- Users can challenge-close their <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with last known <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
-- Funds are recovered according to last signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
-- Worst case: lose value of un-checkpointed transfers
-
-**Best Practice**:
-- Periodically checkpoint important <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip> on-chain for large balances
-- Keep local records of recent transfer history
+3. **Channel Escrow Account**: Temporary account that locks funds when user requests blockchain operations like resize. Funds remain in this account until the transaction is confirmed on-chain.
 
 ---
 
 ## Error Cases
 
-| Error | Code | Description | Recovery |
-|-------|------|-------------|----------|
-| **Authentication required** | 1001 | Not authenticated | Complete [authentication](./authentication) |
-| **Insufficient available balance** | 1002 | Sender doesn't have enough | Check balance, wait for funds |
-| **Recipient not found** | 1003 | No channels with clearnode | Verify recipient address, ensure they're connected |
-| **Invalid destination address** | -32602 | Malformed wallet address | Verify address format (0x + 40 hex) |
-| **Invalid allocation format** | -32602 | Negative amount or unsupported asset | Check allocation structure |
-| **Amount exceeds available** | 1002 | Exceeds available (not total) balance | Reduce amount or close <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> |
-| **Cannot transfer to self** | -32602 | sender == recipient | Use different recipient |
-| **Asset not supported** | 1010 | Asset not available | Use `get_assets` to see supported assets |
-| **Amount too small** | -32602 | Below minimum transfer amount | Increase amount |
+:::note Error Format
+The protocol does not use numeric error codes. Errors are returned as method `"error"` with descriptive messages.
+:::
+
+Common error scenarios:
+
+| Error | Description | Recovery |
+|-------|-------------|----------|
+| **Authentication required** | Not authenticated | Complete [authentication](./authentication) |
+| **Insufficient available balance** | Sender doesn't have enough funds in unified account | Check balance with `get_balance`, deposit or transfer funds |
+| **Invalid destination address** | Malformed wallet address | Verify address format (0x-prefixed, 20 bytes) |
+| **Invalid allocation format** | Negative amount or invalid structure | Check allocation structure matches API requirements |
+| **Cannot transfer to self** | Sender and recipient are the same | Use different recipient address |
+| **Asset not supported** | Asset not available on clearnode | Use `get_assets` to see supported assets |
+| **Amount too small** | Below minimum transfer amount | Increase transfer amount |
 
 ---
 
-## Transaction History
+## Transaction History Query Methods
 
-Users can query their transfer history using two methods:
+Users can query their transfer history using two methods for different levels of detail.
+
+---
 
 ### get_ledger_transactions
 
-**Purpose**: User-facing transaction log with sender, recipient, amount, and type.
+Retrieves user-facing transaction log with sender, recipient, amount, and type. This endpoint provides a view of transactions where the specified account appears as either the sender or receiver.
 
-**Use Case**: Display transaction history in UI, export records.
+:::info Public Endpoint
+This is a public endpoint - authentication is not required.
+:::
 
-```javascript
-const transactions = await clearnode.call("get_ledger_transactions", {
-  asset: "usdc",
-  offset: 0,
-  limit: 50
-})
+#### Request
 
-transactions.forEach(tx => {
-  console.log(`${tx.tx_type}: ${tx.amount} ${tx.asset}`)
-  console.log(`From: ${tx.from_account_tag || tx.from_account}`)
-  console.log(`To: ${tx.to_account_tag || tx.to_account}`)
-  console.log(`Note: ${tx.note || 'N/A'}`)
-})
-```
+| Parameter | Type | Required | Description | Format | Example | Notes |
+|-----------|------|----------|-------------|--------|---------|-------|
+| `account_id` | string | No | Filter by account ID | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns transactions for this account |
+| `asset` | string | No | Filter by asset symbol | Lowercase string | `"usdc"` | Returns transactions for this asset only |
+| `tx_type` | string | No | Filter by transaction type | One of: `transfer`, `deposit`, `withdrawal`, `app_deposit`, `app_withdrawal` | `"transfer"` | Returns only this type of transaction |
+| `offset` | number | No | Pagination offset | Positive integer | `42` | Skip this many transactions |
+| `limit` | number | No | Number of transactions to return | Positive integer | `10` | Default varies by implementation |
+| `sort` | string | No | Sort order by created_at | `asc` or `desc` | `"desc"` | Default: `desc` |
+
+#### Response
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `ledger_transactions` | LedgerTransaction[] | Array of transaction objects |
+| `metadata` | PaginationMetadata | Pagination information |
+
+**LedgerTransaction Structure**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique transaction reference |
+| `tx_type` | string | Transaction type (transfer/deposit/withdrawal/app_deposit/app_withdrawal) |
+| `from_account` | string | Sender's wallet address |
+| `from_account_tag` | string | Sender's user tag (empty if none) |
+| `to_account` | string | Recipient's wallet address |
+| `to_account_tag` | string | Recipient's user tag (empty if none) |
+| `asset` | string | Asset symbol |
+| `amount` | string | Transaction amount |
+| `created_at` | string | ISO 8601 timestamp |
+
+**PaginationMetadata Structure**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `page` | number | Current page number |
+| `per_page` | number | Items per page |
+| `total_count` | number | Total number of transactions |
+| `page_count` | number | Total number of pages |
+
+---
 
 ### get_ledger_entries
 
-**Purpose**: Detailed accounting entries showing all debits and credits.
+Retrieves detailed accounting entries showing all debits and credits. This endpoint provides double-entry bookkeeping records for detailed reconciliation and audit trails.
 
-**Use Case**: Detailed reconciliation, audit trail, accounting integration.
+:::info Public Endpoint
+This is a public endpoint - authentication is not required.
+:::
 
-```javascript
-const entries = await clearnode.call("get_ledger_entries", {
-  account_id: user_address,
-  asset: "usdc"
-})
+#### Request
 
-entries.forEach(entry => {
-  if (entry.debit > 0) {
-    console.log(`Debit: -${entry.debit} ${entry.asset}`)
-  } else {
-    console.log(`Credit: +${entry.credit} ${entry.asset}`)
-  }
-})
-```
+| Parameter | Type | Required | Description | Format | Example | Notes |
+|-----------|------|----------|-------------|--------|---------|-------|
+| `account_id` | string | No | Filter by account ID | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns entries for this account |
+| `wallet` | string | No | Filter by participant wallet | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns entries for this participant |
+| `asset` | string | No | Filter by asset symbol | Lowercase string | `"usdc"` | Returns entries for this asset only |
+| `offset` | number | No | Pagination offset | Positive integer | `42` | Skip this many entries |
+| `limit` | number | No | Number of entries to return | Positive integer | `10` | Default varies by implementation |
+| `sort` | string | No | Sort order by created_at | `asc` or `desc` | `"desc"` | Default: `desc` |
+
+#### Response
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `ledger_entries` | LedgerEntry[] | Array of ledger entry objects |
+| `metadata` | PaginationMetadata | Pagination information |
+
+**LedgerEntry Structure**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | number | Unique entry ID |
+| `account_id` | string | Account identifier |
+| `account_type` | number | Account type (0=Unified, 1=App Session, 2=Channel Escrow) |
+| `asset` | string | Asset symbol |
+| `participant` | string | Participant wallet address |
+| `credit` | string | Credit amount (positive value or "0.0") |
+| `debit` | string | Debit amount (positive value or "0.0") |
+| `created_at` | string | ISO 8601 timestamp |
+
+**PaginationMetadata Structure**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `page` | number | Current page number |
+| `per_page` | number | Items per page |
+| `total_count` | number | Total number of entries |
+| `page_count` | number | Total number of pages |
 
 ---
 
 ## Implementation Notes
 
 **Performance**:
-- Transfers are instant and atomic
+- Transfers are instant (< 1 second) and atomic
 - No blockchain transaction required
-- Zero gas fees
-
-**Network**:
-- Both parties must be online to receive notifications
-- Transfer completes regardless of recipient online status
-- Recipient sees updated balance when they reconnect
+- No blockchain fees
 
 **Features**:
 - <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> is updated immediately
 - Transfer can include multiple assets in one operation
-- The transaction_id can be used to track and query the transfer status
+- Transaction IDs can be used to track and query transfer status via `get_ledger_transactions`
 
 **Audit Trail**:
 - Clearnode maintains complete audit trail of all transfers
