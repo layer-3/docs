@@ -74,7 +74,7 @@ Each blockchain entry requires the following fields:
 blockchains:
   - name: polygon                 # Blockchain name (lowercase, underscores allowed)
     id: 137                       # Chain ID for validation
-    disabled: false               # Whether to connect (default: false)
+    disabled: false               # Whether to disable (default: false)
     block_step: 10000             # Block range for scanning (default: 10000)
     contract_addresses:           # Override default contract addresses
       custody: "0x..."
@@ -94,11 +94,23 @@ blockchains:
 
 ### Contract Deployment
 
-Before requesting blockchain support, **you must deploy the Nitrolite protocol smart contracts** on your target blockchain:
+When requesting the addition of a new blockchain, addresses of the infrastructure smart contracts must be provided:
 
 - **Custody Contract**: Manages user deposits and withdrawals
 - **Adjudicator Contract**: Handles dispute resolution for state channels
 - **Balance Checker Contract**: Provides efficient balance queries
+
+:::info Smart contract deployment
+For now, you don't need to deploy these contracts yourself. The development team will handle contract deployment on the new blockchain as part of the support process.
+
+You can submit your request with smart contract addresses set to placeholder values (e.g., `0x0000000000000000000000000000000000000000`). The team will replace them with the actual deployed addresses during integration.
+:::
+
+:::info Coming Soon: Cross-Chain Contract Deployment Tool
+We are developing a tool to simplify the deployment of Nitrolite protocol smart contracts across multiple blockchains with deterministic addresses. This will enable deploying contracts to the same address on different chains, making configuration management significantly easier.
+:::
+
+Read on to learn how to specify contract addresses in the configuration.
 
 You have two options for providing contract addresses:
 
@@ -147,10 +159,6 @@ blockchains:
 
 :::warning Contract Address Requirements
 Each blockchain **must have all three contract addresses configured** either through `default_contract_addresses` or blockchain-specific `contract_addresses`. If defaults are not provided, every blockchain must explicitly define all three addresses. Missing contract addresses will cause Clearnode to fail on startup.
-:::
-
-:::info Coming Soon: Cross-Chain Contract Deployment Tool
-We are developing a tool to simplify the deployment of Nitrolite protocol smart contracts across multiple blockchains with deterministic addresses. This will enable deploying contracts to the same address on different chains, making configuration management significantly easier.
 :::
 
 ## Need Help?

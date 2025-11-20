@@ -33,8 +33,8 @@ Clearnode operates in two distinct environments with separate asset configuratio
 
 | Environment | Purpose | Typical Assets |
 |-------------|---------|----------------|
-| **Sandbox** | Development, testing, and experimentation | Testnet tokens (Sepolia USDC, Amoy WETH, test tokens, etc.) |
-| **Production** | Live operations with real assets | Mainnet tokens (USDC, WETH, USDT, DAI, etc.) |
+| **Sandbox** | Development, testing, and experimentation | Testnet tokens (Sepolia USDC, Amoy ETH, test tokens, etc.) |
+| **Production** | Live operations with real assets | Mainnet tokens (USDC, USDT, DAI, etc.) |
 
 **Configuration file location:** `clearnode/chart/config/<sandbox_or_prod>/assets.yaml`
 
@@ -65,7 +65,7 @@ The next section provides detailed guidance on the configuration structure and w
 
 In Clearnode's configuration model:
 
-- An **asset** represents a logical currency or token type (e.g., "USDC", "WETH")
+- An **asset** represents a logical currency or token type (e.g., "USDC", "ETH")
 - A **token** is a specific implementation of that asset on a particular blockchain
 
 **Example:** USDC is an asset that has different token implementations:
@@ -123,7 +123,7 @@ assets:
 | Field | Required | Description |
 |-------|----------|-------------|
 | `name` | No | Human-readable name of the asset (e.g., "USD Coin"). If omitted, defaults to the symbol. |
-| `symbol` | **Yes** | Ticker symbol for the asset (must be lowercase, e.g., "usdc", "weth") |
+| `symbol` | **Yes** | Ticker symbol for the asset (must be lowercase, e.g., "usdc", "eth") |
 | `disabled` | No | Set to `true` to temporarily disable processing this asset (default: `false`) |
 | `tokens` | **Yes** | Array of blockchain-specific token implementations |
 
@@ -148,7 +148,7 @@ tokens:
 | `blockchain_id` | **Yes** | Chain ID where this token is deployed (must match a supported blockchain) |
 | `disabled` | No | Set to `true` to temporarily disable this token (default: `false`) |
 | `address` | **Yes** | Token's smart contract address (must be a valid address on the specified chain) |
-| `decimals` | **Yes** | Number of decimal places the token uses (e.g., 6 for USDC, 18 for WETH) |
+| `decimals` | **Yes** | Number of decimal places the token uses (e.g., 6 for USDC, 18 for ETH) |
 
 ### Prerequisites for Adding Assets
 
