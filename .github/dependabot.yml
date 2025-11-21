@@ -9,3 +9,12 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "chore(npm)"
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
