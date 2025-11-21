@@ -61,8 +61,7 @@ This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tool
 
 ### Prerequisites
 
-- User must be [authenticated](./authentication) (<Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> registered)
-- User must have sufficient token balance in their wallet
+- User must be [authenticated](./authentication)
 - Target blockchain and token must be supported by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>
 - User must have native currency for gas fees
 
@@ -70,9 +69,8 @@ This ensures <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tool
 
 | Parameter | Type | Required | Description | Default | Example | Notes |
 |-----------|------|----------|-------------|---------|---------|-------|
-| `chain_id` | uint32 | Yes | Blockchain network identifier<br/><br/>**Examples**:<br/>• 1: Ethereum Mainnet<br/>• 137: Polygon<br/>• 8453: Base<br/>• 42161: Arbitrum One<br/>• 10: Optimism | - | `137` | Use get_config to see supported chains |
-| `token` | string (wallet address) | Yes | ERC-20 token contract address on the specified chain<br/><br/>**Format**: 0x-prefixed hex string (20 bytes) | - | `"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"` (USDC on Polygon) | Must be a supported token; see get_assets for available tokens |
-| `session_key` | string (wallet address) | No | Session key address to authorize for this channel | Authenticated session key | `"0x9876543210fedcba9876543210fedcba98765432"` | Optional parameter to specify which session key can control the channel |
+| `chain_id` | uint32 | Yes | Blockchain network identifier<br/><br/>**Examples**:<br/>• 1: Ethereum Mainnet<br/>• 137: Polygon<br/>• 8453: Base<br/>• 42161: Arbitrum One<br/>• 10: Optimism | — | `137` | Use `get_config` to see supported chains |
+| `token` | string (wallet address) | Yes | ERC-20 token contract address on the specified chain<br/><br/>Format: 0x-prefixed hex (20 bytes) | — | `"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"` | Must be supported; see `get_assets` |
 
 :::info Initial Channel State
 Channels are created with **zero initial balance** for both participants. To add funds to the channel, use the `resize_channel` method after creation. The challenge period is set to 1 hour (3600 seconds) by default.
@@ -86,10 +84,10 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 
 | Parameter | Type | Description | See Also |
 |-----------|------|-------------|----------|
-| `channel` | Channel | Complete channel configuration to be submitted on-chain | [↓ Structure](#channel-structure) |
-| `state` | State | Initial funding state with the clearnode's signature | [↓ Structure](#state-structure) |
-| `server_signature` | string | The clearnode's signature over the channel and state (0x-prefixed hex, 65 bytes) | — |
-| `channel_id` | string | Computed channel identifier (0x-prefixed hex, 32 bytes)<br/>Computed as: keccak256(abi.encode(channel))<br/>Client should compute this independently to verify | — |
+| `channel_id` | string | Computed channel identifier (0x-prefixed hex, 32 bytes) | — |
+| `channel` | Channel | On-chain channel params | [↓ Structure](#channel-structure) |
+| `state` | State | Initial state (intent INITIALIZE, version 0, empty data, zero allocations) | [↓ Structure](#state-structure) |
+| `server_signature` | string | Clearnode signature over packed state (hex string) | — |
 
 #### Channel Structure
 
@@ -114,10 +112,10 @@ Structures: [Channel](#channel-structure) • [State](#state-structure) • [Sta
 
 | Field | Type | Description | Notes |
 |-------|------|-------------|-------|
-| `intent` | StateIntent | State purpose indicator | For creation: 1 (INITIALIZE) |
-| `version` | uint64 | State sequence number | For creation: 0 |
-| `state_data` | string | Application-specific state data (hex string) | For creation: "0x" (empty) |
-| `allocations` | StateAllocation[] | Fund allocations for each participant | Order matches participants array<br/>See [StateAllocation](#stateallocation) below<br/>For creation: both participants start with "0" |
+| `intent` | StateIntent | State purpose indicator | For creation: `INITIALIZE` (1) |
+| `version` | uint64 | State sequence number | For creation: `0` |
+| `state_data` | string | State data (hex) | For creation: `"0x"` |
+| `allocations` | StateAllocation[] | Fund allocations (raw units) | Order matches participants array; both `0` on creation |
 
 **Example**:
 ```json
@@ -185,12 +183,11 @@ Common error scenarios:
 | Error | Description | Recovery |
 |-------|-------------|----------|
 | **Authentication required** | Not authenticated | Complete [authentication flow](./authentication) |
-| **Unsupported chain** | chain_id not supported | Use `get_config` to see supported chains |
-| **Unsupported token** | Token not in asset config | Use `get_assets` to see supported tokens |
-| **Invalid chain_id format** | Not a valid uint32 | Provide numeric chain ID |
-| **Invalid token address** | Malformed wallet address | Verify token address format |
-| **Channel already exists** | An open channel with clearnode already exists | Close existing channel first or use that channel |
-| **Clearnode unavailable** | Clearnode at capacity | Retry later or contact support |
+| **Unsupported chain** | `chain_id` not supported | Use `get_config` |
+| **Token not supported** | Token not in asset config for chain | Use `get_assets` |
+| **Invalid signature** | Caller did not sign request | Sign with channel participant wallet |
+| **Channel already exists** | Open channel with broker already exists | Use existing channel or close it first |
+| **Failed to prepare state** | Internal packing/signing issue | Retry or contact support |
 
 ### Implementation Notes
 
@@ -271,15 +268,15 @@ Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **imme
 | Parameter | Type | Required | Description | Default | Example | Notes |
 |-----------|------|----------|-------------|---------|---------|-------|
 | `channel_id` | string | Yes | Identifier of the channel to close | - | `"0xabcdef1234567890..."` | From get_channels or stored after creation |
-| `funds_destination` | string (wallet address) | Yes | Address where your share of channel funds should be sent | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | Typically your wallet address; can also be used to send to custody ledger |
+| `funds_destination` | string (wallet address) | Yes | Address where your share of channel funds should be sent | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | Typically your wallet address |
 
 ### Response
 
 | Parameter | Type | Description | Example | Notes |
 |-----------|------|-------------|---------|-------|
-| `channel_id` | string | Channel identifier | `"0xabcdef1234..."` | For reference |
-| `state` | State | Final state with FINALIZE intent<br/><br/>**Structure**:<br/>• `intent` - 3 (FINALIZE)<br/>• `version` - Incremented from current<br/>• `state_data` - Application-specific data<br/>• `allocations` - Final distribution of funds | See [State structure](#state-structure) | Clearnode determines final allocations based on unified balance |
-| `server_signature` | string | The clearnode's signature over the final state | `"0xabcdef987654..."` | 0x-prefixed hex string (65 bytes) |
+| `channel_id` | string | Channel identifier | `"0xabcdef1234..."` | — |
+| `state` | State | Final state with intent FINALIZE and version = current+1<br/>`state_data`: `"0x"`<br/>`allocations`: final fund distribution (raw units) | See [State structure](#state-structure) | `channel` field is omitted in close responses |
+| `server_signature` | string | Clearnode signature over packed state | `"0xabcdef987654..."` | Hex string |
 
 ### Next Steps After Receiving Response
 
@@ -322,11 +319,13 @@ Common error scenarios:
 | Error | Description | Recovery |
 |-------|-------------|----------|
 | **Authentication required** | Not authenticated | Re-authenticate |
-| **Channel not found** | Invalid channel_id | Verify channel_id from get_channels |
-| **Channel not open** | Channel in wrong status | Check status; may already be closed or resizing |
-| **Channel already closed** | Channel was closed | No action needed |
-| **User doesn't own channel** | Not a participant | Verify you're using correct account |
-| **Invalid funds_destination** | Malformed wallet address | Verify address format |
+| **Channel not found** | Invalid `channel_id` | Verify with `get_channels` |
+| **Channel challenged** | Participant has challenged channels | Resolve challenges first |
+| **Channel not open/resizing** | Status not `open` or `resizing` | Only open/resizing channels can close |
+| **Invalid signature** | Caller did not sign request | Sign with channel participant wallet |
+| **Token/asset not found** | Asset config missing | Ensure channel token is supported |
+| **Insufficient/negative balance** | Ledger balance retrieval or negative balance | Ensure balances are non-negative; retry |
+| **Failed to pack/sign state** | Internal packing/signing issue | Retry or contact support |
 
 ### Comparison: Cooperative vs Challenge Closure
 
@@ -380,8 +379,8 @@ The resize operation updates the channel **in place**. The <Tooltip content={too
 
 - <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> must exist and be in ACTIVE status
 - User must be authenticated
-- For **positive delta** (deposit): Funds must be available in custody ledger
-- For **negative delta** (withdrawal): Channel must have sufficient allocated funds
+- Positive deltas require enough available unified balance
+- Negative deltas require sufficient channel balance
 - All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign the resize state (consensus required)
 - User must have native currency for gas fees
 
@@ -390,23 +389,17 @@ The resize operation updates the channel **in place**. The <Tooltip content={too
 | Parameter | Type | Required | Description | Default | Example | Notes |
 |-----------|------|----------|-------------|---------|---------|-------|
 | `channel_id` | string | Yes | Identifier of the channel to resize (stays the same) | - | `"0xabcdef1234567890..."` | 0x-prefixed hex string (32 bytes)<br/>This channel_id will NOT change after resize |
-| `allocate_amount` | string (decimal) | No (mutually exclusive with resize_amount) | Amount to move from unified balance to channel before resize | - | `"50.0"` | Decimal string in human-readable format<br/>Used for multi-chain rebalancing |
-| `resize_amount` | string (decimal) | No (mutually exclusive with allocate_amount) | Delta amount to deposit from custody ledger (positive) or withdraw to custody ledger (negative) | - | `"75.0"` (deposit) or `"-100.0"` (withdraw) | Decimal string; can be negative<br/>Positive: funds must be available in custody ledger<br/>Negative: channel must have sufficient allocated funds |
-| `funds_destination` | string (wallet address) | Yes | Destination address for user's allocation in the resize state | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | 0x-prefixed hex string (20 bytes)<br/>Typically the user's wallet address |
-
-:::note Allocate vs Resize
-- **`allocate_amount`**: Moves funds from your unified balance on Clearnode to the channel
-- **`resize_amount`**: Deposits from or withdraws to the custody ledger on the smart contract
-- These parameters are **mutually exclusive** - provide only one per request
-:::
+| `allocate_amount` | string (decimal) | No | Amount to add/remove between unified balance and the channel before resize | `0` | `"50.0"` | Decimal string; can be used together with `resize_amount`; at least one of the two must be non-zero |
+| `resize_amount` | string (decimal) | No | Delta to apply to the channel: positive to deposit, negative to withdraw | `0` | `"75.0"` or `"-100.0"` | Decimal string; can be used together with `allocate_amount`; at least one of the two must be non-zero |
+| `funds_destination` | string (wallet address) | Yes | Destination for the user's allocation in the resize state | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | 0x-prefixed hex string (20 bytes) |
 
 ### Response
 
 | Parameter | Type | Description | Example | Notes |
 |-----------|------|-------------|---------|-------|
 | `channel_id` | string | Same channel identifier (unchanged) | `"0xabcdef1234567890..."` | This does NOT change (in-place update) |
-| `state` | State | Resize state to be submitted on-chain<br/><br/>**Structure**:<br/>• `intent` - 2 (RESIZE)<br/>• `version` - Incremented from current (e.g., if current is 5, this will be 6)<br/>• `state_data` - ABI-encoded `int256[]` delta amounts (per participant)<br/>&nbsp;&nbsp;Example: For +50 USDC by user: `[50000000, 0]`<br/>&nbsp;&nbsp;Example: For -30 USDC by user: `[-30000000, 0]`<br/>• `allocations` - FINAL allocation state after resize (absolute amounts, not deltas) | See [State structure](#state-structure) | Clearnode prepares deltas and final allocations |
-| `server_signature` | string | The clearnode's signature over the resize state | `"0x9876fedcba..."` | 0x-prefixed hex string (65 bytes) |
+| `state` | State | Resize state to be submitted on-chain<br/>• `intent` = RESIZE (2)<br/>• `version` = current+1<br/>• `state_data` = ABI-encoded `int256[2]` of `[resize_amount, allocate_amount]` (raw units)<br/>• `allocations` = final absolute allocations after resize | See [State structure](#state-structure) | `channel` field is omitted in resize responses |
+| `server_signature` | string | Clearnode signature over packed state | `"0x9876fedcba..."` | Hex string |
 
 ### Next Steps After Receiving Response
 
@@ -430,10 +423,9 @@ The client must submit the resize state to the blockchain:
    user_signature = sign(stateHash, participant_private_key)
    ```
 
-3. **Ensure sufficient funds in custody ledger (if depositing)**
-   - For positive `resize_amount`, the requested amount must already be available in your custody ledger
-   - Funds are moved from custody ledger to the channel
-   - No token approval needed at this stage
+3. **Ensure sufficient balance**
+   - Positive deltas require enough available unified balance to cover `allocate_amount + resize_amount` (after decimals conversion)
+   - Negative deltas require the channel to have sufficient funds being deallocated
 
 4. **Call `Custody.resize()` on-chain**
    ```
@@ -468,12 +460,16 @@ The client must submit the resize state to the blockchain:
 | Error | Cause | Resolution |
 |-------|-------|------------|
 | Authentication required | Not authenticated | Complete authentication flow |
-| Channel not found | Invalid channel_id | Verify <Tooltip content={tooltipDefinitions.channelId}>channel ID</Tooltip> with `get_channels` |
-| Channel not in ACTIVE status | Channel closed or in dispute | Cannot resize non-active <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip> |
-| Insufficient balance | Not enough available in custody ledger for deposit | Check `get_balance` for available amount in custody ledger |
-| Exceeds channel capacity | Withdrawal exceeds allocated funds | Reduce withdrawal amount |
-| Invalid signatures | Missing or incorrect signatures | All participants must sign resize state |
-| Version conflict | State version doesn't match expected | Fetch current state, retry with correct version |
+| Channel not found | Invalid channel_id | Verify with `get_channels` |
+| Channel challenged | Participant has challenged channels | Resolve challenged channels first |
+| Operation denied: resize already ongoing | Channel status is `resizing` | Wait for existing resize to complete |
+| Operation denied: channel is not open | Status not `open` | Only open channels can resize |
+| Invalid signature | Caller not among channel signers | Sign request with channel participant |
+| Token/asset not found for channel | Asset config missing for channel token/chain | Ensure channel token is supported |
+| Resize operation requires non-zero amounts | Both `resize_amount` and `allocate_amount` are zero | Provide a non-zero value |
+| Insufficient unified balance | New channel amount would exceed available balance | Reduce amounts or add funds |
+| New channel amount must be positive | Resize would make channel balance negative | Reduce withdrawal |
+| Failed to pack resize amounts/state | Internal packing/signing error | Retry; contact support if persistent |
 
 ### Resize Scenarios
 
@@ -492,7 +488,7 @@ resize_channel({
   channel_id: "0xCelo_Channel_Id",  // Resize Celo channel
   allocate_amount: "0",
   resize_amount: "75.0",  // Deposit 75 USDC
-  funds_destination: null  // Not needed for deposit
+  funds_destination: "0x742d35Cc..."  // Required, even for deposits
 })
 ```
 
@@ -500,16 +496,9 @@ resize_channel({
 ```
 Channel (on Polygon): 20 USDC (unchanged)
 Channel (on Celo): 80 USDC (5 + 75 = 80)
-Unified balance: 100 USDC total
+Unified balance: 100 USDC total (reduced available balance to fund deposit)
 Same channel_id on Celo (unchanged)
 ```
-
-**On-Chain**:
-- User must have 75 USDC already available in custody ledger
-- Calls `resize()` with positive delta: `[+75000000, 0]`
-- Custody locks additional 75 USDC from custody ledger to channel
-- Channel allocations updated: 5 USDC → 80 USDC
-- Emits `Resized(channelId, [+75000000, 0])`
 
 ---
 
@@ -535,17 +524,10 @@ resize_channel({
 ```
 Channel (on Polygon): 0 USDC (100 - 100 = 0)
 Unified balance: 0 USDC
-100 USDC unlocked to available balance in Custody
+100 USDC returned to available balance (unified)
 Same channel_id (unchanged)
 Channel still ACTIVE (can be used again or closed)
 ```
-
-**On-Chain**:
-- Calls `resize()` with negative delta: `[-100000000, 0]`
-- Custody unlocks 100 USDC
-- Funds available in Custody (can be withdrawn separately)
-- Channel expected deposits updated: 100 USDC → 0 USDC
-- Emits `Resized(channelId, [-100000000, 0])`
 
 ---
 
@@ -588,8 +570,8 @@ Multi-chain rebalancing with `allocate_amount` is an advanced feature. For simpl
 - Channel remains in **ACTIVE** status throughout
 - State **version increments** like any state update
 - Delta amounts are encoded as **int256[]** in state.data
-- Positive deltas → `_lockAccountFundsToChannel()`
-- Negative deltas → `_unlockAllocation()`
+- Positive deltas increase channel balance (and reduce available unified balance)
+- Negative deltas decrease channel balance (and increase available unified balance)
 - **All participants must sign** the resize state (consensus required)
 - More gas-efficient than close + reopen
 - <Tooltip content={tooltipDefinitions.unifiedBalance}>Unified balance</Tooltip> automatically updated by clearnode
@@ -609,4 +591,3 @@ For protocol fundamentals:
 - **[Authentication](./authentication)** - Understand authorization and session management
 - **[Message Format](./message-format)** - Learn request/response structure
 - **[On-Chain Protocol](/docs/protocol/on-chain/overview)** - Deep dive into smart contracts
-

@@ -421,7 +421,6 @@ stateDiagram-v2
 | From | To | Trigger | Requirements |
 |------|----|---------|--------------| 
 | VOID | INITIAL | `create()` | Creator signature, sufficient balance, INITIALIZE intent || VOID | ACTIVE | `create()` with all sigs | All participants' signatures, sufficient balances |
-| VOID | ACTIVE | `create()` with all sigs | All participants' signatures, sufficient balances |
 | INITIAL | ACTIVE | `join()` | All participants joined and funded |
 | ACTIVE | ACTIVE | `checkpoint()` | Valid newer state |
 | ACTIVE | ACTIVE | `resize()` | All signatures, valid deltas, sufficient balance |

@@ -136,15 +136,17 @@ If you prefer to use your main wallet as a root signer for all operations, you c
 | Parameter | Type | Required | Description | Default | Example | Notes |
 |-----------|------|----------|-------------|---------|---------|-------|
 | `address` | string (wallet address) | Yes | User's main wallet address that owns the funds | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | - |
-| `session_key` | string (wallet address) | Yes, if using session key delegation | Wallet address of the locally-generated session keypair | - | `"0x9876543210fedcba9876543210fedcba98765432"` | The private key never leaves the client |
+| `session_key` | string (wallet address) | Yes | Wallet address of the locally-generated session keypair | - | `"0x9876543210fedcba9876543210fedcba98765432"` | The private key never leaves the client |
 | `application` | string | No | Application identifier for analytics and session management | `"clearnode"` | `"chess-game-app"` | Helps track which app is using which session |
-| `allowances` | Array\<Allowance\> | No | Spending limits for this session key<br/><br/>**Structure (per allowance)**:<br/>• `asset` (string) - Asset identifier (e.g., "usdc", "eth")<br/>• `amount` (string) - Maximum amount this session can spend | No spending limits (unrestricted) | `[{"asset": "usdc", "amount": "100.0"}]` | Recommended for security - limit potential damage if key compromised |
+| `allowances` | Array\<Allowance\> | No | Spending limits for this session key<br/><br/>**Structure (per allowance)**:<br/>• `asset` (string) - Asset identifier (e.g., "usdc", "eth")<br/>• `amount` (string) - Maximum amount this session can spend | Unrestricted if omitted/empty | `[{"asset": "usdc", "amount": "100.0"}]` | If empty/omitted, no spending cap is enforced |
 | `scope` | string | No | Comma-separated list of permitted operations | All operations permitted | `"app.create,app.submit,transfer"` | Future feature, not fully enforced yet |
-| `expires_at` | number | No | Unix timestamp when the session key expires<br/><br/>**Format**: Unix timestamp (seconds since epoch) | 1 hour from authentication | `1762417328` | Absolute timestamp, not relative duration |
+| `expires_at` | number | Yes | Unix timestamp (milliseconds) when the session key expires | — | `1762417328000` | Provide a 13-digit Unix ms timestamp; no server default is applied |
 
 :::tip Spending Allowances
-Always specify `allowances` when creating <Tooltip content={tooltipDefinitions.sessionKey}>session keys</Tooltip>. If a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised, allowances limit the maximum damage to the specified amounts.
+If you omit `allowances` the session key is unrestricted. Specify explicit allowances to bound risk if a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised.
 :::
+
+Allowances are validated against the broker’s supported assets. Unsupported symbols will cause authentication to fail.
 
 ### Response
 
@@ -168,7 +170,7 @@ Keep the authentication parameters (especially `address`, `session_key`, `applic
 
 ### Next Step
 
-Upon receiving the `challenge_message`, client must prepare an EIP-712 signature and call `auth_verify`.
+Upon receiving the `challenge_message`, client must prepare an EIP-712 signature (or reuse a previously issued `jwt`) and call `auth_verify`.
 
 ### Error Cases
 
@@ -214,12 +216,7 @@ N/A (server-initiated response to `auth_request`)
 
 ### Signature
 
-Response is signed by <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>.
-
-**Verification**:
-- Client SHOULD verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> signature on the response
-- Ensures challenge authenticity
-- Prevents man-in-the-middle attacks
+The challenge is returned as a normal RPC response (server signs the envelope like any other RPC response).
 
 ### Next Step
 
@@ -256,7 +253,7 @@ Immediately after receiving `auth_challenge` response. This is the final step in
 | Parameter | Type | Required | Description | Example | Notes |
 |-----------|------|----------|-------------|---------|-------|
 | `challenge` | string | Yes | The challenge_message received from auth_challenge | `"550e8400-e29b-41d4-a716-446655440000"` | Must be the exact challenge from Step 2 |
-| `session_key` | string (wallet address) | No (can be derived from signature) | Session key wallet address (same as in auth_request) | `"0x9876543210fedcba9876543210fedcba98765432"` | Including it explicitly can speed up verification |
+| `jwt` | string | No | Existing JWT for re-login without signature | `"eyJhbGciOi..."` | If provided, signature is not required |
 
 ### Response
 
@@ -264,12 +261,12 @@ Immediately after receiving `auth_challenge` response. This is the final step in
 |-----------|------|-------------|---------|-------|
 | `address` | string (wallet address) | Authenticated user's main wallet address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` | Confirms which account is authenticated |
 | `session_key` | string (wallet address) | Confirmed session key wallet address | `"0x9876543210fedcba9876543210fedcba98765432"` | The authorized session key |
-| `jwt_token` | string | JWT token for authenticated API calls | `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."` | Store securely for subsequent connections |
+| `jwt_token` | string | JWT token for authenticated API calls | `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."` | Store securely; validity follows the provided `expires_at` |
 | `success` | boolean | Authentication success indicator | `true` | Indicates if authentication completed successfully |
 
 ### Signature
 
-Request **MUST** include an EIP-712 signature signed by the **main wallet** (NOT the session key).
+If `jwt` is omitted, the request **MUST** include an EIP-712 signature signed by the **main wallet** (NOT the session key). If `jwt` is present, no signature is required.
 
 **EIP-712 Typed Data Structure**:
 
@@ -301,7 +298,7 @@ Request **MUST** include an EIP-712 signature signed by the **main wallet** (NOT
     scope: <scope>,                  // From auth_request
     wallet: <address>,               // From auth_request
     session_key: <session_key>,      // From auth_request
-    expires_at: <expires_at>,        // From auth_request
+    expires_at: <expires_at>,        // From auth_request (13-digit Unix ms)
     allowances: <allowances>         // From auth_request
   }
 }
@@ -318,7 +315,7 @@ The `auth_verify` signature MUST be an **EIP-712 signature signed by the main wa
 
 ### Next Step
 
-Session is authenticated. All subsequent private method calls should be signed with the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>.
+Session is authenticated. All subsequent private method calls should be signed with the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>. You may also re-authenticate later by sending `auth_verify` with the previously issued `jwt` (no signature required).
 
 ### Error Cases
 
@@ -385,11 +382,11 @@ stateDiagram-v2
 
 ### Checking Session Status
 
-Use `get_session_keys` to view active sessions and their remaining allowances. The response includes session details with current allowance usage.
+Use `get_session_keys` to view active sessions and their remaining allowances. The response includes session details with current allowance usage and respects the `expires_at` provided during `auth_request`.
 
 ### Session Expiration Handling
 
-When a session expires, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> will return an error response:
+When a session expires according to the `expires_at` you provided, <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> will return an error response:
 
 ```json
 {
@@ -426,7 +423,7 @@ After operations:
   used = sum_of_all_debits
   remaining = allowance - used
 
-When operation exceeds remaining:
+When operation exceeds remaining (for assets with an allowance):
   Error: "Session key allowance exceeded: amount_required, remaining_available"
 ```
 

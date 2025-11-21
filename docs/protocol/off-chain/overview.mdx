@@ -53,7 +53,7 @@ Supports operations requiring multiple participants' signatures:
 
 ### 4. Timestamp-Based Request Ordering
 
-All messages include server-provided timestamps ensuring:
+All messages include timestamps (client-provided on requests, server-provided on responses) enabling:
 - Request ordering
 - Replay attack prevention
 - Audit trail for debugging
@@ -175,9 +175,8 @@ Manage multi-party application channels:
 ### 5. Query Methods
 
 Read state and configuration:
-- `get_config`, `get_assets`, `get_channels`, `get_app_sessions`
-- `get_ledger_balances`, `get_ledger_entries`, `get_ledger_transactions`
-- `get_user_tag`, `get_session_keys`, `ping`
+- Public: `get_config`, `get_assets`, `get_app_definition`, `get_channels`, `get_app_sessions`, `get_ledger_entries`, `get_ledger_transactions`, `ping`
+- Private (auth required): `get_ledger_balances`, `get_rpc_history`, `get_user_tag`, `get_session_keys`
 
 ### 6. Notifications (Server-to-Client)
 
@@ -241,4 +240,3 @@ Before diving into specific methods, ensure you understand these core concepts f
 - <Tooltip content={tooltipDefinitions.sessionKey}>**Session Key**</Tooltip> - Temporary key with spending limits
 
 Refer to the **[Terminology](/docs/protocol/terminology)** page for complete definitions.
-

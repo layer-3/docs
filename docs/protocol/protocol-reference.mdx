@@ -13,14 +13,12 @@ Quick reference guide for protocol versions, constants, standards, and specifica
 :::info Quick Navigation
 Jump to a section:
 - [Protocol Versions](#protocol-versions) - Nitrolite & Nitro RPC versions
-- [Magic Numbers](#magic-numbers) - CHANOPEN & CHANCLOSE
+- [State Intent System](#state-intent-system) - Channel state classification
 - [Participant Indices](#participant-indices) - Creator & Clearnode positions
 - [Channel Status](#channel-status-state-machine) - Status transitions
-- [Error Codes](#error-codes) - JSON-RPC & application errors
 - [Signature Standards](#signature-standards) - On-chain & off-chain formats
-- [Deployment Addresses](#deployment-addresses) - Contract locations
-- [Asset Identifiers](#asset-identifiers) - Supported assets
 - [EIP References](#eip-references) - Ethereum standards used
+- [Protocol Constants](#protocol-constants) - Core constants
 :::
 
 ---
@@ -31,8 +29,8 @@ Jump to a section:
 
 | Property | Value |
 |----------|-------|
-| **Version** | 1.0 |
-| **Status** | Production |
+| **Version** | 0.5.0 |
+| **Status** | Mainnet deployments live; not production yet |
 | **Compatibility** | EVM-compatible chains |
 
 **Supported Chains**: Ethereum, Polygon, Arbitrum One, Optimism, Base, and other EVM-compatible networks.
@@ -55,54 +53,45 @@ Jump to a section:
 
 ---
 
-## Magic Numbers
+## State Intent System
 
-Constants used in the protocol to signal special <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> types.
+Channel states are classified by `state.intent` (uint8) to signal their purpose. The Solidity enum defines:
 
-### CHANOPEN
+### StateIntent Enumeration
 
+```solidity
+enum StateIntent {
+    OPERATE,     // 0: Normal updates (challenge/checkpoint)
+    INITIALIZE,  // 1: Channel funding/creation
+    RESIZE,      // 2: In-place capacity change
+    FINALIZE     // 3: Cooperative closure
+}
 ```
-Value (Decimal): 7877
-Value (Hex): 0x1EC5
-```
 
-**Description**: Magic number in `state.data` for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> funding states.
+### Intent Usage
 
-**Usage**: 
-- Signals this is an initial state during create/join phase
-- Used in `create_channel` RPC method
-- Required for `Custody.create()` on-chain transaction
-- Both <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign state containing CHANOPEN
+| Intent | Value | When Used | Method |
+|--------|-------|-----------|---------|
+| `INITIALIZE` | 1 | Channel creation | `Custody.create()` |
+| `RESIZE` | 2 | Channel resize | `Custody.resize()` |
+| `FINALIZE` | 3 | Cooperative closure | `Custody.close()` |
+| `OPERATE` | 0 | Challenge/checkpoint | `Custody.challenge()`, `Custody.checkpoint()` |
 
 **Example**:
 ```javascript
-state.data = "0x0000000000000000000000000000000000000000000000000000000000001ec5"
-// Last 4 hex digits are 1EC5 (7877 in decimal)
+// Creation state
+state.intent = 1  // INITIALIZE
+state.version = 0
+state.data = "0x"  // Empty for basic channels
+
+// Closing state
+state.intent = 3  // FINALIZE
+state.version = currentVersion + 1
+state.data = "0x"
 ```
 
-### CHANCLOSE
-
-```
-Value (Decimal): 7879
-Value (Hex): 0x1EC7
-```
-
-**Description**: Magic number in `state.data` for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closing states.
-
-**Usage**: 
-- Signals this is a final state for cooperative closure
-- Used in `close_channel` RPC method
-- Required for `Custody.close()` on-chain transaction
-- All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must sign state containing CHANCLOSE
-
-**Example**:
-```javascript
-state.data = "0x0000000000000000000000000000000000000000000000000000000000001ec7"
-// Last 4 hex digits are 1EC7 (7879 in decimal)
-```
-
-:::caution Magic Number Validation
-Smart contracts validate these magic numbers to ensure proper <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle. Using incorrect magic numbers will cause transactions to revert.
+:::caution Intent Validation
+Smart contracts validate the `intent` field to ensure proper <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle. Incorrect intent values will cause transactions to revert.
 :::
 
 ---
@@ -131,10 +120,9 @@ channel.participants[0] = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb" // User
 **Role**: Service provider
 
 **Responsibilities**:
-- Joins after creation
+- Co-signs the initial state before on-chain `create()`; there is no separate `join()` call
 - Provides off-chain services (Nitro RPC, unified balance management)
 - Second to sign states (`state.sigs[1]`)
-- Calls `Custody.join()` on-chain
 
 **Example**:
 ```javascript
@@ -173,8 +161,9 @@ enum Status {
 ```mermaid
 stateDiagram-v2
     [*] --> VOID
-    VOID --> INITIAL : create()
-    INITIAL --> ACTIVE : join() (all participants)
+    VOID --> INITIAL : create() (creator only)
+    VOID --> ACTIVE : create() (all sigs present)
+    INITIAL --> ACTIVE : join() (remaining participants)
     ACTIVE --> DISPUTE : challenge()
     ACTIVE --> FINAL : close() (cooperative)
     DISPUTE --> ACTIVE : checkpoint() (newer state)
@@ -211,8 +200,9 @@ stateDiagram-v2
 
 | From | To | Trigger | Notes |
 |------|----|---------|---------| 
-| `VOID` | `INITIAL` | `create()` | <Tooltip content={tooltipDefinitions.creatorParticipant}>Creator</Tooltip> submits first |
-| `INITIAL` | `ACTIVE` | `join()` | All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> joined |
+| `VOID` | `INITIAL` | `create()` (creator only) | Legacy flow; awaiting other participants |
+| `VOID` | `ACTIVE` | `create()` (all sigs present) | Current flow; both participants co-sign initial state |
+| `INITIAL` | `ACTIVE` | `join()` | Remaining <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> join |
 | `ACTIVE` | `DISPUTE` | `challenge()` | Dispute initiated |
 | `ACTIVE` | `FINAL` | `close()` | Cooperative closure |
 | `DISPUTE` | `ACTIVE` | `checkpoint()` | Newer state accepted |
@@ -220,52 +210,6 @@ stateDiagram-v2
 
 :::tip Quick Closure
 The fastest way to close a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is **ACTIVE → FINAL** via cooperative `close()`. This skips the challenge period entirely.
-:::
-
----
-
-## Error Codes
-
-### JSON-RPC Standard Errors
-
-Based on [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification).
-
-| Code | Name | Description | When to Use |
-|------|------|-------------|-------------|
-| `-32700` | Parse error | Invalid JSON received | Malformed JSON in request |
-| `-32600` | Invalid request | Request structure invalid | Missing required fields |
-| `-32601` | Method not found | Method does not exist | Unknown RPC method |
-| `-32602` | Invalid params | Invalid method parameters | Wrong parameter types |
-| `-32603` | Internal error | Internal server error | <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> error |
-
-### Application-Specific Errors (1000+)
-
-| Code | Name | Description | Resolution |
-|------|------|-------------|------------|
-| `1001` | Authentication required | Operation requires authenticated session | Call `auth_request`, `auth_challenge`, `auth_verify` |
-| `1002` | Insufficient balance | User doesn't have enough available funds | Deposit more or close <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> |
-| `1003` | Channel not found | Specified <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> does not exist | Verify <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip>, create new <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> |
-| `1004` | App session not found | Specified <Tooltip content={tooltipDefinitions.appSessionId}>appSessionId</Tooltip> does not exist | Verify ID, create new session |
-| `1005` | Quorum not met | Signatures don't meet quorum requirement | Collect more signatures |
-| `1006` | Version conflict | State version doesn't match expected | Fetch current state, retry with `version + 1` |
-| `1007` | Invalid allocation | Allocation sum doesn't match rules | Verify allocation math |
-| `1008` | Session key allowance exceeded | Operation would exceed spending cap | Increase allowance or use main wallet |
-| `1009` | Unsupported chain | Specified <Tooltip content={tooltipDefinitions.chainId}>chainId</Tooltip> not supported | Use `get_config` to see supported chains |
-| `1010` | Unsupported token | Specified token not supported | Use `get_assets` to see supported tokens |
-
-**Error Response Format**:
-```javascript
-{
-  "id": requestId,
-  "error": {
-    "code": 1002,
-    "message": "Insufficient balance: have 50.0 USDC, need 100.0 USDC"
-  }
-}
-```
-
-:::note Error Handling
-Always check the `error` field in responses. Successful responses have a `res` or `result` field instead.
 :::
 
 ---
@@ -291,12 +235,12 @@ struct State {
 - **ERC-1271**: Smart contract wallet signatures
 - **ERC-6492**: Counterfactual contract signatures (not yet deployed)
 
-**Hash**: Raw <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> (no EIP-191 prefix for chain-agnostic compatibility)
+**Hash**: Raw `packedState` (no EIP-191 prefix for chain-agnostic compatibility)
 
 **Example**:
 ```javascript
-stateHash = keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))
-signature = sign(stateHash, participantPrivateKey) // Raw hash, no prefix
+packedState = keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))
+signature = sign(packedState, participantPrivateKey) // Raw hash, no prefix
 ```
 
 ### Off-Chain Signatures (Nitro RPC)
@@ -328,93 +272,7 @@ Off-chain RPC signatures are typically ECDSA from session keys (EOA wallets), bu
 :::
 
 :::caution Chain-Agnostic Signatures
-On-chain signatures do NOT use EIP-191 or EIP-712 prefixes to maintain chain-agnostic compatibility. This differs from typical Ethereum signing patterns.
-:::
-
----
-
-## Deployment Addresses
-
-Contract deployment addresses are stored in the repository.
-
-### Repository Structure
-
-```
-/contract/deployments/{chain_id}/{contract_name}/
-├── address.txt       # Contract address
-├── receipt.json      # Deployment receipt
-└── metadata.json     # Contract metadata
-```
-
-**Example Path** (Polygon USDC <Tooltip content={tooltipDefinitions.custodyContract}>Custody</Tooltip>):
-```
-/contract/deployments/137/USDCCustody/address.txt
-```
-
-### Supported Chains
-
-| Chain | Chain ID | Name | Status |
-|-------|----------|------|--------|
-| Ethereum Mainnet | `1` | ethereum | Production |
-| Polygon | `137` | polygon | Production |
-| Arbitrum One | `42161` | arbitrum | Production |
-| Optimism | `10` | optimism | Production |
-| Base | `8453` | base | Production |
-| Ethereum Sepolia | `11155111` | sepolia | Testnet |
-| Polygon Mumbai | `80001` | mumbai | Testnet (deprecated) |
-| Polygon Amoy | `80002` | amoy | Testnet |
-
-:::tip Finding Addresses
-Use `get_config` RPC method to retrieve supported chains and contract addresses dynamically. This ensures you always have the latest deployment information.
-:::
-
----
-
-## Asset Identifiers
-
-Common asset identifiers in the protocol (lowercase, consistent across chains).
-
-### Supported Assets
-
-| Identifier | Full Name | Decimals | Type |
-|------------|-----------|----------|------|
-| `"usdc"` | USD Coin | 6 | Stablecoin |
-| `"usdt"` | Tether USD | 6 | Stablecoin |
-| `"dai"` | Dai Stablecoin | 18 | Stablecoin |
-| `"eth"` | Ethereum | 18 | Native/Wrapped |
-| `"weth"` | Wrapped Ethereum | 18 | Wrapped Native |
-| `"wbtc"` | Wrapped Bitcoin | 8 | Wrapped BTC |
-
-**Usage in Methods**:
-```javascript
-// Always use lowercase identifier
-transfer({
-  allocations: [
-    {"asset": "usdc", "amount": "100.0"},  // ✓ Correct
-    {"asset": "USDC", "amount": "100.0"}   // ✗ Wrong
-  ]
-})
-```
-
-**Asset Configuration**:
-```javascript
-// Each asset has different contract addresses per chain
-get_assets() → {
-  "usdc": {
-    "symbol": "usdc",
-    "name": "USD Coin",
-    "decimals": 6,
-    "chains": [
-      {"chain_id": 1, "token_address": "0xA0b86991..."},
-      {"chain_id": 137, "token_address": "0x2791Bca1..."},
-      {"chain_id": 42161, "token_address": "0xaf88d065..."}
-    ]
-  }
-}
-```
-
-:::tip Asset Discovery
-Use `get_assets` RPC method to retrieve the complete list of supported assets with contract addresses for each <Tooltip content={tooltipDefinitions.chainId}>chain</Tooltip>. Asset support may vary by clearnode.
+On-chain signatures do NOT use EIP-191 or EIP-712 prefixes to maintain chain-agnostic compatibility. This differs from typical Ethereum signing patterns. Off-chain RPC signatures (e.g., authentication) DO use EIP-712 for better wallet UX.
 :::
 
 ---
@@ -428,14 +286,14 @@ Ethereum Improvement Proposals referenced or used by the protocol.
 **Status**: Not used in on-chain signatures (chain-agnostic design)  
 **Link**: https://eips.ethereum.org/EIPS/eip-191
 
-**Why not used**: Nitrolite signatures are computed over raw <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> without EIP-191 prefix to maintain compatibility across different EVM chains and potential non-EVM implementations.
+**Why not used for on-chain**: On-chain signatures are computed over raw `packedState` hash without EIP-191 prefix to maintain compatibility across different EVM chains and potential non-EVM implementations.
 
 ### EIP-712: Typed Structured Data Hashing
 
-**Status**: Not currently used  
+**Status**: Used for off-chain RPC authentication  
 **Link**: https://eips.ethereum.org/EIPS/eip-712
 
-**Future consideration**: May be adopted for improved wallet UX in future versions.
+**Usage**: Authentication flow uses EIP-712 typed data for signing the Policy structure (challenge, wallet, session_key, expires_at, scope, allowances) with the main wallet. This provides better wallet UX by displaying human-readable signing data.
 
 ### EIP-1271: Contract Signature Validation
 
@@ -459,30 +317,15 @@ While the protocol references these EIPs, implementation details may vary. Alway
 
 ## Protocol Constants
 
-### Time Constants
+The only protocol-wide constants defined in code are:
 
-```javascript
-DEFAULT_CHALLENGE_PERIOD = 86400  // 24 hours in seconds
-RECOMMENDED_MIN_CHALLENGE = 3600  // 1 hour minimum
-RECOMMENDED_MAX_CHALLENGE = 604800  // 7 days maximum
+```solidity
+uint256 constant PART_NUM   = 2; // Channels are always 2-party
+uint256 constant CLIENT_IDX = 0; // Client/creator participant index
+uint256 constant SERVER_IDX = 1; // Server/clearnode participant index
 ```
 
-### Index Constants
-
-```javascript
-CLIENT_IDX = 0       // Client/Creator participant index
-SERVER_IDX = 1       // Server/Clearnode participant index
-PART_NUM = 2         // Number of participants (always 2)
-CLEARNODE_INDEX = 1  // Clearnode's participant index in payment channels
-```
-
-### Version Constants
-
-```javascript
-NITROLITE_VERSION = "1.0"
-NITRO_RPC_LEGACY = "NitroRPC/0.2"
-NITRO_RPC_CURRENT = "NitroRPC/0.4"
-```
+All channel arrays (participants, allocations, sigs) and state validation logic rely on these indices and fixed participant count.
 
 ---
 
@@ -490,12 +333,11 @@ NITRO_RPC_CURRENT = "NitroRPC/0.4"
 
 Now that you have the complete protocol reference:
 
-1. **Terminology**: Review [Terminology](../protocol/terminology) for all term definitions
+1. **Terminology**: Review [Terminology](./terminology) for all term definitions
 2. **Communication Flows**: See [Communication Flows](./communication-flows) for sequence diagrams
 3. **Implementation Guide**: Follow [Implementation Checklist](./implementation-checklist) to build compliant clients
-4. **Quick Start**: Use [Quick Start Guide](./quick-start) to begin development
+4. **Channel Lifecycle**: See [Channel Lifecycle](../on-chain/channel-lifecycle) for detailed state transitions
 
 :::tip Reference Updates
-This reference reflects protocol version 1.0. For the latest updates, check the [Nitrolite repository](https://github.com/layer-3/nitrolite) or use `get_config` to query clearnode capabilities dynamically.
+This reference reflects protocol version 0.5.0. For the latest updates, check the [Nitrolite repository](https://github.com/layer-3/nitrolite) or use `get_config` to query clearnode capabilities dynamically.
 :::
-

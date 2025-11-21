@@ -45,29 +45,24 @@ sequenceDiagram
     Client->>Client: session_private_key = random()
     Client->>Client: session_address = address(session_public_key)
     
-    Note over Client,Clearnode: 2. Register Session Key
-    Client->>Wallet: Sign auth_request
-    Wallet-->>Client: Main wallet signature
-    Client->>Clearnode: auth_request(address, session_key, allowances)
+    Note over Client,Clearnode: 2. auth_request (public, no signature)
+    Client->>Clearnode: auth_request(address, session_key, allowances, scope, expires_at)
     
-    Note over Clearnode: 3. Validate & Generate Challenge
-    Clearnode->>Clearnode: Verify wallet signature
-    Clearnode->>Clearnode: Generate challenge UUID
-    
+    Note over Clearnode: 3. Generate Challenge
+    Clearnode->>Clearnode: Validate params, generate UUID
     Clearnode->>Client: auth_challenge(challenge_message)
     
-    Note over Client: 4. Sign Challenge
-    Client->>Client: Sign challenge with session_private_key
+    Note over Client: 4. Sign Challenge with MAIN wallet (EIP-712)
+    Client->>Wallet: Sign Policy typed data (challenge, scope, wallet, session_key, expires_at, allowances)
+    Wallet-->>Client: EIP-712 signature
+    Client->>Clearnode: auth_verify(challenge, sig)  // or auth_verify(challenge, jwt)
     
-    Client->>Clearnode: auth_verify(challenge, signature)
+    Note over Clearnode: 5. Validate & Issue Session
+    Clearnode->>Clearnode: Recover main wallet from sig (or validate jwt)
+    Clearnode->>Clearnode: Create session + JWT
+    Clearnode->>Client: {address, session_key, jwt_token, success}
     
-    Note over Clearnode: 5. Validate Challenge
-    Clearnode->>Clearnode: Verify session key signature
-    Clearnode->>Clearnode: Validate challenge matches
-    
-    Clearnode->>Client: Session established ✓
-    
-    Note over Client,Clearnode: All subsequent requests use session key
+    Note over Client,Clearnode: Subsequent requests signed with session_key
 ```
 
 ### Steps
@@ -82,9 +77,9 @@ session_public_key = derive(session_private_key)
 session_address = address(session_public_key)
 ```
 
-#### Step 2: Client → Clearnode: `auth_request`
+#### Step 2: Client → Clearnode: `auth_request` (public, no signature)
 
-The client sends a registration request signed by their main <Tooltip content={tooltipDefinitions.walletAddress}>wallet address</Tooltip> (e.g., MetaMask):
+The client sends a public registration request (no signature required):
 
 ```javascript
 Request:
@@ -92,16 +87,15 @@ Request:
   address: user_wallet_address
   session_key: session_address
   allowances: [{"asset": "usdc", "amount": "100.0"}]
-  expire: "3600"
+  scope: "transfer,app.create"
+  expires_at: 1762417328123  // Unix ms
 }
-Signature: signed by user's main wallet
 ```
 
 #### Step 3: Clearnode Validates and Generates Challenge
 
 <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> performs validation:
-- Verify signature is from the claimed wallet address
-- Check if wallet address has open <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip>
+- Validate address/session_key format, optional allowances/scope, expires_at
 - Generate challenge UUID
 
 #### Step 4: Clearnode → Client: `auth_challenge`
@@ -116,30 +110,32 @@ Response:
 Signature: signed by Clearnode
 ```
 
-#### Step 5: Client Signs Challenge
+#### Step 5: Client Signs Challenge (MAIN wallet, EIP-712)
 
-The client signs the challenge with the <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> private key:
+The client signs the challenge using the main wallet over the Policy typed data (includes challenge, wallet, session_key, expires_at, scope, allowances):
 
 ```javascript
-challenge_signature = sign(challenge_message, session_private_key)
+challenge_signature = signTypedData(policyTypedData, main_wallet_private_key)
 ```
 
 #### Step 6: Client → Clearnode: `auth_verify`
 
-The client submits the signed challenge:
+The client submits the signed challenge (or a previously issued JWT):
 
 ```javascript
 Request:
 {
-  challenge: "550e8400-e29b-41d4-a716-446655440000"
+  challenge: "550e8400-e29b-41d4-a716-446655440000",
+  // alternatively:
+  // jwt: "<existing_jwt>"
 }
-Signature: challenge_signature (proves ownership of session key)
+Signature: EIP-712 signature by main wallet (required if jwt is absent)
 ```
 
 #### Step 7: Clearnode Validates Challenge
 
 <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> validates:
-- Challenge signature is from the registered session_key
+- Signature recovers the wallet used in `auth_request`
 - Challenge matches pending authentication
 - Challenge not expired or reused
 
@@ -152,7 +148,8 @@ Response:
 {
   address: user_wallet_address
   session_key: session_address
-  expires_at: 1699999999
+  jwt_token: "<jwt>"
+  success: true
 }
 ```
 
@@ -180,7 +177,7 @@ Response:
 
 ### Purpose
 
-Open a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> and deposit funds on blockchain.
+Open a payment <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with zero initial balance; fund it later via `resize_channel`.
 
 ### Actors
 
@@ -198,27 +195,25 @@ sequenceDiagram
     participant Blockchain
     
     Note over Client,Clearnode: Off-Chain Preparation
-    Client->>Clearnode: create_channel(chain_id, token, amount)
+    Client->>Clearnode: create_channel(chain_id, token)
     
     Note over Clearnode: 2. Prepare Channel
     Clearnode->>Clearnode: Generate unique nonce
     Clearnode->>Clearnode: Create channel config
-    Clearnode->>Clearnode: Create funding state (CHANOPEN)
-    Clearnode->>Clearnode: Sign state (clearnode signature)
+    Clearnode->>Clearnode: Create initial state (intent: INITIALIZE, version: 0, zero allocations)
+    Clearnode->>Clearnode: Pack & sign state
     
-    Clearnode->>Client: {channel, state, clearnode_signature}
+    Clearnode->>Client: {channel_id, channel, state, server_signature}
     
     Note over Client: 3. Validate & Sign
     Client->>Client: Verify Clearnode signature
-    Client->>Client: Add own signature to state
-    Client->>Client: State now has BOTH signatures
+    Client->>Client: Sign packed state with user key
     
     Note over Client,Blockchain: On-Chain Execution
-    Client->>Blockchain: Custody.create(channel, state with BOTH sigs)
-    Blockchain->>Blockchain: Verify both signatures
-    Blockchain->>Blockchain: Lock Creator's funds
-    Blockchain->>Blockchain: Lock Clearnode's funds (if any)
-    Blockchain->>Blockchain: Set status to ACTIVE
+    Client->>Blockchain: Custody.create(channel, state, sig_user, sig_clearnode)
+    Blockchain->>Blockchain: Verify signatures
+    Blockchain->>Blockchain: Create channel (zero balance)
+    Blockchain->>Blockchain: Set status to OPEN/ACTIVE
     Blockchain->>Blockchain: Emit Opened event
     
     Blockchain-->>Clearnode: Opened event (monitored)
@@ -238,8 +233,6 @@ Request:
 {
   chain_id: 137  // Polygon
   token: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"  // USDC
-  amount: "100000000"  // 100 USDC with 6 decimals
-  challenge: 86400  // 24 hours
 }
 Signature: session key signature
 ```
@@ -252,9 +245,9 @@ Signature: session key signature
 - Selects <Tooltip content={tooltipDefinitions.adjudicator}>adjudicator</Tooltip> (SimpleConsensus for payment channels)
 - Creates <Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> struct
 - Computes <Tooltip content={tooltipDefinitions.channelId}>`channelId`</Tooltip> = `keccak256(abi.encode(Channel))`
-- Creates initial <Tooltip content={tooltipDefinitions.channelState}>State</Tooltip> with `data` = `0x1EC7` (CHANOPEN magic number)
-- Computes <Tooltip content={tooltipDefinitions.stateHash}>`stateHash`</Tooltip> = `keccak256(abi.encode(channelId, data, allocations))`
-- Signs stateHash with clearnode's <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
+- Creates initial <Tooltip content={tooltipDefinitions.channelState}>State</Tooltip> with `intent: INITIALIZE`, `version: 0`, `state_data: "0x"`, zero allocations
+- Packs state (`abi.encode(channelId, intent, version, data, allocations)` in Solidity terms)
+- Signs packed state with clearnode's <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
 
 #### Step 3: Clearnode → Client: Response
 
@@ -268,14 +261,15 @@ Response:
     nonce: 1699123456789
   }
   state: {
-    data: 0x1EC7  // CHANOPEN
+    intent: INITIALIZE
+    version: 0
+    data: "0x"
     allocations: [
-      {destination: user_address, token: usdc, amount: 100000000},
+      {destination: user_address, token: usdc, amount: 0},
       {destination: clearnode_address, token: usdc, amount: 0}
     ]
-    sigs: [null, clearnode_signature]
   }
-  broker_signature: "0xClearnodeSig..."
+  server_signature: "0xClearnodeSig..."
   channel_id: "0xChannelId..."
 }
 ```
@@ -288,71 +282,41 @@ Response:
 
 Client:
 - Recomputes `channelId` and verifies it matches
-- Recomputes `stateHash` and verifies clearnode signature
-- Signs stateHash with user's <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
-- Adds signature at `state.sigs[0]`
+- Recomputes packed state and verifies clearnode signature
+- Signs packed state with user's <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> key
 
-#### Step 6: Client Approves Token Spending
-
-If needed:
-```javascript
-ERC20(token).approve(Custody, amount)
-```
-
-#### Step 7: Client → Blockchain: `Custody.create()`
+#### Step 6: Client → Blockchain: `Custody.create()`
 
 Client submits transaction:
 ```javascript
-Custody.create(channel, state)
+Custody.create(channel, state, userSig, serverSig)
 ```
 
-#### Step 8: Blockchain Validates and Locks Funds
+#### Step 7: Blockchain Validates and Creates Channel
 
 Contract:
 - Verifies user's signature is valid
-- Verifies user has sufficient token balance
-- Verifies magic number is CHANOPEN
-- Transfers tokens from user to <Tooltip content={tooltipDefinitions.custodyContract}>Custody</Tooltip>
-- Sets <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status to `INITIAL`
-- Stores funding state hash
-- Emits `Created` event
-
-#### Step 9: Event Listener Detects Creation
-
-<Tooltip content={tooltipDefinitions.clearnode}>The clearnode's</Tooltip> event listener:
-- Detects `Created` event
-- Validates <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> parameters
-- Prepares to join
-
-#### Step 10: Clearnode → Blockchain: `Custody.join()`
-
-<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> submits transaction:
-```javascript
-Custody.join(channelId, 1, clearnode_signature)
-```
-
-#### Step 11: Blockchain Completes Channel Opening
-
-Contract:
-- Verifies clearnode's signature matches
-- Verifies index is 1 (clearnode's position)
-- Transfers tokens from clearnode to <Tooltip content={tooltipDefinitions.custodyContract}>Custody</Tooltip> (0 in this case)
-- Updates <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> metadata with actual deposits
-- Sets status to `ACTIVE`
+- Verifies clearnode's signature is valid
+- Stores channel parameters and funding state (zero balances)
+- Sets <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status to `OPEN`
 - Emits `Opened` event
 
-#### Steps 12-13: Notifications
+#### Step 8: Event Listener Detects Creation
+
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode's</Tooltip> event listener:
+- Detects `Opened` event
+- Validates <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> parameters
+
+#### Steps 9-10: Notifications
 
 <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip>:
-- Updates internal database: <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status = active
-- Adds user's deposit to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- Updates internal database: <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status = open (zero balance)
 - Sends `channel_update` notification to client
-- Sends `balance_update` notification to client
 
-#### Step 14: Channel Active
+#### Step 11: Channel Active
 
-- User has 100 USDC in <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
-- Can perform off-chain operations
+- Channel active with zero balance
+- Use `resize_channel` to fund the channel
 
 ### Key Points
 
@@ -416,9 +380,8 @@ Sender initiates transfer:
 ```javascript
 Request:
 {
-  destination: "0xClientB_Address"
+  destination: "0xClientB_Address",   // or destination_user_tag: "UX123D"
   allocations: [{"asset": "usdc", "amount": "50.0"}]
-  note: "Payment for coffee"
 }
 Signature: Client A's session key
 ```
@@ -428,36 +391,30 @@ Signature: Client A's session key
 <Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> validates:
 - Client A is authenticated
 - Client A has >= 50 USDC available balance
-- Client B exists (has open <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>)
+- Destination address/tag is valid (account is created if new)
 - <Tooltip content={tooltipDefinitions.assetSymbol}>Asset</Tooltip> "usdc" is supported
 
 #### Step 3: Clearnode Creates Ledger Entries
 
 Double-entry bookkeeping:
 
-**Entry 1 (Debit from Client A)**:
+**Entry 1 (Debit from Client A unified account)**:
 ```javascript
 {
   account_id: Client A address
   asset: "usdc"
   credit: "0.0"
   debit: "50.0"
-  type: "DEBIT"
-  related_account: Client B address
-  reference_id: "txn_123456"
 }
 ```
 
-**Entry 2 (Credit to Client B)**:
+**Entry 2 (Credit to Client B unified account)**:
 ```javascript
 {
   account_id: Client B address
   asset: "usdc"
   credit: "50.0"
   debit: "0.0"
-  type: "CREDIT"
-  related_account: Client A address
-  reference_id: "txn_123456"
 }
 ```
 
@@ -465,69 +422,43 @@ Double-entry bookkeeping:
 
 ```javascript
 {
-  transaction_id: "txn_123456"
-  tx_type: "transfer"
-  from_account: Client A address
-  to_account: Client B address
-  asset: "usdc"
-  amount: "50.0"
-  note: "Payment for coffee"
-  status: "CONFIRMED"
-  created_at: current_time
+  id: 1,
+  tx_type: "transfer",
+  from_account: Client A address,
+  from_account_tag: "NQKO7C",
+  to_account: Client B address,
+  to_account_tag: "UX123D",
+  asset: "usdc",
+  amount: "50.0",
+  created_at: "2023-05-01T12:00:00Z"
 }
 ```
 
-#### Step 5: Clearnode Updates Balances
-
-```javascript
-Client A: available = 100 - 50 = 50 USDC
-Client B: available = 0 + 50 = 50 USDC
-```
-
-#### Step 6: Clearnode → Client A: Response
+#### Step 5: Clearnode → Client A: Response
 
 ```javascript
 Response:
 {
-  transaction_id: "txn_123456"
-  status: "confirmed"
-  sender: Client A address
-  recipient: Client B address
-  allocations: [{"asset": "usdc", "amount": "50.0"}]
-  sender_balance: {"usdc": {"total": "50.0", "available": "50.0"}}
-  timestamp: 1699123456789
+  transactions: [
+    {
+      id: 1,
+      tx_type: "transfer",
+      from_account: "0xA...",
+      from_account_tag: "NQKO7C",
+      to_account: "0xB...",
+      to_account_tag: "UX123D",
+      asset: "usdc",
+      amount: "50.0",
+      created_at: "2023-05-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-#### Step 7-8: Clearnode → Client B: Notifications
+#### Step 6-7: Clearnode → Clients: Notifications
 
-**Notification 1**: `transfer_received`
-```javascript
-{
-  event: "transfer_received"
-  data: {
-    transaction_id: "txn_123456"
-    from: Client A address
-    from_tag: "NQKO7C"
-    asset: "usdc"
-    amount: "50.0"
-    note: "Payment for coffee"
-    timestamp: 1699123456789
-  }
-}
-```
-
-**Notification 2**: `balance_update`
-```javascript
-{
-  event: "balance_update"
-  data: {
-    address: Client B address
-    balances: [{"asset": "usdc", "amount": "50.0", "available": "50.0"}]
-    trigger: "transfer"
-  }
-}
-```
+- `tr` (transfer) notification to sender/receiver with `transactions` array
+- `bu` (balance update) notification reflecting new balances
 
 #### Step 9: Transfer Complete
 
@@ -543,7 +474,7 @@ Response:
 - **Instant settlement**: < 1 second typical
 - **Zero gas fees**: No on-chain transaction required
 - **Double-entry bookkeeping**: Accounting accuracy guaranteed
-- **Both parties connected**: Must have open channels with same clearnode
+- **Receiver account auto-created**: Destination tag/address need not have a prior balance
 :::
 
 **Related Methods**: [`transfer`](../off-chain/transfers#transfer)
@@ -566,7 +497,115 @@ Create, update, and close a collaborative <Tooltip content={tooltipDefinitions.a
 
 Two-player chess game with 100 USDC stake each.
 
-### Key Points (Part 1 of 3)
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant A as Client A
+    participant B as Client B
+    participant Clearnode
+
+    Note over A,B: Create (lock funds)
+    A->>Clearnode: create_app_session(definition, allocations, session_data?)
+    B-->>Clearnode: co-sign (if non-zero allocation)
+    Clearnode->>Clearnode: Validate quorum, balances, allowances
+    Clearnode->>Clearnode: Lock allocations from unified balances
+    Clearnode-->>A: {app_session_id, status:"open", version:1}
+    Clearnode-->>B: asu/bu notifications
+
+    Note over A,B: Update (submit_app_state)
+    A->>Clearnode: submit_app_state(app_session_id, intent, version, allocations, session_data?)
+    B-->>Clearnode: co-signs to meet quorum
+    Clearnode->>Clearnode: Validate intent rules, version, quorum, allowances
+    Clearnode->>Clearnode: Apply operate/deposit/withdraw
+    Clearnode-->>A: {app_session_id, status:"open", version:n}
+    Clearnode-->>B: asu/bu notifications
+
+    Note over A,B: Close
+    A->>Clearnode: close_app_session(app_session_id, allocations, session_data?)
+    B-->>Clearnode: co-signs to meet quorum
+    Clearnode->>Clearnode: Validate sums and quorum, release to unified balances
+    Clearnode-->>A: {app_session_id, status:"closed", version:n+1}
+    Clearnode-->>B: asu/bu notifications
+
+```
+
+### Sequence (Create → Update → Close)
+
+1. **Create (off-chain): `create_app_session`**
+   - Client signs request (all participants with non-zero allocations must sign).
+   - Clearnode validates protocol version (0.2/0.4), quorum, balances, allowances/session keys.
+   - Funds are locked from each signer’s <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> into the app session account.
+   - **Response (minimal)**: `app_session_id`, `status: "open"`, `version: 1`. Full metadata is not echoed; use `get_app_sessions` to read it.
+
+   **Example Request**:
+   ```json
+   {
+     "req": [1,"create_app_session",{
+       "definition": {
+         "protocol": "NitroRPC/0.4",
+         "participants": ["0xA","0xB"],
+         "weights": [100,100],
+         "quorum": 200,
+         "challenge": 86400,
+         "nonce": 1699123
+       },
+       "allocations": [
+         {"participant": "0xA","asset": "usdc","amount": "100.0"},
+         {"participant": "0xB","asset": "usdc","amount": "100.0"}
+       ],
+       "session_data": "{\"game\":\"chess\"}"
+     },1699123456789],
+     "sig": ["0xUserSig","0xCoSig"]
+   }
+   ```
+
+2. **State Updates (off-chain): `submit_app_state`**
+   - v0.4 requires `version = current+1`; v0.2 rejects `intent`/`version` and only allows a single update.
+   - Intents:
+     - `operate`: redistribute, sum must stay equal.
+     - `deposit`: sum must increase; depositor must sign and have available unified balance.
+     - `withdraw`: sum must decrease; session must have funds.
+   - Quorum required; session-key allowances enforced.
+   - **Response (minimal)**: `app_session_id`, `status: "open"`, `version` (new). No metadata echoed.
+   - Notifications: `asu` (app session update) + `bu` (balance update for deposit/withdraw).
+
+   **Example Request (deposit v0.4)**:
+   ```json
+   {
+     "req": [2,"submit_app_state",{
+       "app_session_id": "0xSession",
+       "intent": "deposit",
+       "version": 2,
+       "allocations": [
+         {"participant": "0xA","asset": "usdc","amount": "150.0"},
+         {"participant": "0xB","asset": "usdc","amount": "100.0"}
+       ]
+     },1699123456790],
+     "sig": ["0xUserSig","0xCoSig"]
+   }
+   ```
+
+3. **Close (off-chain): `close_app_session`**
+   - Requires quorum signatures; final allocations must match total balances.
+   - **Response (minimal)**: `app_session_id`, `status: "closed"`, `version` (incremented). No metadata echoed.
+   - Funds are released to participants’ unified balances; notifications `asu` and `bu` are sent.
+
+   **Example Request**:
+   ```json
+   {
+     "req": [3,"close_app_session",{
+       "app_session_id": "0xSession",
+       "allocations": [
+         {"participant": "0xA","asset": "usdc","amount": "180.0"},
+         {"participant": "0xB","asset": "usdc","amount": "20.0"}
+       ]
+     },1699123456795],
+     "sig": ["0xUserSig","0xCoSig"]
+   }
+   ```
+
+### Key Points
 
 :::info App Sessions
 <Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> enable multi-party applications with custom governance rules. Funds are locked from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> for the duration of the session.
@@ -595,6 +634,51 @@ Close <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> when all p
 Cooperative closure is **fast (1 transaction)**, **cheap (low gas)**, and **immediate (no waiting period)**. Always use this when possible.
 :::
 
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Clearnode
+    participant Blockchain
+
+    Client->>Clearnode: close_channel(channel_id, funds_destination)
+    Clearnode->>Clearnode: Validate channel open/resizing and not challenged
+    Clearnode->>Clearnode: Build FINALIZE state (version = current+1, data = "0x", allocations)
+    Clearnode-->>Client: {channel_id, state, server_signature}
+    Client->>Client: Verify server_signature and sign packed state
+    Client->>Blockchain: Custody.close(channel_id, state, userSig, serverSig)
+    Blockchain->>Blockchain: Verify signatures, close channel, emit event
+    Blockchain-->>Clearnode: Event observed
+    Clearnode->>Clearnode: Update DB and balances
+    Clearnode-->>Client: cu + bu notifications
+
+```
+
+### Sequence
+
+1. **Client → Clearnode**: `close_channel(channel_id, funds_destination)`
+   - Authenticated request signed by the user (session key or wallet).
+
+   **Example Request**:
+   ```json
+   {
+     "req": [10,"close_channel",{
+       "channel_id": "0xChannel",
+       "funds_destination": "0xUser"
+     },1699123457000],
+     "sig": ["0xUserSig"]
+   }
+   ```
+2. **Clearnode**: validates channel exists and is `open`/`resizing`, checks challenged-channel guard, builds FINALIZE state:
+   - `intent: FINALIZE`, `version = current+1`, `state_data: "0x"`, allocations split between user and broker based on channel balance.
+   - Signs packed state (`keccak256(abi.encode(channelId, intent, version, data, allocations))`).
+3. **Clearnode → Client**: response with `channel_id`, `state`, `server_signature`.
+4. **Client**: verifies server signature, signs the same packed state.
+5. **Client → Blockchain**: `Custody.close(channel_id, state, userSig, serverSig)` (one tx).
+6. **Blockchain**: verifies both signatures, closes channel, emits `Closed/Opened`-equivalent event (implementation-specific), releases funds.
+7. **Clearnode**: observes event, updates DB, sends `cu` (channel update) and `bu` (balance update) notifications.
+
 **Related Methods**: [`close_channel`](../off-chain/channel-methods#close_channel)
 
 ---
@@ -618,6 +702,39 @@ Close <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> when other
 This method requires waiting for the challenge period (typically 24 hours) to elapse. Use only when cooperative closure fails.
 :::
 
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Blockchain
+    participant Clearnode
+
+    Note over Client: Hold latest signed state
+    Client->>Blockchain: Custody.challenge(channelId, state, sigs)
+    Blockchain->>Blockchain: Start challenge timer (challenge period)
+    alt Newer state posted
+        OtherParty->>Blockchain: Custody.checkpoint(channelId, newerState, sigs)
+        Blockchain->>Blockchain: Replace pending state
+    end
+    Note over Client,Blockchain: Wait for challenge period expiry
+    Client->>Blockchain: Custody.close(channelId, state, sigs) // after timeout if uncontested
+    Blockchain->>Blockchain: Finalize channel, emit event
+    Blockchain-->>Clearnode: Event observed when back online
+    Clearnode->>Clearnode: Update DB, balances
+    Clearnode-->>Client: cu + bu notifications
+```
+
+### Sequence (User-initiated, clearnode unresponsive)
+
+1. **Prerequisite**: User holds the latest mutually signed state (or clearnode-signed latest) for the channel.
+2. **Client → Blockchain**: `Custody.challenge(channelId, state, sigs...)`
+   - Submits the latest signed state to start the challenge.
+3. **Challenge Window**: Other party can respond with a newer valid state before timeout.
+4. **If no newer state is posted**: After the challenge period, user calls `Custody.close(channelId, state, sigs...)` to finalize.
+5. **Blockchain**: finalizes channel, releases funds per challenged state, emits closure event.
+6. **Clearnode** (when responsive again): observes event, updates DB, sends `cu`/`bu` notifications to participants.
+
 **Related Methods**: On-chain `Custody.challenge()` and `Custody.close()`
 
 ---
@@ -634,4 +751,3 @@ Now that you understand how all protocol layers work together:
 :::tip Complete Flows
 These flows represent the most common operations. For edge cases and error handling, consult the specific method documentation in Part 2.
 :::
-

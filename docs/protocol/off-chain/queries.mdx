@@ -32,17 +32,23 @@ Combine query methods for initial <Tooltip content={tooltipDefinitions.channelSt
 |--------|---------------|---------|------------|
 | `get_config` | Public | Retrieve clearnode configuration | No |
 | `get_assets` | Public | List supported assets | No |
-| `get_channels` | Public/Private | List payment channels | Yes |
-| `get_app_sessions` | Private | List app sessions | Yes |
+| `get_app_definition` | Public | Fetch the definition for a specific app session | No |
+| `get_channels` | Public | List payment channels | Yes |
+| `get_app_sessions` | Public | List app sessions | Yes |
 | `get_ledger_balances` | Private | Query current balances | No |
-| `get_ledger_entries` | Private | Detailed accounting entries | Yes |
-| `get_ledger_transactions` | Private | User-facing transaction history | Yes |
+| `get_ledger_entries` | Public | Detailed accounting entries | Yes |
+| `get_ledger_transactions` | Public | User-facing transaction history | Yes |
+| `get_rpc_history` | Private | Fetch recent RPC invocations | Yes |
 | `get_user_tag` | Private | Retrieve user's alphanumeric tag | No |
-| `get_session_keys` | Private | List active session keys | No |
+| `get_session_keys` | Private | List active session keys | Yes |
 | `ping` | Public | Connection health check | No |
 
 :::info Authentication
 **Public methods** can be called without authentication. **Private methods** require completing the [authentication flow](./authentication) first.
+:::
+
+:::note Pagination defaults
+Unless explicitly provided, paginated methods default to `limit = 10` (maximum 100) and `offset = 0`, matching the broker’s `ListOptions`.
 :::
 
 ---
@@ -55,11 +61,11 @@ Combine query methods for initial <Tooltip content={tooltipDefinitions.channelSt
 
 ### Usage
 
-Retrieves <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> configuration including supported blockchains, protocol versions, challenge periods, and operational parameters.
+Retrieves <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> configuration: broker address plus supported blockchains and their custody/adjudicator contracts.
 
 ### Request
 
-No parameters required (empty object `{}`).
+No parameters.
 
 ### Response
 
@@ -78,8 +84,8 @@ No parameters required (empty object `{}`).
 | `adjudicator_address` | string | Adjudicator contract address on this chain | `"0xAdjudicatorAddress..."` |
 
 **Use Cases**:
-- Verify clearnode capabilities before connecting
 - Discover supported chains and contract addresses
+- Verify clearnode wallet address
 
 ---
 
@@ -97,7 +103,7 @@ Retrieves all supported assets and their configurations across supported blockch
 
 | Parameter | Type | Required | Description | Example | Notes |
 |-----------|------|----------|-------------|---------|-------|
-| `chain_id` | uint64 | No | Filter by specific chain | `137` | If omitted, returns assets for all chains |
+| `chain_id` | uint32 | No | Filter by specific chain | `137` | If omitted, returns assets for all chains |
 
 ### Response
 
@@ -121,6 +127,42 @@ Retrieves all supported assets and their configurations across supported blockch
 
 ---
 
+## get_app_definition
+
+### Name
+
+`get_app_definition`
+
+### Usage
+
+Retrieves the immutable definition for a given <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> so clients can verify governance parameters and participants.
+
+### Request
+
+| Parameter | Type | Required | Description | Example |
+|-----------|------|----------|-------------|---------|
+| `app_session_id` | string | Yes | Target app session identifier | `"0x9876543210fedcba..."` |
+
+### Response
+
+Returns the [AppDefinition](../off-chain/app-sessions#appdefinition) structure:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `protocol` | string | Protocol version (`"NitroRPC/0.2"` or `"NitroRPC/0.4"`) |
+| `participants` | array\<address\> | Wallet addresses authorized for this session |
+| `weights` | array\<int64\> | Voting weight per participant (aligned with `participants` order) |
+| `quorum` | uint64 | Minimum combined weight required for updates |
+| `challenge` | uint64 | Dispute timeout (seconds) |
+| `nonce` | uint64 | Unique instance identifier |
+
+**Use Cases**:
+- Validate session metadata before signing states
+- Display governance rules in UI
+- Confirm protocol version compatibility
+
+---
+
 ## get_channels
 
 ### Name
@@ -135,10 +177,10 @@ Lists all channels for a specific <Tooltip content={tooltipDefinitions.participa
 
 | Parameter | Type | Required | Description | Default | Example |
 |-----------|------|----------|-------------|---------|---------|
-| `participant` | string | No | Participant wallet address to query | Authenticated user | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
-| `status` | string | No | Filter by status | - | `"active"` |
+| `participant` | string | No | Participant wallet address to query | (empty = all channels) | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
+| `status` | string | No | Filter by status | - | `"open"` |
 | `offset` | number | No | Pagination offset | `0` | `42` |
-| `limit` | number | No | Number of channels to return | `100` | `10` |
+| `limit` | number | No | Number of channels to return | `10` (max 100) | `10` |
 | `sort` | string | No | Sort order by created_at | `"desc"` | `"desc"` |
 
 **Allowed status values**: `"open"` \| `"closed"` \| `"challenged"` \| `"resizing"`
@@ -182,19 +224,19 @@ Lists all channels for a specific <Tooltip content={tooltipDefinitions.participa
 
 ### Usage
 
-Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for a <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>, sorted by creation date (newest first by default). Optionally filter by status (open/closed). Returns complete session information including <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>, governance configuration, protocol version, and current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>. Supports pagination for large result sets.
+Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for a <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>, sorted by creation date (newest first by default). Optionally filter by status (open/closed). Returns complete session information including <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>, voting weights, quorum, protocol version, and current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>. Supports pagination for large result sets.
 
 ### Request
 
 | Parameter | Type | Required | Description | Default | Allowed Values | Example |
 |-----------|------|----------|-------------|---------|----------------|---------|
-| `participant` | string (address) | No | Filter by participant wallet address | Authenticated user's address | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
+| `participant` | string (address) | No | Filter by participant wallet address | (empty = all sessions) | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
 | `status` | string | No | Filter by status | - | `"open"` |
 | `offset` | number | No | Pagination offset | 0 | - | `42` |
-| `limit` | number | No | Number of sessions to return | 100 | - | `10` |
+| `limit` | number | No | Number of sessions to return | 10 (max 100) | - | `10` |
 | `sort` | string | No | Sort order by created_at | "desc" | `"desc"` |
 
-**Allowed status values**: `"open"` \| `"closed"` \| `"challenged"` \| `"resizing"`
+**Allowed status values**: `"open"` \| `"closed"`
 
 ### Response
 
@@ -207,9 +249,10 @@ Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
 | `app_session_id` | string | Unique identifier | `"0x9876543210fedcba..."` |
+| `application` | string | Application identifier | `"NitroliteChess"` |
 | `status` | string | Current status | `"open"` \| `"closed"` |
 | `participants` | array\<address\> | All participant wallet addresses | `["0x742d35Cc...", "0x8B3192f2..."]` |
-| `weights` | array\<uint64\> | Voting weights per participant | `[50, 50, 100]` |
+| `weights` | array\<int64\> | Voting weights per participant | `[50, 50, 100]` |
 | `quorum` | uint64 | Required weight for state updates | `100` |
 | `protocol` | string | Protocol version | `"NitroRPC/0.4"` |
 | `challenge` | uint64 | Challenge period in seconds | `86400` |
@@ -218,7 +261,6 @@ Lists all <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip
 | `session_data` | string | Current application state | `"{\"gameType\":\"chess\",\"turn\":\"white\"}"` |
 | `created_at` | string (timestamp) | Creation timestamp | `"2023-05-01T12:00:00Z"` |
 | `updated_at` | string (timestamp) | Last update timestamp | `"2023-05-01T14:30:00Z"` |
-| `closed_at` | string (timestamp) | Closure timestamp (optional, only if closed) | `"2023-05-01T16:00:00Z"` |
 
 **Use Cases**:
 - Display user's active games or escrows
@@ -239,7 +281,7 @@ When dealing with users who have many <Tooltip content={tooltipDefinitions.appCh
 
 ### Usage
 
-Retrieves the ledger balances for an account. If no parameters are provided, returns the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> by providing the app_session_id. Returns all assets with non-zero balances.
+Retrieves the ledger balances for an account. If no parameters are provided, returns the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across all assets. Can also query balance within a specific <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> by providing the app_session_id. Returns all tracked assets (including those that currently evaluate to zero).
 
 ### Request
 
@@ -289,7 +331,7 @@ Retrieves detailed ledger entries for an account, providing a complete audit tra
 | `wallet` | string (address) | No | Filter by wallet address | - | - | `"0x742d35Cc..."` |
 | `asset` | string | No | Filter by asset | - | - | `"usdc"` |
 | `offset` | number | No | Pagination offset | 0 | - | - |
-| `limit` | number | No | Number of entries to return | 100 | - | - |
+| `limit` | number | No | Number of entries to return | 10 (max 100) | - | - |
 | `sort` | string | No | Sort order by created_at | "desc" | "asc" \| "desc" | - |
 
 ### Response
@@ -304,12 +346,14 @@ Retrieves detailed ledger entries for an account, providing a complete audit tra
 |-------|------|-------------|---------|
 | `id` | number | Unique entry identifier | `123` |
 | `account_id` | string | Account this entry belongs to | `"0x742d35Cc..."` |
-| `account_type` | number | Type of account (0=Unified, 1=App Session, 2=Channel Escrow) | `0` |
+| `account_type` | number | Ledger account classification (`1000`=asset, `2000`=liability, etc.) | `1000` |
 | `asset` | string | Asset symbol | `"usdc"` |
 | `participant` | string | Participant wallet address | `"0x742d35Cc..."` |
 | `credit` | string | Credit amount (incoming funds, "0.0" if debit) | `"100.0"` |
 | `debit` | string | Debit amount (outgoing funds, "0.0" if credit) | `"25.0"` |
 | `created_at` | string | Entry creation timestamp (ISO 8601) | `"2023-05-01T12:00:00Z"` |
+
+Account types follow the broker’s GAAP-style codes: `1000` series for assets, `2000` liabilities, `3000` equity, `4000` revenue, and `5000` expenses.
 
 ### Double-Entry Bookkeeping
 
@@ -359,9 +403,9 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 |-----------|------|----------|-------------|---------|----------------|---------|
 | `account_id` | string | No | Filter by account identifier | - | - | `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"` |
 | `asset` | string | No | Filter by asset | - | - | `"usdc"` |
-| `tx_type` | string | No | Filter by transaction type | - | "transfer" \| "deposit" \| "withdrawal" \| "app_deposit" \| "app_withdrawal" | `"transfer"` |
+| `tx_type` | string | No | Filter by transaction type | - | "transfer" \| "deposit" \| "withdrawal" \| "app_deposit" \| "app_withdrawal" \| "escrow_lock" \| "escrow_unlock" | `"transfer"` |
 | `offset` | number | No | Pagination offset | 0 | - | - |
-| `limit` | number | No | Number of transactions to return | 100 | - | - |
+| `limit` | number | No | Number of transactions to return | 10 (max 100) | - | - |
 | `sort` | string | No | Sort order by created_at | "desc" | "asc" \| "desc" | - |
 
 ### Response
@@ -374,15 +418,17 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
-| `id` | string | Unique transaction identifier | `"1"` |
+| `id` | number | Unique transaction identifier | `1` |
 | `tx_type` | string | Transaction type | `"transfer"` |
-| `from_account` | string | Sender wallet address | `"0x742d35Cc..."` |
+| `from_account` | string | Sender account identifier (wallet, channel, or app session) | `"0x742d35Cc..."` |
 | `from_account_tag` | string | Sender's user tag (empty if none) | `"NQKO7C"` |
-| `to_account` | string | Receiver wallet address | `"0x8B3192f2..."` |
+| `to_account` | string | Receiver account identifier (wallet, channel, or app session) | `"0x8B3192f2..."` |
 | `to_account_tag` | string | Receiver's user tag (empty if none) | `"UX123D"` |
 | `asset` | string | Asset symbol | `"usdc"` |
 | `amount` | string | Transaction amount | `"50.0"` |
 | `created_at` | string | Transaction timestamp (ISO 8601) | `"2023-05-01T12:00:00Z"` |
+
+`from_account` and `to_account` mirror the broker’s internal `AccountID` values, so they can reference wallets, app session escrow accounts, or channel escrows.
 
 ### Transaction Types
 
@@ -404,6 +450,51 @@ Retrieves user-facing transaction history showing transfers, deposits, withdrawa
 
 ---
 
+## get_rpc_history
+
+### Name
+
+`get_rpc_history`
+
+### Usage
+
+Returns the authenticated user's recent RPC invocations, including signed request and response payloads. Useful for audit trails and debugging client integrations.
+
+### Request
+
+| Parameter | Type | Required | Description | Default | Example |
+|-----------|------|----------|-------------|---------|---------|
+| `offset` | number | No | Pagination offset | `0` | `20` |
+| `limit` | number | No | Maximum entries to return | `10` (max 100) | `25` |
+| `sort` | string | No | Sort order by timestamp | `"desc"` | `"asc"` |
+
+### Response
+
+| Parameter | Type | Description | See Also |
+|-----------|------|-------------|----------|
+| `rpc_entries` | array\<RPCEntry\> | Recorded invocations | See structure below |
+
+#### RPCEntry Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | number | Internal history identifier |
+| `sender` | string | Wallet that issued the call |
+| `req_id` | number | Request sequence number |
+| `method` | string | RPC method name |
+| `params` | string | JSON-encoded request parameters |
+| `timestamp` | number | Unix timestamp (seconds) |
+| `req_sig` | array\<Signature\> | Signatures attached to the request |
+| `response` | string | JSON-encoded response payload |
+| `res_sig` | array\<Signature\> | Response signatures |
+
+**Use Cases**:
+- Debug client/server mismatches
+- Provide user-facing audit logs
+- Verify signed payloads during dispute resolution
+
+---
+
 ## get_user_tag
 
 ### Name
@@ -416,7 +507,7 @@ Retrieves the authenticated user's unique alphanumeric tag. User tags provide a 
 
 ### Request
 
-No parameters required (empty object `{}`).
+No parameters.
 
 ### Response
 
@@ -460,7 +551,11 @@ Required (private method)
 
 ### Request
 
-No parameters required (empty object `{}`).
+| Parameter | Type | Required | Description | Default | Example |
+|-----------|------|----------|-------------|---------|---------|
+| `offset` | number | No | Pagination offset | `0` | `20` |
+| `limit` | number | No | Results per page | `10` (max 100) | `25` |
+| `sort` | string | No | Sort order by created_at | `"desc"` | `"asc"` |
 
 ### Response
 
@@ -475,7 +570,7 @@ No parameters required (empty object `{}`).
 | `id` | number | Internal identifier | — | — |
 | `session_key` | string (address) | Session key address | — | — |
 | `application` | string | Application name for this session | `"clearnode"` | — |
-| `allowances` | array\<Allowance\> | Spending limits and usage | — | See Allowance structure below |
+| `allowances` | array\<AllowanceUsage\> | Spending limits and usage | — | See structure below |
 | `scope` | string | Permission scope | — | Future feature, not fully enforced yet |
 | `expires_at` | string (timestamp) | Session expiration time (ISO 8601 format) | — | — |
 | `created_at` | string (timestamp) | Session creation time (ISO 8601 format) | — | — |
@@ -495,7 +590,7 @@ No parameters required (empty object `{}`).
 }
 ```
 
-#### Allowance
+#### AllowanceUsage
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -653,7 +748,6 @@ Whenever account balances change due to transfers, <Tooltip content={tooltipDefi
 
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
-| `account_id` | string | Account identifier | `"0x742d35Cc..."` |
 | `asset` | string | Asset symbol | `"usdc"` |
 | `amount` | string | New balance amount | `"150.0"` |
 
@@ -767,7 +861,6 @@ When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> s
 
 **Pagination**:
 - For methods with pagination, use reasonable `limit` values
-- Store `metadata.total_count` for progress indicators
 
 ---
 
@@ -782,4 +875,3 @@ Explore other protocol features:
 For protocol fundamentals:
 - **[Authentication](./authentication)** - Manage session keys
 - **[Message Format](./message-format)** - Understand request/response structure
-

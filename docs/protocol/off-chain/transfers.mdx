@@ -108,14 +108,14 @@ The response contains an array of transactions, with one transaction for each as
 
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
-| `id` | string | Unique transaction reference | `"1"` |
+| `id` | number | Numeric transaction identifier | `1` |
 | `tx_type` | string | Transaction type | `"transfer"` |
-| `from_account` | string | Sender's wallet address | `"0x1234567890abcdef..."` |
+| `from_account` | string | Sender account identifier (wallet/app session/channel) | `"0x1234567890abcdef..."` |
 | `from_account_tag` | string | Sender's user tag (if exists) | `"NQKO7C"` |
-| `to_account` | string | Recipient's wallet address | `"0x9876543210abcdef..."` |
+| `to_account` | string | Recipient account identifier | `"0x9876543210abcdef..."` |
 | `to_account_tag` | string | Recipient's user tag (if exists) | `"UX123D"` |
 | `asset` | string | Asset symbol that was transferred | `"usdc"` |
-| `amount` | string | Amount transferred for this asset | `"50.0"` |
+| `amount` | string | Amount transferred for this asset (decimal string) | `"50.0"` |
 | `created_at` | string | ISO 8601 timestamp | `"2023-05-01T12:00:00Z"` |
 
 **Example Response**:
@@ -124,7 +124,7 @@ The response contains an array of transactions, with one transaction for each as
 {
   "transactions": [
     {
-      "id": "1",
+      "id": 1,
       "tx_type": "transfer",
       "from_account": "0x1234567890abcdef...",
       "from_account_tag": "NQKO7C",
@@ -135,7 +135,7 @@ The response contains an array of transactions, with one transaction for each as
       "created_at": "2023-05-01T12:00:00Z"
     },
     {
-      "id": "2",
+      "id": 2,
       "tx_type": "transfer",
       "from_account": "0x1234567890abcdef...",
       "from_account_tag": "NQKO7C",
@@ -168,7 +168,7 @@ sequenceDiagram
     end
 
     Note over Alice: 1. Send Transfer Request
-    Alice->>Clearnode: transfer(destination, allocations, note)
+    Alice->>Clearnode: transfer({ destination, allocations })
 
     Note over Clearnode: 2. Validate
     Clearnode->>Clearnode: Verify authentication
@@ -260,7 +260,7 @@ Common error scenarios:
 | Error | Description | Recovery |
 |-------|-------------|----------|
 | **Authentication required** | Not authenticated | Complete [authentication](./authentication) |
-| **Insufficient available balance** | Sender doesn't have enough funds in unified account | Check balance with `get_balance`, deposit or transfer funds |
+| **Insufficient available balance** | Sender doesn't have enough funds in unified account | Check balance with `get_ledger_balances`, deposit or transfer funds |
 | **Invalid destination address** | Malformed wallet address | Verify address format (0x-prefixed, 20 bytes) |
 | **Invalid allocation format** | Negative amount or invalid structure | Check allocation structure matches API requirements |
 | **Cannot transfer to self** | Sender and recipient are the same | Use different recipient address |
@@ -287,42 +287,32 @@ This is a public endpoint - authentication is not required.
 
 | Parameter | Type | Required | Description | Format | Example | Notes |
 |-----------|------|----------|-------------|--------|---------|-------|
-| `account_id` | string | No | Filter by account ID | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns transactions for this account |
+| `account_id` | string | No | Filter by account ID (wallet, app session, or channel) | Hex string or ID | `"0x1234567890abcdef..."` | Returns transactions for this account |
 | `asset` | string | No | Filter by asset symbol | Lowercase string | `"usdc"` | Returns transactions for this asset only |
-| `tx_type` | string | No | Filter by transaction type | One of: `transfer`, `deposit`, `withdrawal`, `app_deposit`, `app_withdrawal` | `"transfer"` | Returns only this type of transaction |
-| `offset` | number | No | Pagination offset | Positive integer | `42` | Skip this many transactions |
-| `limit` | number | No | Number of transactions to return | Positive integer | `10` | Default varies by implementation |
-| `sort` | string | No | Sort order by created_at | `asc` or `desc` | `"desc"` | Default: `desc` |
+| `tx_type` | string | No | Filter by transaction type | `transfer`, `deposit`, `withdrawal`, `app_deposit`, `app_withdrawal`, `escrow_lock`, `escrow_unlock` | `"transfer"` | Returns only this type of transaction |
+| `offset` | number | No | Pagination offset | `0` | `42` | Defaults to `0` |
+| `limit` | number | No | Number of transactions to return | `10` (max 100) | `10` | Defaults to 10 if omitted |
+| `sort` | string | No | Sort order by created_at | `"asc"` or `"desc"` | `"desc"` | Default: `"desc"` |
 
 #### Response
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `ledger_transactions` | LedgerTransaction[] | Array of transaction objects |
-| `metadata` | PaginationMetadata | Pagination information |
 
 **LedgerTransaction Structure**:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | string | Unique transaction reference |
-| `tx_type` | string | Transaction type (transfer/deposit/withdrawal/app_deposit/app_withdrawal) |
-| `from_account` | string | Sender's wallet address |
+| `id` | number | Unique transaction reference |
+| `tx_type` | string | Transaction type |
+| `from_account` | string | Sender account identifier |
 | `from_account_tag` | string | Sender's user tag (empty if none) |
-| `to_account` | string | Recipient's wallet address |
+| `to_account` | string | Recipient account identifier |
 | `to_account_tag` | string | Recipient's user tag (empty if none) |
 | `asset` | string | Asset symbol |
-| `amount` | string | Transaction amount |
+| `amount` | string | Transaction amount (decimal string) |
 | `created_at` | string | ISO 8601 timestamp |
-
-**PaginationMetadata Structure**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `page` | number | Current page number |
-| `per_page` | number | Items per page |
-| `total_count` | number | Total number of transactions |
-| `page_count` | number | Total number of pages |
 
 ---
 
@@ -338,19 +328,18 @@ This is a public endpoint - authentication is not required.
 
 | Parameter | Type | Required | Description | Format | Example | Notes |
 |-----------|------|----------|-------------|--------|---------|-------|
-| `account_id` | string | No | Filter by account ID | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns entries for this account |
+| `account_id` | string | No | Filter by account ID (wallet/app session/channel) | Hex string or ID | `"0x1234567890abcdef..."` | Returns entries for this account |
 | `wallet` | string | No | Filter by participant wallet | 0x-prefixed hex string (20 bytes) | `"0x1234567890abcdef..."` | Returns entries for this participant |
 | `asset` | string | No | Filter by asset symbol | Lowercase string | `"usdc"` | Returns entries for this asset only |
-| `offset` | number | No | Pagination offset | Positive integer | `42` | Skip this many entries |
-| `limit` | number | No | Number of entries to return | Positive integer | `10` | Default varies by implementation |
-| `sort` | string | No | Sort order by created_at | `asc` or `desc` | `"desc"` | Default: `desc` |
+| `offset` | number | No | Pagination offset | `0` | `42` | Defaults to `0` |
+| `limit` | number | No | Number of entries to return | `10` (max 100) | `10` | Defaults to 10 if omitted |
+| `sort` | string | No | Sort order by created_at | `"asc"` or `"desc"` | `"desc"` | Default: `"desc"` |
 
 #### Response
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `ledger_entries` | LedgerEntry[] | Array of ledger entry objects |
-| `metadata` | PaginationMetadata | Pagination information |
 
 **LedgerEntry Structure**:
 
@@ -358,21 +347,12 @@ This is a public endpoint - authentication is not required.
 |-------|------|-------------|
 | `id` | number | Unique entry ID |
 | `account_id` | string | Account identifier |
-| `account_type` | number | Account type (0=Unified, 1=App Session, 2=Channel Escrow) |
+| `account_type` | number | Account type (`1000`=asset, `2000`=liability, etc.) |
 | `asset` | string | Asset symbol |
 | `participant` | string | Participant wallet address |
 | `credit` | string | Credit amount (positive value or "0.0") |
 | `debit` | string | Debit amount (positive value or "0.0") |
 | `created_at` | string | ISO 8601 timestamp |
-
-**PaginationMetadata Structure**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `page` | number | Current page number |
-| `per_page` | number | Items per page |
-| `total_count` | number | Total number of entries |
-| `page_count` | number | Total number of pages |
 
 ---
 
@@ -406,4 +386,3 @@ Explore other off-chain operations:
 For protocol fundamentals:
 - **[Authentication](./authentication)** - Understand authorization and session management
 - **[Message Format](./message-format)** - Learn request/response structure
-

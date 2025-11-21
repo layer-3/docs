@@ -28,7 +28,7 @@ This array-based format reduces message overhead by approximately 30% compared t
 
 | Component | Type | Description |
 |-----------|------|-------------|
-| **requestId** | uint32 | Unique identifier for the request, used to correlate responses |
+| **requestId** | uint64 | Unique identifier for the request, used to correlate responses |
 | **method** | string | Remote method name to be invoked |
 | **params** | object | Method-specific parameters as a JSON object |
 | **timestamp** | uint64 | Server-provided timestamp in milliseconds |
@@ -36,9 +36,9 @@ This array-based format reduces message overhead by approximately 30% compared t
 #### requestId
 
 - **Purpose**: Correlate requests with their responses
-- **Type**: Unsigned 32-bit integer
+- **Type**: Unsigned 64-bit integer
 - **Generation**: Client-generated, must be unique per connection
-- **Range**: 0 to 2^32-1
+- **Range**: 0 to 2^64-1
 - **Example**: `1`, `42`, `9876543210`
 
 #### method
@@ -60,7 +60,7 @@ This array-based format reduces message overhead by approximately 30% compared t
 
 - **Purpose**: Request ordering and replay attack prevention
 - **Type**: Unsigned 64-bit integer (Unix milliseconds)
-- **Generation**: Client-provided (current Unix time in milliseconds)
+- **Generation**: Client-provided on requests; server-provided on responses
 - **Example**: `1699123456789` (November 5, 2023, 01:57:36 UTC)
 
 ---
@@ -101,7 +101,7 @@ Each signature is:
 - **Length**: 65 bytes (130 hex characters + "0x" prefix)
 - **Components**: r (32 bytes) + s (32 bytes) + v (1 byte)
 - **Algorithm**: ECDSA over secp256k1 curve
-- **Hash**: keccak256 hash of the JSON-encoded `req` array
+- **Hash**: keccak256 of the exact `req` array bytes
 
 **Example Signature**:
 ```
@@ -132,7 +132,7 @@ Signatures are computed over the keccak256 hash of the JSON-encoded `req` array.
         {"asset": "eth", "amount": "0.5"}
       ],
       "scope": "transfer,app.create",
-      "expires_at": 1762417328
+      "expires_at": 1762417328123
     },
     1699123456789
   ],
@@ -183,7 +183,7 @@ The response payload as a 4-element array:
 {
   "res": [
     1,
-    "auth_request",
+    "auth_challenge",
     {
       "challenge_message": "550e8400-e29b-41d4-a716-446655440000"
     },
@@ -274,58 +274,29 @@ Check the response method field (position 1 in `res` array). If it equals `"erro
 
 ## Payload Hash Computation
 
-Every RPC message (request or response) has a **payload hash** that is computed and signed. The payload is everything inside the `req` or `res` field.
+Every RPC message (request or response) is signed over the exact serialized `req` or `res` array bytes.
 
-### What is the Payload
+### What is Signed
 
-- **For requests**: The `req` array: `[requestId, method, params, timestamp]`
-- **For responses**: The `res` array: `[requestId, method, result, timestamp]`
+- **Requests**: The `req` array `[requestId, method, params, timestamp]` exactly as sent
+- **Responses**: The `res` array `[requestId, method, result, timestamp]` exactly as received
 
 ### Hash Formula
 
 ```javascript
-payloadHash = keccak256(JSON.stringify(payload))
+payloadHash = keccak256(<exact JSON bytes of req or res>)
 ```
 
-Where `payload` is the `req` or `res` array.
-
-### JSON Encoding Requirements
-
-The JSON encoding MUST contain **spaces only inside string values**. No spaces between structural elements (arrays, objects, commas, colons).
-
-**Correct encoding** for hashing:
-```json
-[1,"transfer",{"amount":"100","asset":"usdc","destination":"0x..."},1699123456]
-```
-
-**Incorrect encoding** (would produce different hash):
-```json
-[  1,  "transfer",  { "amount": "100", "asset": "usdc" },  1699123456  ]
-```
-
-:::caution Encoding Consistency
-The JSON encoding logic (no spaces except in string values) may be reconsidered in the next version of the protocol. For now, all implementations MUST follow this exact encoding to ensure signature compatibility.
-:::
+Use the same bytes you transmit (or receive) when computing/verifying the hash; do not re-serialize with different spacing or key ordering.
 
 ### Example
 
 **Request Payload**:
-```javascript
-[42, "create_app_session", {"definition":{...}, "allocations":[...]}, 1699123456789]
+```json
+[42,"create_app_session",{"definition":{...},"allocations":[...]},1699123456789]
 ```
 
-**Payload Hash**:
-```javascript
-payloadHash = keccak256(JSON.stringify([
-  42,
-  "create_app_session",
-  {"definition":{...}, "allocations":[...]},
-  1699123456789
-]))
-// Result: 0xabcdef1234567890...
-```
-
-This hash is then signed by the sender (client's session key for requests, clearnode for responses).
+Hash that exact byte string, then sign it (client for requests, clearnode for responses).
 
 ---
 
@@ -376,14 +347,14 @@ Both clients and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</To
 ### Client Verifying a Clearnode Response
 
 1. **Extract Response**: Get `res` array from response
-2. **Compute Hash**: `hash = keccak256(JSON.stringify(res))`
+2. **Compute Hash**: `hash = keccak256(<exact res bytes>)`
 3. **Recover Address**: Use `sig` to recover signer address
 4. **Verify**: Confirm recovered address matches <Tooltip content={tooltipDefinitions.clearnode}>the clearnode's</Tooltip> known address
 
 ### A Clearnode Verifying Client Request
 
 1. **Extract Request**: Get `req` array from request
-2. **Compute Hash**: `hash = keccak256(JSON.stringify(req))`
+2. **Compute Hash**: `hash = keccak256(<exact req bytes>)`
 3. **Recover Address**: Use `sig` to recover signer address
 4. **Verify**: Confirm recovered address matches authenticated user or registered <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>
 
@@ -433,4 +404,3 @@ Now that you understand the message format, explore how it's used in practice:
 - **[App Sessions](./app-sessions)** - Explore multi-signature <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> messages
 
 For a high-level overview, return to **[Off-Chain RPC Overview](./overview)**.
-

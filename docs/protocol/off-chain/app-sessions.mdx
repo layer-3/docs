@@ -116,7 +116,7 @@ Implementation reference: `clearnode/app_session_service.go`.
 |-------|------|----------|-------------|---------|----------------|-------|
 | `protocol` | string | Yes | Protocol version for this app session | — | `"NitroRPC/0.2"` \| `"NitroRPC/0.4"` | Version cannot be changed after creation; use 0.4 for new sessions |
 | `participants` | address[] | Yes | Array of all participant wallet addresses | — | Min: 2 participants | Order is important - indices used for signatures and weights<br/>Last participant often represents the application/judge |
-| `weights` | uint64[] | Yes | Voting power for each participant | — | — | Length must match participants array<br/>Order corresponds to participants array<br/>Absolute values matter for quorum; don't need to sum to 100 |
+| `weights` | int64[] | Yes | Voting power for each participant | — | — | Length must match participants array<br/>Order corresponds to participants array<br/>Absolute values matter for quorum; don't need to sum to 100 |
 | `quorum` | uint64 | Yes | Minimum total weight required to approve state updates | — | — | Sum of signers' weights must be ≥ quorum |
 | `challenge` | uint64 | No | Challenge period in seconds for disputes | 86400 (24 hours) | — | Only relevant if app session state is ever checkpointed on-chain |
 | `nonce` | uint64 | Yes | Unique identifier | — | — | Typically timestamp; ensures uniqueness |
@@ -157,11 +157,10 @@ Implementation reference: `clearnode/app_session_service.go`.
 | Parameter | Type | Description | Format/Structure | Example | Notes |
 |-----------|------|-------------|------------------|---------|-------|
 | `app_session_id` | string | Unique identifier for the created app session | 0x-prefixed hex string (32 bytes) | `"0x9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba"` | Use this for all subsequent operations on this session |
-| `definition` | AppDefinition | Confirmed app definition (echoed back for verification) | - | - | - |
-| `initial_state` | AppSessionState | Initial state of the app session<br/><br/>**Structure**:<br/>• `version` (number) - State version number<br/>&nbsp;&nbsp;- Value: 1 (initial state always version 1)<br/>• `allocations` (Allocation[]) - Current fund distribution<br/>&nbsp;&nbsp;- Note: Initially matches creation allocations<br/>• `session_data` (string) - Current application data | See structure | - | - |
-| `status` | string | App session status | Value: "open" | `"open"` | - |
-| `locked_funds` | object | Summary of locked funds per participant | Map of participant address to locked amounts | `{"0x742d35Cc...": {"usdc": "100.0"}, "0x8B3192f2...": {"usdc": "100.0"}}` | - |
-| `created_at` | number | Unix timestamp of creation | - | `1699123456789` | - |
+| `status` | string | App session status | `"open"` | `"open"` | Values: `"open"` or `"closed"` |
+| `version` | number | Current state version | `1` | `1` | Always starts at 1 |
+
+The Go service returns only these fields on creation. To fetch full metadata (application, participants, quorum, weights, session_data, protocol, challenge, nonce, timestamps), call [`get_app_sessions`](./queries#get_app_sessions) after creation.
 
 ---
 
@@ -320,7 +319,9 @@ During <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> li
 - For DEPOSIT intent: Depositing <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> must sign (in addition to quorum)
 - For DEPOSIT intent: Depositing <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> must have sufficient available balance
 - For WITHDRAW intent: Session must have sufficient funds to withdraw
-- Version must be exactly current version + 1
+- NitroRPC/0.4: `version` must be **exactly current_version + 1**
+- NitroRPC/0.2: **omit** `intent` and `version` (service rejects them); only OPERATE-style redistribution is supported
+- If using a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>, spending allowances for that key are enforced
 
 ### Request
 
@@ -338,12 +339,9 @@ During <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> li
 |-----------|------|-------------|------------------|---------|-------|
 | `app_session_id` | string | Session identifier (echoed) | - | - | - |
 | `version` | number | Confirmed new version number | - | `2` | - |
-| `intent` | string | Confirmed intent (if applicable) | - | - | - |
-| `allocations` | Allocation[] | Confirmed final allocations | - | - | - |
-| `session_data` | string | Confirmed session data | - | - | - |
-| `locked_funds` | object | Updated locked funds per participant | - | `{"0xAlice": {"usdc": "75.0"}, "0xBob": {"usdc": "125.0"}}` | - |
-| `total_locked` | object | Total funds in session | - | `{"usdc": "200.0"}` | - |
-| `timestamp` | number | Unix timestamp of update | - | - | - |
+| `status` | string | Updated session status | `"open"` | `"open"` | Minimal response (no metadata echoed) |
+
+The Go handler returns an `AppSessionResponse` type, but for state submissions it only includes `app_session_id`, `version`, and `status` (and does not echo session metadata). Use [`get_app_sessions`](./queries#get_app_sessions) to read the full session record.
 
 ---
 
@@ -400,11 +398,12 @@ Use OPERATE for simple fund redistributions within the session. The total amount
 **Purpose**: Add funds from a <Tooltip content={tooltipDefinitions.participant}>participant's</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> into the session.
 
 **Rules**:
-- Sum of allocations MUST be greater than sum before operation
+- Sum of allocations MUST be greater or equal to sum before operation
 - Increase MUST come from available balance of depositing <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>
 - Depositing <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> MUST sign (even if quorum is met without them)
 - Quorum requirement MUST still be met
 - Allocations show FINAL amounts (not delta)
+- If signed via a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip>, spending caps for that key are enforced
 
 **Example**:
 
@@ -459,7 +458,7 @@ Validation:
 **Purpose**: Remove funds from session back to a <Tooltip content={tooltipDefinitions.participant}>participant's</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
 
 **Rules**:
-- Sum of allocations MUST be less than sum before operation
+- Sum of allocations MUST be less or equal to sum before operation
 - Decrease is returned to <Tooltip content={tooltipDefinitions.participant}>participant's</Tooltip> available balance
 - Withdrawing <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> signature NOT specifically required (quorum sufficient)
 - Quorum requirement MUST be met
@@ -507,23 +506,8 @@ Validation:
 
 ## Version Management
 
-Every <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> update MUST increment version sequentially:
-
-```
-Initial state: version 1
-First update: must submit version 2
-Second update: must submit version 3
-...
-```
-
-**If submitted version doesn't match expected version + 1**:
-- Request is rejected
-- Error: "Version conflict"
-- Client should fetch current <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> and retry
-
-:::warning Version Conflict Prevention
-Version management prevents concurrent update conflicts and ensures total ordering of <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>. This guarantees all <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> see the same sequence of <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> transitions.
-:::
+- NitroRPC/0.4: each update MUST be exactly `previous_version + 1`, or it is rejected.
+- NitroRPC/0.2: omit `intent` and `version`; providing either results in `"incorrect request: specified parameters are not supported in this protocol"`.
 
 ---
 
@@ -604,14 +588,12 @@ When application logic has completed and <Tooltip content={tooltipDefinitions.pa
 | Parameter | Type | Description | Format/Structure | Example | Notes |
 |-----------|------|-------------|------------------|---------|-------|
 | `app_session_id` | string | Session identifier (echoed) | - | - | - |
-| `status` | string | Final status | Value: "closed" | `"closed"` | - |
-| `final_allocations` | Allocation[] | Confirmed final distribution | - | - | - |
-| `final_session_data` | string | Confirmed final application state | - | - | - |
-| `distributions` | object | How funds were distributed back to unified balances | Map of participant to amounts returned | `{"0xAlice": {"usdc": "180.0"}, "0xBob": {"usdc": "15.0"}, "0xJudge": {"usdc": "5.0"}}` | - |
-| `closed_at` | number | Unix timestamp of closure | - | `1699125678901` | - |
-| `duration` | number | Session duration in milliseconds | - | `3600000` (1 hour) | - |
-| `total_states` | number | Total number of state updates during session | - | `42` | - |
+| `status` | string | Final status | Value: "closed" | `"closed"` | Minimal response |
+| `version` | number | New session version | - | `2` | Incremented on close |
 
+:::note close_app_session response
+The handler returns an `AppSessionResponse` type in Go, but on close it only populates `app_session_id`, `status`, and `version`. For full metadata after closure, query [`get_app_sessions`](./queries#get_app_sessions).
+:::
 ---
 
 ## Fund Distribution on Closure
@@ -656,9 +638,9 @@ After Closure:
    - <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> can receive zero in final allocation (lost everything)
    - Example: Losing player in a winner-takes-all game
 
-3. **Must Account for All Participants**:
-   - Every <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> in definition should have an entry (even if zero)
-   - Omitted <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> are treated as receiving zero
+3. **Accounting for Participants**:
+   - It is recommended to include an entry for every <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> (use zero for losers).
+   - If you omit a <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>, the service treats them as receiving zero, as long as per-asset totals still match the session balance.
 
 4. **Can Include Non-Financial Participants**:
    - Example: Judge/application can receive commission
@@ -747,14 +729,15 @@ All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> rec
 | **Authentication required** | Caller not authenticated | Complete [authentication](./authentication) |
 | **App session not found** | Invalid app_session_id | Verify session ID |
 | **Already closed** | Session status is "closed" | Cannot reopen; create new session |
-| **Version conflict** | Version != current + 1 | Fetch current state, retry with correct version |
 | **Quorum not met** | Sum of signer weights < quorum | Add more signers or adjust governance |
 | **Intent not supported** | Intent in v0.2 session | Use v0.4 or omit intent field |
+| **v0.2 parameters rejected** | v0.2 session receives `intent` or `version` | Omit both; only OPERATE-style redistribution is allowed |
 | **Invalid intent** | Unknown intent value | Use "operate", "deposit", or "withdraw" |
 | **OPERATE: Sum changed** | Total different after operation | Ensure sum(new) == sum(old) |
 | **DEPOSIT: Not signed** | Depositing participant didn't sign | Add depositor's signature |
 | **DEPOSIT: Insufficient balance** | Depositor lacks funds | Reduce deposit or add funds |
 | **WITHDRAW: Insufficient funds** | Session lacks funds to withdraw | Reduce withdrawal amount |
+| **Version mismatch** | v0.4: `version` not equal to current+1 | Fetch latest session (`get_app_sessions`) and retry with next version |
 | **Unknown participant** | Allocation references unknown address | Use only defined participants |
 | **Unknown asset** | Asset not supported | Use `get_assets` for supported assets |
 | **Negative amount** | Amount < 0 in allocations | Use positive amounts only |
@@ -777,7 +760,7 @@ All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> rec
 - All updates are logged for audit trail
 
 **Notifications**:
-- <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> are notified via WebSocket of <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> changes
+- <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> are notified on all active connections of <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> changes
 - Closed sessions remain queryable for history
 
 **Irreversibility**:
@@ -799,4 +782,3 @@ Explore other protocol features:
 For foundational concepts:
 - **[Message Format](./message-format)** - Understand request/response structure
 - **[Authentication](./authentication)** - Manage session keys and security
-
