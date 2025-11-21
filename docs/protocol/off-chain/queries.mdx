@@ -634,7 +634,7 @@ Error: "operation denied: insufficient session key allowance: 60 required, 55 av
 
 ### Usage
 
-Simple connectivity check to verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is responsive and the WebSocket connection is alive. Returns immediately with success. Used for heartbeat, connection testing, and latency measurement.
+Simple connectivity check to verify <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip> is responsive and the RPC connection is alive. Returns immediately with success. Used for heartbeat, connection testing, and latency measurement.
 
 ### Authentication
 
@@ -654,7 +654,7 @@ The response method should be `"pong"`.
 
 ### Use Cases
 
-**Heartbeat**: Periodic ping to keep WebSocket connection alive
+**Heartbeat**: Periodic ping to keep RPC connection alive
 ```javascript
 setInterval(() => clearnode.call("ping"), 30000)  // Every 30 seconds
 ```
@@ -687,7 +687,7 @@ const response = await clearnode.call("ping")
 
 ## Notifications (Server-to-Client)
 
-<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> sends unsolicited notifications to clients via WebSocket when certain events occur. These are not responses to requests, but asynchronous messages initiated by the server.
+<Tooltip content={tooltipDefinitions.clearnode}>The clearnode</Tooltip> sends unsolicited notifications to clients via RPC when certain events occur. These are not responses to requests, but asynchronous messages initiated by the server.
 
 ```mermaid
 sequenceDiagram
@@ -701,7 +701,7 @@ sequenceDiagram
         participant Event as Event Source
     end
 
-    Note over Client,Clearnode: WebSocket Connection Established
+    Note over Client,Clearnode: RPC Connection Established
 
     Event->>Clearnode: Transfer (incoming/outgoing)
     Clearnode->>Client: tr (transfer) notification

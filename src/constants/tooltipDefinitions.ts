@@ -4,7 +4,7 @@ export const tooltipDefinitions = {
   channel:
     "A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.",
   clearnode:
-    "A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.",
+    "A server implementing a virtual ledger layer that provides a unified ledger (through Nitro RPC), coordinates state channels (through Nitrolite), and enables chain abstraction for developers and users",
   nitroRpc: "The off-chain communication protocol.",
   channelState:
     "A snapshot of the channel at any point in time, including fund allocations and application-specific data.",

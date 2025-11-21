@@ -43,7 +43,7 @@ graph TB
   end
 
   APP --> CLIENT
-  CLIENT <-->|"Communicate via WebSocket using NitroRPC protocol"| BROKER
+  CLIENT <-->|"Communicate via RPC using NitroRPC protocol"| BROKER
   CLIENT -. "Operate on-chain state channels" .-> CONTRACTS
   BROKER -. "Observe events" .-> CONTRACTS
   CONTRACTS --> CHAIN
