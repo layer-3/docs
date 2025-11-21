@@ -76,17 +76,18 @@ The security of <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolit
 
 ```mermaid
 graph TB
-    A[User has latest<br/>signed state] --> B{Other participant responsive?}
-    B -->|Yes| C[Cooperative close<br/>Fast & cheap]
-    B -->|No| D[Challenge with<br/>latest state]
-    D --> E[Wait challenge<br/>period]
-    E --> F{Communication continuation suggested?}
-    F -->|No| G[Close & recover funds]
-    F -->|Yes| H[Create and submit a<br/>newer state via `checkpoint(...)`]
+    A["User has latest<br/>signed state"] --> B{"Other participant responsive?"}
+    B -->|Yes| C["Cooperative close<br/>Fast & cheap"]
+    B -->|No| D["Challenge with<br/>latest state"]
+    D --> E["Wait challenge<br/>period"]
+    E --> F{"Communication continuation suggested?"}
+    F -->|No| G["Close & recover funds"]
+    F -->|Yes| H["Create and submit a<br/>newer state via checkpoint(...)"]
     H --> E
     
     style C fill:#90EE90
     style G fill:#90EE90
+
 ```
 
 ### State Validity
