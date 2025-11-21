@@ -210,7 +210,7 @@ Channel IDs are deterministically computed from the channel configuration, ensur
 
 ### Packed State
 
-The legacy <Tooltip content={tooltipDefinitions.stateHash}>state hash</Tooltip> concept was removed in v0.3.0 when non-ECDSA signatures were introduced. Instead, participants sign the **packed state** payload directly:
+The legacy state hash concept was removed in v0.3.0 when non-ECDSA signatures were introduced. Instead, participants sign the **packed state** payload directly:
 
 ```javascript
 packedState = abi.encode(

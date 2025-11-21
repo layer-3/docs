@@ -1,6 +1,6 @@
 {
   "label": "Off-Chain RPC Protocol",
   "position": 5,
-  "collapsible": true,
-  "collapsed": true
+  "collapsible": false,
+  "collapsed": false
 }

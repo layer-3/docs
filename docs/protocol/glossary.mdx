@@ -327,20 +327,22 @@ A snapshot of the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip
 
 ---
 
-### stateHash
+### packedState
 
-Cryptographic hash of a <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>, used for signature verification. The stateHash ensures all participants agree on the exact state before signing.
+A specific encoding of a channelId, state.intent, state.version, state.data, state.allocations, used for signing and signature verification.
 
 **Computation**:
 ```javascript
-stateHash = keccak256(abi.encode(
+packedState = abi.encode(
   channelId,
+  state.intent,
+  state.version,
   state.data,
   state.allocations
-))
+)
 ```
 
-**Related**: [Data Structures](../protocol/on-chain/data-structures#state-hash)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#packed-state)
 
 ---
 

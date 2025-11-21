@@ -1,6 +1,6 @@
 {
   "label": "On-Chain Protocol",
   "position": 4,
-  "collapsible": true,
-  "collapsed": true
+  "collapsible": false,
+  "collapsed": false
 }

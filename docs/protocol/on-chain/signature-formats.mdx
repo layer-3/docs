@@ -14,7 +14,7 @@ Nitrolite treats each signature inside `State.sigs` as an opaque `bytes` value. 
 
 ### Raw / Pre-EIP-191 ECDSA
 
-- Signs the raw <Tooltip content={tooltipDefinitions.stateHash}>stateHash</Tooltip> with no prefix.
+- Signs the raw <Tooltip content={tooltipDefinitions.packedState}>packedState</Tooltip> with no prefix.
 - Produces the canonical `(v, r, s)` tuple encoded as 65 bytes.
 - Recommended for chain-agnostic clients or when hardware-wallet compatibility is required.
 

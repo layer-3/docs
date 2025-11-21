@@ -8,12 +8,16 @@ export const tooltipDefinitions = {
   nitroRpc: "The off-chain communication protocol.",
   channelState:
     "A snapshot of the channel at any point in time, including fund allocations and application-specific data.",
+  packedState:
+    "A specific encoding of a channelId, state.intent, state.version, state.data, state.allocations, used for signing and signature verification.",
   blockchain:
     "The underlying distributed ledger technology (e.g., Ethereum).",
   participant:
     "An entity (identified by a wallet address) that is part of a channel.",
   appChannel:
     "Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain.",
+  appSessionId:
+    "A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes).",
   custodyContract:
     "The primary Nitrolite contract that locks and unlocks funds, manages channel lifecycle (create/close/challenge), tracks channel state, and coordinates with adjudicators to validate transitions.",
   unifiedBalance:
@@ -28,8 +32,6 @@ export const tooltipDefinitions = {
     "A smart contract that validates state transitions according to application-specific rules during all channel lifecycle operations.",
   channelId:
     "A unique identifier for a channel, computed as the hash of the channel configuration, formatted as a 0x-prefixed hex string (32 bytes).",
-  stateHash:
-    "A cryptographic hash of the concatenated channelId and channel state, formatted as a 0x-prefixed hex string (32 bytes) and used for signature verification.",
   assetSymbol: "A lowercase string identifier for a supported asset.",
   sessionThreshold:
     "Minimum total weight of signatures required to approve app session state updates.",
@@ -39,10 +41,6 @@ export const tooltipDefinitions = {
     "An enum defining the purpose of a state: INITIALIZE (0), OPERATE (1), RESIZE (2), FINALIZE (3).",
   creatorParticipant:
     "The participant at index 0 in a channel who initiates channel creation.",
-  appSessionId:
-    "A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes).",
-  packedState:
-    "A specific encoding of a channelId, state.intent, state.version, state.data, state.allocations, used for signing and signature verification.",
 } as const;
 
 export type TooltipDefinitionKey = keyof typeof tooltipDefinitions;

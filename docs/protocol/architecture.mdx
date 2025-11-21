@@ -131,8 +131,8 @@ This is the preferred closure method. It requires only 1 transaction and is gas-
 1. A participant submits the latest known state to the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> via `challenge()`
 2. Contract verifies signatures and sets channel status to DISPUTE
 3. A challenge period begins (e.g., 24 hours), allowing the other party to respond
-4. If a newer valid state is submitted during the challenge period, it replaces the current state
-5. After the challenge period expires, any participant calls `close()` to finalize with the latest submitted state
+4. If participants decides to cooperate again, they may produce a newer valid state, and any of them can submit it via `checkpoint()`, thus stopping the challenge period and moving the channel from DISPUTE back to ACTIVE status
+5. If not, after the challenge period expires, any participant calls `close()` to finalize with the latest submitted state
 6. Contract distributes funds according to the final state allocations
 
 This mechanism resolves disputes when parties cannot cooperate. It requires a waiting period for security and is more expensive due to multiple transactions.
