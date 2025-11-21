@@ -1,0 +1,212 @@
+---
+sidebar_position: 2
+title: "Data Structures"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Data Structures
+
+## Channel
+
+Represents the configuration of a <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip>.
+
+```solidity
+struct Channel {
+    address[] participants;  // List of participants in the channel
+    address adjudicator;     // Contract that validates state transitions
+    uint64 challenge;        // Duration in seconds for dispute resolution
+    uint64 nonce;           // Unique identifier for the channel
+}
+```
+
+**Fields**:
+
+- `participants`: An ordered array of <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> addresses. Index 0 is typically the <Tooltip content={tooltipDefinitions.creatorRole}>Creator</Tooltip>, index 1 is the <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>.
+- `adjudicator`: Address of the <Tooltip content={tooltipDefinitions.adjudicator}>adjudicator</Tooltip> contract responsible for validating state transitions.
+- `challenge`: Challenge period duration in seconds. Determines a time window when a challenge can be resolved by a counterparty. Otherwise, a channel is considered closed and funds can be withdrawn.
+- `nonce`: A unique number that, combined with other fields, creates a unique <Tooltip content={tooltipDefinitions.channelId}>channel identifier</Tooltip>.
+
+:::info Participant versus Caller Address
+The first <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> address is usually different from the caller (EOA or contract), thus enabling channel operation delegation. This can be fruitful as users can fund channels for other ones.
+:::
+
+## State
+
+Represents a snapshot of <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> state at a point in time.
+
+```solidity
+struct State {
+    StateIntent intent;       // Intent of the state (INITIALIZE, OPERATE, RESIZE, FINALIZE)
+    uint256 version;          // State version incremental number to compare most recent
+    bytes data;               // Application-specific data
+    Allocation[] allocations; // Asset allocation for each participant
+    bytes[] sigs;             // Participant signatures authorizing the packed state payload
+}
+```
+
+**Fields**:
+
+- `intent`: The intent of this state, indicating its purpose (see <Tooltip content={tooltipDefinitions.stateIntent}>StateIntent</Tooltip> enum).
+- `version`: Incremental version number used to compare and validate state freshness. Higher versions supersede lower versions.
+- `data`: Application-specific data which adjudicators can operate on. For a `resize(...)` state must contain `allocationDeltas`. For more information, please check the [resize operation docs](./channel-lifecycle#resize-protocol).
+- `allocations`: Array of allocations defining how funds are distributed.
+- `sigs`: Array of participant signatures over the canonical packed state payload. Order corresponds to the Channel's participants array.
+
+## Allocation
+
+Specifies how a particular amount of a token should be allocated.
+
+```solidity
+struct Allocation {
+    address destination;  // Recipient of funds
+    address token;        // ERC-20 token address
+    uint256 amount;       // Token amount in smallest unit
+}
+```
+
+**Fields**:
+
+- `destination`: Address that will receive the funds when channel closes.
+- `token`: Contract address of the ERC-20 token (or zero address for native currency).
+- `amount`: Amount in the token's smallest unit (wei for ETH, considering decimals for ERC-20).
+
+## Signatures
+
+Signatures in <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> are stored as raw `bytes` so the protocol can validate multiple scheme formats. 
+
+```solidity
+struct Signature {
+    uint8 v;      // Recovery identifier
+    bytes32 r;    // First 32 bytes of signature
+    bytes32 s;    // Second 32 bytes of signature
+}
+```
+
+At a minimum Nitrolite currently recognizes the following signature families (see the [Signature Formats](./signature-formats) reference for the full specification):
+
+- **Raw/Pre-EIP-191 ECDSA** – Signs `keccak256(packedState)` without any prefix.
+- **EIP-191 (version `0x45`)** – Signs a structured message that prefixes the packed state with the Ethereum signed message header and length.
+- **EIP-712 Typed Data** – Signs `keccak256(abi.encode(domainSeparator, hashStruct(state)))`.
+- **EIP-1271 Smart-Contract Signatures** – Arbitrary bytes validated via `isValidSignature` on the signer contract.
+- **EIP-6492 Counterfactual Signatures** – Wraps deployment data to prove a not-yet-deployed ERC-4337 wallet authorized the state.
+
+Refer to the dedicated page for verification order, payload layouts, and implementation guidance.
+
+## Amount
+
+Represents a quantity of a specific token.
+
+```solidity
+struct Amount {
+    address token;    // ERC-20 token address
+    uint256 amount;   // Token amount
+}
+```
+
+## Channel Status
+
+Enum representing the lifecycle stage of a channel.
+
+```solidity
+enum Status {
+    VOID,      // Channel does not exist
+    INITIAL,   // Creation in progress, awaiting all participants
+    ACTIVE,    // Fully funded and operational
+    DISPUTE,   // Challenge period active
+    FINAL      // Ready to be closed and deleted
+}
+```
+
+## Protocol Constants
+
+### Participant Indices
+
+```solidity
+constant uint256 CLIENT_IDX = 0;   // Client/Creator participant index
+constant uint256 SERVER_IDX = 1;   // Server/Clearnode participant index
+constant uint256 PART_NUM = 2;     // Number of participants (always 2)
+```
+
+### Challenge Period
+
+```solidity
+uint256 public constant MIN_CHALLENGE_PERIOD = 1 hours;
+```
+
+The minimum challenge period enforced by the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip>. Channel configurations must specify a challenge period of at least 1 hour.
+
+### EIP-712 Type Hashes
+
+The protocol uses EIP-712 structured data signing with the following domain parameters:
+
+```solidity
+// EIP-712 Domain
+name: "Nitrolite:Custody"
+version: "0.3.0"
+```
+
+Type hashes for state validation:
+
+```solidity
+// State hash computation for signatures
+bytes32 constant STATE_TYPEHASH = keccak256(
+    "AllowStateHash(bytes32 channelId,uint8 intent,uint256 version,bytes data,Allocation[] allocations)Allocation(address destination,address token,uint256 amount)"
+);
+
+// Challenge state hash computation
+bytes32 public constant CHALLENGE_STATE_TYPEHASH = keccak256(
+    "AllowChallengeStateHash(bytes32 channelId,uint8 intent,uint256 version,bytes data,Allocation[] allocations)Allocation(address destination,address token,uint256 amount)"
+);
+```
+
+These type hashes enable human-readable signature prompts in wallets and improve security by preventing signature replay attacks across different contexts.
+
+## Identifier Computation
+
+### Channel Identifier
+
+The <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> MUST be computed as:
+
+```javascript
+channelId = keccak256(
+    abi.encode(
+        channel.participants,
+        channel.adjudicator,
+        channel.challenge,
+        channel.nonce,
+        chainId
+    )
+)
+```
+
+This creates a deterministic, unique identifier for each <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>.
+
+:::info App Session Identifiers
+<Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> use a different computation: `keccak256(JSON.stringify(definition))` where definition includes the app configuration but **not** `chainId`, since sessions are entirely off-chain. See [Off-chain › App Sessions › Session Identifier](../off-chain/app-sessions#session-identifier) for details.
+:::
+
+:::note Deterministic IDs
+Channel IDs are deterministically computed from the channel configuration, ensuring the same configuration always produces the same identifier.
+:::
+
+### Packed State
+
+The legacy state hash concept was removed in v0.3.0 when non-ECDSA signatures were introduced. Instead, participants use the **packed state** payload for signing:
+
+```javascript
+packedState = abi.encode(
+    channelId,
+    state.intent,
+    state.version,
+    state.data,
+    state.allocations
+)
+```
+
+The packed state is simply `abi.encode(channelId, state.intent, state.version, state.data, state.allocations)`. This byte array is fed into the selected signing scheme (EIP-712 hashing, ERC-1271 contract checks, NO_EIP712 fallback, etc.). Each scheme may wrap or hash `packedState` as needed, but the canonical payload MUST be the input.
+
+:::warning Signature Verification
+All state updates MUST be verified by checking signatures against the canonical `packedState` payload (after the signing method applies its required hashing/wrapping) before accepting them on-chain.
+:::

@@ -1,0 +1,184 @@
+---
+sidebar_position: 3
+title: "Architecture"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Architecture
+
+## System Overview
+
+The <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol architecture consists of multiple layers working together to enable scalable, secure <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations:
+
+```mermaid
+%%{init: { "flowchart": { "htmlLabels": true } }}%%
+graph TB
+
+  %% Layered architecture with legible fills for light/dark modes
+
+  subgraph Application["Application Layer"]
+    direction TB
+    APP["Chess, DEX, Gaming, Payments, Custom Logic"]
+  end
+
+  subgraph OffChain["Off-Chain Layer<br/>(Fast Updates)"]
+    direction LR
+    BROKER["Clearnode"]
+  end
+
+  subgraph ClientLayer["Client SDK"]
+    direction TB
+    CLIENT["Client SDK"]
+  end
+
+  subgraph OnChain["On-Chain Layer<br/>(Smart Contracts)"]
+    direction TB
+    CONTRACTS["Custody, Adjudicator contracts"]
+  end
+
+  subgraph Blockchain["Blockchain Layer"]
+    direction TB
+    CHAIN["Ethereum, Polygon, etc."]
+  end
+
+  APP --> CLIENT
+  CLIENT <-->|"Communicate via RPC using NitroRPC protocol"| BROKER
+  CLIENT -. "Operate on-chain state channels" .-> CONTRACTS
+  BROKER -. "Observe events" .-> CONTRACTS
+  CONTRACTS --> CHAIN
+
+  style Application fill:#e1f5ff,stroke:#9ad7ff,color:#111
+  style OffChain fill:#fff4e1,stroke:#ffd497,color:#111
+  style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
+  style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
+
+  linkStyle 2 stroke:#0ea5e9,stroke-width:2px
+
+```
+
+## Communication Patterns
+
+### On-Chain Channel Opening
+
+The <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> opening process follows a coordinated sequence between client and <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip>:
+
+1. Client requests channel creation from <Tooltip content={tooltipDefinitions.clearnode}>a clearnode</Tooltip> via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
+2. The clearnode returns a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> struct and signed initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> (signature at index 1)
+3. Client signs the initial <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> (signature at index 0)
+4. Client calls the `create(...)` method of the Custody Smart Contract on the <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip>, providing the channel and initial state with both signatures
+5. Contract verifies signatures and emits `Opened` event
+6. Channel becomes ACTIVE immediately
+7. The clearnode monitors the `Opened` event and updates its internal state
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Clearnode
+    participant Blockchain
+    
+    Client->>Clearnode: create_channel request
+    Clearnode->>Client: channel struct + signed initial state (clearnode signature)
+    Client->>Client: Add own signature
+    Client->>Blockchain: create() with BOTH signatures
+    Blockchain->>Blockchain: Verify signatures<br/>Set status = ACTIVE
+    Blockchain->>Blockchain: Emit Opened event
+    Blockchain-->>Clearnode: Opened event (monitored)
+    Clearnode->>Client: channel_update notification
+```
+
+:::success Cooperative Opening
+Channel opening requires cooperation between both parties, ensuring mutual agreement before funds are locked.
+:::
+
+### Off-Chain Updates
+
+**Off-Chain Updates**:
+
+1. <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> exchange signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates:
+
+   - **For Payment Channels** (User ↔ <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>): States are exchanged directly via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
+   
+   - **For <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
+
+2. No blockchain transactions required
+
+3. Latest valid state maintained off-chain
+
+4. Can be checkpointed on-chain at any time
+
+   - *Current Implementation Note*: While this is the ideal design goal, the current implementation does not store the state off-chain, so checkpointing is not currently supported. This functionality is under development and will be more enforced in the next version of the protocol.
+
+:::tip Zero Gas Fees
+Off-chain updates are instant (< 1 second) and incur zero gas fees, enabling high-frequency operations.
+:::
+
+### On-Chain Channel Closing
+
+Channels can be closed in two ways:
+
+**Cooperative Closure**:
+1. All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> negotiate and agree on the final <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip>
+2. Each participant signs the final state with `intent = FINALIZE`
+3. Any participant submits the fully-signed final state to the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> via `close()`
+4. Contract verifies all signatures and distributes funds according to final allocations
+5. Channel status becomes FINAL
+
+This is the preferred closure method. It requires only 1 transaction and is gas-efficient.
+
+**Non-Cooperative Closure**:
+1. A participant submits the latest known state to the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> via `challenge()`
+2. Contract verifies signatures and sets channel status to DISPUTE
+3. A challenge period begins (e.g., 24 hours), allowing the other party to respond
+4. If participants decides to cooperate again, they may produce a newer valid state, and any of them can submit it via `checkpoint()`, thus stopping the challenge period and moving the channel from DISPUTE back to ACTIVE status
+5. If not, after the challenge period expires, any participant calls `close()` to finalize with the latest submitted state
+6. Contract distributes funds according to the final state allocations
+
+This mechanism resolves disputes when parties cannot cooperate. It requires a waiting period for security and is more expensive due to multiple transactions.
+
+```mermaid
+graph LR
+    A[Active Channel] --> B{Parties Agree?}
+    B -->|Yes| C[Cooperative Close<br/>Fast, Cheap]
+    B -->|No| D[Challenge-Response<br/>Slow, Secure]
+    
+    style C fill:#90EE90,stroke:#333,color:#111
+    style D fill:#FFB6C1,stroke:#333,color:#111
+```
+
+## Fund Flow
+
+The following diagram illustrates how funds flow through the Nitrolite protocol:
+
+```mermaid
+graph TB
+    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]    
+    B -->|resize| D["Unified Balance<br/>(Clearnode)"]
+    B <-->|resize| C["Channel-Locked<br/>(Custody SC)"]
+    C <-->|resize| D
+    D -->|open/deposit| E["App Sessions<br/>(Application)"]
+    E -->|withdraw / close session| D
+    D -->|resize / close channel| B
+    B -->|withdraw| A
+    
+    style A fill:#90EE90,stroke:#333,color:#111
+    style B fill:#87CEEB,stroke:#333,color:#111
+    style C fill:#FFD700,stroke:#333,color:#111
+    style D fill:#DDA0DD,stroke:#333,color:#111
+    style E fill:#FFA07A,stroke:#333,color:#111
+
+```
+
+**Flow Explanation**:
+
+1. **Deposit**: User deposits ERC-20 tokens into the **Available** balance of the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip>.
+2. **Resize**: Funds can be moved between **Available** balance and **Unified Balance** (managed off-chain by the clearnode).
+3. **Channel Lock**: Funds can also be moved between **Available** balance and **Channel-Locked** balance via resize operations, or between **Channel-Locked** and **Unified Balance**.
+4. **App Sessions**: Funds from the **Unified Balance** can be allocated to <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>.
+5. **Release**: When app sessions close or funds are withdrawn, they return to the **Unified Balance**.
+6. **Unlock/Withdraw**: Funds can be moved back to **Available** balance (via resize/close) and then withdrawn to the **User Wallet**.
+
+:::caution Security Guarantee
+At every stage, funds remain cryptographically secured. Users can always recover their funds according to the latest valid signed state, even if the clearnode becomes unresponsive.
+:::

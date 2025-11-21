@@ -1,0 +1,47 @@
+:root[data-theme='light'] .tippy-box[data-theme~='docusaurus'] {
+    --tooltip-bg: #f0f0f0;      /* light grey */
+    --tooltip-fg: #2c2c2c;      /* dark text */
+    --tooltip-border: rgba(0,0,0,.15);
+  }
+  
+  :root[data-theme='dark'] .tippy-box[data-theme~='docusaurus'] {
+    --tooltip-bg: #2b2f36;      /* dark slate */
+    --tooltip-fg: #f5f7fa;      /* near-white text */
+    --tooltip-border: rgba(255,255,255,.16);
+  }
+  
+  .tippy-box[data-theme~='docusaurus'] {
+    background: var(--tooltip-bg) !important;
+    color: var(--tooltip-fg) !important;
+    border: 1px solid var(--tooltip-border) !important;
+    border-radius: 8px;
+    box-shadow: var(--ifm-global-shadow-lw, 0 2px 8px rgba(0,0,0,.15));
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .tippy-box[data-theme~='docusaurus'] .tippy-content {
+    color: var(--tooltip-fg) !important;
+    padding: 0.5rem 0.625rem;
+  }
+  
+  /* Arrow colors */
+  .tippy-box[data-theme~='docusaurus'][data-placement^='top'] > .tippy-arrow::before {
+    border-top-color: var(--tooltip-bg) !important;
+  }
+  .tippy-box[data-theme~='docusaurus'][data-placement^='bottom'] > .tippy-arrow::before {
+    border-bottom-color: var(--tooltip-bg) !important;
+  }
+  .tippy-box[data-theme~='docusaurus'][data-placement^='left'] > .tippy-arrow::before {
+    border-left-color: var(--tooltip-bg) !important;
+  }
+  .tippy-box[data-theme~='docusaurus'][data-placement^='right'] > .tippy-arrow::before {
+    border-right-color: var(--tooltip-bg) !important;
+  }
+  
+  /* Trigger underline stays as before */
+  .TooltipTrigger {
+    border-bottom: 1px dotted var(--ifm-color-emphasis-300);
+    cursor: help;
+  }
+  

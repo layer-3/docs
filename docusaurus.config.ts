@@ -114,6 +114,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/docs/protocol/introduction',
+          label: 'Protocol',
+          position: 'left',
+        },
+        {
           to: '/docs/manuals',
           label: 'Manuals',
           position: 'left',
@@ -200,6 +205,12 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
       defaultLanguage: 'javascript',
+    },
+    mermaid: {
+      theme: {
+        light: 'default',
+        dark: 'default',
+      },
     },
   } satisfies Preset.ThemeConfig,
 };

@@ -1,0 +1,566 @@
+---
+sidebar_position: 10
+title: Implementation Checklist
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Implementation Checklist
+
+Comprehensive checklist for building a compliant <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> client with security best practices.
+
+:::tip Progressive Implementation
+You don't need to implement everything at once. Start with Core Protocol and On-Chain Integration, then add Off-Chain RPC and advanced features progressively.
+:::
+
+---
+
+## Core Protocol Support
+
+Foundation requirements for any <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> implementation.
+
+### Identifier Computation
+
+- [ ] **Compute <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> from Channel struct**
+  - Hash participants, adjudicator, challenge, nonce using keccak256
+  - Verify deterministic computation (same inputs = same output)
+  - Reference: [Data Structures](../protocol/on-chain/data-structures#channel-identifier)
+
+- [ ] **Compute payload hash (packedState) from channel state**
+  - Compute `packedState = keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
+  - Ensure proper ABI encoding
+  - Reference: [Data Structures](../protocol/on-chain/data-structures#packed-state)
+
+### Signature Handling
+
+- [ ] **Generate signatures**
+  - Support ECDSA signatures (standard for EOA wallets)
+  - Encode as `bytes` format (65 bytes: r + s + v)
+  - For on-chain: sign raw `packedState` hash
+  - For off-chain RPC: sign EIP-712 typed data structures
+  - Reference: [Signature Standards](./protocol-reference#signature-standards)
+
+- [ ] **Verify signatures**
+  - Recover signer address from signature
+  - Validate signer matches expected <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip>
+  - Support EIP-1271 for smart contract wallets
+  - Support EIP-6492 for counterfactual contracts
+  - Handle EIP-191 for personal signatures where applicable
+
+:::caution Signature Standards
+On-chain signatures use raw `packedState` hash for chain-agnostic compatibility. Off-chain RPC messages use EIP-712 typed data for user-facing signatures (e.g., authentication). Refer to [Signature Standards](./protocol-reference#signature-standards) for details.
+:::
+
+---
+
+## On-Chain Integration
+
+Smart contract interactions for <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle management.
+
+### Blockchain Connection
+
+- [ ] **Connect to Ethereum-compatible blockchain**
+  - Support multiple chains (Ethereum, Polygon, Arbitrum, Optimism, Base)
+  - Use Web3 provider (e.g., Infura, Alchemy)
+  - Handle network switching
+  - Implement retry logic for failed connections
+
+- [ ] **Load contract ABIs**
+  - <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> ABI
+  - <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> contract ABI (application-specific)
+  - ERC-20 token ABI
+
+### Channel Operations
+
+- [ ] **Create channel (`Custody.create`)**
+  - Verify state has `intent = INITIALIZE` (1) and `version = 0`
+  - Preferred: include both participant signatures to start in `ACTIVE`
+  - Legacy: single sig → `INITIAL`; wait for `join()` to reach `ACTIVE`
+  - Handle ERC-20 approvals only if depositing at creation (legacy flow)
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#creation-phase)
+
+- [ ] **Monitor activation / join**
+  - Subscribe to `Opened` and `Joined` events
+  - In legacy flow, ensure `join()` transitions `INITIAL` → `ACTIVE`
+
+- [ ] **Cooperative closure (`Custody.close`)**
+  - Build state with `intent = FINALIZE` (3), `version = current+1`, `data = "0x"`
+  - Require both participant signatures; submit single tx
+  - Confirm funds destination and allocations match expectations
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#cooperative-closure)
+
+- [ ] **Dispute / challenge**
+  - Persist latest fully signed state for `challenge()`
+  - During `DISPUTE`, accept newer state via `checkpoint()` (on-chain) if available
+  - After challenge timeout, finalize with `close()` using challenged state
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#challenge-phase)
+
+### Event Listening
+
+- [ ] **Listen to contract events**
+  - `Opened(channelId, channel, deposits)` - Channel created and active
+  - `Challenged(channelId, state, expiration)` - Dispute started (expiration = challenge period end)
+  - `Closed(channelId, allocations)` - Channel finalized
+  - `Resized(channelId)` - Channel capacity changed
+
+- [ ] **Process events in order**
+  - Maintain event log cursor/checkpoint
+  - Handle blockchain reorganizations
+  - Implement event replay for recovery
+
+- [ ] **Update internal state based on events**
+  - Sync <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> status (INITIAL → ACTIVE → DISPUTE → FINAL)
+  - Update <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> when channels open/close
+  - Notify users of status changes
+
+:::tip Event Recovery
+Implement event recovery for when your application restarts or loses connection. Replay events from last checkpoint to current block.
+:::
+
+---
+
+## Off-Chain RPC
+
+RPC communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip>.
+
+### Connection Management
+
+- [ ] **Establish RPC connection**
+  - Connect to clearnode RPC endpoint
+  - Handle connection timeouts
+  - Implement exponential backoff for reconnection
+  - Reference: [Off-Chain Overview](../off-chain/overview)
+
+- [ ] **Implement message format**
+  - Compact JSON array format: `[requestId, method, params, timestamp]`
+  - Request wrapper: `{req: [...], sig: [...]}`
+  - Response wrapper: `{res: [...], sig: [...]}`
+  - Error format: `{res: [requestId, "error", {error: "message"}, timestamp], sig: [...]}`
+  - Reference: [Message Format](../off-chain/message-format)
+
+- [ ] **Handle network outages gracefully**
+  - Detect connection loss
+  - Queue pending requests
+  - Reconnect automatically
+  - Resubmit queued requests after reconnection
+
+### Authentication
+
+- [ ] **Implement 3-step flow (auth_request → auth_challenge → auth_verify)**
+  - Generate <Tooltip content={tooltipDefinitions.sessionKey}>session keypair</Tooltip> locally; never transmit the private key
+  - `auth_request`: public, unsigned; send address, session_key, allowances (optional), scope (optional, not enforced), **expires_at (required, ms)**
+  - Store the exact parameters; response method is `auth_challenge` with `challenge_message`
+  - `auth_verify`: sign EIP-712 Policy typed data with **main wallet** (not session key) including challenge, wallet, session_key, expires_at, scope, allowances; or pass `jwt` to reuse without signature
+  - Response returns `{address, session_key, jwt_token, success}`; use session key for all subsequent private calls
+  - Reference: [Authentication](../off-chain/authentication)
+
+- [ ] **Session key management**
+  - Specify allowances per asset (unrestricted if omitted); enforce spending caps on every debit
+  - Set `expires_at`; re-authenticate before expiry; handle “session expired” errors
+  - Rotate/revoke session keys as needed; avoid reusing keys across applications
+
+- [ ] **Request signing & verification**
+  - Client signs all private RPC requests with session key; validate clearnode signatures on responses
+  - Ensure canonical JSON serialization of `req`/`res` arrays before hashing/signing
+
+### Method Implementation
+
+- [ ] **Implement all required methods**
+  - **Authentication**: auth_request, auth_verify
+  - **Channel Management**: create_channel, close_channel, resize_channel
+  - **Transfers**: transfer
+  - **App Sessions**: create_app_session, submit_app_state, close_app_session
+  - **Queries**: get_config, get_assets, get_app_definition, get_channels, get_app_sessions, get_ledger_balances, get_ledger_entries, get_ledger_transactions, get_rpc_history, get_user_tag, get_session_keys, ping
+  - Reference: [Queries](../off-chain/queries)
+
+- [ ] **Handle server notifications**
+  - `bu` (Balance Update) - Balance changed
+  - `cu` (Channel Update) - Channel status changed
+  - `tr` (Transfer) - Incoming/outgoing transfer
+  - `asu` (App Session Update) - App session state changed
+  - Reference: [Notifications](../off-chain/queries#notifications)
+
+:::tip Method Prioritization
+Start with: authentication → create_channel → transfer → get_ledger_balances. Add other methods as needed for your use case.
+:::
+
+---
+
+## State Management
+
+Off-chain state tracking and synchronization.
+
+### State Storage
+
+- [ ] **Store latest signed states securely**
+  - Save complete state struct (data, allocations, sigs)
+  - Include channelId and version
+  - Persist to durable storage (database, filesystem)
+  - Implement atomic updates
+
+- [ ] **Track state versions**
+  - Maintain version counter per <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> and <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
+  - Reject states with version ≤ current version
+  - Increment version for each new state
+
+- [ ] **Implement unified balance tracking**
+  - Aggregate funds across all chains
+  - Track funds in unified account vs channel escrow vs app session accounts
+  - Update on <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> open/close and transfers
+  - Reference: [Transfers](../off-chain/transfers)
+
+- [ ] **Handle app session state updates**
+  - Verify quorum met (sum of weights ≥ quorum)
+  - Track locked funds per session
+  - Release funds on session close
+  - Reference: [App Sessions](../off-chain/app-sessions)
+
+### State Validation
+
+- [ ] **Verify signatures before accepting states**
+  - Check all required signatures present
+  - Validate each signature against expected signer
+  - Ensure quorum met for <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
+
+- [ ] **Validate state transitions**
+  - For channels: verify StateIntent (INITIALIZE, RESIZE, FINALIZE)
+  - For app sessions: verify quorum and allocation rules
+  - Verify version increments correctly
+  - For closure: allocations valid and complete
+
+- [ ] **Maintain state history**
+  - Keep N most recent states per <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>
+  - Useful for dispute resolution
+  - Implement pruning strategy for old states
+
+---
+
+## Security
+
+Critical security practices for production deployments.
+
+### Key Management
+
+- [ ] **Secure key storage**
+  - Never log private keys
+  - Use secure key storage (keychain, HSM, encrypted database)
+  - Implement key rotation
+  - Separate signing keys from storage keys
+
+- [ ] **Implement signature verification**
+  - Verify all incoming signatures
+  - Validate signer matches expected participant
+  - Check signature freshness (timestamp)
+
+- [ ] **Never share private keys or session key private keys**
+  - Session keys stay on client
+  - Never transmit private keys over network
+  - Use separate keys for different purposes
+
+### Challenge Monitoring
+
+- [ ] **Monitor blockchain for channel events**
+  - Subscribe to all channels you participate in
+  - Alert on `Challenged` events
+  - Automated response to challenges
+
+- [ ] **Respond to challenges within challenge period**
+  - Maintain latest valid state
+  - Submit newer state if challenged with old state
+  - Set alerts for challenge expiration
+
+- [ ] **Implement automated challenge response**
+  - Detect challenges automatically
+  - Submit newer state without manual intervention
+  - Fallback to manual response if needed
+
+### Session Key Management
+
+- [ ] **Session key allowance enforcement**
+  - Track spending per session key
+  - Reject operations exceeding allowance
+  - Alert user when approaching limit
+
+- [ ] **Validate spending limits client-side**
+  - Check allowance before submitting operations
+  - Provide clear error messages
+  - Offer to re-authenticate with higher allowance
+
+### Best Practices
+
+- [ ] **Never sign two states with same version number**
+  - Maintain version counter
+  - Reject duplicate versions
+  - Use atomic version increment
+
+- [ ] **Keep track of latest state you've signed**
+  - Store all signed states
+  - Never sign older version
+  - Use for dispute resolution
+
+- [ ] **Set appropriate challenge periods**
+  - Balance security (longer) vs UX (shorter)
+  - Consider block time and congestion
+  - Minimum: 1 hour (enforced by Custody Contract `MIN_CHALLENGE_PERIOD`)
+
+- [ ] **Validate all inputs thoroughly**
+  - Check address formats
+  - Verify amounts are positive
+  - Validate asset symbols
+  - Sanitize user input
+
+- [ ] **Log all state transitions for auditing**
+  - Timestamp all operations
+  - Record signatures and signers
+  - Maintain audit trail
+  - Implement log rotation
+
+---
+
+## Error Handling
+
+Robust error handling for production reliability.
+
+### RPC Errors
+
+- [ ] **Handle error responses**
+  - Error response format: `{res: [requestId, "error", {error: "descriptive message"}, timestamp], sig: [...]}`
+  - No numeric error codes; errors have descriptive messages only
+  - Common errors: "authentication required", "insufficient balance", "channel not found", "session expired, please re-authenticate"
+  - Always check if response method is `"error"`
+  - Reference: [Error Handling](./protocol-reference#error-handling)
+
+### Transaction Errors
+
+- [ ] **Implement retry logic for critical operations**
+  - Exponential backoff
+  - Maximum retry attempts
+  - Idempotent operations
+
+- [ ] **Handle gas estimation failures**
+  - Provide manual gas limit option
+  - Retry with higher gas limit
+  - Alert user to potential issues
+
+- [ ] **Handle transaction reverts**
+  - Parse revert reason
+  - Provide helpful error messages
+  - Suggest corrective actions
+
+---
+
+## Testing
+
+Comprehensive testing strategy for confidence in production.
+
+### Unit Testing
+
+- [ ] **Test signature generation and verification**
+  - Known test vectors
+  - Round-trip signing
+  - Invalid signature rejection
+
+- [ ] **Test identifier computation**
+  - channelId determinism
+  - packedState (payload hash) consistency
+  - Known test vectors
+
+- [ ] **Test state validation logic**
+  - Version ordering
+  - Allocation sum validation
+  - StateIntent validation (INITIALIZE, RESIZE, FINALIZE for channels)
+
+### Integration Testing
+
+- [ ] **Test both cooperative and challenge closure paths**
+  - Cooperative close (happy path)
+  - Challenge initiation
+  - Challenge response
+  - Challenge timeout
+
+- [ ] **Test multi-chain operations**
+  - Open channels on different chains
+  - Cross-chain transfers (via unified balance)
+  - Chain-specific edge cases
+
+- [ ] **Test network reconnection**
+  - Simulate network interruption
+  - Verify automatic reconnection
+  - Check state synchronization
+
+### End-to-End Testing
+
+- [ ] **Test complete user journeys**
+  - Authentication → Channel Open → Transfer → Channel Close
+  - App session creation → State updates → Closure
+  - Error scenarios and recovery
+
+- [ ] **Test with real clearnodes**
+  - Testnet deployment
+  - Mainnet staging environment
+  - Monitor performance and errors
+
+---
+
+## Performance Optimization
+
+Optimize for production workloads.
+
+### Efficiency
+
+- [ ] **Minimize blockchain queries**
+  - Cache contract addresses
+  - Batch event queries
+  - Use multicall for multiple reads
+
+- [ ] **Implement connection pooling**
+  - Reuse RPC connections
+  - Pool blockchain RPC connections
+  - Implement connection limits
+
+- [ ] **Optimize state storage**
+  - Index by channelId and app_session_id
+  - Prune old states
+  - Compress stored states
+
+### Monitoring
+
+- [ ] **Implement health checks**
+  - RPC connection status
+  - Blockchain connection status
+  - Event listener status
+  - Use `ping` method for clearnode health
+
+- [ ] **Monitor latency**
+  - RPC request/response time
+  - Transaction confirmation time
+  - Event processing delay
+
+- [ ] **Track error rates**
+  - Failed transactions
+  - RPC errors
+  - Signature verification failures
+
+---
+
+## Documentation
+
+Documentation for maintainability.
+
+### Code Documentation
+
+- [ ] **Document adjudicator-specific requirements clearly**
+  - State validation rules
+  - Version comparison logic
+  - Gas cost estimates
+
+- [ ] **Document custom state formats**
+  - Application-specific data structures
+  - Serialization format
+  - Version compatibility
+
+### User Documentation
+
+- [ ] **Provide integration guide**
+  - Setup instructions
+  - Code examples
+  - Common patterns
+
+- [ ] **Document error messages**
+  - User-friendly descriptions
+  - Suggested actions
+  - Support contact information
+
+---
+
+## Deployment Checklist
+
+Pre-production validation.
+
+### Pre-Production
+
+- [ ] **Audit smart contracts thoroughly before deployment**
+  - Use established auditors
+  - Test on testnets first
+  - Gradual mainnet rollout
+
+- [ ] **Test on testnet extensively**
+  - All user flows
+  - Error scenarios
+  - Performance under load
+
+- [ ] **Implement monitoring and alerting**
+  - Error rate alerts
+  - Performance degradation alerts
+  - Challenge event alerts
+
+### Production
+
+- [ ] **Use appropriate challenge periods**
+  - Longer for high-value channels
+  - Consider network congestion
+  - Balance security vs UX
+
+- [ ] **Implement proper key management**
+  - Hardware security modules (HSM)
+  - Key rotation policy
+  - Backup and recovery procedures
+
+- [ ] **Set up incident response procedures**
+  - On-call rotation
+  - Escalation procedures
+  - Communication plan
+
+---
+
+## Compliance Levels
+
+### Minimal (User Client)
+
+Essential for basic client functionality:
+- Core Protocol Support ✓
+- On-Chain Integration (create, close) ✓
+- Off-Chain RPC (auth, transfer, basic queries) ✓
+- Basic Security ✓
+
+### Standard (Production Application)
+
+Add:
+- Complete method implementation ✓
+- State Management ✓
+- Comprehensive Error Handling ✓
+- Testing ✓
+
+### Advanced (Clearnode Implementation)
+
+Add:
+- Server-side RPC routing and authentication ✓
+- Event-driven architecture ✓
+- Unified balance management (double-entry ledger) ✓
+- App session coordination ✓
+- High availability and fault tolerance ✓
+
+---
+
+## Next Steps
+
+1. **Start Simple**: Implement Core Protocol + Basic On-Chain integration
+2. **Add RPC**: Connect to clearnode, implement authentication and basic methods
+3. **Enhance Security**: Implement all security best practices
+4. **Test Thoroughly**: Unit, integration, and end-to-end tests
+5. **Deploy Gradually**: Testnet → Staging → Production
+
+:::success Ready to Build
+Use this checklist as a guide throughout your implementation. Check off items as you complete them and refer back to detailed documentation for each section.
+:::
+
+---
+
+## Resources
+
+- **Communication Flows**: [Communication Flows](./communication-flows)
+- **Reference**: [Protocol Reference](./protocol-reference)
+- **Channel Lifecycle**: [Channel Lifecycle](../on-chain/channel-lifecycle)
+- **RPC Methods**: [Queries](../off-chain/queries)
+- **Example Code**: [Integration Tests](https://github.com/layer-3/nitrolite/tree/main/integration)

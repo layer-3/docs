@@ -1,0 +1,63 @@
+---
+sidebar_position: 2
+title: "Terminology"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Terminology
+
+## Core Concepts
+
+**Channel**: {tooltipDefinitions.channel}
+
+**State**: {tooltipDefinitions.channelState}
+
+**Participant**: {tooltipDefinitions.participant}
+
+**Clearnode**: {tooltipDefinitions.clearnode}
+
+**Creator**: {tooltipDefinitions.creatorParticipant}
+
+**App Sessions**: {tooltipDefinitions.appChannel}
+
+**Unified Balance**: {tooltipDefinitions.unifiedBalance}
+
+**Session Key**: {tooltipDefinitions.sessionKey}
+
+## Identifiers
+
+**channelId**: {tooltipDefinitions.channelId}
+
+**packedState**: {tooltipDefinitions.packedState}
+
+**requestId**: A unique identifier for an RPC request, used for correlating requests and responses formatted as a 0x-prefixed hex string (32 bytes).
+
+**appSessionId**: {tooltipDefinitions.appSessionId} Used for all subsequent operations on that specific app session.
+
+**accountId**: An identifier for an account or app session within the unified ledger. Can be either a 0x-prefixed hex string or a wallet address.
+
+**chainId**: {tooltipDefinitions.chainId} Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
+
+**assetSymbol**: {tooltipDefinitions.assetSymbol} Asset symbols are consistent across chains.
+
+**walletAddress**: {tooltipDefinitions.walletAddress} Used to identify participants in channels and app sessions.
+
+**userId**: Identifies a user after authentication to the Clearnode. Currently, this is always equivalent to the user's walletAddress.
+
+## On-Chain Contracts
+
+**Custody Contract**: The main on-chain contract implementing the Nitrolite protocol. It provides the functionality to lock and unlock funds; create, close and challenge a channel; track channel state, and coordinate with adjudicators to validate state transitions on state updates.
+
+**Adjudicator**: A smart contract that defines the rules for validating state transitions during all channel lifecycle operations. The adjudicator's `adjudicate(...)` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
+
+## Protocol Components
+
+**Nitrolite**: The on-chain smart contract protocol.
+
+**Nitro RPC**: The off-chain communication protocol.
+
+:::tip Quick Reference
+These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.
+:::

@@ -1,0 +1,61 @@
+---
+sidebar_position: 3
+title: "Signature Formats"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Signature Formats
+
+Nitrolite treats each signature inside `State.sigs` as an opaque `bytes` value. At verification time the <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> inspects that payload to detect which validation flow to run. This page captures the current formats the protocol accepts and how they are evaluated.
+
+## Supported Formats
+
+### Raw / Pre-EIP-191 ECDSA
+
+- Signs the raw <Tooltip content={tooltipDefinitions.packedState}>packedState</Tooltip> with no prefix.
+- Produces the canonical `(v, r, s)` tuple encoded as 65 bytes.
+- Recommended for chain-agnostic clients or when hardware-wallet compatibility is required.
+
+### EIP-191 (`0x45`) Ethereum Signed Message
+
+- Payload: `keccak256(\"\\x19Ethereum Signed Message:\\n\" + len(packedState) + packedState)`.
+- Matches the UX most wallets expose when calling `eth_sign`.
+- Nitrolite stores the resulting `(v, r, s)` so adjudicators can re-create the prefixed hash for verification.
+
+### EIP-712 Typed Data
+
+- Payload: `keccak256(\"\\x19\\x01\" ++ domainSeparator ++ hashStruct(state))`.
+- Domain separator includes chain ID, verifying contract, and an application-specific salt to prevent replay.
+- Provides the strongest replay protection when both parties agree on the domain definition.
+
+### EIP-1271 Smart-Contract Signatures
+
+- Supports smart contract wallets (multi-sigs, modules, account abstraction).
+- The `bytes` payload is passed to the signer's `isValidSignature(hash, bytes signature)` function.
+- Implementations can encode arbitrary metadata (e.g., batched approvals, guardians).
+
+### EIP-6492 Counterfactual Signatures
+
+- Wraps an EIP-1271 signature with deployment bytecode and a detection suffix `0x6492649264926492649264926492649264926492649264926492649264926492`.
+- Allows a not-yet-deployed ERC-4337 smart wallet to attest to a state.
+- During verification Nitrolite simulates or deploys the wallet, then forwards the inner signature to the regular EIP-1271 flow.
+
+## Verification Order
+
+The Custody contract attempts the following strategies in order:
+
+1. **EIP-6492** – If the detection suffix is present, unwrap and validate as counterfactual.
+2. **EIP-1271** – If the signer currently has contract code, call `isValidSignature`.
+3. **ECDSA / EIP-191 / EIP-712** – Otherwise treat it as an externally owned account signature and recover the signer using the appropriate hash for the advertised format.
+
+Implementations should persist metadata about which scheme was used so that adjudicators and monitoring services can reproduce the expected hash locally.
+
+## Implementation Notes
+
+- `bytes[] sigs` preserves the ordering of channel participants, but each entry may come from a different signature family.
+- Wallets should expose the format they used when signing to aid debugging.
+- Future versions may extend this list; storing opaque bytes ensures backward compatibility.
+
+
