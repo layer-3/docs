@@ -250,13 +250,13 @@ When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> i
 
 ```mermaid
 graph TB
-    A[Alice's Unified Account<br/>Balance: 200 USDC] 
+    A["Alice's Unified Account<br/>Balance: 200 USDC"] 
     
-    B[Create App Session<br/>Alice transfers 100 USDC]
+    B["Create App Session<br/>Alice transfers 100 USDC"]
     
-    C[Alice's Unified Account<br/>Balance: 100 USDC]
+    C["Alice's Unified Account<br/>Balance: 100 USDC"]
     
-    D[App Session Account<br/>Balance: 100 USDC<br/>(Beneficiary: Alice)]
+    D["App Session Account<br/>Balance: 100 USDC<br/>(Beneficiary: Alice)"]
     
     A -->|create_app_session| B
     B --> C

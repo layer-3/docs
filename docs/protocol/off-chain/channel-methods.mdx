@@ -22,7 +22,7 @@ Payment channels are the foundation of the Nitrolite protocol. They lock funds o
 stateDiagram-v2
     [*] --> Requesting: create_channel (off-chain)
     Requesting --> OnChain: User submits create() transaction
-    OnChain --> ACTIVE: Contract locks user funds (status: open)
+    OnChain --> ACTIVE: Contract locks user funds (status = open)
 
     ACTIVE --> Resizing: resize_channel (optional)
     Resizing --> ACTIVE: User submits resize() transaction
@@ -31,7 +31,8 @@ stateDiagram-v2
     Closing --> [*]: Funds distributed
 
     ACTIVE --> Disputing: challenge() (non-cooperative)
-    Disputing --> [*]: Challenge period → close()
+    Disputing --> [*]: Challenge period then close()
+
 
 ```
 
