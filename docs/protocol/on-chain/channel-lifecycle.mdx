@@ -16,7 +16,10 @@ The lifecycle of a <Tooltip content={tooltipDefinitions.channel}>channel</Toolti
 stateDiagram-v2
     [*] --> VOID
     VOID --> INITIAL: create()
+    VOID --> ACTIVE: create() (sigs from all participants)
     INITIAL --> ACTIVE: join() (all participants)
+    ACTIVE --> ACTIVE: resize()
+    ACTIVE --> ACTIVE: checkpoint()
     ACTIVE --> DISPUTE: challenge()
     ACTIVE --> FINAL: close() (cooperative)
     DISPUTE --> ACTIVE: checkpoint() (newer state)
@@ -273,19 +276,6 @@ During the challenge period, any participant:
 - Submits a more recent valid state by calling `checkpoint()`
 - If the new state is valid and more recent (as determined by the adjudicator or IComparable interface), the contract updates the stored state, resets the challenge period, and returns the channel to `ACTIVE` status
 
-```mermaid
-graph TB
-    A[Challenge Initiated] --> B{Response Received?}
-    B -->|Yes - Newer State| C[Update State]
-    C --> D[Reset Timer]
-    D --> B
-    B -->|No - Timer Expires| E[Proceed to Close]
-    
-    style A fill:#FFB6C1
-    style C fill:#87CEEB
-    style E fill:#90EE90
-```
-
 ### Challenge Period Elapse
 
 After the challenge period expires, any participant:
@@ -315,9 +305,9 @@ stateDiagram-v2
     note right of Dispute: Challenge period active<br/>Parties can submit<br/>newer states
 ```
 
-## Resize Protocol
+## Resize Protocol {#resize-protocol}
 
-**Purpose**: Adjust <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> allocations by locking or unlocking funds **without closing the channel**.
+**Purpose**: Adjust funds locked in the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> by locking or unlocking funds **without closing the channel**.
 
 **Process**:
 
@@ -371,8 +361,8 @@ sequenceDiagram
 ```
 
 **Use Cases**:
-- Increasing allocations (positive delta: adding funds)
-- Decreasing allocations (negative delta: removing funds)
+- Increasing funds locked in the channel (positive delta: adding funds)
+- Decreasing funds locked in the channel (negative delta: removing funds)
 - Adjusting fund distribution while maintaining channel continuity
 
 :::tip In-Place Update

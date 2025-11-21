@@ -40,11 +40,11 @@ Transfers provide the speed and convenience of traditional payment networks whil
 
 ### Usage
 
-Transfer funds from the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to another user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation executed as a database transaction on <Tooltip content={tooltipDefinitions.clearnode}>the clearnode</Tooltip>, resulting in instant settlement. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. The security guarantee comes from the underlying on-chain channels that back the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
+Transfer funds from the authenticated user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> to another user's <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> within the Yellow Network. This is a purely off-chain operation, which results in instant settlement. The transfer updates internal ledger entries using double-entry bookkeeping principles and creates a transaction record for both parties. The security guarantee comes from the underlying on-chain channels that back the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>.
 
 ### When to Use
 
-When sending funds to another Yellow Network user. Common use cases include peer-to-peer payments, merchant payments, tipping, and rapid fund redistribution between users.
+When sending funds to another Yellow Network user. Common use cases include peer-to-peer payments, merchant payments, tipping.
 
 ### Prerequisites
 
@@ -53,7 +53,7 @@ When sending funds to another Yellow Network user. Common use cases include peer
 - Recipient must be identified by valid <Tooltip content={tooltipDefinitions.participant}>wallet address</Tooltip> or user tag
 
 :::info Recipient Requirements
-The recipient does not need to have an existing balance or account on the clearnode. Transfers can be sent to any valid wallet address, and the recipient's account will be created automatically if it doesn't exist.
+The recipient does not need to have an existing balance or account on the clearnode. Transfers can be sent to any valid wallet address, and the recipient's account will be created automatically on the first login if it doesn't exist.
 :::
 
 ### Request
@@ -181,13 +181,14 @@ sequenceDiagram
     Clearnode->>Clearnode: Record transaction
 
     Note over Clearnode: 4. Send Responses & Notifications
-    Clearnode->>Alice: {ledger_transactions}
+    Note over Bob: 5. Balance Updated
+    Bob->>Bob: Balance +50 USDC
+
+    Clearnode->>Alice: tr (transfer) notification
     Clearnode->>Alice: bu (balance update) notification
     Clearnode->>Bob: tr (transfer) notification
     Clearnode->>Bob: bu (balance update) notification
-
-    Note over Bob: 5. Balance Updated
-    Bob->>Bob: Balance +50 USDC
+    Clearnode->>Alice: response
 
 ```
 
@@ -214,9 +215,12 @@ A user-facing transaction record is created for each asset being transferred, co
 
 #### 4. Sends Notifications
 
-- **Sender** receives response with transaction details
 - **Both parties** receive `tr` (transfer) notification with transaction details
 - **Both parties** receive `bu` (balance update) notification with updated balances
+
+#### 5. Response
+
+- **Sender** receives response with transaction details
 
 ---
 
@@ -247,25 +251,10 @@ The ledger system maintains three types of accounts:
 
 3. **Channel Escrow Account**: Temporary account that locks funds when user requests blockchain operations like resize. Funds remain in this account until the transaction is confirmed on-chain.
 
----
 
-## Error Cases
 
-:::note Error Format
-The protocol does not use numeric error codes. Errors are returned as method `"error"` with descriptive messages.
-:::
+{/* TODO: Document actual error codes from implementation. Currently removed as placeholder errors were inaccurate. */}
 
-Common error scenarios:
-
-| Error | Description | Recovery |
-|-------|-------------|----------|
-| **Authentication required** | Not authenticated | Complete [authentication](./authentication) |
-| **Insufficient available balance** | Sender doesn't have enough funds in unified account | Check balance with `get_ledger_balances`, deposit or transfer funds |
-| **Invalid destination address** | Malformed wallet address | Verify address format (0x-prefixed, 20 bytes) |
-| **Invalid allocation format** | Negative amount or invalid structure | Check allocation structure matches API requirements |
-| **Cannot transfer to self** | Sender and recipient are the same | Use different recipient address |
-| **Asset not supported** | Asset not available on clearnode | Use `get_assets` to see supported assets |
-| **Amount too small** | Below minimum transfer amount | Increase transfer amount |
 
 ---
 

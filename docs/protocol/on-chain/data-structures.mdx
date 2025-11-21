@@ -74,7 +74,7 @@ struct Allocation {
 
 ## Signatures
 
-Signatures in <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> are stored as raw `bytes` so the protocol can validate multiple scheme formats. Each signature ultimately resolves to the tuple `(v, r, s)` used by ECDSA-compatible verifiers, but additional metadata can be embedded in the byte payload when required by the signing standard.
+Signatures in <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> are stored as raw `bytes` so the protocol can validate multiple scheme formats. 
 
 ```solidity
 struct Signature {
@@ -117,23 +117,6 @@ enum Status {
     DISPUTE,   // Challenge period active
     FINAL      // Ready to be closed and deleted
 }
-```
-
-**State Transitions**:
-
-```mermaid
-stateDiagram-v2
-    [*] --> VOID
-    VOID --> INITIAL: create()
-    INITIAL --> ACTIVE: join() (all participants)
-    ACTIVE --> DISPUTE: challenge()
-    ACTIVE --> FINAL: close() (cooperative)
-    DISPUTE --> ACTIVE: checkpoint() (newer state)
-    DISPUTE --> FINAL: challenge period expires
-    FINAL --> [*]
-    
-    note right of ACTIVE: Operational state<br/>Off-chain updates occur here
-    note right of DISPUTE: Challenge period active<br/>Parties can submit newer states
 ```
 
 ## Protocol Constants
@@ -210,7 +193,7 @@ Channel IDs are deterministically computed from the channel configuration, ensur
 
 ### Packed State
 
-The legacy state hash concept was removed in v0.3.0 when non-ECDSA signatures were introduced. Instead, participants sign the **packed state** payload directly:
+The legacy state hash concept was removed in v0.3.0 when non-ECDSA signatures were introduced. Instead, participants use the **packed state** payload for signing:
 
 ```javascript
 packedState = abi.encode(

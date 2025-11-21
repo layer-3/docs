@@ -13,6 +13,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 The <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol architecture consists of multiple layers working together to enable scalable, secure <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations:
 
 ```mermaid
+%%{init: { "flowchart": { "htmlLabels": true } }}%%
 graph TB
 
   %% Layered architecture with legible fills for light/dark modes
@@ -22,7 +23,7 @@ graph TB
     APP["Chess, DEX, Gaming, Payments, Custom Logic"]
   end
 
-  subgraph OffChain["Off-Chain Layer (Fast Updates)"]
+  subgraph OffChain["Off-Chain Layer<br/>(Fast Updates)"]
     direction LR
     BROKER["Clearnode"]
   end
@@ -32,7 +33,7 @@ graph TB
     CLIENT["Client SDK"]
   end
 
-  subgraph OnChain["On-Chain Layer (Smart Contracts)"]
+  subgraph OnChain["On-Chain Layer<br/>(Smart Contracts)"]
     direction TB
     CONTRACTS["Custody, Adjudicator contracts"]
   end
@@ -48,14 +49,13 @@ graph TB
   BROKER -. "Observe events" .-> CONTRACTS
   CONTRACTS --> CHAIN
 
-  %% Subgraph fills (kept light for both themes)
   style Application fill:#e1f5ff,stroke:#9ad7ff,color:#111
   style OffChain fill:#fff4e1,stroke:#ffd497,color:#111
   style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
   style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
 
-  %% Emphasize the RPC link (index 2 in the edge list above)
   linkStyle 2 stroke:#0ea5e9,stroke-width:2px
+
 ```
 
 ## Communication Patterns
@@ -153,12 +153,13 @@ The following diagram illustrates how funds flow through the Nitrolite protocol:
 
 ```mermaid
 graph TB
-    A[User Wallet<br/>ERC-20] -->|deposit| B[Available<br/>Custody Contract]
-    B -->|create/resize| C[Channel-Locked<br/>Custody SC]
-    C -->|off-chain updates| D[Unified Balance<br/>Clearnode]
-    D -->|open/deposit| E[App Sessions<br/>Application]
+    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]    
+    B -->|resize| D["Unified Balance<br/>(Clearnode)"]
+    B <-->|resize| C["Channel-Locked<br/>(Custody SC)"]
+    C <-->|resize| D
+    D -->|open/deposit| E["App Sessions<br/>(Application)"]
     E -->|withdraw / close session| D
-    C -->|resize / challenge / close channel| B
+    D -->|resize / close channel| B
     B -->|withdraw| A
     
     style A fill:#90EE90,stroke:#333,color:#111
@@ -166,17 +167,17 @@ graph TB
     style C fill:#FFD700,stroke:#333,color:#111
     style D fill:#DDA0DD,stroke:#333,color:#111
     style E fill:#FFA07A,stroke:#333,color:#111
+
 ```
 
 **Flow Explanation**:
 
-1. **Deposit**: User deposits ERC-20 tokens into <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip>
-2. **Lock**: Funds move from "available" to "locked" when <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is created or resized
-3. **Off-Chain**: Channel-locked funds become part of <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, managed off-chain by the clearnode
-4. **App Sessions**: Funds can be allocated to <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for applications
-5. **Release**: When app sessions close or withdraw, funds return to unified balance
-6. **Unlock**: Channel operations (resize, challenge, close) move funds from "locked" back to "available"
-7. **Withdraw**: User withdraws available funds back to their wallet
+1. **Deposit**: User deposits ERC-20 tokens into the **Available** balance of the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip>.
+2. **Resize**: Funds can be moved between **Available** balance and **Unified Balance** (managed off-chain by the clearnode).
+3. **Channel Lock**: Funds can also be moved between **Available** balance and **Channel-Locked** balance via resize operations, or between **Channel-Locked** and **Unified Balance**.
+4. **App Sessions**: Funds from the **Unified Balance** can be allocated to <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>.
+5. **Release**: When app sessions close or funds are withdrawn, they return to the **Unified Balance**.
+6. **Unlock/Withdraw**: Funds can be moved back to **Available** balance (via resize/close) and then withdrawn to the **User Wallet**.
 
 :::caution Security Guarantee
 At every stage, funds remain cryptographically secured. Users can always recover their funds according to the latest valid signed state, even if the clearnode becomes unresponsive.

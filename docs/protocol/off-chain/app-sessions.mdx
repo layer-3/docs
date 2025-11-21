@@ -14,7 +14,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 ## Overview
 
-<Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> are off-chain channels built on top of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, intended for app developers to create application-specific interactions. They act as a "box" or shared account where multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> can lock funds and execute custom logic with governance rules.
+<Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> are off-chain channels built on top of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>, intended for app developers to create application-specific interactions. They act as a "box" or shared account where multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> can transfer funds and execute custom logic with governance rules.
 
 ### Key Features
 
@@ -22,7 +22,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 **Application-Specific State**: Store arbitrary application data (game state, escrow conditions, etc.).
 
-**Flexible Fund Management**: Lock, redistribute, add, or withdraw funds during session lifecycle.
+**Flexible Fund Management**: Transfer, redistribute, add, or withdraw funds during session lifecycle.
 
 **Instant Updates**: All state changes happen off-chain with zero gas fees.
 
@@ -62,7 +62,7 @@ The protocol version is specified in the app definition during creation and **ca
 
 ### Usage
 
-Creates a new virtual application session on top of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>. An <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> is a "box" or shared account where multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> can lock funds and execute application-specific logic with custom governance rules. The app definition specifies <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>, their voting weights, quorum requirements for state updates, and the protocol version. Funds are locked from <Tooltip content={tooltipDefinitions.participant}>participants'</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balances</Tooltip> for the duration of the session. <Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> enable complex multi-party applications like games, prediction markets, escrow, and collaborative finance—all operating off-chain with instant <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates and zero gas fees.
+Creates a new virtual application session on top of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>. An <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> is a "box" or shared account where multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> can transfer funds and execute application-specific logic with custom governance rules. The app definition specifies <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>, their voting weights, quorum requirements for state updates, and the protocol version. Funds are transferred from <Tooltip content={tooltipDefinitions.participant}>participants'</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> accounts to a dedicated App Session Account for the duration of the session. <Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> enable complex multi-party applications like games, prediction markets, escrow, and collaborative finance—all operating off-chain with instant <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates and zero gas fees.
 
 ### When to Use
 
@@ -84,7 +84,7 @@ Common structures: [AppDefinition](#appdefinition) • [Allocation](#allocation)
 | Parameter | Type | Required | Description | See Also |
 |-----------|------|----------|-------------|----------|
 | `definition` | AppDefinition | Yes | Configuration defining the app session rules and participants | [↓ Structure](#appdefinition) |
-| `allocations` | Allocation[] | Yes | Initial funds to lock from participants' unified balances | [↓ Structure](#allocation) |
+| `allocations` | Allocation[] | Yes | Initial funds to transfer from participants' unified balance accounts | [↓ Structure](#allocation) |
 | `session_data` | string | No | Application-specific initial state (JSON string, max 64KB recommended)<br/>This is application-specific; protocol doesn't validate content | — |
 
 #### Session Identifier {#session-identifier}
@@ -244,19 +244,19 @@ By adjusting weights and quorum, you can implement any governance model from ful
 
 ---
 
-## Fund Locking Mechanics
+## Fund Transfer Mechanics
 
-When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> is created, funds are locked from the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>:
+When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> is created, funds are transferred from the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> account to a dedicated App Session Account:
 
 ```mermaid
 graph TB
-    A[Alice's Unified Balance<br/>Total: 200 USDC<br/>Available: 200 USDC<br/>Locked: 0 USDC] 
+    A[Alice's Unified Account<br/>Balance: 200 USDC] 
     
-    B[Create App Session<br/>Alice locks 100 USDC]
+    B[Create App Session<br/>Alice transfers 100 USDC]
     
-    C[Alice's Unified Balance<br/>Total: 200 USDC<br/>Available: 100 USDC<br/>Locked: 100 USDC]
+    C[Alice's Unified Account<br/>Balance: 100 USDC]
     
-    D[App Session<br/>Alice: 100 USDC<br/>Status: Open]
+    D[App Session Account<br/>Balance: 100 USDC<br/>(Beneficiary: Alice)]
     
     A -->|create_app_session| B
     B --> C
@@ -272,21 +272,16 @@ graph TB
 
 ```
 Before Creation:
-  Alice's Unified Balance:
-    Total: 200 USDC
-    Available: 200 USDC
-    Locked: 0 USDC
+  Alice's Unified Account:
+    Balance: 200 USDC
 
 After Creating Session with 100 USDC:
-  Alice's Unified Balance:
-    Total: 200 USDC
-    Available: 100 USDC
-    Locked: 100 USDC (in app session 0x98765...)
+  Alice's Unified Account:
+    Balance: 100 USDC
+  
+  App Session Account:
+    Balance: 100 USDC (Beneficiary: Alice)
 ```
-
-:::warning Locked Funds
-Locked funds **cannot be transferred or withdrawn** until the <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> closes. Only available balance can be used for [transfers](./transfers) or new <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>.
-:::
 
 ### Signature Requirements
 
@@ -432,8 +427,10 @@ Result:
   Total: 250 USDC (+50) ✓
   
 Alice's Unified Balance After:
-  Available: 0 USDC (50 moved to session)
-  Locked: +50 USDC
+  Available: 0 USDC (50 transferred to App Session Account)
+
+App Session Account After:
+  Balance: 250 USDC (increased by 50)
 
 Validation:
   - Sum after (250) > Sum before (200) ✓
@@ -489,7 +486,9 @@ Result:
   
 Bob's Unified Balance After:
   Available: +25 USDC
-  Locked: -25 USDC
+
+App Session Account After:
+  Balance: 225 USDC (decreased by 25)
 
 Validation:
   - Sum after (225) < Sum before (250) ✓
@@ -562,7 +561,7 @@ Valid signature combinations:
 
 ### Usage
 
-Closes an active <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> and distributes all locked funds according to the final allocations. Once closed, the <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> cannot be reopened; <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must create a new session if they want to continue. The final allocations determine how funds are returned to each <Tooltip content={tooltipDefinitions.participant}>participant's</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> (available state). Closing requires quorum signatures. The final session_data can record the outcome or final <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> of the application. All funds locked in the session are released immediately.
+Closes an active <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> and distributes all funds from the App Session Account according to the final allocations. Once closed, the <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> cannot be reopened; <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> must create a new session if they want to continue. The final allocations determine how funds are returned to each <Tooltip content={tooltipDefinitions.participant}>participant's</Tooltip> <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> account. Closing requires quorum signatures. The final session_data can record the outcome or final <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> of the application. All funds in the App Session Account are released immediately.
 
 ### When to Use
 
@@ -602,12 +601,10 @@ When an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> c
 
 ```
 Before Closure:
-  Alice's Unified Balance:
-    Total: 200 USDC
-    Available: 100 USDC
-    Locked: 100 USDC (in app session 0x98765...)
+  Alice's Unified Account:
+    Balance: 100 USDC
 
-App Session 0x98765:
+App Session Account 0x98765:
   Alice: 100 USDC
   Bob: 100 USDC
   Total: 200 USDC
@@ -617,15 +614,14 @@ Close with final allocations:
   Bob: 20 USDC
 
 After Closure:
-  Alice's Unified Balance:
-    Total: 280 USDC (200 + 80 won)
-    Available: 280 USDC
-    Locked: 0 USDC
+  Alice's Unified Account:
+    Balance: 280 USDC (100 + 180 received from session)
     
-  Bob's Unified Balance:
-    Total: 20 USDC (100 - 80 lost)
-    Available: 20 USDC
-    Locked: 0 USDC (was 100)
+  Bob's Unified Account:
+    Balance: 20 USDC (received from session)
+  
+  App Session Account 0x98765:
+    Closed (Balance: 0 USDC)
 ```
 
 ### Allocation Rules
@@ -722,26 +718,7 @@ All <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> rec
 
 ---
 
-## Error Cases
-
-| Error | Description | Recovery |
-|-------|-------------|----------|
-| **Authentication required** | Caller not authenticated | Complete [authentication](./authentication) |
-| **App session not found** | Invalid app_session_id | Verify session ID |
-| **Already closed** | Session status is "closed" | Cannot reopen; create new session |
-| **Quorum not met** | Sum of signer weights < quorum | Add more signers or adjust governance |
-| **Intent not supported** | Intent in v0.2 session | Use v0.4 or omit intent field |
-| **v0.2 parameters rejected** | v0.2 session receives `intent` or `version` | Omit both; only OPERATE-style redistribution is allowed |
-| **Invalid intent** | Unknown intent value | Use "operate", "deposit", or "withdraw" |
-| **OPERATE: Sum changed** | Total different after operation | Ensure sum(new) == sum(old) |
-| **DEPOSIT: Not signed** | Depositing participant didn't sign | Add depositor's signature |
-| **DEPOSIT: Insufficient balance** | Depositor lacks funds | Reduce deposit or add funds |
-| **WITHDRAW: Insufficient funds** | Session lacks funds to withdraw | Reduce withdrawal amount |
-| **Version mismatch** | v0.4: `version` not equal to current+1 | Fetch latest session (`get_app_sessions`) and retry with next version |
-| **Unknown participant** | Allocation references unknown address | Use only defined participants |
-| **Unknown asset** | Asset not supported | Use `get_assets` for supported assets |
-| **Negative amount** | Amount < 0 in allocations | Use positive amounts only |
-| **Missing field** | Required field absent | Include all required fields |
+{/* TODO: Document actual error codes from implementation. Currently removed as placeholder errors were inaccurate. */}
 
 ---
 
