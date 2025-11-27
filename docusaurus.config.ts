@@ -119,8 +119,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/docs/tutorials',
-          label: 'Tutorials',
+          to: '/docs/guides',
+          label: 'Guides',
           position: 'left',
         },
         {
@@ -166,8 +166,8 @@ const config: Config = {
               to: '/docs/manuals',
             },
             {
-              label: 'Tutorials',
-              to: '/docs/tutorials',
+              label: 'Guides',
+              to: '/docs/guides',
             },
             {
               label: 'API Reference',
@@ -205,6 +205,23 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
       defaultLanguage: 'javascript',
+      magicComments: [
+        {
+            className: 'git-diff-remove',
+            line: 'remove-next-line',
+            block: { start: 'remove-start', end: 'remove-end' },
+        },
+        {
+            className: 'git-diff-add',
+            line: 'add-next-line',
+            block: { start: 'add-start', end: 'add-end' },
+        },
+        {
+            className: 'theme-code-block-highlighted-line',
+            line: 'highlight-next-line',
+            block: { start: 'highlight-start', end: 'highlight-end' },
+        },
+      ],
     },
   } satisfies Preset.ThemeConfig,
 };
