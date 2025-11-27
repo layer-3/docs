@@ -37,11 +37,11 @@ default_contract_addresses:
 blockchains:
   - name: polygon
     id: 137
-    enabled: true
+    disabled: false
     block_step: 10000
   - name: base
     id: 8453
-    enabled: false
+    disabled: true
 ```
 
 ### 4. Configure Assets
@@ -129,7 +129,7 @@ docker compose down
 - **blockchains**: Array of blockchain configurations
   - `name`: Blockchain name (required; lowercase, underscores allowed)
   - `id`: Chain ID for validation (required)
-  - `disabled`: Whether to connect to this blockchain (optional, default: false)
+  - `disabled`: Whether to disable this blockchain (optional, default: false)
   - `block_step`: Block range for scanning (optional, default: 10000)
   - `contract_addresses`: Override default addresses for this specific blockchain (optional)
     - `custody`: Custody contract address
