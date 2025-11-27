@@ -1,0 +1,50 @@
+---
+sidebar_position: 1
+title: "Overview"
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# On-Chain Protocol Overview
+
+The on-chain protocol defines the smart contract interfaces and data structures that form the foundation of <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite's</Tooltip> security guarantees. This layer operates on the <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> and handles:
+
+- **Fund Custody**: Secure locking and unlocking of <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> assets
+- **Dispute Resolution**: Challenge-response mechanism for disagreements
+- **Final Settlement**: Distribution of funds according to validated <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>
+- **<Tooltip content={tooltipDefinitions.channel}>Channel</Tooltip> Lifecycle**: State transitions from creation to closure
+
+## Key Responsibilities
+
+The on-chain layer MUST provide:
+
+1. **Deterministic <Tooltip content={tooltipDefinitions.channelId}>channel identifiers</Tooltip>** computed from channel configuration
+2. **Signature verification** to authenticate <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates
+3. **State validation** through <Tooltip content={tooltipDefinitions.adjudicator}>adjudicator</Tooltip> contracts
+4. **Challenge periods** to ensure fair dispute resolution
+5. **Fund safety** guaranteeing users can always recover their assets
+
+:::info EVM Compatibility
+The initial version of Nitrolite is designed for EVM-compatible blockchains including Ethereum, Polygon, Base, and other EVM chains. Support for additional networks is continuously expanding.
+:::
+
+## Contract Interfaces
+
+The protocol defines three primary contract interfaces:
+
+- **IChannel**: Core <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> lifecycle operations (create, join, challenge, close)
+- **IDeposit**: Token deposit and withdrawal management
+- **IChannelReader**: Read-only queries for channel <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> and status
+
+These interfaces are implemented by the <Tooltip content={tooltipDefinitions.custodyContract}>**Custody Contract**</Tooltip>, which serves as the main entry point for on-chain operations.
+
+
+## Next Steps
+
+The following sections detail:
+
+- [Data Structures](./data-structures): Core types and identifier computation
+- [Channel Lifecycle](./channel-lifecycle): Complete state machine and operations
+- [Security Considerations](./security): Threat model and best practices
+

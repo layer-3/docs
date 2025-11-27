@@ -1,0 +1,415 @@
+---
+sidebar_position: 9
+title: Glossary
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Glossary
+
+Complete alphabetical reference of all protocol terms and concepts.
+
+:::tip Quick Reference
+This glossary provides concise definitions of all Nitrolite protocol terms. For detailed explanations with examples and diagrams, see the respective sections in the documentation.
+:::
+
+---
+
+## A
+
+### Adjudicator
+
+Smart contract that validates state transitions according to application-specific rules. Each <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> specifies an adjudicator that determines which state updates are valid.
+
+**Examples**: SimpleConsensus, RemittanceAdjudicator
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures), [Security Considerations](../protocol/on-chain/security)
+
+---
+
+### Allocation
+
+Specification of how funds are distributed, containing destination, token, and amount. Allocations define where funds should be sent when a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> closes or how they're distributed within an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>.
+
+**Structure**:
+```javascript
+{
+  destination: address,  // Recipient wallet address
+  token: address,        // ERC-20 token contract
+  amount: uint256        // Amount in smallest unit
+}
+```
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#allocation)
+
+---
+
+### App Session
+
+Off-chain channels built on top of payment channels, intended to be used by app developers to enable application-specific interactions and transactions without touching the blockchain. Previously known as Virtual Ledger Channels (VLC).
+
+**Features**:
+- Multi-party participation
+- Custom governance rules (quorum, weights)
+- Fund locking from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- Application-specific state management
+
+**Related**: [App Sessions Methods](../off-chain/app-sessions), [Communication Flows](./communication-flows#app-session-lifecycle-flow)
+
+---
+
+## C
+
+### Challenge Period
+
+Duration (in seconds) that parties have to respond to a dispute. When a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> is challenged, all participants have this amount of time to submit a newer state before the challenged state becomes final.
+
+**Typical Values**:
+- Default: 86400 seconds (24 hours)
+- Minimum recommended: 3600 seconds (1 hour)
+- Maximum recommended: 604800 seconds (7 days)
+
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#closure---challenge-response)
+
+---
+
+### Channel
+
+A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates. Channels are the foundation of the Nitrolite protocol.
+
+**Lifecycle**: VOID → INITIAL → ACTIVE → (DISPUTE) → FINAL
+
+**Related**: [On-Chain Protocol](../protocol/on-chain/overview), [Data Structures](../protocol/on-chain/data-structures#channel)
+
+---
+
+### channelId
+
+A unique identifier for a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Computed deterministically from the channel configuration.
+
+**Computation**:
+```javascript
+channelId = keccak256(abi.encode(
+  channel.participants,
+  channel.adjudicator,
+  channel.challenge,
+  channel.nonce
+))
+```
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel-identifier)
+
+---
+
+### Checkpoint
+
+Recording a state on-chain without entering dispute mode. Checkpointing creates an on-chain record of the current state but keeps the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> in ACTIVE status.
+
+**Benefits**:
+- Shortens effective challenge history
+- Provides on-chain proof of state
+- Doesn't start challenge period
+
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#checkpointing)
+
+---
+
+### Clearnode
+
+A virtual ledger layer that provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
+
+**Responsibilities**:
+- Manage off-chain RPC protocol
+- Provide <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- Join payment channels
+- Coordinate <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
+
+**Related**: [Architecture](../protocol/architecture), [Off-Chain RPC Protocol](../off-chain/overview)
+
+---
+
+### Creator
+
+The participant at index 0 in a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> who initiates channel creation. The Creator constructs the channel configuration, prepares the initial funding state, signs it (signature at position 0), and calls the on-chain `create()` function to lock their funds and establish the channel.
+
+**Typically**: A user or light client opening a payment channel with a clearnode.
+
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#creation-phase), [Protocol Reference](./protocol-reference#participant-indices)
+
+---
+
+### Custody Contract
+
+The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol.
+
+**Interfaces Implemented**:
+- `IChannel` - Core channel operations
+- `IDeposit` - Fund management
+- `IChannelReader` - State queries
+
+**Related**: [On-Chain Overview](../protocol/on-chain/overview), [Data Structures](../protocol/on-chain/data-structures)
+
+---
+
+## I
+
+### Intent
+
+In NitroRPC/0.4, specifies the type of <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> state update. The intent system enables dynamic fund management within active sessions.
+
+**Types**:
+- **OPERATE**: Redistribute existing funds (sum unchanged)
+- **DEPOSIT**: Add funds to session from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- **WITHDRAW**: Remove funds from session to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+
+**Related**: [App Sessions](../off-chain/app-sessions#submit_app_state)
+
+---
+
+## L
+
+### Ledger Entry
+
+Double-entry bookkeeping record of a debit or credit. Every financial operation in a clearnode creates two ledger entries to maintain accounting accuracy.
+
+**Fields**:
+- account_id
+- asset
+- credit (incoming)
+- debit (outgoing)
+- created_at
+
+**Related**: [Transfers](../off-chain/transfers#off-chain-processing), [Query Methods](../off-chain/queries#get_ledger_entries)
+
+---
+
+### Ledger Transaction
+
+User-facing transaction record showing transfers, deposits, withdrawals, and <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> operations. Provides a simplified view of financial activity.
+
+**Types**:
+- `transfer` - Direct transfer between users
+- `deposit` - Funds deposited to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- `withdrawal` - Funds withdrawn from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
+- `app_deposit` - Funds locked in <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
+- `app_withdrawal` - Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
+
+**Related**: [Query Methods](../off-chain/queries#get_ledger_transactions)
+
+---
+
+## M
+
+### Magic Number
+
+Constant in `state.data` signaling special states. Magic numbers enable smart contracts to identify the type of state without complex parsing.
+
+**Values**:
+- **CHANOPEN** = 7877 (0x1EC5) - Initial funding state
+- **CHANCLOSE** = 7879 (0x1EC7) - Final closing state
+
+**Related**: [Protocol Reference](./protocol-reference#magic-numbers), [Data Structures](../protocol/on-chain/data-structures)
+
+---
+
+## N
+
+### Nonce
+
+Unique number ensuring <Tooltip content={tooltipDefinitions.channelId}>channel identifier</Tooltip> uniqueness. Even with identical participants and configuration, different nonces create different channel IDs.
+
+**Typical Value**: Timestamp in milliseconds
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel), [Channel Creation](../off-chain/channel-methods#create_channel)
+
+---
+
+### Nitro RPC
+
+The off-chain communication protocol for state channel operations. A lightweight, RPC-based RPC protocol with compact message format and signature-based authentication.
+
+**Versions**:
+- **NitroRPC/0.2**: Legacy (basic state updates)
+- **NitroRPC/0.4**: Current (intent system)
+
+**Related**: [Off-Chain RPC Protocol](../off-chain/overview), [Message Format](../off-chain/message-format)
+
+---
+
+### Nitrolite
+
+The on-chain smart contract protocol for state channels. Defines the structure of channels, states, and the rules for creation, updates, and closure.
+
+**Version**: 0.5.0 (Mainnet deployments live; not production yet)
+
+**Related**: [On-Chain Protocol](../protocol/on-chain/overview), [Protocol Reference](./protocol-reference#protocol-versions)
+
+---
+
+## P
+
+### Participant
+
+An entity (identified by a <Tooltip content={tooltipDefinitions.walletAddress}>wallet address</Tooltip>) that is part of a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip>. Typically includes a Creator (user) and a Clearnode or Clearnode Operator.
+
+**In Payment Channels**:
+- Index 0: Creator (user)
+- Index 1: Clearnode
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel), [Protocol Reference](./protocol-reference#participant-indices)
+
+---
+
+## Q
+
+### Quorum
+
+Minimum total weight of signatures required to approve <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip> state updates. The quorum defines the governance threshold for multi-party applications.
+
+**Example**:
+```javascript
+participants: [Alice, Bob, Judge]
+weights: [40, 40, 50]
+quorum: 80
+
+// Valid signature combinations:
+// - Alice + Bob (40 + 40 = 80) ✓
+// - Alice + Judge (40 + 50 = 90) ✓
+// - Bob + Judge (40 + 50 = 90) ✓
+// - Alice alone (40 < 80) ✗
+```
+
+**Related**: [App Sessions](../off-chain/app-sessions#create_app_session), [Governance Examples](../off-chain/app-sessions#governance-examples)
+
+---
+
+## R
+
+### requestId
+
+A unique identifier for an RPC request, used for correlating requests and responses. Generated by the client for each request.
+
+**Type**: uint64
+
+**Related**: [Message Format](../off-chain/message-format#general-structure)
+
+---
+
+## S
+
+### Session Key
+
+A temporary cryptographic key delegated by a user's main wallet that provides a flexible way for the user to manage security of their funds by giving specific permissions and allowances for specific apps.
+
+**Features**:
+- Spending limits (allowances)
+- Operation scope restrictions
+- Expiration time
+- Gasless signing (no wallet prompts)
+
+**Related**: [Authentication](../off-chain/authentication), [Communication Flows](./communication-flows#authentication-flow)
+
+---
+
+### State
+
+A snapshot of the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> at a point in time, including fund allocations and application-specific data. States are signed by participants to authorize transitions.
+
+**Components**:
+- `intent` - Purpose of the state (INITIALIZE, OPERATE, RESIZE, FINALIZE)
+- `version` - Incremental version number for comparison
+- `data` - Application-specific data or magic number
+- `allocations` - Fund distribution
+- `sigs` - Participant signatures
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#state)
+
+---
+
+### packedState
+
+A specific encoding of a channelId, state.intent, state.version, state.data, state.allocations, used for signing and signature verification.
+
+**Computation**:
+```javascript
+packedState = abi.encode(
+  channelId,
+  state.intent,
+  state.version,
+  state.data,
+  state.allocations
+)
+```
+
+**Related**: [Data Structures](../protocol/on-chain/data-structures#packed-state)
+
+---
+
+## U
+
+### Unified Balance
+
+An abstraction that aggregates a user's funds across multiple blockchain networks, managed by a clearnode. The unified balance provides a single view of all assets regardless of which chain they're locked on.
+
+**Benefits**:
+- Chain abstraction
+- Simplified fund management
+- Cross-chain transfers without bridges
+- Single balance for all operations
+
+**Related**: [Architecture](../protocol/architecture#fund-flow), [Transfers](../off-chain/transfers#unified-balance-mechanics)
+
+---
+
+## W
+
+### Weight
+
+Voting power assigned to a participant in an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>. Weights determine how much influence each participant has in governance decisions.
+
+**Usage**: Sum of signer weights must meet <Tooltip content={tooltipDefinitions.sessionThreshold}>quorum</Tooltip> for state updates to be valid.
+
+**Related**: [App Sessions](../off-chain/app-sessions#create_app_session)
+
+---
+
+## Additional Terms
+
+### appSessionId
+
+A unique identifier for an <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>, formatted as a 0x-prefixed hex string (32 bytes). Used for all subsequent operations on that specific app session.
+
+---
+
+### chainId
+
+A blockchain network identifier (uint64). Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
+
+---
+
+### assetSymbol
+
+A lowercase string identifier for a supported asset (e.g., "usdc", "eth", "weth", "usdt", "dai", "wbtc"). Asset symbols are consistent across chains.
+
+---
+
+### walletAddress
+
+A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies their account and owns funds. Used to identify participants in channels and <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>.
+
+---
+
+## Cross-References
+
+For detailed explanations of these terms with examples, diagrams, and use cases, refer to:
+
+- **Core Concepts**: [Terminology](../protocol/terminology)
+- **On-Chain Details**: [On-Chain Protocol](../protocol/on-chain/overview)
+- **Off-Chain Details**: [Off-Chain RPC Protocol](../off-chain/overview)
+- **Implementation**: [Quick Start Guide](./quick-start), [Implementation Checklist](./implementation-checklist)
+
+:::tip Using This Glossary
+Press `Ctrl+F` (or `Cmd+F` on Mac) to search for specific terms. Most terms also appear as tooltips throughout the documentation for quick reference.
+:::
+

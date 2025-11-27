@@ -114,6 +114,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/docs/protocol/introduction',
+          label: 'Protocol',
+          position: 'left',
+        },
+        {
           to: '/docs/manuals',
           label: 'Manuals',
           position: 'left',
@@ -121,11 +126,6 @@ const config: Config = {
         {
           to: '/docs/guides',
           label: 'Guides',
-          position: 'left',
-        },
-        {
-          to: '/docs/api-reference',
-          label: 'API Reference',
           position: 'left',
         },
         {
@@ -144,8 +144,8 @@ const config: Config = {
           items: [
             {
               html: `
-                <img src="img/themes/light/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0;" class="footer-logo-light" />
-                <img src="img/themes/dark/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0; display: none;" class="footer-logo-dark" />
+                <img src="/img/themes/light/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0;" class="footer-logo-light" />
+                <img src="/img/themes/dark/logo.svg" alt="Yellow Network" style="width: 80px; margin-bottom: 20px; margin-left: 0; display: none;" class="footer-logo-dark" />
               `,
             },
           ],
@@ -222,6 +222,12 @@ const config: Config = {
             block: { start: 'highlight-start', end: 'highlight-end' },
         },
       ],
+    },
+    mermaid: {
+      theme: {
+        light: 'default',
+        dark: 'default',
+      },
     },
   } satisfies Preset.ThemeConfig,
 };
