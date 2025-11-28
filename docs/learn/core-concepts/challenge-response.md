@@ -78,7 +78,11 @@ Every state has a version number. A newer (higher version) state always supersed
 
 ### States Are Signed
 
-Both parties must sign every state. If someone signed a state, they can't later claim they didn't agree.
+With the default SimpleConsensus adjudicator, both parties must sign every state. If someone signed a state, they can't later claim they didn't agree.
+
+:::note Other Adjudicators
+Different adjudicators may have different signing requirements. For example, a Remittance adjudicator may only require the sender's signature. The signing rules are defined by the channel's adjudicator contract.
+:::
 
 ### Challenge Period Provides Fairness
 

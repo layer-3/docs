@@ -19,7 +19,9 @@ In this guide, you will learn how state channels compare to Layer 1 and Layer 2 
 |----------|------------|---------|-------------|----------|
 | **Layer 1** | 15-65K TPS | 1-15 sec | $0.001-$50 | Settlement, contracts |
 | **Layer 2** | 2,000-4,000 TPS | 1-10 sec | $0.01-$0.50 | General dApps |
-| **State Channels** | **Unlimited** | **< 1 sec** | **$0** | High-frequency, known parties |
+| **State Channels** | **Unlimited*** | **< 1 sec** | **$0** | High-frequency, known parties |
+
+*\*Theoretically unlimited—no consensus bottleneck. Real-world throughput depends on signature generation, network latency, and application logic. Benchmarking documentation coming soon.*
 
 ---
 
@@ -64,7 +66,7 @@ Off-chain transactions are only visible to participants. Only opening and final 
 
 ### Known Participants
 
-Channels work between specific participants. Yellow Network solves this with the Clearnode hub-and-spoke model.
+Channels work between specific participants. Yellow Network addresses this through Clearnodes—off-chain service providers that coordinate channels and provide a unified balance across multiple users and chains.
 
 ### Liquidity Requirements
 
@@ -72,7 +74,7 @@ Funds must be locked upfront. You can't spend more than what's locked in the cha
 
 ### Liveness Requirements
 
-Participants must respond to challenges within the challenge period. The Clearnode provides 24/7 monitoring.
+Participants must respond to challenges within the challenge period. Users should ensure they can monitor for challenges or use services that provide this functionality.
 
 ---
 
@@ -108,7 +110,7 @@ flowchart TD
 
 | Limitation | Solution |
 |------------|----------|
-| Known participants | Hub-and-spoke via Clearnode |
+| Known participants | Clearnode coordination layer |
 | Liquidity | Unified balance across chains |
 | Liveness | Always-on Clearnode monitoring |
 

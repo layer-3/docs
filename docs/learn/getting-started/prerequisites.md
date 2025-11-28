@@ -343,3 +343,4 @@ Use a dedicated RPC provider (Infura, Alchemy) instead of public endpoints for p
 ### TypeScript errors with viem
 Ensure your `tsconfig.json` has `"moduleResolution": "bundler"` or `"node16"`.
 
+

@@ -54,6 +54,15 @@ const sidebars: SidebarsConfig = {
       collapsible: false,
       collapsed: false,
     },
+    {
+      type: 'category',
+      label: 'Advanced',
+      items: [
+        'learn/advanced/managing-session-keys',
+      ],
+      collapsible: false,
+      collapsed: false,
+    },
   ],
   
   // Build section sidebar

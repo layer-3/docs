@@ -339,3 +339,4 @@ The minimum challenge period is 1 hour. Ensure your `challengeDuration` is at le
 ### Connection issues
 Verify WebSocket URL and that you're connected to the correct network (testnet vs mainnet).
 
+

@@ -44,8 +44,10 @@ State channels let you execute unlimited off-chain operations between on-chain c
 |---------|---------|
 | **Instant Transactions** | Sub-second finality (< 1 second typical) |
 | **Zero Gas Costs** | Off-chain operations incur no blockchain fees |
-| **Unlimited Throughput** | 100,000+ operations per second |
+| **Unlimited Throughput*** | No consensus bottleneck limiting operations |
 | **Blockchain Security** | Funds are always recoverable via on-chain contracts |
+
+*\*Theoretically unlimited—state channels have no blockchain consensus overhead. Real-world performance depends on signature generation speed, network latency between participants, and application complexity. We'll be publishing detailed benchmarks soon.*
 
 ---
 
@@ -73,12 +75,16 @@ Choose Yellow Network when your application needs:
 
 A **Clearnode** serves as your entry point to Yellow Network. When you connect to a Clearnode:
 
-1. **Deposit** tokens on any supported chain
-2. **Receive** a unified balance aggregated across all chains
+1. **Deposit** tokens into the Custody Contract on any supported chain
+2. **Resize** your channel to move funds to your unified balance
 3. **Transact** instantly with any other user on the network
-4. **Withdraw** to any supported chain
+4. **Withdraw** back through the Custody Contract to any supported chain
 
-For example, deposit 50 USDC on Polygon and 50 USDC on Base—your unified balance shows 100 USDC. You can then withdraw all 100 USDC to Arbitrum if you choose.
+:::note Fund Flow
+Funds flow through the Custody Contract (on-chain) before reaching your unified balance (off-chain). The `resize` operation moves funds between your on-chain available balance and your off-chain unified balance. See [Architecture](./architecture-at-a-glance#how-funds-flow) for the complete flow.
+:::
+
+For example, deposit 50 USDC on Polygon and 50 USDC on Base—after resizing, your unified balance shows 100 USDC. You can then withdraw all 100 USDC to Arbitrum if you choose.
 
 ```mermaid
 graph LR

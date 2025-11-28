@@ -173,6 +173,10 @@ stateDiagram-v2
     note right of ACTIVE: This is where<br/>99% of activity happens
 ```
 
+:::info Legacy Flow
+The diagram above shows the recommended flow where both participants sign the initial state, creating the channel directly in ACTIVE status. A legacy flow also exists where only the creator signs initially (status becomes INITIAL), and other participants call `join()` separately. See [Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle) for details.
+:::
+
 ### Typical Flow
 
 1. **Create**: Both parties sign initial state → channel becomes ACTIVE
