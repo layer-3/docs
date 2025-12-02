@@ -53,8 +53,8 @@ A **Channel** is the on-chain representation of a state channel. It defines:
 
 ```typescript
 {
-  participants: ['0xAlice', '0xBob'],  // Who can participate
-  adjudicator: '0xContract',           // Rules for state validation
+  participants: ['0xAlice', '0xBob'],   // Who can participate
+  adjudicator: '0xContract',            // Rules for state validation
   challenge: 86400,                     // Dispute window (seconds)
   nonce: 1699123456789                  // Unique identifier
 }
@@ -93,7 +93,7 @@ An **Allocation** specifies how funds should be distributed:
 ```typescript
 {
   destination: '0xAlice',              // Recipient address
-  token: '0xUSDC_CONTRACT',           // Token contract
+  token: '0xUSDC_CONTRACT',            // Token contract
   amount: 50000000n                    // Amount in smallest unit (6 decimals for USDC)
 }
 ```
@@ -140,7 +140,7 @@ An **App Session** is an off-chain channel built on top of the unified balance f
 {
   protocol: 'NitroRPC/0.4',
   participants: ['0xAlice', '0xBob', '0xJudge'],
-  weights: [40, 40, 50],        // Voting power
+  weights: [40, 40, 50],         // Voting power
   quorum: 80,                    // Required weight for state updates
   challenge: 3600,               // Dispute window
   nonce: 1699123456789

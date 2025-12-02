@@ -170,8 +170,8 @@ Always use `NitroRPC/0.4` for new applications. Protocol version is set at creat
 
 ## Deep Dive
 
-For complete API specifications and implementation details:
+For complete method specifications and implementation details:
 
-- **[App Session Methods](/docs/protocol/off-chain/app-sessions)** — Full API reference
+- **[App Session Methods](/docs/protocol/off-chain/app-sessions)** — Complete method specifications
 - **[Communication Flows](/docs/protocol/communication-flows#app-session-lifecycle-flow)** — Sequence diagrams
 - **[Implementation Checklist](/docs/protocol/implementation-checklist#state-management)** — Building app session support

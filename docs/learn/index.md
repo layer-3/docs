@@ -55,7 +55,6 @@ After completing the Learn section, continue to:
 
 - **[Build](/docs/build/quick-start)** — Implement complete Yellow Applications
 - **[Protocol Reference](/docs/protocol/introduction)** — Authoritative protocol specification
-- **[API Reference](/docs/api-reference)** — SDK and RPC method documentation
 
 ---
 

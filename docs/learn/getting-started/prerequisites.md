@@ -154,11 +154,9 @@ SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
 BASE_RPC_URL=https://base-sepolia.g.alchemy.com/v2/YOUR_KEY
 
 # Clearnode WebSocket endpoint
-CLEARNODE_WS_URL=wss://clearnode.yellow.com/ws
-
-# Contract addresses (get from Yellow Network docs)
-CUSTODY_ADDRESS=0x...
-ADJUDICATOR_ADDRESS=0x...
+# Production: wss://clearnet.yellow.com/ws
+# Sandbox: wss://clearnet-sandbox.yellow.com/ws
+CLEARNODE_WS_URL=wss://clearnet-sandbox.yellow.com/ws
 ```
 
 Add to `.gitignore`:
@@ -207,7 +205,25 @@ npx tsx scripts/create-wallet.ts
 
 ### Get Test Tokens
 
-For testnet development, you need test tokens:
+#### Yellow Network Sandbox Faucet (Recommended)
+
+For testing on the Yellow Network Sandbox, you can request test tokens directly to your unified balance:
+
+```bash
+curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
+  -H "Content-Type: application/json" \
+  -d '{"userAddress":"<your_wallet_address>"}'
+```
+
+Replace `<your_wallet_address>` with your actual wallet address.
+
+:::tip No On-Chain Operations Needed
+Test tokens (ytest.USD) are credited directly to your unified balance on the Sandbox Clearnode. No deposit or channel operations are required—you can start transacting immediately!
+:::
+
+#### Testnet Faucets (For On-Chain Testing)
+
+If you need on-chain test tokens for Sepolia or Base Sepolia:
 
 | Network | Faucet |
 |---------|--------|
@@ -306,16 +322,30 @@ yellow-app/
 
 ## Supported Networks
 
-Yellow Network currently supports these EVM-compatible chains:
+To get the current list of supported chains and contract addresses, query the Clearnode's `get_config` endpoint:
 
-| Network | Chain ID | Status |
-|---------|----------|--------|
-| Ethereum Mainnet | 1 | Production |
-| Polygon | 137 | Production |
-| Arbitrum One | 42161 | Production |
-| Optimism | 10 | Production |
-| Base | 8453 | Production |
-| Sepolia (testnet) | 11155111 | Testing |
+```javascript
+// Example: Fetch supported chains and contract addresses
+const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
+
+ws.onopen = () => {
+  const request = {
+    req: [1, 'get_config', {}, Date.now()],
+    sig: [] // get_config is a public endpoint, no signature required
+  };
+  ws.send(JSON.stringify(request));
+};
+
+ws.onmessage = (event) => {
+  const response = JSON.parse(event.data);
+  console.log('Supported chains:', response.res[2].chains);
+  console.log('Contract addresses:', response.res[2].contracts);
+};
+```
+
+:::tip Dynamic Configuration
+The `get_config` method returns real-time information about supported chains, contract addresses, and Clearnode capabilities. This ensures you always have the most up-to-date network information.
+:::
 
 ---
 

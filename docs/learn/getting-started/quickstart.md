@@ -19,10 +19,18 @@ Before starting, ensure you have:
 
 - Node.js 18+ installed
 - A Web3 wallet (MetaMask, Rabby, or similar)
-- Test tokens on a supported testnet (Sepolia, Base Goerli, etc.)
+- Test tokens from the Yellow Network Sandbox faucet
 
-:::tip Quick Setup
-If you don't have test tokens, you can use a testnet faucet. Most testnets provide free tokens for development.
+:::tip Get Test Tokens
+Request test tokens directly to your unified balance:
+
+```bash
+curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
+  -H "Content-Type: application/json" \
+  -d '{"userAddress":"<your_wallet_address>"}'
+```
+
+Tokens are credited immediately—no on-chain operations needed! For complete setup instructions, see [Prerequisites](./prerequisites#get-test-tokens).
 :::
 
 ---
@@ -96,11 +104,16 @@ console.log('✓ Client initialized');
 
 ## Step 3: Authenticate with Clearnode
 
-Establish a session with the Clearnode using the 3-step authentication flow:
+Establish a session with the Clearnode using the 3-step authentication flow.
+
+:::tip Clearnode Endpoints
+- **Production**: `wss://clearnet.yellow.com/ws`
+- **Sandbox**: `wss://clearnet-sandbox.yellow.com/ws` (recommended for testing)
+:::
 
 ```javascript
-// Connect to Clearnode WebSocket
-const ws = new WebSocket('wss://clearnode.yellow.com/ws');
+// Connect to Clearnode WebSocket (using sandbox for testing)
+const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
 
 // Step 1: Generate session keypair locally
 const sessionPrivateKey = generatePrivateKey(); // Your crypto library
