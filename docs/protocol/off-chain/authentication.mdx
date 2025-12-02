@@ -273,6 +273,9 @@ If `jwt` is omitted, the request **MUST** include an EIP-712 signature signed by
 ```typescript
 {
   types: {
+    EIP712Domain: [
+      { name: "name", type: "string" }
+    ],
     Policy: [
       { name: "challenge", type: "string" },
       { name: "scope", type: "string" },
@@ -288,7 +291,7 @@ If `jwt` is omitted, the request **MUST** include an EIP-712 signature signed by
   },
   primaryType: "Policy",
   domain: {
-    name: <application_name>  // From auth_request
+    name: <application_name>  // From auth_request - shown in MetaMask header
   },
   message: {
     challenge: <challenge_message>,  // From auth_challenge
