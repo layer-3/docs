@@ -5,9 +5,12 @@ description: Multi-party application channels with custom governance and state m
 keywords: [app sessions, multi-party, governance, quorum, NitroRPC]
 ---
 
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
 # App Sessions
 
-App sessions are off-chain channels built on top of the unified balance that enable multi-party applications with custom governance rules.
+<Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> are off-chain channels built on top of the <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> that enable multi-party applications with custom governance rules.
 
 **Goal**: Understand how app sessions work for building multi-party applications.
 
@@ -15,9 +18,9 @@ App sessions are off-chain channels built on top of the unified balance that ena
 
 ## What is an App Session?
 
-An **app session** is a temporary shared account where multiple participants can:
+An **app session** is a temporary shared account where multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> can:
 
-- Lock funds from their unified balance
+- Lock funds from their <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - Execute application-specific logic (games, escrow, predictions)
 - Redistribute funds based on outcomes
 - Close and release funds back to unified balances
@@ -172,6 +175,6 @@ Always use `NitroRPC/0.4` for new applications. Protocol version is set at creat
 
 For complete method specifications and implementation details:
 
-- **[App Session Methods](/docs/protocol/off-chain/app-sessions)** — Complete method specifications
-- **[Communication Flows](/docs/protocol/communication-flows#app-session-lifecycle-flow)** — Sequence diagrams
-- **[Implementation Checklist](/docs/protocol/implementation-checklist#state-management)** — Building app session support
+- **[App Session Methods](/docs/protocol/off-chain/app-sessions.mdx)** — Complete method specifications
+- **[Communication Flows](/docs/protocol/communication-flows.mdx#app-session-lifecycle-flow)** — Sequence diagrams
+- **[Implementation Checklist](/docs/protocol/implementation-checklist.mdx#state-management)** — Building app session support

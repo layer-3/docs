@@ -5,6 +5,9 @@ description: How Yellow Network handles disputes and ensures fund safety
 keywords: [challenge, dispute, security, settlement, fund recovery]
 ---
 
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
 # Challenge-Response & Disputes
 
 In this guide, you will learn how Yellow Network resolves disputes and ensures your funds are always recoverable.
@@ -17,9 +20,9 @@ In this guide, you will learn how Yellow Network resolves disputes and ensures y
 
 In any off-chain system, a critical question arises: **What if someone tries to cheat?**
 
-State channels solve this with a challenge-response mechanism:
+<Tooltip content={tooltipDefinitions.channel}>State channels</Tooltip> solve this with a challenge-response mechanism:
 
-1. Anyone can submit a state to the blockchain
+1. Anyone can submit a <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> to the blockchain
 2. Counterparties have time to respond with a newer state
 3. The newest valid state always wins
 4. Funds are distributed according to that state
@@ -43,7 +46,7 @@ State channels are **trustless** because:
 
 ### Scenario: Clearnode Becomes Unresponsive
 
-You have a channel with 100 USDC. The Clearnode stops responding.
+You have a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with 100 USDC. The <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> stops responding.
 
 **Your options:**
 
@@ -147,6 +150,6 @@ You can **always** recover your funds according to the latest mutually signed st
 
 For technical implementation details:
 
-- **[Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle)** — Full state machine
-- **[Security Considerations](/docs/protocol/on-chain/security)** — Threat model and best practices
-- **[Communication Flows](/docs/protocol/communication-flows#challenge-response-closure-flow)** — Sequence diagrams
+- **[Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle.mdx)** — Full state machine
+- **[Security Considerations](/docs/protocol/on-chain/security.mdx)** — Threat model and best practices
+- **[Communication Flows](/docs/protocol/communication-flows.mdx#challenge-response-closure-flow)** — Sequence diagrams

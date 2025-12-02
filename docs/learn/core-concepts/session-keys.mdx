@@ -5,9 +5,12 @@ description: Delegated keys for secure, gasless application interactions
 keywords: [session keys, authentication, signatures, allowances, security]
 ---
 
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
 # Session Keys
 
-Session keys are delegated keys that enable applications to perform operations on behalf of a user's wallet with specified spending limits, permissions, and expiration times. They provide a secure way to grant limited access to applications without exposing the main wallet's private key.
+<Tooltip content={tooltipDefinitions.sessionKey}>Session keys</Tooltip> are delegated keys that enable applications to perform operations on behalf of a user's wallet with specified spending limits, permissions, and expiration times. They provide a secure way to grant limited access to applications without exposing the main wallet's private key.
 
 :::important
 Session keys are **no longer used as on-chain channel participant addresses** for new channels created after the v0.5.0 release. For all new channels, the wallet address is used directly as the participant address. However, session keys still function correctly for channels that were created before v0.5.0, ensuring backward compatibility.
@@ -35,7 +38,7 @@ When authenticating with an already registered session key, you must still provi
 
 ### Applications
 
-Each session key is associated with a specific **application name**, which identifies the application or service that will use the session key. The application name is also used to identify **app sessions** that are created using that session key.
+Each session key is associated with a specific **application name**, which identifies the application or service that will use the session key. The application name is also used to identify <Tooltip content={tooltipDefinitions.appChannel}>**app sessions**</Tooltip> that are created using that session key.
 
 This association serves several purposes:
 
@@ -169,6 +172,6 @@ You can skip session keys entirely and sign every request with your main wallet.
 
 ## Next Steps
 
-- **[Managing Session Keys](../advanced/managing-session-keys)** — Create, list, and revoke session keys with full API examples
-- **[Authentication Flow](/docs/protocol/off-chain/authentication)** — Full 3-step authentication protocol
-- **[Communication Flows](/docs/protocol/communication-flows#authentication-flow)** — Sequence diagrams for auth
+- **[Managing Session Keys](../advanced/managing-session-keys.mdx)** — Create, list, and revoke session keys with full API examples
+- **[Authentication Flow](/docs/protocol/off-chain/authentication.mdx)** — Full 3-step authentication protocol
+- **[Communication Flows](/docs/protocol/communication-flows.mdx#authentication-flow)** — Sequence diagrams for auth

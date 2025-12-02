@@ -5,6 +5,9 @@ description: Compare state channels with Layer 1 and Layer 2 scaling solutions
 keywords: [state channels, L1, L2, scaling, comparison, rollups, Nitrolite]
 ---
 
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
 # State Channels vs L1/L2
 
 In this guide, you will learn how state channels compare to Layer 1 and Layer 2 solutions, and when each approach is the right choice.
@@ -30,7 +33,7 @@ In this guide, you will learn how state channels compare to Layer 1 and Layer 2 
 State channels operate on a simple principle:
 
 1. **Lock funds** in a smart contract (on-chain)
-2. **Exchange signed states** directly between participants (off-chain)
+2. **Exchange signed <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>** directly between <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> (off-chain)
 3. **Settle** when done or if there's a dispute (on-chain)
 
 The key insight: most interactions between parties don't need immediate on-chain settlement.
@@ -66,7 +69,7 @@ Off-chain transactions are only visible to participants. Only opening and final 
 
 ### Known Participants
 
-Channels work between specific participants. Yellow Network addresses this through Clearnodes—off-chain service providers that coordinate channels and provide a unified balance across multiple users and chains.
+Channels work between specific <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip>. Yellow Network addresses this through <Tooltip content={tooltipDefinitions.clearnode}>Clearnodes</Tooltip>—off-chain service providers that coordinate channels and provide a <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across multiple users and chains.
 
 ### Liquidity Requirements
 
@@ -133,6 +136,6 @@ State channels shine when you have identified participants who will interact fre
 
 For technical details on channel implementation:
 
-- **[Architecture](/docs/protocol/architecture)** — System design and fund flows
-- **[Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle)** — State machine and operations
-- **[Data Structures](/docs/protocol/on-chain/data-structures)** — Channel and state formats
+- **[Architecture](/docs/protocol/architecture.mdx)** — System design and fund flows
+- **[Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle.mdx)** — State machine and operations
+- **[Data Structures](/docs/protocol/on-chain/data-structures.mdx)** — Channel and state formats

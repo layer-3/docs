@@ -5,6 +5,9 @@ description: Understand the core problems Yellow Network addresses - scaling, co
 keywords: [Yellow Network, state channels, blockchain scaling, off-chain, Web3]
 ---
 
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
 # What Yellow Solves
 
 In this guide, you will learn why Yellow Network exists, what problems it addresses, and how it provides a faster, cheaper way to build Web3 applications.
@@ -27,7 +30,7 @@ For applications requiring real-time interactions—gaming, trading, micropaymen
 
 ## How Yellow Network Solves This
 
-Yellow Network uses **state channels** to move high-frequency operations off-chain while preserving blockchain-level security guarantees.
+Yellow Network uses <Tooltip content={tooltipDefinitions.channel}>**state channels**</Tooltip> to move high-frequency operations off-chain while preserving blockchain-level security guarantees.
 
 ### The Core Insight
 
@@ -73,10 +76,10 @@ Choose Yellow Network when your application needs:
 
 ## Chain Abstraction with Clearnode
 
-A **Clearnode** serves as your entry point to Yellow Network. When you connect to a Clearnode:
+A <Tooltip content={tooltipDefinitions.clearnode}>**Clearnode**</Tooltip> serves as your entry point to Yellow Network. When you connect to a Clearnode:
 
-1. **Deposit** tokens into the Custody Contract on any supported chain
-2. **Resize** your channel to move funds to your unified balance
+1. **Deposit** tokens into the <Tooltip content={tooltipDefinitions.custodyContract}>Custody Contract</Tooltip> on any supported chain
+2. **Resize** your <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> to move funds to your <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 3. **Transact** instantly with any other user on the network
 4. **Withdraw** back through the Custody Contract to any supported chain
 
@@ -138,5 +141,5 @@ If a Clearnode becomes unresponsive or malicious, you can submit your latest sig
 
 Now that you understand what Yellow solves, continue to:
 
-- **[Architecture at a Glance](./architecture-at-a-glance)** — See how the protocol layers work together
-- **[Quickstart](../getting-started/quickstart)** — Create your first state channel in minutes
+- **[Architecture at a Glance](./architecture-at-a-glance.mdx)** — See how the protocol layers work together
+- **[Quickstart](../getting-started/quickstart.mdx)** — Create your first state channel in minutes
