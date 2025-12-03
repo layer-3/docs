@@ -60,10 +60,19 @@ npm install @erc7824/nitrolite viem
 Create a file `index.js` and set up the Nitrolite client:
 
 ```javascript
-import { NitroliteClient } from '@erc7824/nitrolite';
+import { 
+  NitroliteClient, 
+  WalletStateSigner,
+  createAuthRequestMessage,
+  createAuthVerifyMessageFromChallenge,
+  createCreateChannelMessage,
+  createResizeChannelMessage,
+  createTransferMessage,
+  createGetLedgerBalancesMessage
+} from '@erc7824/nitrolite';
 import { createPublicClient, createWalletClient, http } from 'viem';
 import { sepolia } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
 
 // Your wallet private key (use environment variables in production!)
 const account = privateKeyToAccount('0xYOUR_PRIVATE_KEY');
@@ -91,7 +100,8 @@ const client = new NitroliteClient({
     });
     return signature;
   },
-  // Contract addresses (get these from Yellow Network documentation)
+  // Contract addresses
+  // Tip: Once connected, you can use the 'get_config' RPC method to fetch these dynamically
   addresses: {
     custody: '0xCUSTODY_CONTRACT_ADDRESS',
     adjudicator: '0xADJUDICATOR_CONTRACT_ADDRESS',
@@ -119,26 +129,28 @@ Establish a session with the Clearnode using the 3-step authentication flow.
 const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
 
 // Step 1: Generate session keypair locally
-const sessionPrivateKey = generatePrivateKey(); // Your crypto library
-const sessionAddress = privateKeyToAddress(sessionPrivateKey);
+const sessionPrivateKey = generatePrivateKey(); 
+const sessionAccount = privateKeyToAccount(sessionPrivateKey);
+const sessionAddress = sessionAccount.address;
 
-// Step 2: Send auth_request (no signature required)
-const authRequest = {
-  req: [
-    1, // requestId
-    'auth_request',
-    {
-      address: account.address,           // Your main wallet address
-      session_key: sessionAddress,        // Session key you generated
-      allowances: [{ asset: 'usdc', amount: '100.0' }], // Spending limit
-      expires_at: Date.now() + 24 * 60 * 60 * 1000,    // 24 hours
-    },
-    Date.now(),
-  ],
-  sig: [], // No signature needed for auth_request
+// Helper: Create a signer for the session key
+const sessionSigner = async (payload) => {
+  return sessionAccount.signMessage({
+    message: JSON.stringify(payload),
+  });
 };
 
-ws.send(JSON.stringify(authRequest));
+// Step 2: Send auth_request
+const authRequestMsg = await createAuthRequestMessage({
+  address: account.address,           // Your main wallet address
+  session_key: sessionAddress,        // Session key you generated
+  allowances: [{ asset: 'usdc', amount: '100.0' }], // Spending limit
+  expires_at: BigInt(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+  application: 'nitrolite-quickstart', // App name
+  scope: 'app',
+});
+
+ws.send(authRequestMsg);
 
 // Step 3: Sign the challenge with your MAIN wallet (EIP-712)
 ws.onmessage = async (event) => {
@@ -150,12 +162,16 @@ ws.onmessage = async (event) => {
     // Create EIP-712 typed data signature with main wallet
     const signature = await signTypedData(/* EIP-712 Policy structure */);
     
-    // Send auth_verify
-    const verifyRequest = {
-      req: [2, 'auth_verify', { challenge }, Date.now()],
-      sig: [signature],
-    };
-    ws.send(JSON.stringify(verifyRequest));
+    // Send auth_verify using builder
+    // We sign with the MAIN wallet for the first verification
+    const verifyMsg = await createAuthVerifyMessageFromChallenge(
+      async (payload) => {
+         return account.signMessage({ message: JSON.stringify(payload) });
+      },
+      challenge
+    );
+    
+    ws.send(verifyMsg);
   }
   
   if (response.res[1] === 'auth_verify') {
@@ -178,20 +194,15 @@ Request channel creation from the Clearnode:
 
 ```javascript
 // Request channel creation
-const createChannelRequest = {
-  req: [
-    3,
-    'create_channel',
-    {
-      chain_id: 11155111, // Sepolia
-      token: '0xUSDA_TOKEN_ADDRESS', // USDC on Sepolia
-    },
-    Date.now(),
-  ],
-  sig: [sessionKeySignature], // Sign with session key
-};
+const createChannelMsg = await createCreateChannelMessage(
+  sessionSigner,
+  {
+    chain_id: 11155111, // Sepolia
+    token: '0xUSDA_TOKEN_ADDRESS', // USDC on Sepolia
+  }
+);
 
-ws.send(JSON.stringify(createChannelRequest));
+ws.send(createChannelMsg);
 
 // Handle response
 ws.onmessage = async (event) => {
@@ -202,8 +213,11 @@ ws.onmessage = async (event) => {
     
     console.log('✓ Channel prepared:', channel_id);
     
+    // Create signer instance
+    const signer = new WalletStateSigner(walletClient);
+
     // Sign the state with your participant key
-    const userSignature = await signPackedState(channel_id, state);
+    const userSignature = await signer.signState(channel_id, state);
     
     // Submit to blockchain
     const txHash = await client.createChannel({
@@ -225,23 +239,16 @@ Resize the channel to add funds:
 
 ```javascript
 // Request channel resize (add funds)
-const resizeRequest = {
-  req: [
-    4,
-    'resize_channel',
-    {
-      channel_id: '0xYOUR_CHANNEL_ID',
-      allocations: [
-        { participant: account.address, asset: 'usdc', amount: '50.0' },
-        { participant: clearnodeAddress, asset: 'usdc', amount: '0.0' },
-      ],
-    },
-    Date.now(),
-  ],
-  sig: [sessionKeySignature],
-};
+const resizeMsg = await createResizeChannelMessage(
+  sessionSigner,
+  {
+    channel_id: '0xYOUR_CHANNEL_ID',
+    allocate_amount: 50000000n, // 50 USDC (6 decimals)
+    funds_destination: account.address,
+  }
+);
 
-ws.send(JSON.stringify(resizeRequest));
+ws.send(resizeMsg);
 
 // Complete the on-chain resize after receiving server signature
 // ... (similar pattern to channel creation)
@@ -257,20 +264,15 @@ Transfer funds instantly without any blockchain transaction:
 
 ```javascript
 // Transfer 10 USDC to another user
-const transferRequest = {
-  req: [
-    5,
-    'transfer',
-    {
-      destination: '0xRECIPIENT_ADDRESS',
-      allocations: [{ asset: 'usdc', amount: '10.0' }],
-    },
-    Date.now(),
-  ],
-  sig: [sessionKeySignature],
-};
+const transferMsg = await createTransferMessage(
+  sessionSigner,
+  {
+    destination: '0xRECIPIENT_ADDRESS',
+    allocations: [{ asset: 'usdc', amount: '10000000' }], // 10 USDC
+  }
+);
 
-ws.send(JSON.stringify(transferRequest));
+ws.send(transferMsg);
 
 // Handle confirmation
 ws.onmessage = (event) => {
@@ -292,17 +294,12 @@ ws.onmessage = (event) => {
 Query your updated unified balance:
 
 ```javascript
-const balanceRequest = {
-  req: [
-    6,
-    'get_ledger_balances',
-    {},
-    Date.now(),
-  ],
-  sig: [sessionKeySignature],
-};
+const balanceMsg = await createGetLedgerBalancesMessage(
+  sessionSigner,
+  account.address
+);
 
-ws.send(JSON.stringify(balanceRequest));
+ws.send(balanceMsg);
 
 // Response shows updated balance
 // Original: 50 USDC
