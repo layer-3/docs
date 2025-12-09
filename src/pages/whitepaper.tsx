@@ -28,7 +28,7 @@ export default function Whitepaper(): JSX.Element {
               <div className="card__footer">
                 <Link
                   className="button button--primary button--lg"
-                  to="/assets/YELLOW_MiCA_White_Paper_v.1.1.pdf"
+                  to="/assets/YELLOW_MiCA_White_Paper_v.1.2.pdf"
                   target="_blank"
                   download>
                   Download PDF
