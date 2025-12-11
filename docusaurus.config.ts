@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -129,6 +129,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/whitepaper',
+          label: 'Whitepaper',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/layer-3',
           position: 'right',
           className: 'header-github-link',
@@ -170,8 +175,8 @@ const config: Config = {
               to: '/docs/guides',
             },
             {
-              label: 'API Reference',
-              to: '/docs/api-reference',
+              label: 'Whitepaper',
+              to: '/whitepaper',
             },
           ],
         },
@@ -207,19 +212,19 @@ const config: Config = {
       defaultLanguage: 'javascript',
       magicComments: [
         {
-            className: 'git-diff-remove',
-            line: 'remove-next-line',
-            block: { start: 'remove-start', end: 'remove-end' },
+          className: 'git-diff-remove',
+          line: 'remove-next-line',
+          block: { start: 'remove-start', end: 'remove-end' },
         },
         {
-            className: 'git-diff-add',
-            line: 'add-next-line',
-            block: { start: 'add-start', end: 'add-end' },
+          className: 'git-diff-add',
+          line: 'add-next-line',
+          block: { start: 'add-start', end: 'add-end' },
         },
         {
-            className: 'theme-code-block-highlighted-line',
-            line: 'highlight-next-line',
-            block: { start: 'highlight-start', end: 'highlight-end' },
+          className: 'theme-code-block-highlighted-line',
+          line: 'highlight-next-line',
+          block: { start: 'highlight-start', end: 'highlight-end' },
         },
       ],
     },
