@@ -134,7 +134,7 @@ interface ClearNodeConfig {
 }
 
 const config = {
-  endpoint: 'wss://clearnet.yellow.com/ws',
+  endpoint: 'wss://clearnet-sandbox.yellow.com/ws', // or wss://clearnet.yellow.com/ws for production
   timeout: 30000,
   retryAttempts: 3
 };
@@ -224,8 +224,8 @@ try {
 
 ```typescript
 const CLEARNODE_ENDPOINTS = {
-  MAINNET: 'wss://clearnet.yellow.com/ws',
-  TESTNET: 'wss://testnet.clearnet.yellow.com/ws',
+  PRODUCTION: 'wss://clearnet.yellow.com/ws',
+  SANDBOX: 'wss://clearnet-sandbox.yellow.com/ws',
   LOCAL: 'ws://localhost:8080/ws'
 };
 

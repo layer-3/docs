@@ -68,13 +68,18 @@ pnpm add @erc7824/nitrolite
 
 ## Step 2: Connect to ClearNode
 
-Create a file `app.js` and connect to the Yellow Network:
+Create a file `app.js` and connect to the Yellow Network.
+
+:::tip Clearnode Endpoints
+- **Production**: `wss://clearnet.yellow.com/ws`
+- **Sandbox**: `wss://clearnet-sandbox.yellow.com/ws` (recommended for testing)
+:::
 
 ```javascript title="app.js" showLineNumbers
 import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
 
-// Connect to Yellow Network
-const ws = new WebSocket('wss://clearnet.yellow.com/ws');
+// Connect to Yellow Network (using sandbox for testing)
+const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
 
 ws.onopen = () => {
   console.log('✅ Connected to Yellow Network!');
@@ -245,8 +250,8 @@ class SimplePaymentApp {
     this.userAddress = userAddress;
     this.messageSigner = messageSigner;
     
-    // Step 2: Connect to ClearNode
-    this.ws = new WebSocket('wss://clearnet.yellow.com/ws');
+    // Step 2: Connect to ClearNode (sandbox for testing)
+    this.ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
     
     this.ws.onopen = () => {
       console.log('🟢 Connected to Yellow Network!');
