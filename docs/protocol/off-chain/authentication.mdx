@@ -140,7 +140,7 @@ If you prefer to use your main wallet as a root signer for all operations, you c
 | `application` | string | No | Application identifier for analytics and session management | `"clearnode"` | `"chess-game-app"` | Helps track which app is using which session |
 | `allowances` | Array\<Allowance\> | No | Spending limits for this session key<br/><br/>**Structure (per allowance)**:<br/>• `asset` (string) - Asset identifier (e.g., "usdc", "eth")<br/>• `amount` (string) - Maximum amount this session can spend | Unrestricted if omitted/empty | `[{"asset": "usdc", "amount": "100.0"}]` | If empty/omitted, no spending cap is enforced |
 | `scope` | string | No | Comma-separated list of permitted operations | All operations permitted | `"app.create,app.submit,transfer"` | Future feature, not fully enforced yet |
-| `expires_at` | number | Yes | Unix timestamp (milliseconds) when the session key expires | — | `1762417328000` | Provide a 13-digit Unix ms timestamp; no server default is applied |
+| `expires_at` | number | Yes | Unix timestamp (**seconds**) when the session key expires | — | `1762417328` | Provide a 10-digit Unix timestamp in **seconds** (not milliseconds); must match EIP-712 `uint64` type |
 
 :::tip Spending Allowances
 If you omit `allowances` the session key is unrestricted. Specify explicit allowances to bound risk if a <Tooltip content={tooltipDefinitions.sessionKey}>session key</Tooltip> is compromised.
@@ -291,22 +291,52 @@ If `jwt` is omitted, the request **MUST** include an EIP-712 signature signed by
   },
   primaryType: "Policy",
   domain: {
-    name: <application_name>  // From auth_request
+    name: <application_name>  // From auth_request - shown in MetaMask header
   },
   message: {
     challenge: <challenge_message>,  // From auth_challenge
     scope: <scope>,                  // From auth_request
     wallet: <address>,               // From auth_request
     session_key: <session_key>,      // From auth_request
-    expires_at: <expires_at>,        // From auth_request (13-digit Unix ms)
-    allowances: <allowances>         // From auth_request
+    expires_at: BigInt(<expires_at>),// From auth_request (Unix seconds as BigInt)
+    allowances: <allowances>         // From auth_request (array of {asset, amount})
   }
 }
 ```
 
 **Signing Process**:
 1. Client creates EIP-712 typed data with challenge and all parameters from Step 1
-2. User's wallet signs the typed data: `signature = signTypedData(typedData, mainWalletPrivateKey)`
+2. User's wallet signs the typed data using `signTypedData`:
+   ```typescript
+   // Using viem
+   const signature = await walletClient.signTypedData({
+     account: walletClient.account,
+     domain: { name: application },  // Only name field
+     types: {
+       Policy: [
+         { name: 'challenge', type: 'string' },
+         { name: 'scope', type: 'string' },
+         { name: 'wallet', type: 'address' },
+         { name: 'session_key', type: 'address' },
+         { name: 'expires_at', type: 'uint64' },
+         { name: 'allowances', type: 'Allowance[]' },
+       ],
+       Allowance: [
+         { name: 'asset', type: 'string' },
+         { name: 'amount', type: 'string' },
+       ],
+     },
+     primaryType: 'Policy',
+     message: {
+       challenge: challengeMessage,
+       scope: scope,
+       wallet: address,
+       session_key: sessionKey,
+       expires_at: BigInt(expiresAt),  // Must be BigInt for uint64
+       allowances: allowances,
+     }
+   });
+   ```
 3. Client sends request with EIP-712 signature in `sig` array
 
 :::danger Critical Security Requirement
