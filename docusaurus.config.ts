@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -11,6 +11,10 @@ const config: Config = {
   title: 'Yellow Network',
   tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
   favicon: 'img/favicon.ico',
+
+  customFields: {
+    packageVersion: require('./package.json').version,
+  },
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -64,6 +68,19 @@ const config: Config = {
           sidebarCollapsed: false,
           sidebarCollapsible: false,
           breadcrumbs: true,
+          // includeCurrentVersion: true,
+          // lastVersion: '0.5.x',
+          // versions: {
+          //   current: {
+          //     label: require('./package.json').version,
+          //     path: 'next',
+          //     banner: 'unreleased',
+          //   },
+          //   '0.5.x': {
+          //     label: 'v0.5.x',
+          //     path: '',
+          //   },
+          // },
         },
         blog: false,
         theme: {
@@ -207,19 +224,19 @@ const config: Config = {
       defaultLanguage: 'javascript',
       magicComments: [
         {
-            className: 'git-diff-remove',
-            line: 'remove-next-line',
-            block: { start: 'remove-start', end: 'remove-end' },
+          className: 'git-diff-remove',
+          line: 'remove-next-line',
+          block: { start: 'remove-start', end: 'remove-end' },
         },
         {
-            className: 'git-diff-add',
-            line: 'add-next-line',
-            block: { start: 'add-start', end: 'add-end' },
+          className: 'git-diff-add',
+          line: 'add-next-line',
+          block: { start: 'add-start', end: 'add-end' },
         },
         {
-            className: 'theme-code-block-highlighted-line',
-            line: 'highlight-next-line',
-            block: { start: 'highlight-start', end: 'highlight-end' },
+          className: 'theme-code-block-highlighted-line',
+          line: 'highlight-next-line',
+          block: { start: 'highlight-start', end: 'highlight-end' },
         },
       ],
     },
