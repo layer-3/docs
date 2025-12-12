@@ -12,6 +12,10 @@ const config: Config = {
   tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
   favicon: 'img/favicon.ico',
 
+  customFields: {
+    packageVersion: require('./package.json').version,
+  },
+
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
@@ -64,6 +68,19 @@ const config: Config = {
           sidebarCollapsed: false,
           sidebarCollapsible: false,
           breadcrumbs: true,
+          // includeCurrentVersion: true,
+          // lastVersion: '0.5.x',
+          // versions: {
+          //   current: {
+          //     label: require('./package.json').version,
+          //     path: 'next',
+          //     banner: 'unreleased',
+          //   },
+          //   '0.5.x': {
+          //     label: 'v0.5.x',
+          //     path: '',
+          //   },
+          // },
         },
         blog: false,
         theme: {
