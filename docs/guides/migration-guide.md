@@ -117,6 +117,31 @@ Implementing the new session key protocol changes:
 - Plan expiration times based on your operational needs
 - Application-scoped keys track cumulative spending against allowances
 
+#### Auth Verify Changes
+
+The `createEIP712AuthMessageSigner` function signature has changed to align with the new session key structure.
+
+```typescript
+const eip712SigningFunction = createEIP712AuthMessageSigner(
+    walletClient,
+    {
+        scope: authMessage.scope,
+        // remove-next-line
+        application: authMessage.application,
+        // remove-next-line
+        participant: authMessage.session_key,
+        // remove-next-line
+        expire: authMessage.expire,
+        // add-next-line
+        session_key: authMessage.session_key,
+        // add-next-line
+        expires_at: authMessage.expires_at,
+        allowances: authMessage.allowances,
+    },
+    getAuthDomain(),
+);
+```
+
 #### Migrate Channel Creation
 
 Channels must now be created with zero initial deposit and funded separately via the `resizeChannel` method:

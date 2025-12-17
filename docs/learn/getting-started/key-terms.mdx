@@ -1,0 +1,339 @@
+---
+sidebar_position: 3
+title: Key Terms & Mental Models
+description: Essential vocabulary and conceptual frameworks for understanding Yellow Network
+keywords: [terminology, glossary, concepts, state channels, mental models]
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Key Terms & Mental Models
+
+In this guide, you will learn the essential vocabulary and mental models for understanding Yellow Network and state channel technology.
+
+**Goal**: Build a solid conceptual foundation before diving into implementation.
+
+---
+
+## Core Mental Model: Off-Chain Execution
+
+The fundamental insight behind Yellow Network is simple:
+
+> **Most interactions don't need immediate on-chain settlement.**
+
+Think of it like a bar tab:
+
+| Traditional (L1) | State Channels |
+|------------------|----------------|
+| Pay for each drink separately | Open a tab, pay once at the end |
+| Wait for bartender each time | Instant service, settle later |
+| Transaction per item | One transaction for the whole session |
+
+State channels apply this pattern to blockchain: **lock funds once**, **transact off-chain**, **settle once**.
+
+---
+
+## Essential Vocabulary
+
+### State Channel
+
+A **state channel** is a secure pathway for exchanging cryptographically signed states between participants without touching the blockchain.
+
+**Key properties:**
+- Funds are locked in a smart contract
+- Participants exchange signed state updates off-chain
+- Only opening and closing require on-chain transactions
+- Either party can force on-chain settlement if needed
+
+**Analogy**: Like a private Venmo between two parties, backed by a bank escrow.
+
+---
+
+### Channel
+
+A **Channel** is the on-chain representation of a state channel. It defines:
+
+```typescript
+{
+  participants: ['0xAlice', '0xBob'],   // Who can participate
+  adjudicator: '0xContract',            // Rules for state validation
+  challenge: 86400,                     // Dispute window (seconds)
+  nonce: 1699123456789                  // Unique identifier
+}
+```
+
+The **channelId** is computed deterministically from these parameters:
+
+```
+channelId = keccak256(participants, adjudicator, challenge, nonce, chainId)
+```
+
+---
+
+### State
+
+A **State** is a snapshot of the channel at a specific moment:
+
+```typescript
+{
+  intent: 'OPERATE',           // Purpose: INITIALIZE, OPERATE, RESIZE, FINALIZE
+  version: 5,                  // Incremental counter (higher = newer)
+  data: '0x...',               // Application-specific data
+  allocations: [...],          // How funds are distributed
+  sigs: ['0xSig1', '0xSig2']   // Participant signatures
+}
+```
+
+**Key rule**: A higher version number always supersedes a lower one, regardless of allocations.
+
+---
+
+### Allocation
+
+An **Allocation** specifies how funds should be distributed:
+
+```typescript
+{
+  destination: '0xAlice',              // Recipient address
+  token: '0xUSDC_CONTRACT',            // Token contract
+  amount: 50000000n                    // Amount in smallest unit (6 decimals for USDC)
+}
+```
+
+The sum of allocations represents the total funds in the channel.
+
+---
+
+### Clearnode
+
+A **Clearnode** is the off-chain service that:
+
+1. **Manages the Nitro RPC protocol** for state channel operations
+2. **Provides unified balance** aggregated across multiple chains
+3. **Coordinates channels** between users
+4. **Hosts app sessions** for multi-party applications
+
+**Think of it as**: A game server that acts as your entry point to Yellow Network—centralized for speed, but trustless because of on-chain guarantees.
+
+---
+
+### Unified Balance
+
+Your **unified balance** is the aggregation of funds across all chains where you have deposits:
+
+```
+Polygon: 50 USDC  ┐
+Base:    30 USDC  ├─→ Unified Balance: 100 USDC
+Arbitrum: 20 USDC ┘
+```
+
+You can:
+- Transfer from unified balance instantly (off-chain)
+- Withdraw to any supported chain
+- Lock funds into app sessions
+
+---
+
+### App Session
+
+An **App Session** is an off-chain channel built on top of the unified balance for multi-party applications:
+
+```typescript
+{
+  protocol: 'NitroRPC/0.4',
+  participants: ['0xAlice', '0xBob', '0xJudge'],
+  weights: [40, 40, 50],         // Voting power
+  quorum: 80,                    // Required weight for state updates
+  challenge: 3600,               // Dispute window
+  nonce: 1699123456789
+}
+```
+
+**Use cases**: Games, prediction markets, escrow, any multi-party coordination.
+
+---
+
+### Session Key
+
+A **session key** is a temporary cryptographic key that:
+
+- Is generated locally on your device
+- Has limited permissions and spending caps
+- Expires after a specified time
+- Allows gasless signing without wallet prompts
+
+**Flow**:
+1. Generate session keypair locally
+2. Main wallet authorizes the session key (one-time EIP-712 signature)
+3. All subsequent operations use the session key
+4. Session expires or can be revoked
+
+---
+
+## Protocol Components
+
+### Nitrolite
+
+**Nitrolite** is the on-chain smart contract protocol:
+
+- Defines channel data structures
+- Implements create, close, challenge, resize operations
+- Provides cryptographic verification
+- Currently version 0.5.0
+
+---
+
+### Nitro RPC
+
+**Nitro RPC** is the off-chain communication protocol:
+
+- Compact JSON array format for efficiency
+- Every message is cryptographically signed
+- Bidirectional real-time communication
+- Currently version 0.4
+
+**Message format**:
+```javascript
+[requestId, method, params, timestamp]
+
+// Example
+[42, "transfer", {"destination": "0x...", "amount": "50.0"}, 1699123456789]
+```
+
+---
+
+### Custody Contract
+
+The **Custody Contract** is the main on-chain entry point:
+
+- Locks and unlocks participant funds
+- Tracks channel status (VOID → ACTIVE → FINAL)
+- Validates signatures and state transitions
+- Handles dispute resolution
+
+---
+
+### Adjudicator
+
+An **Adjudicator** defines rules for valid state transitions:
+
+| Type | Rule |
+|------|------|
+| **SimpleConsensus** | Both participants must sign (default) |
+| **Remittance** | Only sender must sign |
+| **Custom** | Application-specific logic |
+
+---
+
+## State Lifecycle
+
+### Channel States
+
+```mermaid
+stateDiagram-v2
+    [*] --> VOID: Channel doesn't exist
+    VOID --> ACTIVE: create()
+    ACTIVE --> ACTIVE: Off-chain updates
+    ACTIVE --> DISPUTE: challenge()
+    ACTIVE --> FINAL: close()
+    DISPUTE --> ACTIVE: checkpoint()
+    DISPUTE --> FINAL: Timeout
+    FINAL --> [*]: Deleted
+```
+
+| Status | Meaning |
+|--------|---------|
+| **VOID** | Channel doesn't exist on-chain |
+| **INITIAL** | Created, waiting for all participants (legacy) |
+| **ACTIVE** | Fully operational, off-chain updates happening |
+| **DISPUTE** | Challenge period active, parties can submit newer states |
+| **FINAL** | Closed, funds distributed, metadata deleted |
+
+---
+
+### State Intents
+
+| Intent | When Used | Purpose |
+|--------|-----------|---------|
+| **INITIALIZE** | `create()` | First state when opening channel |
+| **OPERATE** | Off-chain updates | Normal operation, redistribution |
+| **RESIZE** | `resize()` | Add or remove funds |
+| **FINALIZE** | `close()` | Final state for cooperative closure |
+
+---
+
+## Security Concepts
+
+### Challenge Period
+
+When a dispute arises:
+
+1. Party A submits their latest state via `challenge()`
+2. **Challenge period** starts (typically 24 hours)
+3. Party B can submit a newer valid state via `checkpoint()`
+4. If no newer state, Party A's state becomes final after timeout
+
+**Purpose**: Gives honest parties time to respond to incorrect claims.
+
+---
+
+### Signatures
+
+Two contexts for signatures:
+
+| Context | Hash Method | Signed By |
+|---------|-------------|-----------|
+| **On-chain** | Raw `packedState` (no prefix) | Main wallet |
+| **Off-chain RPC** | JSON payload hash | Session key |
+
+**On-chain packedState**:
+```javascript
+keccak256(abi.encode(channelId, intent, version, data, allocations))
+```
+
+---
+
+### Quorum
+
+For app sessions, **quorum** defines the minimum voting weight required for state updates:
+
+```
+Participants: [Alice, Bob, Judge]
+Weights:      [40,    40,   50]
+Quorum: 80
+
+Valid combinations:
+- Alice + Bob = 80 ✓
+- Alice + Judge = 90 ✓
+- Bob + Judge = 90 ✓
+- Alice alone = 40 ✗
+```
+
+---
+
+## Quick Reference Table
+
+| Term | One-Line Definition |
+|------|---------------------|
+| **State Channel** | Off-chain execution backed by on-chain funds |
+| **Clearnode** | Off-chain service coordinating state channels |
+| **Unified Balance** | Aggregated funds across all chains |
+| **App Session** | Multi-party application channel |
+| **Session Key** | Temporary key with limited permissions |
+| **Challenge Period** | Dispute resolution window |
+| **Quorum** | Minimum signature weight for approval |
+| **Allocation** | Fund distribution specification |
+| **packedState** | Canonical payload for signing |
+
+---
+
+## Next Steps
+
+Now that you understand the vocabulary, continue to:
+
+- **[State Channels vs L1/L2](../core-concepts/state-channels-vs-l1-l2.mdx)** — Deep comparison with other scaling solutions
+- **[App Sessions](../core-concepts/app-sessions.mdx)** — Multi-party application patterns
+- **[Session Keys](../core-concepts/session-keys.mdx)** — Authentication and security
+
+For complete definitions, see the **[Glossary](/docs/protocol/glossary.mdx)**.
