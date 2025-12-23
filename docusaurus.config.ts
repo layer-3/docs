@@ -75,11 +75,6 @@ const config: Config = {
               path: '', // Root path (docs/)
               banner: 'none',
             },
-            '0.5.x': {
-              label: '0.5.x',
-              path: '0.5.x',
-              banner: 'none',
-            },
           },
         },
         blog: false,
