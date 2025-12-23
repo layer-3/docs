@@ -36,10 +36,45 @@ try {
     pkg.version = nextDevVersion;
     fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
 
+    // 3. Automate docusaurus.config.ts update to avoid "Duplicate routes" warnings
+    const configPath = path.join(rootDir, 'docusaurus.config.ts');
+    if (fs.existsSync(configPath)) {
+        let configContent = fs.readFileSync(configPath, 'utf8');
+
+        // We want to insert the new version config BEFORE the closing brace of the versions object.
+        // Look for the 'current' block's closing brace, then comma, then insert.
+        // Or simpler: Look for "current: {" block, find its closing "},", and append after it.
+
+        // This snippet formats the entry for the frozen version
+        const newVersionEntry = `
+            '${versionToFreeze}': {
+              label: '${versionToFreeze}',
+              path: '${versionToFreeze}',
+              banner: 'none',
+            },`;
+
+        // Regex to find the end of the 'current' block inside 'versions'
+        // Pattern: inside versions { ... current: { ... }, <INSERT HERE> }
+        // We look for the closing brace of 'current' followed by comma
+        const currentVersionEndRegex = /(current:\s*{[\s\S]*?},)/;
+
+        if (currentVersionEndRegex.test(configContent)) {
+            // Check if already exists to avoid duplication
+            if (!configContent.includes(`'${versionToFreeze}': {`)) {
+                const newContent = configContent.replace(currentVersionEndRegex, `$1${newVersionEntry}`);
+                fs.writeFileSync(configPath, newContent, 'utf8');
+                console.log(`Updated docusaurus.config.ts: Added configuration for version '${versionToFreeze}'.`);
+            }
+        } else {
+            console.warn('Warning: Could not auto-update docusaurus.config.ts. Please verify versions config.');
+        }
+    }
+
     console.log('---------------------------------------------------');
     console.log(`Release Complete!`);
     console.log(`- Frozen Version: ${versionToFreeze} (saved in versioned_docs/)`);
     console.log(`- Created Next Version: ${nextDevVersion} (active in docs/)`);
+    console.log(`- Configuration: Auto-updated docusaurus.config.ts`);
 
 } catch (error) {
     console.error('Release failed:', error.message);

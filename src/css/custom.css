@@ -107,19 +107,19 @@ a.menu__link--active {
 
 /* Remove hover effects for menu items and add text darkening */
 .menu__list-item:hover,
-.menu__list-item:hover > .menu__link {
+.menu__list-item:hover>.menu__link {
   background: transparent !important;
   background-color: transparent !important;
 }
 
-.menu__list-item:hover > .menu__link {
+.menu__list-item:hover>.menu__link {
   color: #333333 !important;
 }
 
 /* Dark mode hover text */
 [data-theme='dark'] .theme-doc-sidebar-item-link:hover,
 [data-theme='dark'] .menu__link:hover,
-[data-theme='dark'] .menu__list-item:hover > .menu__link {
+[data-theme='dark'] .menu__list-item:hover>.menu__link {
   color: #cccccc !important;
 }
 
@@ -281,7 +281,7 @@ a.table-of-contents__link.table-of-contents__link--active code {
   margin-bottom: 8px;
 }
 
-.theme-doc-sidebar-item-category > .theme-doc-sidebar-item-link {
+.theme-doc-sidebar-item-category>.theme-doc-sidebar-item-link {
   font-weight: 600;
   padding: 8px 0;
 }
@@ -297,8 +297,8 @@ a.table-of-contents__link.table-of-contents__link--active code {
 .theme-doc-sidebar-item-category:hover,
 .menu__list-item--collapsed:hover,
 .menu__list-item--collapsible:hover,
-.menu__list-item--collapsed:hover > .menu__link,
-.menu__list-item--collapsible:hover > .menu__link {
+.menu__list-item--collapsed:hover>.menu__link,
+.menu__list-item--collapsible:hover>.menu__link {
   background: transparent !important;
   background-color: transparent !important;
   color: #333333 !important;
@@ -307,8 +307,8 @@ a.table-of-contents__link.table-of-contents__link--active code {
 /* Dark mode category hover */
 [data-theme='dark'] .theme-doc-sidebar-item-category .theme-doc-sidebar-item-link:hover,
 [data-theme='dark'] .theme-doc-sidebar-item-category .menu__link:hover,
-[data-theme='dark'] .menu__list-item--collapsed:hover > .menu__link,
-[data-theme='dark'] .menu__list-item--collapsible:hover > .menu__link {
+[data-theme='dark'] .menu__list-item--collapsed:hover>.menu__link,
+[data-theme='dark'] .menu__list-item--collapsible:hover>.menu__link {
   color: #cccccc !important;
 }
 
@@ -369,7 +369,7 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 
 /* Move expand/collapse icon to the left side of text */
 .menu__link--sublist,
-.menu__list-item-collapsible > .menu__link {
+.menu__list-item-collapsible>.menu__link {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -390,7 +390,7 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 
 /* Add arrow icon before sidebar items with subitems */
 .menu__link--sublist::before,
-.menu__list-item-collapsible > .menu__link::before {
+.menu__list-item-collapsible>.menu__link::before {
   content: '>' !important;
   margin-right: 8px !important;
   font-size: 24px !important;
@@ -410,19 +410,19 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 
 /* Rotate arrow when expanded */
 .menu__link--sublist[aria-expanded="true"]::before,
-.menu__list-item-collapsible:not(.menu__list-item--collapsed) > .menu__link::before {
+.menu__list-item-collapsible:not(.menu__list-item--collapsed)>.menu__link::before {
   transform: rotate(90deg) !important;
 }
 
 /* Dark mode arrow color */
 [data-theme='dark'] .menu__link--sublist::before,
-[data-theme='dark'] .menu__list-item-collapsible > .menu__link::before {
+[data-theme='dark'] .menu__list-item-collapsible>.menu__link::before {
   color: #a0a0a0 !important;
 }
 
 
 /* Category title when expanded */
-.theme-doc-sidebar-item-category-level-1 > .theme-doc-sidebar-item-link {
+.theme-doc-sidebar-item-category-level-1>.theme-doc-sidebar-item-link {
   padding: 10px 0;
   font-size: 1rem;
   font-weight: 700;
@@ -763,8 +763,8 @@ input[type="search"]::placeholder,
 [class*="search"] path,
 .navbar button svg,
 .navbar button path,
-input[type="search"] ~ svg,
-input[type="search"] ~ svg path,
+input[type="search"]~svg,
+input[type="search"]~svg path,
 button[title*="Search"] svg,
 button[title*="Search"] path,
 .navbar__item svg,
@@ -785,8 +785,8 @@ button[title*="Search"] path,
 [data-theme='dark'] [class*="search"] path,
 [data-theme='dark'] .navbar button svg,
 [data-theme='dark'] .navbar button path,
-[data-theme='dark'] input[type="search"] ~ svg,
-[data-theme='dark'] input[type="search"] ~ svg path,
+[data-theme='dark'] input[type="search"]~svg,
+[data-theme='dark'] input[type="search"]~svg path,
 [data-theme='dark'] button[title*="Search"] svg,
 [data-theme='dark'] button[title*="Search"] path,
 [data-theme='dark'] .navbar__item svg,
@@ -975,8 +975,8 @@ span,
 }
 
 /* Code blocks font styling */
-pre[class*="language-"] *, 
-.prism-code *, 
+pre[class*="language-"] *,
+.prism-code *,
 [class*="codeBlock"] *,
 code {
   font-family: 'Menlo', Monaco, 'Courier New', monospace !important;
@@ -1049,7 +1049,7 @@ pre.codeBlock_bY9V[style*="background-color"],
 }
 
 /* Code block with title adjustments */
-.theme-code-block .codeBlockTitle + .codeBlockContent .prism-code {
+.theme-code-block .codeBlockTitle+.codeBlockContent .prism-code {
   border-radius: 0 0 8px 8px !important;
   margin-top: 0 !important;
 }
@@ -1065,7 +1065,8 @@ pre.codeBlock_bY9V[style*="background-color"],
   border-right: none !important;
   margin-right: 1.5em !important;
   padding-right: 1em !important;
-  font-size: 0.72em !important; /* 20% smaller: 0.9em * 0.8 = 0.72em */
+  font-size: 0.72em !important;
+  /* 20% smaller: 0.9em * 0.8 = 0.72em */
   background: #FFFFFF !important;
   background-color: #FFFFFF !important;
 }
@@ -1162,4 +1163,103 @@ pre.codeBlock_bY9V[style*="background-color"],
 [data-theme="dark"] .git-diff-add {
   background-color: rgba(26, 255, 0, 0.15);
   border-left: 3px solid rgba(26, 255, 0, 0.6);
+}
+
+/* Version Switcher Styles */
+.navbar-version-dropdown {
+  margin-right: 0.5rem;
+}
+
+.navbar-version-dropdown>a.navbar__link {
+  display: flex !important;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px !important;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Light Mode */
+[data-theme='light'] .navbar-version-dropdown>a.navbar__link {
+  background-color: #FFF9E6 !important;
+  /* Light yellow/beige from screenshot */
+  color: #0d0d0d !important;
+}
+
+[data-theme='light'] .navbar-version-dropdown>a.navbar__link:hover {
+  background-color: #FDF2C8 !important;
+  color: #0d0d0d !important;
+}
+
+/* Dark Mode */
+[data-theme='dark'] .navbar-version-dropdown>a.navbar__link {
+  background-color: #383125 !important;
+  /* Dark brown from screenshot */
+  color: #E6E6E6 !important;
+}
+
+[data-theme='dark'] .navbar-version-dropdown>a.navbar__link:hover {
+  background-color: #4A4031 !important;
+  color: #E6E6E6 !important;
+}
+
+/* Chevron/Icon adjustment */
+.navbar-version-dropdown>a.navbar__link::after {
+  margin-left: 6px;
+  border-color: currentColor transparent transparent transparent;
+}
+
+/* Mobile Sidebar Tweaks */
+/* Hide duplicate items in the mobile menu list (they are now in the header) */
+.navbar-sidebar__items .header-github-link,
+.navbar-sidebar__items .menu__list-item:has(.navbar-version-dropdown),
+.navbar-sidebar__items .navbar-version-dropdown {
+  display: none !important;
+}
+
+/* Ensure header items have correct spacing */
+.navbar-sidebar__brand .header-github-link {
+  margin-right: 8px !important;
+}
+
+.navbar-sidebar__brand .navbar-version-dropdown {
+  margin-right: 4px !important;
+}
+
+.navbar-sidebar__brand .clean-btn.navbar-sidebar__close {
+  margin-left: 12px;
+}
+
+/* Redefine brand header to support multi-row layout */
+.navbar-sidebar__brand {
+  flex-direction: column !important;
+  height: auto !important;
+  padding: 0 !important;
+  /* Remove padding from container to let rows handle it */
+  align-items: flex-start !important;
+  box-shadow: none !important;
+  /* Remove default shadow */
+}
+
+/* Add shadow to the top row (Logo + Close) */
+.navbar-sidebar__brand-row-main {
+  padding: 16px 17px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  /* Space between line and tools */
+}
+
+.navbar-sidebar__tools-row {
+  padding: 0 17px 16px;
+}
+
+/* Force navbar items (like version dropdown) to be visible in mobile header */
+.navbar-sidebar__brand .navbar__item,
+.navbar-sidebar__tools-row .navbar__item {
+  display: flex !important;
+}
+
+.navbar-sidebar__tools-row .header-github-link {
+  margin-right: 12px;
 }

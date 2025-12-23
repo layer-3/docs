@@ -42,9 +42,38 @@ if (fs.existsSync(packageJsonPath)) {
     console.log(`Updated package.json version to ${targetVersion}`);
 }
 
+// Helper to update docusaurus.config.ts
+const configPath = path.join(rootDir, 'docusaurus.config.ts');
+if (fs.existsSync(configPath)) {
+    try {
+        let configContent = fs.readFileSync(configPath, 'utf8');
+
+        // Regex to match the versions object and replace it with the single-version default
+        // Matches "versions: { ... }" including nested braces for current version
+        // This regex assumes standard formatting as seen in the file
+        const versionsRegex = /versions:\s*{[\s\S]*?},\s*},/m;
+
+        const cleanVersionsBlock = `versions: {
+            current: {
+              label: require('./package.json').version,
+              path: '', // Root path (docs/)
+              banner: 'none',
+            },
+          },`;
+
+        if (versionsRegex.test(configContent)) {
+            const newContent = configContent.replace(versionsRegex, cleanVersionsBlock);
+            fs.writeFileSync(configPath, newContent, 'utf8');
+            console.log(`Updated docusaurus.config.ts: Reset "versions" configuration.`);
+        } else {
+            console.warn('Warning: Could not auto-update docusaurus.config.ts (regex match failed). Please check manually.');
+        }
+    } catch (err) {
+        console.warn(`Warning: Failed to update docusaurus.config.ts: ${err.message}`);
+    }
+}
+
 console.log('---------------------------------------------------');
 console.log(`Reset Complete. The project is now single-version: ${targetVersion}`);
-console.log('The "Next" version in the dropdown will now show this version.');
-console.log('');
-console.log('IMPORTANT: You must manually update docusaurus.config.ts to disable default versioning');
-console.log('configuration (comment out "lastVersion", "versions", etc.) until you serve a new version.');
+console.log(`The "Next" version in the dropdown will now show this version.`);
+console.log(`docusaurus.config.ts has been automatically updated.`);

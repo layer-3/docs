@@ -68,19 +68,14 @@ const config: Config = {
           sidebarCollapsed: false,
           sidebarCollapsible: false,
           breadcrumbs: true,
-          // includeCurrentVersion: true,
-          // lastVersion: '0.5.x',
-          // versions: {
-          //   current: {
-          //     label: require('./package.json').version,
-          //     path: 'next',
-          //     banner: 'unreleased',
-          //   },
-          //   '0.5.x': {
-          //     label: 'v0.5.x',
-          //     path: '',
-          //   },
-          // },
+          includeCurrentVersion: true,
+          versions: {
+            current: {
+              label: require('./package.json').version,
+              path: '', // Root path (docs/)
+              banner: 'none',
+            },
+          },
         },
         blog: false,
         theme: {
@@ -121,27 +116,32 @@ const config: Config = {
       },
       items: [
         {
-          to: '/docs/learn',
+          type: 'doc',
+          docId: 'learn/index',
           label: 'Learn',
           position: 'left',
         },
         {
-          to: '/docs/build/quick-start',
+          type: 'doc',
+          docId: 'build/quick-start/index',
           label: 'Build',
           position: 'left',
         },
         {
-          to: '/docs/protocol/introduction',
+          type: 'doc',
+          docId: 'protocol/introduction',
           label: 'Protocol',
           position: 'left',
         },
         {
-          to: '/docs/manuals',
+          type: 'doc',
+          docId: 'manuals/index',
           label: 'Manuals',
           position: 'left',
         },
         {
-          to: '/docs/guides',
+          type: 'doc',
+          docId: 'guides/index',
           label: 'Guides',
           position: 'left',
         },
@@ -155,6 +155,11 @@ const config: Config = {
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          className: 'navbar-version-dropdown',
         },
       ],
     },
