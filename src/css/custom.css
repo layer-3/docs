@@ -1233,9 +1233,16 @@ pre.codeBlock_bY9V[style*="background-color"],
   background-color: transparent !important;
 }
 
-[data-theme='dark'] .navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link,
 [data-theme='dark'] .navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link:hover {
   background-color: transparent !important;
+}
+
+/* Remove yellow underline from version switcher (desktop & mobile) */
+html body a.navbar-version-dropdown.navbar__link::after,
+html body .navbar-version-dropdown>a.navbar__link::after {
+  content: none !important;
+  background-color: transparent !important;
+  display: none !important;
 }
 
 .navbar-sidebar__brand .clean-btn.navbar-sidebar__close {
