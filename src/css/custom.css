@@ -1227,6 +1227,17 @@ pre.codeBlock_bY9V[style*="background-color"],
   margin-right: 4px !important;
 }
 
+/* Remove yellow highlight in mobile sidebar */
+.navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link,
+.navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link:hover {
+  background-color: transparent !important;
+}
+
+[data-theme='dark'] .navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link,
+[data-theme='dark'] .navbar-sidebar__brand .navbar-version-dropdown>a.navbar__link:hover {
+  background-color: transparent !important;
+}
+
 .navbar-sidebar__brand .clean-btn.navbar-sidebar__close {
   margin-left: 12px;
 }
