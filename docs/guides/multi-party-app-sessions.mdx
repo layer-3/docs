@@ -95,12 +95,28 @@ const appDefinition: RPCAppDefinition = {
 
 Allocations define how assets are distributed among participants:
 
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const allocations: RPCAppSessionAllocation[] = [
+    { participant: address1, asset: 'ytest.usd', amount: '0.01' },
+    { participant: address2, asset: 'ytest.usd', amount: '0.00' }
+];
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
 ```typescript
 const allocations: RPCAppSessionAllocation[] = [
     { participant: address1, asset: 'usdc', amount: '0.01' },
     { participant: address2, asset: 'usdc', amount: '0.00' }
 ];
 ```
+
+  </TabItem>
+</Tabs>
 
 **Rules:**
 - Total allocations cannot exceed session funding
@@ -134,14 +150,32 @@ await yellow.sendMessage(JSON.stringify(closeMessage));
 
 ### Step 1: Connect to Yellow Network
 
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const yellow = new Client({
+    url: 'wss://clearnet-sandbox.yellow.com/ws',
+});
+
+await yellow.connect();
+console.log('Connected to Yellow clearnet (Sandbox)');
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
 ```typescript
 const yellow = new Client({
     url: 'wss://clearnet.yellow.com/ws',
 });
 
 await yellow.connect();
-console.log('Connected to Yellow clearnet');
+console.log('Connected to Yellow clearnet (Production)');
 ```
+
+  </TabItem>
+</Tabs>
 
 ### Step 2: Set Up Participant Wallets
 
@@ -190,6 +224,27 @@ const appDefinition: RPCAppDefinition = {
 
 ### Step 5: Create Session with Initial Allocations
 
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const allocations = [
+    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.01' },
+    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.00' }
+];
+
+const sessionMessage = await createAppSessionMessage(
+    messageSigner1,
+    { definition: appDefinition, allocations }
+);
+
+const sessionResponse = await yellow.sendMessage(sessionMessage);
+const sessionId = sessionResponse.params.appSessionId;
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
 ```typescript
 const allocations = [
     { participant: wallet1Client.account.address, asset: 'usdc', amount: '0.01' },
@@ -205,9 +260,42 @@ const sessionResponse = await yellow.sendMessage(sessionMessage);
 const sessionId = sessionResponse.params.appSessionId;
 ```
 
+  </TabItem>
+</Tabs>
+
 ### Step 6: Update Session State
 
 You can update allocations to reflect state changes (e.g., a transfer). Since the quorum is 100%, both participants must sign:
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const newAllocations = [
+    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.00' },
+    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.01' }
+];
+
+// Create update message signed by first participant
+const updateMessage = await createSubmitAppStateMessage(
+    messageSigner1,
+    { app_session_id: sessionId, allocations: newAllocations }
+);
+
+const updateMessageJson = JSON.parse(updateMessage);
+
+// Second participant signs the same state update
+const signature2 = await messageSigner2(updateMessageJson.req as RPCData);
+
+// Append second signature to meet quorum requirement
+updateMessageJson.sig.push(signature2);
+
+// Submit with all required signatures
+await yellow.sendMessage(JSON.stringify(updateMessageJson));
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
 
 ```typescript
 const newAllocations = [
@@ -232,6 +320,9 @@ updateMessageJson.sig.push(signature2);
 // Submit with all required signatures
 await yellow.sendMessage(JSON.stringify(updateMessageJson));
 ```
+
+  </TabItem>
+</Tabs>
 
 ### Step 7: Close Session with Multi-Party Signatures
 
@@ -279,6 +370,10 @@ Close session response: { success: true }
 ---
 
 ## Use Cases
+
+:::note Asset Names in Examples
+The examples below use `usdc` for production scenarios. When testing on Sandbox, replace `usdc` with `ytest.usd`.
+:::
 
 ### 1. Peer-to-Peer Escrow
 
@@ -418,6 +513,16 @@ function validateStateTransition(
 **Solution**:
 - Ensure both `WALLET_1_SEED_PHRASE` and `WALLET_2_SEED_PHRASE` are set in `.env`
 - Verify wallets have been authenticated on Yellow network before
+
+### "Unsupported token"
+
+**Cause**: Using the wrong asset for your environment (e.g., `usdc` on Sandbox or `ytest.usd` on Production)
+
+**Solution**:
+- **Sandbox** (`wss://clearnet-sandbox.yellow.com/ws`): Use `ytest.usd`
+- **Production** (`wss://clearnet.yellow.com/ws`): Use `usdc`
+
+Ensure the asset in your allocations matches the connected network.
 
 ### "Insufficient balance"
 
