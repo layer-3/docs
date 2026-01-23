@@ -1,0 +1,591 @@
+---
+sidebar_position: 3
+title: Multi-Party Application Sessions
+description: Learn how to create, manage, and close multi-party application sessions using the Yellow Network and Nitrolite protocol
+keywords: [app sessions, multi-party, state channels, quorum, voting, signatures, allocations]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Multi-Party Application Sessions Tutorial
+
+## Overview
+
+Application sessions in Nitrolite enable multiple participants to interact within a shared off-chain state channel. This is particularly powerful for use cases requiring coordinated actions between parties without on-chain overhead.
+
+This tutorial demonstrates how to create, manage, and close a multi-party application session using the Yellow Network and Nitrolite protocol.
+
+:::tip Run the Full Example
+The complete runnable script for this tutorial is available at:
+[`scripts/app_sessions/app_session_two_signers.ts`](https://github.com/stevenzeiler/yellow-sdk-tutorials/blob/main/scripts/app_sessions/app_session_two_signers.ts)
+
+```bash
+npx tsx scripts/app_sessions/app_session_two_signers.ts
+```
+:::
+
+## What is an Application Session?
+
+An **application session** is a multi-party state channel that allows participants to:
+
+- **Execute off-chain logic** without blockchain transactions
+- **Update shared state** with cryptographic signatures
+- **Transfer value** between participants instantly
+
+Unlike simple payment channels (1-to-1), application sessions support:
+- Multiple participants (2+)
+- Complex state logic
+- Voting mechanisms (weights and quorum)
+- Flexible allocation rules
+
+## Prerequisites
+
+### Environment Setup
+
+You'll need two wallet seed phrases in your `.env` file:
+
+```bash
+WALLET_1_SEED_PHRASE="first wallet 12 or 24 word mnemonic here"
+WALLET_2_SEED_PHRASE="second wallet 12 or 24 word mnemonic here"
+```
+
+### Funded Wallets
+
+Both wallets should have:
+1. **Funds in Yellow ledger** (deposited via custody contract)
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## Key Concepts
+
+### 1. App Definition
+
+The application definition specifies the rules of the session:
+
+```typescript
+const appDefinition: RPCAppDefinition = {
+    protocol: RPCProtocolVersion.NitroRPC_0_5,
+    participants: [address1, address2],
+    weights: [50, 50],        // Voting power distribution
+    quorum: 100,              // Percentage needed for decisions (100 = unanimous)
+    challenge: 0,             // Challenge period in seconds
+    nonce: Date.now(),        // Unique session ID
+    application: 'Test app',
+};
+```
+
+**Key parameters:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `participants` | Array of wallet addresses involved |
+| `weights` | Voting power for each participant (must sum to 100 or appropriate total) |
+| `quorum` | Required percentage of votes for actions (50 = majority, 100 = unanimous) |
+| `challenge` | Time window for disputing state changes |
+| `nonce` | Unique identifier to prevent replay attacks |
+
+### 2. Allocations
+
+Allocations define how assets are distributed among participants:
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const allocations: RPCAppSessionAllocation[] = [
+    { participant: address1, asset: 'ytest.usd', amount: '0.01' },
+    { participant: address2, asset: 'ytest.usd', amount: '0.00' }
+];
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
+```typescript
+const allocations: RPCAppSessionAllocation[] = [
+    { participant: address1, asset: 'usdc', amount: '0.01' },
+    { participant: address2, asset: 'usdc', amount: '0.00' }
+];
+```
+
+  </TabItem>
+</Tabs>
+
+**Rules:**
+- Total allocations cannot exceed session funding
+- Amounts are strings (to maintain precision)
+- Must account for all participants
+
+### 3. Multi-Party Signatures
+
+For actions requiring consensus (closing, etc.), signatures from multiple participants are collected:
+
+```typescript
+// First participant signs
+const closeMessage = await createCloseAppSessionMessage(
+    messageSigner1,
+    { app_session_id: sessionId, allocations: finalAllocations }
+);
+
+// Second participant signs
+const signature2 = await messageSigner2(closeMessage.req);
+
+// Add second signature
+closeMessage.sig.push(signature2);
+
+// Submit with all signatures
+await yellow.sendMessage(JSON.stringify(closeMessage));
+```
+
+---
+
+## Step-by-Step Walkthrough
+
+### Step 1: Connect to Yellow Network
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const yellow = new Client({
+    url: 'wss://clearnet-sandbox.yellow.com/ws',
+});
+
+await yellow.connect();
+console.log('Connected to Yellow clearnet (Sandbox)');
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
+```typescript
+const yellow = new Client({
+    url: 'wss://clearnet.yellow.com/ws',
+});
+
+await yellow.connect();
+console.log('Connected to Yellow clearnet (Production)');
+```
+
+  </TabItem>
+</Tabs>
+
+### Step 2: Set Up Participant Wallets
+
+```typescript
+// Create wallet clients for both participants
+const wallet1Client = createWalletClient({
+    account: mnemonicToAccount(process.env.WALLET_1_SEED_PHRASE as string),
+    chain: base,
+    transport: http(),
+});
+
+const wallet2Client = createWalletClient({
+    account: mnemonicToAccount(process.env.WALLET_2_SEED_PHRASE as string),
+    chain: base,
+    transport: http(),
+});
+```
+
+### Step 3: Authenticate Both Participants
+
+Each participant needs their own session key:
+
+```typescript
+// Authenticate first participant
+const sessionKey1 = await authenticateWallet(yellow, wallet1Client);
+const messageSigner1 = createECDSAMessageSigner(sessionKey1.privateKey);
+
+// Authenticate second participant
+const sessionKey2 = await authenticateWallet(yellow, wallet2Client);
+const messageSigner2 = createECDSAMessageSigner(sessionKey2.privateKey);
+```
+
+### Step 4: Define Application Configuration
+
+```typescript
+const appDefinition: RPCAppDefinition = {
+    protocol: RPCProtocolVersion.NitroRPC_0_5,
+    participants: [wallet1Client.account.address, wallet2Client.account.address],
+    weights: [50, 50],
+    quorum: 100,
+    challenge: 0,
+    nonce: Date.now(),
+    application: 'Test app',
+};
+```
+
+### Step 5: Create Session with Initial Allocations
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const allocations = [
+    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.01' },
+    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.00' }
+];
+
+const sessionMessage = await createAppSessionMessage(
+    messageSigner1,
+    { definition: appDefinition, allocations }
+);
+
+const sessionResponse = await yellow.sendMessage(sessionMessage);
+const sessionId = sessionResponse.params.appSessionId;
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
+```typescript
+const allocations = [
+    { participant: wallet1Client.account.address, asset: 'usdc', amount: '0.01' },
+    { participant: wallet2Client.account.address, asset: 'usdc', amount: '0.00' }
+];
+
+const sessionMessage = await createAppSessionMessage(
+    messageSigner1,
+    { definition: appDefinition, allocations }
+);
+
+const sessionResponse = await yellow.sendMessage(sessionMessage);
+const sessionId = sessionResponse.params.appSessionId;
+```
+
+  </TabItem>
+</Tabs>
+
+### Step 6: Update Session State
+
+You can update allocations to reflect state changes (e.g., a transfer). Since the quorum is 100%, both participants must sign:
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox" default>
+
+```typescript
+const newAllocations = [
+    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.00' },
+    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.01' }
+];
+
+// Create update message signed by first participant
+const updateMessage = await createSubmitAppStateMessage(
+    messageSigner1,
+    { app_session_id: sessionId, allocations: newAllocations }
+);
+
+const updateMessageJson = JSON.parse(updateMessage);
+
+// Second participant signs the same state update
+const signature2 = await messageSigner2(updateMessageJson.req as RPCData);
+
+// Append second signature to meet quorum requirement
+updateMessageJson.sig.push(signature2);
+
+// Submit with all required signatures
+await yellow.sendMessage(JSON.stringify(updateMessageJson));
+```
+
+  </TabItem>
+  <TabItem value="production" label="Production">
+
+```typescript
+const newAllocations = [
+    { participant: wallet1Client.account.address, asset: 'usdc', amount: '0.00' },
+    { participant: wallet2Client.account.address, asset: 'usdc', amount: '0.01' }
+];
+
+// Create update message signed by first participant
+const updateMessage = await createSubmitAppStateMessage(
+    messageSigner1,
+    { app_session_id: sessionId, allocations: newAllocations }
+);
+
+const updateMessageJson = JSON.parse(updateMessage);
+
+// Second participant signs the same state update
+const signature2 = await messageSigner2(updateMessageJson.req as RPCData);
+
+// Append second signature to meet quorum requirement
+updateMessageJson.sig.push(signature2);
+
+// Submit with all required signatures
+await yellow.sendMessage(JSON.stringify(updateMessageJson));
+```
+
+  </TabItem>
+</Tabs>
+
+### Step 7: Close Session with Multi-Party Signatures
+
+```typescript
+// Create close message (signed by participant 1)
+const closeMessage = await createCloseAppSessionMessage(
+    messageSigner1,
+    { app_session_id: sessionId, allocations: finalAllocations }
+);
+
+const closeMessageJson = JSON.parse(closeMessage);
+
+// Participant 2 signs
+const signature2 = await messageSigner2(closeMessageJson.req as RPCData);
+closeMessageJson.sig.push(signature2);
+
+// Submit with all signatures
+const closeResponse = await yellow.sendMessage(JSON.stringify(closeMessageJson));
+```
+
+---
+
+## Running the Example
+
+```bash
+npx tsx scripts/app_session_two_signers.ts
+```
+
+### Expected Output
+
+```
+Connected to Yellow clearnet
+Wallet address: 0x1234...
+Wallet address: 0x5678...
+Session message created: {...}
+Session message sent
+Session response: { appSessionId: '0xabc...' }
+Submit app state message: {...}
+Wallet 2 signed close session message: 0xdef...
+Close session message (with all signatures): {...}
+Close session message sent
+Close session response: { success: true }
+```
+
+---
+
+## Use Cases
+
+:::note Asset Names in Examples
+The examples below use `usdc` for production scenarios. When testing on Sandbox, replace `usdc` with `ytest.usd`.
+:::
+
+### 1. Peer-to-Peer Escrow
+
+```typescript
+// Buyer and seller agree on terms
+const appDefinition = {
+    participants: [buyer, seller],
+    weights: [50, 50],
+    quorum: 100,  // Both must agree to release funds
+    // ...
+};
+
+// Buyer funds escrow
+const allocations = [
+    { participant: buyer, asset: 'usdc', amount: '0' },
+    { participant: seller, asset: 'usdc', amount: '100' }  // Released to seller
+];
+```
+
+### 2. Multi-Player Gaming
+
+```typescript
+const appDefinition = {
+    participants: [player1, player2, player3, player4],
+    weights: [25, 25, 25, 25],
+    quorum: 75,  // 3 out of 4 players must agree
+    challenge: 3600,  // 1 hour challenge period
+    application: 'poker-game',
+};
+```
+
+### 3. DAO Treasury Management
+
+```typescript
+const appDefinition = {
+    participants: [member1, member2, member3, member4, member5],
+    weights: [20, 20, 20, 20, 20],
+    quorum: 60,  // 60% approval needed
+    application: 'dao-treasury',
+};
+```
+
+### 4. Atomic Swaps
+
+```typescript
+// Party A has USDC, wants ETH
+// Party B has ETH, wants USDC
+const allocations = [
+    { participant: partyA, asset: 'usdc', amount: '100' },
+    { participant: partyA, asset: 'eth', amount: '0' },
+    { participant: partyB, asset: 'usdc', amount: '0' },
+    { participant: partyB, asset: 'eth', amount: '0.05' }
+];
+
+// After swap
+const finalAllocations = [
+    { participant: partyA, asset: 'usdc', amount: '0' },
+    { participant: partyA, asset: 'eth', amount: '0.05' },
+    { participant: partyB, asset: 'usdc', amount: '100' },
+    { participant: partyB, asset: 'eth', amount: '0' }
+];
+```
+
+---
+
+## Advanced Topics
+
+### Dynamic Participants
+
+For applications requiring flexible participation:
+
+```typescript
+// Start with 2 participants
+let participants = [user1, user2];
+
+// Add a third participant (requires re-creating session)
+participants.push(user3);
+
+const newAppDefinition = {
+    participants,
+    weights: [33, 33, 34],
+    // ...
+};
+```
+
+### Weighted Voting
+
+Different participants can have different voting power:
+
+```typescript
+const appDefinition = {
+    participants: [founder, investor1, investor2],
+    weights: [50, 30, 20],  // Founder has 50% voting power
+    quorum: 60,  // Founder + one investor = 60%
+    // ...
+};
+```
+
+### Challenge Periods
+
+Add time for participants to dispute state changes:
+
+```typescript
+const appDefinition = {
+    // ...
+    challenge: 86400,  // 24 hours in seconds
+};
+
+// Participants have 24 hours to challenge a close request before finalization
+```
+
+### State Validation
+
+Implement custom logic to validate state transitions:
+
+```typescript
+function validateStateTransition(
+    oldAllocations: RPCAppSessionAllocation[],
+    newAllocations: RPCAppSessionAllocation[]
+): boolean {
+    // Ensure total amounts are preserved
+    const oldTotal = oldAllocations.reduce((sum, a) => sum + parseFloat(a.amount), 0);
+    const newTotal = newAllocations.reduce((sum, a) => sum + parseFloat(a.amount), 0);
+    
+    return Math.abs(oldTotal - newTotal) < 0.000001;
+}
+```
+
+---
+
+## Troubleshooting
+
+### "Authentication failed for participant"
+
+**Cause**: Session key authentication failed
+
+**Solution**:
+- Ensure both `WALLET_1_SEED_PHRASE` and `WALLET_2_SEED_PHRASE` are set in `.env`
+- Verify wallets have been authenticated on Yellow network before
+
+### "Unsupported token"
+
+**Cause**: Using the wrong asset for your environment (e.g., `usdc` on Sandbox or `ytest.usd` on Production)
+
+**Solution**:
+- **Sandbox** (`wss://clearnet-sandbox.yellow.com/ws`): Use `ytest.usd`
+- **Production** (`wss://clearnet.yellow.com/ws`): Use `usdc`
+
+Ensure the asset in your allocations matches the connected network.
+
+### "Insufficient balance"
+
+**Cause**: Participant doesn't have enough funds in Yellow ledger
+
+**Solution**:
+
+Deposit sufficient funds into the yellow network account unified balance for each wallet
+
+### "Invalid signatures"
+
+**Cause**: Not all required signatures were collected
+
+**Solution**:
+- Ensure quorum is met (if quorum is 100, need all signatures)
+- Check that signatures are added in correct order
+- Verify message signers correspond to participants
+
+### "Session already closed"
+
+**Cause**: Trying to update or close an already-finalized session
+
+**Solution**:
+- Create a new session
+- Check session status before operations
+
+### "Quorum not reached"
+
+**Cause**: Insufficient voting weight for action
+
+**Solution**:
+
+```typescript
+// Example: quorum is 60, weights are [30, 30, 40]
+// Need at least 2 participants to sign
+
+// Check current signature weight
+const signatureWeight = signatures.reduce((sum, sig) => {
+    const participantIndex = findParticipantIndex(sig);
+    return sum + weights[participantIndex];
+}, 0);
+
+console.log(`Current weight: ${signatureWeight}, Required: ${quorum}`);
+```
+
+---
+
+## Best Practices
+
+1. **Always validate allocations** before submitting state updates
+2. **Store session IDs** for future reference and auditing
+3. **Implement timeout handling** for multi-party signatures
+4. **Use appropriate quorum settings** based on trust model
+5. **Test with small amounts** before production use
+6. **Keep participants informed** of state changes
+7. **Handle disconnections gracefully** (participants may come back)
+8. **Document application logic** for all participants
+
+---
+
+## Further Reading
+
+- [App Sessions Core Concepts](/docs/learn/core-concepts/app-sessions) — Understanding app sessions
+- [App Session Methods](/docs/protocol/off-chain/app-sessions) — Complete API reference
+- [Client-Side App Session Signing Guide](/docs/guides/client-side-app-session-signing) — Signing implementation details
+- [Session Keys](/docs/learn/core-concepts/session-keys) — Managing session keys
