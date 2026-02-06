@@ -26,6 +26,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'learn/introduction/what-yellow-solves',
         'learn/introduction/architecture-at-a-glance',
+        'learn/introduction/supported-chains',
       ],
       collapsible: false,
       collapsed: false,

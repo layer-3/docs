@@ -1,0 +1,301 @@
+---
+sidebar_position: 3
+title: Supported Chains & Assets
+description: Complete list of supported blockchains and assets on Yellow Network
+keywords: [supported chains, blockchains, assets, tokens, USDC, Base, Polygon, Ethereum, sandbox, production]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Supported Chains & Assets
+
+This page lists all blockchains and assets currently supported on Yellow Network.
+
+---
+
+## Environments
+
+Yellow Network operates two separate environments:
+
+| Environment | Purpose | URL |
+|-------------|---------|-----|
+| **Sandbox** | Development and testing | `wss://clearnet-sandbox.yellow.com/ws` |
+| **Production** | Live operations with real assets | `wss://clearnet.yellow.com/ws` |
+
+:::info Environment Separation
+- Sandbox uses **testnet** blockchains and test tokens (e.g., `ytest.usd`)
+- Production uses **mainnet** blockchains and real assets (e.g., `usdc`)
+- Assets and blockchains from one environment cannot be used in the other
+:::
+
+---
+
+## Supported Blockchains
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox (Testnet)" default>
+
+| Blockchain | Chain ID | Status |
+|------------|----------|--------|
+| Base Sepolia | 84532 | ✅ Active |
+| Polygon Amoy | 80002 | ✅ Active |
+| Ethereum Sepolia | 11155111 | ✅ Active |
+
+  </TabItem>
+  <TabItem value="production" label="Production (Mainnet)">
+
+| Blockchain | Chain ID | Status |
+|------------|----------|--------|
+| Ethereum | 1 | ✅ Active |
+| BNB Smart Chain | 56 | ✅ Active |
+| Polygon | 137 | ✅ Active |
+| World Chain | 480 | ✅ Active |
+| Base | 8453 | ✅ Active |
+| Linea | 59144 | ✅ Active |
+| XRPL EVM Sidechain | 1440000 | ✅ Active |
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Supported Assets
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox (Testnet)" default>
+
+| Asset | Symbol | Description |
+|-------|--------|-------------|
+| Yellow Test USD | `ytest.usd` | Test stablecoin for sandbox development |
+
+:::tip Getting Test Tokens
+Use the Yellow Network faucet to receive `ytest.usd` tokens for testing in the Sandbox environment.
+:::
+
+  </TabItem>
+  <TabItem value="production" label="Production (Mainnet)">
+
+| Asset | Symbol | Blockchains | Decimals |
+|-------|--------|-------------|----------|
+| USD Coin | `usdc` | Ethereum, BNB Smart Chain, Polygon, World Chain, Base, Linea, XRPL EVM | 6 |
+| Tether USD | `usdt` | BNB Smart Chain, Base, Linea | 6 |
+| Ethereum | `eth` | Base, Linea | 18 |
+| Wrapped Ether | `weth` | BNB Smart Chain, Polygon | 18 |
+| BNB | `bnb` | BNB Smart Chain | 18 |
+| Chainlink | `link` | BNB Smart Chain | 18 |
+| XRP | `xrp` | XRPL EVM Sidechain | 18 |
+| Beatwav | `beatwav` | Ethereum, Polygon | 18 |
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Assets by Blockchain
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox (Testnet)" default>
+
+### Base Sepolia (84532)
+
+| Asset | Symbol |
+|-------|--------|
+| Yellow Test USD | `ytest.usd` |
+
+### Polygon Amoy (80002)
+
+| Asset | Symbol |
+|-------|--------|
+| Yellow Test USD | `ytest.usd` |
+
+  </TabItem>
+  <TabItem value="production" label="Production (Mainnet)">
+
+### Ethereum (1)
+
+| Asset | Symbol |
+|-------|--------|
+| USD Coin | `usdc` |
+| Beatwav | `beatwav` |
+
+### BNB Smart Chain (56)
+
+| Asset | Symbol |
+|-------|--------|
+| BNB | `bnb` |
+| USD Coin | `usdc` |
+| Tether USD | `usdt` |
+| Wrapped Ether | `weth` |
+| Chainlink | `link` |
+
+### Polygon (137)
+
+| Asset | Symbol |
+|-------|--------|
+| USD Coin | `usdc` |
+| Wrapped Ether | `weth` |
+| Beatwav | `beatwav` |
+
+### World Chain (480)
+
+| Asset | Symbol |
+|-------|--------|
+| USD Coin | `usdc` |
+
+### Base (8453)
+
+| Asset | Symbol |
+|-------|--------|
+| Ethereum | `eth` |
+| USD Coin | `usdc` |
+| Tether USD | `usdt` |
+
+### Linea (59144)
+
+| Asset | Symbol |
+|-------|--------|
+| Ethereum | `eth` |
+| USD Coin | `usdc` |
+| Tether USD | `usdt` |
+
+### XRPL EVM Sidechain (1440000)
+
+| Asset | Symbol |
+|-------|--------|
+| USD Coin | `usdc` |
+| XRP | `xrp` |
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Contract Addresses
+
+Contract addresses vary by blockchain. See the [deployment repository](https://github.com/erc7824/nitrolite/tree/main/contract/deployments) for the latest addresses.
+
+<Tabs groupId="environment">
+  <TabItem value="sandbox" label="Sandbox (Testnet)" default>
+
+### Base Sepolia (84532)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x019B65A265EB3363822f2752141b3dF16131b262` |
+| Adjudicator | `0x7c7ccbc98469190849BCC6c926307794fDfB11F2` |
+
+### Polygon Amoy (80002)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x019B65A265EB3363822f2752141b3dF16131b262` |
+| Adjudicator | `0x7c7ccbc98469190849BCC6c926307794fDfB11F2` |
+
+  </TabItem>
+  <TabItem value="production" label="Production (Mainnet)">
+
+### Ethereum (1)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x6F71a38d919ad713D0AfE0eB712b95064Fc2616f` |
+| Adjudicator | `0x14980dF216722f14c42CA7357b06dEa7eB408b10` |
+
+### BNB Smart Chain (56)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x6F71a38d919ad713D0AfE0eB712b95064Fc2616f` |
+| Adjudicator | `0x14980dF216722f14c42CA7357b06dEa7eB408b10` |
+
+### Polygon (137)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x490fb189DdE3a01B00be9BA5F41e3447FbC838b6` |
+| Adjudicator | `0x7de4A0736Cf5740fD3Ca2F2e9cc85c9AC223eF0C` |
+
+### World Chain (480)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x6F71a38d919ad713D0AfE0eB712b95064Fc2616f` |
+| Adjudicator | `0x14980dF216722f14c42CA7357b06dEa7eB408b10` |
+
+### Base (8453)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x490fb189DdE3a01B00be9BA5F41e3447FbC838b6` |
+| Adjudicator | `0x7de4A0736Cf5740fD3Ca2F2e9cc85c9AC223eF0C` |
+
+### Linea (59144)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x6F71a38d919ad713D0AfE0eB712b95064Fc2616f` |
+| Adjudicator | `0x14980dF216722f14c42CA7357b06dEa7eB408b10` |
+
+### XRPL EVM Sidechain (1440000)
+
+| Contract | Address |
+|----------|---------|
+| Custody | `0x6F71a38d919ad713D0AfE0eB712b95064Fc2616f` |
+| Adjudicator | `0x14980dF216722f14c42CA7357b06dEa7eB408b10` |
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Requesting New Support
+
+Need support for a blockchain or asset not listed here?
+
+- **[Request Blockchain Support](/docs/manuals/request-blockchain-support)** — Guide for adding new blockchain networks
+- **[Request Asset Support](/docs/manuals/request-asset-support)** — Guide for adding new tokens/assets
+
+---
+
+## Quick Code Reference
+
+### Connecting to the Right Environment
+
+```typescript
+import { Client } from "yellow-ts";
+
+// Sandbox (for testing with ytest.usd)
+const sandboxClient = new Client({
+    url: 'wss://clearnet-sandbox.yellow.com/ws',
+});
+
+// Production (for real assets like usdc)
+const productionClient = new Client({
+    url: 'wss://clearnet.yellow.com/ws',
+});
+```
+
+### Using the Correct Asset
+
+```typescript
+// Sandbox environment
+const sandboxAllocations = [
+    { participant: address1, asset: 'ytest.usd', amount: '100.0' },
+    { participant: address2, asset: 'ytest.usd', amount: '0.0' }
+];
+
+// Production environment
+const productionAllocations = [
+    { participant: address1, asset: 'usdc', amount: '100.0' },
+    { participant: address2, asset: 'usdc', amount: '0.0' }
+];
+```
+
+---
+
+## See Also
+
+- [Quick Start Guide](/docs/build/quick-start) — Get started building with Yellow SDK
+- [Multi-Party App Sessions](/docs/guides/multi-party-app-sessions) — Create multi-party application sessions
+- [API Reference](/docs/api-reference) — Complete SDK documentation
