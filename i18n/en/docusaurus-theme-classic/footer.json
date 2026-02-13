@@ -1,0 +1,54 @@
+{
+  "link.title. ": {
+    "message": " ",
+    "description": "The title of the footer links column with title=  in the footer"
+  },
+  "link.title.Docs": {
+    "message": "Docs",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.Social": {
+    "message": "Social",
+    "description": "The title of the footer links column with title=Social in the footer"
+  },
+  "link.item.label.Learn": {
+    "message": "Learn",
+    "description": "The label of footer link with label=Learn linking to /docs/learn"
+  },
+  "link.item.label.Build": {
+    "message": "Build",
+    "description": "The label of footer link with label=Build linking to /docs/build/quick-start"
+  },
+  "link.item.label.Manuals": {
+    "message": "Manuals",
+    "description": "The label of footer link with label=Manuals linking to /docs/manuals"
+  },
+  "link.item.label.Guides": {
+    "message": "Guides",
+    "description": "The label of footer link with label=Guides linking to /docs/guides"
+  },
+  "link.item.label.Whitepaper": {
+    "message": "Whitepaper",
+    "description": "The label of footer link with label=Whitepaper linking to /whitepaper"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.com/invite/yellownetwork"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/layer-3"
+  },
+  "link.item.label.X": {
+    "message": "X",
+    "description": "The label of footer link with label=X linking to https://x.com/YellowCom_News"
+  },
+  "copyright": {
+    "message": "Copyright © 2026 Layer3 Fintech Ltd.",
+    "description": "The footer copyright"
+  }
+}
