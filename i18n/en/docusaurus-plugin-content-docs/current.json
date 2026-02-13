@@ -1,0 +1,34 @@
+{
+  "version.label": {
+    "message": "0.5.x",
+    "description": "The label for version current"
+  },
+  "sidebar.learnSidebar.category.Introduction": {
+    "message": "Introduction",
+    "description": "The label for category 'Introduction' in sidebar 'learnSidebar'"
+  },
+  "sidebar.learnSidebar.category.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label for category 'Getting Started' in sidebar 'learnSidebar'"
+  },
+  "sidebar.learnSidebar.category.Core Concepts": {
+    "message": "Core Concepts",
+    "description": "The label for category 'Core Concepts' in sidebar 'learnSidebar'"
+  },
+  "sidebar.learnSidebar.category.Advanced": {
+    "message": "Advanced",
+    "description": "The label for category 'Advanced' in sidebar 'learnSidebar'"
+  },
+  "sidebar.learnSidebar.doc.Learn": {
+    "message": "Learn",
+    "description": "The label for the doc item 'Learn' in sidebar 'learnSidebar', linking to the doc learn/index"
+  },
+  "sidebar.protocolSidebar.category.On-Chain Protocol": {
+    "message": "On-Chain Protocol",
+    "description": "The label for category 'On-Chain Protocol' in sidebar 'protocolSidebar'"
+  },
+  "sidebar.protocolSidebar.category.Off-Chain RPC Protocol": {
+    "message": "Off-Chain RPC Protocol",
+    "description": "The label for category 'Off-Chain RPC Protocol' in sidebar 'protocolSidebar'"
+  }
+}
