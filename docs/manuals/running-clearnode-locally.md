@@ -1,6 +1,6 @@
 # Running Clearnode Locally
 
-This manual explains how to run a Clearnode locally using Docker Compose for development and testing purposes. Clearnode is an implementation of a message broker node providing ledger services for the Nitrolite protocol, which enables efficient off-chain payment channels with on-chain settlement capabilities.
+This manual explains how to run a Clearnode locally using Docker Compose for development and testing purposes. Clearnode is an open-source implementation of a message broker node developed and maintained by Layer3 Fintech Ltd., providing ledger services for the Nitrolite protocol, which enables efficient off-chain payment channels with on-chain settlement capabilities. Independent node operators run this software on their own infrastructure to provide network services.
 
 ## Prerequisites
 
