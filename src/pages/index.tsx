@@ -30,7 +30,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="Developer documentation for Yellow Network — a decentralized clearing and settlement infrastructure built on state channels. Access SDK guides, protocol specifications, and developer tools supplied by Layer3 Fintech Ltd.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
