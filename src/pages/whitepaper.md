@@ -88,7 +88,7 @@ Yellow is an open-source software framework developed through multi-entity colla
 | Helios Technologies SAS (France) | Core Technology Development |
 | Openware SAS (France) | Core Technology Development |
 
-The core state channel technology builds on academic research from statechannels.org and the Nitrolite framework, developed in collaboration with Consensys and other open-source contributors. Approximately 60 core developers contribute across the open-source codebase, with over 100 third-party applications launched on the network in 2025.
+The core state channel technology builds on academic research from statechannels.org and the VirtualApp framework, developed in collaboration with Consensys and other open-source contributors. Approximately 60 core developers contribute across the open-source codebase, with over 100 third-party applications launched on the network in 2025.
 
 ### Token Utility
 
@@ -161,7 +161,7 @@ Protocol-level service parameters (security thresholds, fee levels, supported ch
 
 ### Architecture
 
-The Yellow Network operates as a three-layer architecture built on top of public blockchains. The underlying technology builds on open-source state channel research (statechannels.org) and collaborative development, including the Nitrolite framework developed with Consensys.
+The Yellow Network operates as a three-layer architecture built on top of public blockchains. The underlying technology builds on open-source state channel research (statechannels.org) and collaborative development, including the VirtualApp framework developed with Consensys.
 
 **Layer 1 — Base Blockchain (EVM Settlement)**
 

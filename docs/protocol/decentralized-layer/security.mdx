@@ -1,0 +1,97 @@
+---
+sidebar_position: 6
+title: "Security Analysis"
+description: "Attack vectors and mitigations — liveness, double spending, Sybil resistance, cluster bribery, and price manipulation defenses."
+---
+
+# Security Analysis
+
+This section describes the threat model for the Yellow Network Protocol and the multi-layer defenses against each attack vector.
+
+## Liveness vs. Safety
+
+The protocol **favors safety**. If a cluster cannot reach a quorum (e.g., due to a network partition), the account is temporarily frozen. Funds are never lost, only inaccessible until the network heals.
+
+## Double Spending
+
+Prevented by **strict nonce ordering** within a shard. A cluster MUST NOT process nonce `N+1` until nonce `N` is finalized. Each user has a single global nonce managed by their home cluster (`C_User`). All state-changing operations originate from the user's cluster, which enforces sequential ordering.
+
+This prevents double-spend across shards at the cost of serializing a single user's transactions. **Throughput scales with the number of users**, not the number of operations per user.
+
+## Sybil Attacks
+
+Mitigated by the **Registry VRF**. The inclusion of `PrevRandao` (L1 block randomness) and `Timestamp` in the [NodeID derivation](./overview.mdx#node-identity) prevents attackers from grinding addresses to target a specific shard. An attacker cannot predict which NodeID they will receive, so they cannot position themselves to surround a target account in XOR space.
+
+## Signing Cluster Bribery
+
+An attacker who bribes `floor(2k/3) + 1` members of `C_sign` could produce a fraudulent Escrow Certificate — signing a withdrawal for more than the account holds, or to an attacker-controlled address. The BLS signature would be genuinely valid.
+
+### Without the Replication Set
+
+This attack is **undetectable**: the certificate and submitted parameters match, the BLS signature verifies, no challenge is raised, the cool-down expires, and finalization drains the Custody contract. The attacker keeps the stolen funds and recovers their collateral after unbonding. The economic deterrent is illusory because slashing never triggers.
+
+### With the Replication Set
+
+The attack **fails**:
+
+1. `C_watch` nodes hold an independent copy of the account state, verified against prior Certificates.
+2. When the fraudulent `startWithdrawal` lands on L1, `C_watch` detects the mismatch against their local state.
+3. `C_watch` produces a [Dispute Certificate](./protocol-lifecycle.mdx#step-3-challenge-period) with `k=r` and a higher nonce, overriding the fraudulent withdrawal on-chain.
+4. The original signers are slashed: the network refuses to produce Escrow Certificates for their collateral. Their stake is forfeit.
+
+### Cost of Corruption Comparison
+
+| Model | Nodes to bribe | Cost |
+|-------|---------------|------|
+| `C_sign` only | `floor(2k/3) + 1` | `Collateral × (2k/3 + 1)` |
+| `C_sign` + `C_watch` | `floor(2r/3) + 1` | `Collateral × (2r/3 + 1)` |
+
+With `f_r = 4`, a `k=5` account requires bribing **14 of 20** nodes instead of 4 of 5 — a 3.5x increase. As *k* grows with value (DQE), *r* grows proportionally, maintaining the security multiplier.
+
+### Residual Risk
+
+If an attacker bribes `floor(2r/3) + 1` of `C_watch`, they can both produce a fraudulent Escrow Certificate (they contain a `C_sign` quorum) and suppress the Dispute Certificate. This is the protocol's **ultimate trust boundary**. The DQE formula ensures `Collateral × floor(2r/3) + 1 > V_A`, making this attack economically irrational.
+
+## Price Manipulation
+
+Attackers might try to manipulate the internal AMM price to lower their required *k* or extract LP capital.
+
+### Three-Layer Defense
+
+**1. EMA Oracle** — All security-critical pricing MUST use `P_EMA`, not `P_spot`. The exponential moving average (`τ = 600s`) is inherently sluggish — an attacker must sustain a manipulated price for multiple half-lives, requiring capital far exceeding any potential exploit.
+
+**2. Dynamic Fee Brake** — Fees scale with `|P_spot - P_scale|`. As an attacker pushes spot price away from the peg, fees rise from 10 bps to 40 bps, exponentially draining attacker capital before the EMA can be shifted.
+
+**3. Profit-Gated Repagging** — Even if an attacker shifts `P_EMA`, the liquidity curve (`P_scale`) only follows if the [Virtual Price gate](./liquidity-layer.mdx#profit-gated-repagging-cold-path) is satisfied. The cluster mathematically refuses to shift liquidity into a position that would decrease `VirtualPrice`, rendering spot-manipulation attacks unprofitable.
+
+### EMA Parameters
+
+| Parameter | Value |
+|-----------|-------|
+| Half-life (`τ`) | 600 seconds (10 minutes) |
+| Minimum observations | 20 swap events before `P_EMA` is considered valid |
+| Bootstrap | Before `P_EMA` is valid (new pool), spot price is used with `k` floored to `k_min × 2` |
+
+### Residual Risk
+
+A well-capitalized attacker who sustains multi-hour manipulation while absorbing escalating dynamic fees could eventually shift `P_EMA` enough to reduce *k*. The profit gate prevents LP capital extraction, but the reduced *k* could lower the cost of a subsequent bribery attack. The [DQE safety multiplier](./elastic-security.mdx#dynamic-quorum-extension-dqe) and the replication set provide defense-in-depth.
+
+## Temporal Consistency and Certificate Freshness
+
+The protocol relies on [time windows](./cluster-lifecycle.mdx#time-windows) to guarantee that on-chain signature verification always operates against the same cluster membership that produced the certificate.
+
+### Attack Vectors Mitigated
+
+| Attack | Mitigation |
+|--------|------------|
+| **Stale certificate replay** — resubmitting an old certificate after cluster membership changed | `signedAt + CERT_LIFETIME < block.timestamp` → contract rejects |
+| **Node departure exploit** — signing a certificate then immediately unregistering to escape slashing | `CERT_LIFETIME < COOLDOWN` → certificate expires before cooldown ends; node remains slashable |
+| **Warmup bypass** — including a new node in signing before it has synced state | Dual enforcement: off-chain via bitmask; on-chain via `aggregateSignerPubkeys` reverting if `block.timestamp < registeredAt + WARMUP_WINDOW` |
+| **Dispute certificate hoarding** — pre-signing a dispute and waiting until membership changes | `signedAt + CERT_LIFETIME` check prevents stale submission. Fresh ceremony required. |
+| **Challenge period exhaustion** — delaying dispute until challenge nearly expires | `CERT_LIFETIME` (25 min) is independent from `CHALLENGE_PERIOD` (1 hour). Even a late dispute must have a recent `signedAt` — the cluster must have been stable at that moment. |
+
+### Deployment Constraints
+
+- `CHALLENGE_PERIOD` MUST allow time for a dispute ceremony (~30 minutes minimum).
+- `COOLDOWN_PERIOD` MUST be strictly greater than `CERT_LIFETIME`. The constructor should validate this.
+- `EVICTION_WINDOW` MUST be greater than `CHALLENGE_PERIOD` to ensure challenged withdrawals resolve before signers can be evicted.

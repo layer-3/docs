@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: Architecture at a Glance
 description: High-level overview of Yellow Network's three-layer architecture
-keywords: [architecture, state channels, Nitrolite, Clearnode, smart contracts]
+keywords: [architecture, state channels, VirtualApp, Clearnode, smart contracts]
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
@@ -67,7 +67,7 @@ The on-chain layer provides cryptographic guarantees through smart contracts:
 
 ### Custody Contract
 
-The <Tooltip content={tooltipDefinitions.custodyContract}>**Custody Contract**</Tooltip> is the core of Nitrolite's on-chain implementation. It handles:
+The <Tooltip content={tooltipDefinitions.custodyContract}>**Custody Contract**</Tooltip> is the core of VirtualApp's on-chain implementation. It handles:
 
 - **Channel Creation**: Lock funds and establish <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> relationships
 - **Dispute Resolution**: Process challenges and validate <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>
@@ -177,7 +177,7 @@ stateDiagram-v2
 ```
 
 :::info Legacy Flow
-The diagram above shows the recommended flow where both participants sign the initial state, creating the channel directly in ACTIVE status. A legacy flow also exists where only the creator signs initially (status becomes INITIAL), and other participants call `join()` separately. See [Channel Lifecycle](/docs/protocol/on-chain/channel-lifecycle) for details.
+The diagram above shows the recommended flow where both participants sign the initial state, creating the channel directly in ACTIVE status. A legacy flow also exists where only the creator signs initially (status becomes INITIAL), and other participants call `join()` separately. See [Channel Lifecycle](/docs/protocol/app-layer/on-chain/channel-lifecycle) for details.
 :::
 
 ### Typical Flow

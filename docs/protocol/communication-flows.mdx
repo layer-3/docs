@@ -169,7 +169,7 @@ Response:
 - Challenge-response prevents replay attacks
 :::
 
-**Related Methods**: [`auth_request`](../off-chain/authentication#step-1-auth_request), [`auth_challenge`](../off-chain/authentication#step-2-auth_challenge), [`auth_verify`](../off-chain/authentication#step-3-auth_verify)
+**Related Methods**: [`auth_request`](./app-layer/off-chain/authentication#step-1-auth_request), [`auth_challenge`](./app-layer/off-chain/authentication#step-2-auth_challenge), [`auth_verify`](./app-layer/off-chain/authentication#step-3-auth_verify)
 
 ---
 
@@ -326,7 +326,7 @@ Contract:
 - This ensures clearnode is ready to join before user risks funds
 :::
 
-**Related Methods**: [`create_channel`](../off-chain/channel-methods#create_channel)
+**Related Methods**: [`create_channel`](./app-layer/off-chain/channel-methods#create_channel)
 
 ---
 
@@ -477,7 +477,7 @@ Response:
 - **Receiver account auto-created**: Destination tag/address need not have a prior balance
 :::
 
-**Related Methods**: [`transfer`](../off-chain/transfers#transfer)
+**Related Methods**: [`transfer`](./app-layer/off-chain/transfers#transfer)
 
 ---
 
@@ -611,7 +611,7 @@ sequenceDiagram
 <Tooltip content={tooltipDefinitions.appChannel}>App sessions</Tooltip> enable multi-party applications with custom governance rules. Funds are locked from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> for the duration of the session.
 :::
 
-**Related Methods**: [`create_app_session`](../off-chain/app-sessions#create_app_session), [`submit_app_state`](../off-chain/app-sessions#submit_app_state), [`close_app_session`](../off-chain/app-sessions#close_app_session)
+**Related Methods**: [`create_app_session`](./app-layer/off-chain/app-sessions#create_app_session), [`submit_app_state`](./app-layer/off-chain/app-sessions#submit_app_state), [`close_app_session`](./app-layer/off-chain/app-sessions#close_app_session)
 
 ---
 
@@ -679,7 +679,7 @@ sequenceDiagram
 6. **Blockchain**: verifies both signatures, closes channel, emits `Closed/Opened`-equivalent event (implementation-specific), releases funds.
 7. **Clearnode**: observes event, updates DB, sends `cu` (channel update) and `bu` (balance update) notifications.
 
-**Related Methods**: [`close_channel`](../off-chain/channel-methods#close_channel)
+**Related Methods**: [`close_channel`](./app-layer/off-chain/channel-methods#close_channel)
 
 ---
 
@@ -746,7 +746,7 @@ Now that you understand how all protocol layers work together:
 1. **Review Method Details**: Visit Part 2 (Off-Chain RPC Protocol) for complete method specifications
 2. **Explore Reference**: See [Protocol Reference](./protocol-reference) for constants and standards
 3. **Implementation Guide**: Check [Implementation Checklist](./implementation-checklist) for best practices
-4. **Quick Start**: Follow the [Quick Start Guide](./quick-start) to begin building
+4. **Quick Start**: Follow the [Quick Start Guide](/docs/build/quick-start) to begin building
 
 :::tip Complete Flows
 These flows represent the most common operations. For edge cases and error handling, consult the specific method documentation in Part 2.

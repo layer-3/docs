@@ -13,6 +13,7 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
+    "sync:contracts": "node scripts/sync-contracts-docs.js",
     "version:remove": "node scripts/remove-version.js",
     "version:reset": "node scripts/reset-versions.js",
     "version:release": "node scripts/release-version.js"
@@ -20,8 +21,8 @@
   "dependencies": {
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
-    "@docusaurus/theme-mermaid": "^3.9.2",
-    "@docusaurus/theme-search-algolia": "^3.9.2",
+    "@docusaurus/theme-mermaid": "3.9.2",
+    "@docusaurus/theme-search-algolia": "3.9.2",
     "@mdx-js/react": "^3.1.1",
     "@tippyjs/react": "^4.2.6",
     "clsx": "^2.0.0",
@@ -55,5 +56,8 @@
   },
   "engines": {
     "node": ">=18.0"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.3"
   }
 }
