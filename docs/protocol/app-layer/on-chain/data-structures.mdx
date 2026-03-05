@@ -74,7 +74,7 @@ struct Allocation {
 
 ## Signatures
 
-Signatures in <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> are stored as raw `bytes` so the protocol can validate multiple scheme formats. 
+Signatures in <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> are stored as raw `bytes` so the protocol can validate multiple scheme formats. 
 
 ```solidity
 struct Signature {
@@ -84,7 +84,7 @@ struct Signature {
 }
 ```
 
-At a minimum Nitrolite currently recognizes the following signature families (see the [Signature Formats](./signature-formats) reference for the full specification):
+At a minimum VirtualApp currently recognizes the following signature families (see the [Signature Formats](./signature-formats) reference for the full specification):
 
 - **Raw/Pre-EIP-191 ECDSA** – Signs `keccak256(packedState)` without any prefix.
 - **EIP-191 (version `0x45`)** – Signs a structured message that prefixes the packed state with the Ethereum signed message header and length.
@@ -143,7 +143,7 @@ The protocol uses EIP-712 structured data signing with the following domain para
 
 ```solidity
 // EIP-712 Domain
-name: "Nitrolite:Custody"
+name: "VirtualApp:Custody"
 version: "0.3.0"
 ```
 

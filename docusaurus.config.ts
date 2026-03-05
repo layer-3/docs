@@ -133,6 +133,12 @@ const config: Config = {
         },
         {
           type: 'doc',
+          docId: 'contracts/index',
+          label: 'Contracts',
+          position: 'left',
+        },
+        {
+          type: 'doc',
           docId: 'manuals/index',
           label: 'Manuals',
           position: 'left',
@@ -185,6 +191,10 @@ const config: Config = {
             {
               label: 'Build',
               to: '/docs/build/quick-start',
+            },
+            {
+              label: 'Contracts',
+              to: '/docs/contracts',
             },
             {
               label: 'Manuals',

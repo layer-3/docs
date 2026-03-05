@@ -14,7 +14,7 @@ This guide is primarily for **project teams, token issuers, and integration part
 Once an asset is supported in Clearnode:
 
 - Users can deposit and withdraw the asset through Clearnode's state channels
-- The asset becomes available for instant, off-chain transfers via the Nitrolite protocol
+- The asset becomes available for instant, off-chain transfers via the VirtualApp protocol
 - The asset can be used in cross-chain operations (deposit on one chain, withdraw on another) for blockchains it was configured on
 - Applications built on Yellow Network can integrate the asset for payments and settlements
 - The asset's unified balance is tracked across all supported blockchains
