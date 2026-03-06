@@ -75,7 +75,7 @@ The quorum system enables flexible governance patterns.
 | **Unanimous** | `weights: [50, 50]`, `quorum: 100` | Both must agree |
 | **Trusted Judge** | `weights: [0, 0, 100]`, `quorum: 100` | App determines outcome |
 | **2-of-3 Escrow** | `weights: [40, 40, 50]`, `quorum: 80` | Any two can proceed |
-| **Weighted DAO** | `weights: [20, 25, 30, 25]`, `quorum: 51` | Majority by stake |
+| **Weighted Voting** | `weights: [20, 25, 30, 25]`, `quorum: 51` | Majority by weight |
 
 ---
 
@@ -175,6 +175,6 @@ Always use `NitroRPC/0.4` for new applications. Protocol version is set at creat
 
 For complete method specifications and implementation details:
 
-- **[App Session Methods](/docs/protocol/off-chain/app-sessions.mdx)** — Complete method specifications
+- **[App Session Methods](/docs/protocol/app-layer/off-chain/app-sessions.mdx)** — Complete method specifications
 - **[Communication Flows](/docs/protocol/communication-flows.mdx#app-session-lifecycle-flow)** — Sequence diagrams
 - **[Implementation Checklist](/docs/protocol/implementation-checklist.mdx#state-management)** — Building app session support

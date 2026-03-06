@@ -46,8 +46,8 @@ const FeatureList: FeatureItem[] = [
     imageSrcDark: require('@site/static/img/themes/dark/icons/clearnode.png').default,
     description: (
       <>
-        Set up and operate a clearnode to participate in the network,
-        earn rewards, and contribute to decentralized infrastructure.
+        Set up and operate a clearnode to provide network services
+        and contribute to decentralized infrastructure.
       </>
     ),
     link: '/docs/manuals',

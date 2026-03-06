@@ -14,7 +14,7 @@ This guide is primarily for **blockchain integrators, infrastructure teams, and 
 Once a blockchain is supported in Clearnode:
 
 - Clearnode can establish RPC connections to the specified blockchain network
-- The Nitrolite protocol smart contracts (custody, adjudicator, and balance checker) will be monitored on that chain
+- The VirtualApp protocol smart contracts (custody, adjudicator, and balance checker) will be monitored on that chain
 - Users can deposit and withdraw assets on that blockchain through Clearnode
 - State channels can leverage that blockchain for on-chain settlement when needed
 - Assets deployed on the supported blockchain become available for cross-chain clearing
@@ -107,7 +107,7 @@ You can submit your request with smart contract addresses set to placeholder val
 :::
 
 :::info Coming Soon: Cross-Chain Contract Deployment Tool
-We are developing a tool to simplify the deployment of Nitrolite protocol smart contracts across multiple blockchains with deterministic addresses. This will enable deploying contracts to the same address on different chains, making configuration management significantly easier.
+We are developing a tool to simplify the deployment of VirtualApp protocol smart contracts across multiple blockchains with deterministic addresses. This will enable deploying contracts to the same address on different chains, making configuration management significantly easier.
 :::
 
 Read on to learn how to specify contract addresses in the configuration.

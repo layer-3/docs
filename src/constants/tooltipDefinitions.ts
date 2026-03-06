@@ -1,10 +1,10 @@
 export const tooltipDefinitions = {
-  nitroliteProtocol:
-    "The on-chain smart contract protocol for state channels.",
+  virtualAppProtocol:
+    "The App Layer (VirtualApp) protocol — state channels with on-chain custody and off-chain RPC for building YApps.",
   channel:
     "A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates.",
   clearnode:
-    "A server implementing a virtual ledger layer that provides a unified ledger (through Nitro RPC), coordinates state channels (through Nitrolite), and enables chain abstraction for developers and users",
+    "A node operated by independent operators using open-source software developed by Layer3 Fintech Ltd. It provides a unified ledger (through the Nitro RPC protocol), coordinates state channels (through VirtualApp), and enables chain abstraction for developers and users.",
   nitroRpc: "The off-chain communication protocol.",
   channelState:
     "A snapshot of the channel at any point in time, including fund allocations and application-specific data.",
@@ -19,7 +19,7 @@ export const tooltipDefinitions = {
   appSessionId:
     "A unique identifier for an app session, formatted as a 0x-prefixed hex string (32 bytes).",
   custodyContract:
-    "The primary Nitrolite contract that locks and unlocks funds, manages channel lifecycle (create/close/challenge), tracks channel state, and coordinates with adjudicators to validate transitions.",
+    "The primary VirtualApp contract that locks and unlocks funds, manages channel lifecycle (create/close/challenge), tracks channel state, and coordinates with adjudicators to validate transitions.",
   unifiedBalance:
     "An abstraction that aggregates users' funds across multiple blockchain networks, managed by a clearnode.",
   sessionKey:
