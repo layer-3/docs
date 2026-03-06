@@ -66,7 +66,7 @@ Creates a new virtual application session on top of the <Tooltip content={toolti
 
 ### When to Use
 
-When multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> need to interact with shared funds and application <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> in a trustless manner. Examples include turn-based games, betting pools, escrow arrangements, multi-signature treasuries, prediction markets, and any application requiring multi-signature <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> management.
+When multiple <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> need to interact with shared funds and application <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> in a trustless manner. Examples include turn-based games, betting pools, escrow arrangements, DAOs, prediction markets, and any application requiring multi-signature <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> management.
 
 ### Prerequisites
 
@@ -210,7 +210,7 @@ Use case: Escrowed transactions with dispute resolution
 
 **Governance**: Flexible 2-of-3 - any two can proceed, preventing single-party blocking.
 
-### Example 4: Weighted Multi-Party Voting
+### Example 4: DAO-like Voting
 
 ```
 Participants: [User1, User2, User3, User4, Contract]
@@ -221,7 +221,7 @@ Result: Majority of weighted votes required (51 out of 100)
 Use case: Collaborative funds management
 ```
 
-**Governance**: Weighted majority - decisions require majority approval by weight.
+**Governance**: Weighted majority - decisions require majority approval by stake.
 
 ### Example 5: Watch Tower
 
@@ -498,8 +498,8 @@ Validation:
 **Use Cases**:
 - Cash out partial winnings mid-game
 - Remove collateral when no longer needed
-- Withdraw partial winnings from a shared session
-- Reduce wager in ongoing game
+- Take profits from shared investment
+- Reduce stake in ongoing game
 
 ---
 

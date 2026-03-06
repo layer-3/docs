@@ -405,14 +405,14 @@ const appDefinition = {
 };
 ```
 
-### 3. Multi-Signature Treasury Management
+### 3. DAO Treasury Management
 
 ```typescript
 const appDefinition = {
     participants: [member1, member2, member3, member4, member5],
     weights: [20, 20, 20, 20, 20],
     quorum: 60,  // 60% approval needed
-    application: 'multi-sig-treasury',
+    application: 'dao-treasury',
 };
 ```
 
@@ -465,9 +465,9 @@ Different participants can have different voting power:
 
 ```typescript
 const appDefinition = {
-    participants: [founder, participant1, participant2],
+    participants: [founder, investor1, investor2],
     weights: [50, 30, 20],  // Founder has 50% voting power
-    quorum: 60,  // Founder + one participant = 60%
+    quorum: 60,  // Founder + one investor = 60%
     // ...
 };
 ```
