@@ -10,4 +10,4 @@ displayed_sidebar: guidesSidebar
 **[Migration Guide](/docs/guides/migration-guide)** - Guide for migrating from previous versions of the Yellow SDK.
 
 
-**[Multi-Party App Sessions](/docs/guides/multi-party-app-sessions)** - Learn how to create, manage, and close multi-party application sessions using the Yellow Network and VirtualApp protocol.
+**[Multi-Party App Sessions](/docs/guides/multi-party-app-sessions)** - Learn how to create, manage, and close multi-party application sessions using the Yellow Network and Nitrolite protocol.

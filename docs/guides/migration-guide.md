@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Migration Guide
-description: Guide to migrate to newer versions of VirtualApp
+description: Guide to migrate to newer versions of Nitrolite
 keywords: [migration, upgrade, breaking changes, nitrolite, erc7824]
 ---
 
@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 # Migration Guide
 
-If you are coming from an earlier version of VirtualApp, you will need to account for the following breaking changes.
+If you are coming from an earlier version of Nitrolite, you will need to account for the following breaking changes.
 
 ## 0.5.x Breaking changes
 
@@ -70,9 +70,9 @@ The following operations will return errors if the user has any channel with non
 
 The returned error has the following format: `operation denied: non-zero allocation in <count> channel(s) detected owned by wallet <address>"`
 
-### VirtualApp SDK
+### Nitrolite SDK
 
-You should definitely read this section if you are using the VirtualApp SDK.
+You should definitely read this section if you are using the Nitrolite SDK.
 
 #### Update Authentication
 
@@ -227,7 +227,7 @@ for (const channel of channels) {
 
 #### Test State Signatures
 
-If you plan to work with on-chain channels opened PRIOR to v0.5.0, then on VirtualAppClient initialization the `stateSigner` you specify must be based on a Session Key used in the channel as participant. Even if this session key is or will expire, you still need to provide a `stateSigner` based on it.
+If you plan to work with on-chain channels opened PRIOR to v0.5.0, then on NitroliteClient initialization the `stateSigner` you specify must be based on a Session Key used in the channel as participant. Even if this session key is or will expire, you still need to provide a `stateSigner` based on it.
 
 On the other hand, if you plan to work with channels created SINCE v0.5.0, you can specify the `stateSigner` based on the `walletClient` you have specified.
 
@@ -402,13 +402,13 @@ The 0.3.x release includes breaking changes to the SDK architecture, smart contr
 
 **Not ready to migrate?** Unfortunately, at this time Yellow Network does not provide ClearNodes running the previous version of the protocol, so you will need to migrate to the latest version to continue using the Network.
 
-### VirtualApp SDK
+### Nitrolite SDK
 
-You should definitely read this section if you are using the VirtualApp SDK.
+You should definitely read this section if you are using the Nitrolite SDK.
 
 #### Client: Replaced `stateWalletClient` with `StateSigner`
 
-The `stateWalletClient` parameter of `VirtualAppClient` has been replaced with a required `stateSigner` parameter that implements the `StateSigner` interface.
+The `stateWalletClient` parameter of `NitroliteClient` has been replaced with a required `stateSigner` parameter that implements the `StateSigner` interface.
 
 When initializing the client, you should use either `WalletStateSigner` or `SessionKeyStateSigner` to handle state signing.
 
@@ -417,12 +417,12 @@ When initializing the client, you should use either `WalletStateSigner` or `Sess
 import { createNitroliteClient } from '@erc7824/nitrolite';
 // add-start
 import { 
-  createVirtualAppClient,
+  createNitroliteClient,
   WalletStateSigner
 } from '@erc7824/nitrolite';
 // add-end
 
-const client = createVirtualAppClient({
+const client = createNitroliteClient({
   publicClient,
   walletClient,
   // remove-next-line
@@ -487,7 +487,7 @@ You should update your RPC request creation code to use the new structured forma
 
 ```typescript
 // remove-start
-const request = VirtualAppRPC.createRequest(
+const request = NitroliteRPC.createRequest(
   requestId,
   RPCMethod.GetChannels,
   [participant, status],
@@ -495,7 +495,7 @@ const request = VirtualAppRPC.createRequest(
 );
 // remove-end
 // add-start
-const request = VirtualAppRPC.createRequest({
+const request = NitroliteRPC.createRequest({
   method: RPCMethod.GetChannels,
   params: {
     participant,
@@ -565,7 +565,7 @@ export interface CloseChannelResponse extends GenericRPCMessage {
 
 The `Signature` struct has been replaced with a simple `Hex` type to support EIP-1271 and EIP-6492 signatures.
 
-Update your signature-handling code to use the new `Hex` type. Still, if using VirtualApp utils correctly, you will not need to change anything, as the utils will handle the conversion for you.
+Update your signature-handling code to use the new `Hex` type. Still, if using Nitrolite utils correctly, you will not need to change anything, as the utils will handle the conversion for you.
 
 ```typescript
 // remove-start
@@ -607,7 +607,7 @@ export interface PaginationFilters {
 
 ### Clearnode API
 
-You should read this section only if you are using the ClearNode API directly, or if you are using the VirtualApp SDK with custom ClearNode API requests.
+You should read this section only if you are using the ClearNode API directly, or if you are using the Nitrolite SDK with custom ClearNode API requests.
 
 #### Actions: Structured Request Parameters
 
@@ -649,7 +649,7 @@ Update all your ClearNode API requests to use object-based parameters instead of
 
 A new `create_channel` method has been added to facilitate the improved single-transaction channel opening flow.
 
-Use this method to request channel creation parameters from the broker, then submit the returned data to the smart contract via VirtualApp SDK or directly.
+Use this method to request channel creation parameters from the broker, then submit the returned data to the smart contract via Nitrolite SDK or directly.
 
 **Request:**
 ```json
@@ -793,7 +793,7 @@ The metadata fields provide:
 
 ### Contracts
 
-You should read this section only if you are using the VirtualApp smart contracts directly.
+You should read this section only if you are using the Nitrolite smart contracts directly.
 
 #### Action: Replaced `Signature` Struct with `bytes`
 

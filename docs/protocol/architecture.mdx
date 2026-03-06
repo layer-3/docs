@@ -10,56 +10,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 ## System Overview
 
-Yellow Protocol consists of two distinct layers — the **Decentralized Layer** for network consensus and settlement, and the **App Layer (VirtualApp)** for <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations. Together they enable scalable, secure cross-chain clearing and application hosting.
-
-### Two-Layer Architecture
-
-```mermaid
-%%{init: { "flowchart": { "htmlLabels": true } }}%%
-graph TB
-  subgraph DL["Decentralized Layer"]
-    direction LR
-    DHT["Kademlia DHT"]
-    BLS["BLS Clusters"]
-    SECURITY["Elastic Security"]
-  end
-
-  subgraph AL["App Layer — VirtualApp"]
-    direction LR
-    RPC["Nitro RPC"]
-    CHANNELS["State Channels"]
-    SESSIONS["YApps / App Sessions"]
-  end
-
-  subgraph OnChain["On-Chain Contracts"]
-    direction LR
-    DL_CONTRACTS["Registry, Custody, Governor"]
-    AL_CONTRACTS["Custody, Adjudicator"]
-  end
-
-  subgraph Blockchain["Blockchains"]
-    CHAIN["Ethereum, Arbitrum, Base, Polygon, Linea, BNB"]
-  end
-
-  DL --> AL
-  DL_CONTRACTS --> Blockchain
-  AL_CONTRACTS --> Blockchain
-
-  style DL fill:#e1f5ff,stroke:#9ad7ff,color:#111
-  style AL fill:#fff4e1,stroke:#ffd497,color:#111
-  style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
-  style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
-```
-
-:::info Contract Convergence
-Both layers currently deploy their own on-chain contracts. These are expected to be merged into a unified contract suite once testnet concludes.
-:::
-
-For the Decentralized Layer architecture (DHT topology, cluster formation, elastic security), see [Decentralized Layer Overview](./decentralized-layer/overview).
-
-## App Layer Architecture
-
-The <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> App Layer architecture consists of multiple components working together to enable state channel operations:
+The <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol architecture consists of multiple layers working together to enable scalable, secure <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations:
 
 ```mermaid
 %%{init: { "flowchart": { "htmlLabels": true } }}%%
@@ -198,7 +149,7 @@ graph LR
 
 ## Fund Flow
 
-The following diagram illustrates how funds flow through the VirtualApp protocol:
+The following diagram illustrates how funds flow through the Nitrolite protocol:
 
 ```mermaid
 graph TB

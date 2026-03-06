@@ -5,7 +5,7 @@ description: Get up and running with the Yellow Network SDK in minutes.
 
 # Quickstart Guide
 
-This guide provides a step-by-step walkthrough of integrating with the Yellow Network using the VirtualApp SDK. We will build a script to connect to the network, authenticate, manage state channels, and transfer funds.
+This guide provides a step-by-step walkthrough of integrating with the Yellow Network using the Nitrolite SDK. We will build a script to connect to the network, authenticate, manage state channels, and transfer funds.
 
 ## Prerequisites
 
@@ -44,7 +44,7 @@ curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
 
 ## 2. Initialization
 
-First, we setup the `VirtualAppClient` with Viem. This client handles all communication with the Yellow Network nodes and smart contracts.
+First, we setup the `NitroliteClient` with Viem. This client handles all communication with the Yellow Network nodes and smart contracts.
 
 ```typescript
 import { NitroliteClient, WalletStateSigner, createECDSAMessageSigner } from '@erc7824/nitrolite';
@@ -59,8 +59,8 @@ const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
 const publicClient = createPublicClient({ chain: sepolia, transport: http(process.env.ALCHEMY_RPC_URL) });
 const walletClient = createWalletClient({ chain: sepolia, transport: http(), account });
 
-// Initialize VirtualApp Client
-const client = new VirtualAppClient({
+// Initialize Nitrolite Client
+const client = new NitroliteClient({
     publicClient,
     walletClient,
     stateSigner: new WalletStateSigner(walletClient),
@@ -210,7 +210,7 @@ npx tsx close_all.ts
 
 ```typescript
 import {
-    VirtualAppClient,
+    NitroliteClient,
     WalletStateSigner,
     createTransferMessage,
     createGetConfigMessage,
@@ -299,8 +299,8 @@ async function fetchConfig(): Promise<Config> {
             try {
                 const response = JSON.parse(event.data.toString());
                 // Response format: [requestId, method, result, timestamp]
-                // or VirtualAppRPCMessage structure depending on implementation
-                // Based on types: VirtualAppRPCMessage { res: RPCData }
+                // or NitroliteRPCMessage structure depending on implementation
+                // Based on types: NitroliteRPCMessage { res: RPCData }
                 // RPCData: [RequestID, RPCMethod, object, Timestamp?]
 
                 if (response.res && response.res[2]) {
@@ -323,12 +323,12 @@ async function fetchConfig(): Promise<Config> {
     });
 }
 
-// Initialize VirtualApp client
+// Initialize Nitrolite client
 console.log('Fetching configuration...');
 const config = await fetchConfig();
 console.log('Configuration fetched. Assets count:', config.assets?.length);
 
-const client = new VirtualAppClient({
+const client = new NitroliteClient({
     publicClient,
     walletClient,
     // Use WalletStateSigner for signing states
@@ -886,7 +886,7 @@ if (ws.readyState === WebSocket.OPEN) {
 
 ```typescript
 import {
-    VirtualAppClient,
+    NitroliteClient,
     WalletStateSigner,
     createECDSAMessageSigner,
     createEIP712AuthMessageSigner,
@@ -946,8 +946,8 @@ async function main() {
         transport: http(RPC_URL),
     });
 
-    // Initialize VirtualApp Client
-    const client = new VirtualAppClient({
+    // Initialize Nitrolite Client
+    const client = new NitroliteClient({
         publicClient,
         walletClient,
         addresses: {

@@ -2,7 +2,7 @@
 sidebar_position: 9
 title: API Reference
 description: Complete Yellow SDK method documentation with examples and type definitions
-keywords: [api reference, methods, types, virtualapp client, documentation]
+keywords: [api reference, methods, types, nitrolite client, documentation]
 displayed_sidebar: apiSidebar
 ---
 
@@ -10,7 +10,7 @@ displayed_sidebar: apiSidebar
 
 Complete reference for all Yellow SDK methods, types, and utilities.
 
-## VirtualAppRPC Functions
+## NitroliteRPC Functions
 
 ### Message Creation
 
@@ -260,4 +260,4 @@ const SESSION_STATUS = {
 };
 ```
 
-This API reference provides everything you need to integrate VirtualAppRPC into your applications with confidence and precision.
+This API reference provides everything you need to integrate NitroliteRPC into your applications with confidence and precision.

@@ -8,7 +8,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Implementation Checklist
 
-Comprehensive checklist for building a compliant <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> client with security best practices.
+Comprehensive checklist for building a compliant <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> client with security best practices.
 
 :::tip Progressive Implementation
 You don't need to implement everything at once. Start with Core Protocol and On-Chain Integration, then add Off-Chain RPC and advanced features progressively.
@@ -18,19 +18,19 @@ You don't need to implement everything at once. Start with Core Protocol and On-
 
 ## Core Protocol Support
 
-Foundation requirements for any <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> implementation.
+Foundation requirements for any <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> implementation.
 
 ### Identifier Computation
 
 - [ ] **Compute <Tooltip content={tooltipDefinitions.channelId}>channelId</Tooltip> from Channel struct**
   - Hash participants, adjudicator, challenge, nonce using keccak256
   - Verify deterministic computation (same inputs = same output)
-  - Reference: [Data Structures](./app-layer/on-chain/data-structures#channel-identifier)
+  - Reference: [Data Structures](../protocol/on-chain/data-structures#channel-identifier)
 
 - [ ] **Compute payload hash (packedState) from channel state**
   - Compute `packedState = keccak256(abi.encode(channelId, state.intent, state.version, state.data, state.allocations))`
   - Ensure proper ABI encoding
-  - Reference: [Data Structures](./app-layer/on-chain/data-structures#packed-state)
+  - Reference: [Data Structures](../protocol/on-chain/data-structures#packed-state)
 
 ### Signature Handling
 
@@ -78,7 +78,7 @@ Smart contract interactions for <Tooltip content={tooltipDefinitions.channel}>ch
   - Preferred: include both participant signatures to start in `ACTIVE`
   - Legacy: single sig → `INITIAL`; wait for `join()` to reach `ACTIVE`
   - Handle ERC-20 approvals only if depositing at creation (legacy flow)
-  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#creation-phase)
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#creation-phase)
 
 - [ ] **Monitor activation / join**
   - Subscribe to `Opened` and `Joined` events
@@ -88,13 +88,13 @@ Smart contract interactions for <Tooltip content={tooltipDefinitions.channel}>ch
   - Build state with `intent = FINALIZE` (3), `version = current+1`, `data = "0x"`
   - Require both participant signatures; submit single tx
   - Confirm funds destination and allocations match expectations
-  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#cooperative-closure)
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#cooperative-closure)
 
 - [ ] **Dispute / challenge**
   - Persist latest fully signed state for `challenge()`
   - During `DISPUTE`, accept newer state via `checkpoint()` (on-chain) if available
   - After challenge timeout, finalize with `close()` using challenged state
-  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#challenge-phase)
+  - Reference: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#challenge-phase)
 
 ### Event Listening
 
@@ -130,14 +130,14 @@ RPC communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode
   - Connect to clearnode RPC endpoint
   - Handle connection timeouts
   - Implement exponential backoff for reconnection
-  - Reference: [Off-Chain Overview](./app-layer/off-chain/overview)
+  - Reference: [Off-Chain Overview](../off-chain/overview)
 
 - [ ] **Implement message format**
   - Compact JSON array format: `[requestId, method, params, timestamp]`
   - Request wrapper: `{req: [...], sig: [...]}`
   - Response wrapper: `{res: [...], sig: [...]}`
   - Error format: `{res: [requestId, "error", {error: "message"}, timestamp], sig: [...]}`
-  - Reference: [Message Format](./app-layer/off-chain/message-format)
+  - Reference: [Message Format](../off-chain/message-format)
 
 - [ ] **Handle network outages gracefully**
   - Detect connection loss
@@ -153,7 +153,7 @@ RPC communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode
   - Store the exact parameters; response method is `auth_challenge` with `challenge_message`
   - `auth_verify`: sign EIP-712 Policy typed data with **main wallet** (not session key) including challenge, wallet, session_key, expires_at, scope, allowances; or pass `jwt` to reuse without signature
   - Response returns `{address, session_key, jwt_token, success}`; use session key for all subsequent private calls
-  - Reference: [Authentication](./app-layer/off-chain/authentication)
+  - Reference: [Authentication](../off-chain/authentication)
 
 - [ ] **Session key management**
   - Specify allowances per asset (unrestricted if omitted); enforce spending caps on every debit
@@ -172,14 +172,14 @@ RPC communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode
   - **Transfers**: transfer
   - **App Sessions**: create_app_session, submit_app_state, close_app_session
   - **Queries**: get_config, get_assets, get_app_definition, get_channels, get_app_sessions, get_ledger_balances, get_ledger_entries, get_ledger_transactions, get_rpc_history, get_user_tag, get_session_keys, ping
-  - Reference: [Queries](./app-layer/off-chain/queries)
+  - Reference: [Queries](../off-chain/queries)
 
 - [ ] **Handle server notifications**
   - `bu` (Balance Update) - Balance changed
   - `cu` (Channel Update) - Channel status changed
   - `tr` (Transfer) - Incoming/outgoing transfer
   - `asu` (App Session Update) - App session state changed
-  - Reference: [Notifications](./app-layer/off-chain/queries#notifications)
+  - Reference: [Notifications](../off-chain/queries#notifications)
 
 :::tip Method Prioritization
 Start with: authentication → create_channel → transfer → get_ledger_balances. Add other methods as needed for your use case.
@@ -208,13 +208,13 @@ Off-chain state tracking and synchronization.
   - Aggregate funds across all chains
   - Track funds in unified account vs channel escrow vs app session accounts
   - Update on <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> open/close and transfers
-  - Reference: [Transfers](./app-layer/off-chain/transfers)
+  - Reference: [Transfers](../off-chain/transfers)
 
 - [ ] **Handle app session state updates**
   - Verify quorum met (sum of weights ≥ quorum)
   - Track locked funds per session
   - Release funds on session close
-  - Reference: [App Sessions](./app-layer/off-chain/app-sessions)
+  - Reference: [App Sessions](../off-chain/app-sessions)
 
 ### State Validation
 
@@ -561,6 +561,6 @@ Use this checklist as a guide throughout your implementation. Check off items as
 
 - **Communication Flows**: [Communication Flows](./communication-flows)
 - **Reference**: [Protocol Reference](./protocol-reference)
-- **Channel Lifecycle**: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle)
-- **RPC Methods**: [Queries](./app-layer/off-chain/queries)
+- **Channel Lifecycle**: [Channel Lifecycle](../on-chain/channel-lifecycle)
+- **RPC Methods**: [Queries](../off-chain/queries)
 - **Example Code**: [Integration Tests](https://github.com/layer-3/nitrolite/tree/main/integration)

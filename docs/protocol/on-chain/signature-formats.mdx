@@ -8,7 +8,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Signature Formats
 
-VirtualApp treats each signature inside `State.sigs` as an opaque `bytes` value. At verification time the <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> inspects that payload to detect which validation flow to run. This page captures the current formats the protocol accepts and how they are evaluated.
+Nitrolite treats each signature inside `State.sigs` as an opaque `bytes` value. At verification time the <Tooltip content={tooltipDefinitions.custodyContract}>Custody contract</Tooltip> inspects that payload to detect which validation flow to run. This page captures the current formats the protocol accepts and how they are evaluated.
 
 ## Supported Formats
 
@@ -22,7 +22,7 @@ VirtualApp treats each signature inside `State.sigs` as an opaque `bytes` value.
 
 - Payload: `keccak256(\"\\x19Ethereum Signed Message:\\n\" + len(packedState) + packedState)`.
 - Matches the UX most wallets expose when calling `eth_sign`.
-- VirtualApp stores the resulting `(v, r, s)` so adjudicators can re-create the prefixed hash for verification.
+- Nitrolite stores the resulting `(v, r, s)` so adjudicators can re-create the prefixed hash for verification.
 
 ### EIP-712 Typed Data
 
@@ -40,7 +40,7 @@ VirtualApp treats each signature inside `State.sigs` as an opaque `bytes` value.
 
 - Wraps an EIP-1271 signature with deployment bytecode and a detection suffix `0x6492649264926492649264926492649264926492649264926492649264926492`.
 - Allows a not-yet-deployed ERC-4337 smart wallet to attest to a state.
-- During verification VirtualApp simulates or deploys the wallet, then forwards the inner signature to the regular EIP-1271 flow.
+- During verification Nitrolite simulates or deploys the wallet, then forwards the inner signature to the regular EIP-1271 flow.
 
 ## Verification Order
 

@@ -8,69 +8,45 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Introduction
 
-## What is Yellow Protocol?
+## What is Nitrolite?
 
-Yellow Protocol is a layered system for decentralized clearing, settlement, and application hosting across multiple blockchains. It is developed and maintained by Layer3 Fintech Ltd. and operated by independent node operators running open-source <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip> software.
+Nitrolite is a <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> protocol that enables off-chain interactions between <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> with minimal on-chain operations. The protocol forms a unified virtual ledger (called "clearnet") for applications to escrow funds while being fully abstracted from the underlying blockchain. Nitrolite is developed and maintained by Layer3 Fintech Ltd. and operated by independent node operators running the issuer's open-source clearnode software.
 
-The protocol is composed of two distinct layers:
-
-1. **Decentralized Layer** — A peer-to-peer overlay network (the Yellow Network Protocol, or YNP) that uses a Kademlia DHT, BLS threshold signatures, and elastic security to manage accounts, route transactions, and settle assets across chains.
-
-2. **App Layer (VirtualApp)** — A <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> protocol (also known as YApps) that enables off-chain interactions between <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> with minimal on-chain operations. It forms a unified virtual ledger for applications to escrow funds while being fully abstracted from the underlying blockchain.
-
-:::info On-Chain Contracts
-Both layers currently deploy their own on-chain smart contracts. These are expected to be merged into a unified contract suite once testnet concludes.
-:::
-
-```mermaid
-graph TB
-  subgraph DL["Decentralized Layer"]
-    direction TB
-    DHT["Kademlia DHT & Routing"]
-    CLUSTERS["BLS Threshold Clusters"]
-    ELASTIC["Elastic Security & Collateral"]
-    LIQUIDITY["Liquidity Layer & AMM"]
-    DL_CHAIN["Registry, Custody, Governor"]
-  end
-
-  subgraph AL["App Layer (VirtualApp)"]
-    direction TB
-    OFFCHAIN["Off-Chain Nitro RPC"]
-    AL_CHAIN["Custody & Adjudicator Contracts"]
-    APPS["YApps (Chess, DEX, Payments, ...)"]
-  end
-
-  subgraph L1["Blockchains"]
-    CHAINS["Ethereum, Arbitrum, Base, Polygon, ..."]
-  end
-
-  DL --> AL
-  AL --> L1
-  DL_CHAIN -.-> L1
-  AL_CHAIN -.-> L1
-
-  style DL fill:#e1f5ff,stroke:#9ad7ff,color:#111
-  style AL fill:#fff4e1,stroke:#ffd497,color:#111
-  style L1 fill:#f0f0f0,stroke:#c9c9c9,color:#111
-```
+The initial version of Nitrolite is EVM-compatible and designed for deployment on Layer 1 and Layer 2 Ethereum networks.
 
 ## Design Goals
 
-- **Scalability**: Move high-frequency operations off-chain; throughput scales with the number of users
-- **Cost Efficiency**: Minimize gas fees by reducing on-chain transactions to deposits, withdrawals, and disputes
-- **Security**: Value-proportional security — the cost to corrupt a cluster always exceeds the value it protects
-- **Interoperability**: Support multiple blockchains and assets through a unified clearing layer
-- **Developer Experience**: Provide clear, implementable specifications for both layers
+Nitrolite is designed with the following objectives:
+
+- **Scalability**: Move high-frequency operations off-chain
+- **Cost Efficiency**: Minimize gas fees by reducing on-chain transactions
+- **Security**: Maintain blockchain-level security guarantees
+- **Interoperability**: Support multiple blockchains and assets
+- **Developer Experience**: Provide clear, implementable specifications
+
+## Protocol Layers
+
+Nitrolite consists of three interconnected layers:
+
+1. **On-Chain Layer**: Smart contracts that handle fund custody, dispute resolution, and final settlement
+2. **Off-Chain Layer**: RPC protocol for fast, gasless <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates between participants
+3. **Application Layer**: Arbitrary application logic built on top of the protocol
+
+```mermaid
+graph TB
+    A[Application Layer] --> B[Off-Chain RPC Layer]
+    B --> C[On-Chain Smart Contract Layer]
+    C --> D[Blockchain]
+    
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+    style D fill:#f0f0f0
+```
 
 ## Specification Scope
 
-This documentation defines the Yellow Protocol in a **programming language-agnostic manner**. Implementers can use these specifications to build compliant implementations in any language (Go, Python, Rust, JavaScript, etc.).
-
-| Section | Layer | Covers |
-|---------|-------|--------|
-| [Decentralized Layer](./decentralized-layer/overview) | Network | DHT topology, cluster lifecycle, elastic security, protocol lifecycle, liquidity, security analysis |
-| [App Layer — On-Chain](./app-layer/on-chain/overview) | VirtualApp | Smart contracts for fund custody, dispute resolution, and settlement |
-| [App Layer — Off-Chain](./app-layer/off-chain/overview) | VirtualApp | Nitro RPC protocol for state channel operations, transfers, and app sessions |
+This document defines the Nitrolite protocol in a **programming language-agnostic manner**. Implementers can use these specifications to build compliant implementations in any language (Go, Python, Rust, JavaScript, etc.).
 
 :::caution Language Independence
 Implementation-specific details are referenced but not mandated by this specification. The protocol description is abstract and can be implemented in any programming language.
@@ -79,3 +55,4 @@ Implementation-specific details are referenced but not mandated by this specific
 ## RFC 2119 Keywords
 
 The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+

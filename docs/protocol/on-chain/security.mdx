@@ -38,7 +38,7 @@ The protocol operates under the following security assumptions:
 - **<Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> have access to the blockchain** to submit challenges within the challenge period
 
 :::info Trust Model
-<Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> is designed as a **trustless protocol** - no single party can steal funds or prevent others from recovering their legitimate share.
+<Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> is designed as a **trustless protocol** - no single party can steal funds or prevent others from recovering their legitimate share.
 :::
 
 ### Protected Against
@@ -59,7 +59,7 @@ The protocol cannot protect against:
 - **Denial of service by blockchain congestion** - may affect ability to respond to challenges
 
 :::warning Blockchain Dependency
-The security of <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip> depends on the underlying <Tooltip content={tooltipDefinitions.blockchain}>blockchain's</Tooltip> liveness and security. Extended blockchain downtime during a challenge period could prevent parties from responding.
+The security of <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> <Tooltip content={tooltipDefinitions.channel}>channels</Tooltip> depends on the underlying <Tooltip content={tooltipDefinitions.blockchain}>blockchain's</Tooltip> liveness and security. Extended blockchain downtime during a challenge period could prevent parties from responding.
 :::
 
 ## Security Properties
@@ -106,7 +106,7 @@ State validity is enforced through [supported signatures](./signature-formats), 
 
 #### EIP-712 Signature Support
 
-<Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> supports **EIP-712 (Typed Structured Data)** signatures in addition to raw ECDSA and EIP-191. This provides significant security and user experience advantages:
+<Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> supports **EIP-712 (Typed Structured Data)** signatures in addition to raw ECDSA and EIP-191. This provides significant security and user experience advantages:
 
 **Security Benefits**:
 - **Domain Separation**: Signatures are bound to a specific contract and chain, preventing replay attacks across different applications or networks
@@ -138,7 +138,7 @@ Sign Message:
 
 **Implementation Note**: The protocol accepts **all three formats** (raw ECDSA, EIP-191, EIP-712) for maximum compatibility, but EIP-712 is **strongly recommended** for production applications due to its superior security and UX properties.
 
-Supporting EIP-712 signatures also differentiates <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> by keeping state channel operations wallet-friendly and lowering integration friction compared to protocols limited to raw message signing.
+Supporting EIP-712 signatures also differentiates <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> by keeping state channel operations wallet-friendly and lowering integration friction compared to protocols limited to raw message signing.
 
 ### Liveness
 
@@ -234,7 +234,7 @@ Challenge griefing is economically costly for the attacker (gas fees) while only
 **Attack**: Observing pending challenge transaction and front-running with a newer state.
 
 **Mitigation**: 
-- **This is actually desired behavior** in VirtualApp
+- **This is actually desired behavior** in Nitrolite
 - The newest state should always win
 - Front-running helps ensure the most recent state is used
 - Both parties benefit from accurate state resolution
@@ -293,7 +293,7 @@ Before submitting state on-chain:
 :::
 
 :::caution Before Implementing Your Own Adjudicator
-The <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> is an incredibly important part of the <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> protocol. Yellow Network is built on top of a specific adjudicator, which if changed, will render interoperability and security guarantees impossible. Before starting to implement your own Adjudicator, please be sure to advise the VirtualApp developer team, so that your work is not left out.
+The <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> is an incredibly important part of the <Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> protocol. Yellow Network is built on top of a specific adjudicator, which if changed, will render interoperability and security guarantees impossible. Before starting to implement your own Adjudicator, please be sure to advise the Nitrolite developer team, so that your work is not left out.
 :::
 
 ## Security Guarantees Summary
@@ -307,7 +307,7 @@ The <Tooltip content={tooltipDefinitions.adjudicator}>Adjudicator</Tooltip> is a
 | **No Replay** | Old states cannot be reused | Version number validation |
 
 :::success Strong Security Model
-<Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> provides **strong security guarantees** built on top of Layer 1 <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> security, while enabling Layer 2 scalability and efficiency.
+<Tooltip content={tooltipDefinitions.nitroliteProtocol}>Nitrolite</Tooltip> provides **strong security guarantees** built on top of Layer 1 <Tooltip content={tooltipDefinitions.blockchain}>blockchain</Tooltip> security, while enabling Layer 2 scalability and efficiency.
 :::
 
 ## Emergency Procedures

@@ -1,3 +1,0 @@
-[submodule "vendors/yellow"]
-	path = vendors/yellow
-	url = git@github.com:layer-3/yellow.git

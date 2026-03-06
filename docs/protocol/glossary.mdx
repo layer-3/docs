@@ -11,7 +11,7 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 Complete alphabetical reference of all protocol terms and concepts.
 
 :::tip Quick Reference
-This glossary provides concise definitions of all VirtualApp protocol terms. For detailed explanations with examples and diagrams, see the respective sections in the documentation.
+This glossary provides concise definitions of all Nitrolite protocol terms. For detailed explanations with examples and diagrams, see the respective sections in the documentation.
 :::
 
 ---
@@ -24,7 +24,7 @@ Smart contract that validates state transitions according to application-specifi
 
 **Examples**: SimpleConsensus, RemittanceAdjudicator
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures), [Security Considerations](./app-layer/on-chain/security)
+**Related**: [Data Structures](../protocol/on-chain/data-structures), [Security Considerations](../protocol/on-chain/security)
 
 ---
 
@@ -41,7 +41,7 @@ Specification of how funds are distributed, containing destination, token, and a
 }
 ```
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#allocation)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#allocation)
 
 ---
 
@@ -55,7 +55,7 @@ Off-chain channels built on top of payment channels, intended to be used by app 
 - Fund locking from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - Application-specific state management
 
-**Related**: [App Sessions Methods](./app-layer/off-chain/app-sessions), [Communication Flows](./communication-flows#app-session-lifecycle-flow)
+**Related**: [App Sessions Methods](../off-chain/app-sessions), [Communication Flows](./communication-flows#app-session-lifecycle-flow)
 
 ---
 
@@ -70,17 +70,17 @@ Duration (in seconds) that parties have to respond to a dispute. When a <Tooltip
 - Minimum recommended: 3600 seconds (1 hour)
 - Maximum recommended: 604800 seconds (7 days)
 
-**Related**: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#closure---challenge-response)
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#closure---challenge-response)
 
 ---
 
 ### Channel
 
-A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates. Channels are the foundation of the VirtualApp protocol.
+A secure communication pathway between participants that locks funds in an on-chain smart contract while enabling off-chain state updates. Channels are the foundation of the Nitrolite protocol.
 
 **Lifecycle**: VOID → INITIAL → ACTIVE → (DISPUTE) → FINAL
 
-**Related**: [On-Chain Protocol](./app-layer/on-chain/overview), [Data Structures](./app-layer/on-chain/data-structures#channel)
+**Related**: [On-Chain Protocol](../protocol/on-chain/overview), [Data Structures](../protocol/on-chain/data-structures#channel)
 
 ---
 
@@ -98,7 +98,7 @@ channelId = keccak256(abi.encode(
 ))
 ```
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#channel-identifier)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel-identifier)
 
 ---
 
@@ -111,13 +111,13 @@ Recording a state on-chain without entering dispute mode. Checkpointing creates 
 - Provides on-chain proof of state
 - Doesn't start challenge period
 
-**Related**: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#checkpointing)
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#checkpointing)
 
 ---
 
 ### Clearnode
 
-A virtual ledger layer operated by independent node operators using the issuer's open-source software. It provides a unified ledger (through Nitro RPC) and coordinates state channels (through VirtualApp), providing chain abstraction for developers and users.
+A virtual ledger layer operated by independent node operators using the issuer's open-source software. It provides a unified ledger (through Nitro RPC) and coordinates state channels (through Nitrolite), providing chain abstraction for developers and users.
 
 **Responsibilities**:
 - Manage off-chain RPC protocol
@@ -125,7 +125,7 @@ A virtual ledger layer operated by independent node operators using the issuer's
 - Join payment channels
 - Coordinate <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip>
 
-**Related**: [Architecture](./architecture), [Off-Chain RPC Protocol](./app-layer/off-chain/overview)
+**Related**: [Architecture](../protocol/architecture), [Off-Chain RPC Protocol](../off-chain/overview)
 
 ---
 
@@ -135,20 +135,20 @@ The participant at index 0 in a <Tooltip content={tooltipDefinitions.channel}>ch
 
 **Typically**: A user or light client opening a payment channel with a clearnode.
 
-**Related**: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#creation-phase), [Protocol Reference](./protocol-reference#participant-indices)
+**Related**: [Channel Lifecycle](../protocol/on-chain/channel-lifecycle#creation-phase), [Protocol Reference](./protocol-reference#participant-indices)
 
 ---
 
 ### Custody Contract
 
-The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the VirtualApp protocol.
+The main on-chain contract implementing channel creation, joining, closure, and resizing. It is an implementation of the Nitrolite protocol.
 
 **Interfaces Implemented**:
 - `IChannel` - Core channel operations
 - `IDeposit` - Fund management
 - `IChannelReader` - State queries
 
-**Related**: [On-Chain Overview](./app-layer/on-chain/overview), [Data Structures](./app-layer/on-chain/data-structures)
+**Related**: [On-Chain Overview](../protocol/on-chain/overview), [Data Structures](../protocol/on-chain/data-structures)
 
 ---
 
@@ -163,7 +163,7 @@ In NitroRPC/0.4, specifies the type of <Tooltip content={tooltipDefinitions.appC
 - **DEPOSIT**: Add funds to session from <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 - **WITHDRAW**: Remove funds from session to <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip>
 
-**Related**: [App Sessions](./app-layer/off-chain/app-sessions#submit_app_state)
+**Related**: [App Sessions](../off-chain/app-sessions#submit_app_state)
 
 ---
 
@@ -180,7 +180,7 @@ Double-entry bookkeeping record of a debit or credit. Every financial operation 
 - debit (outgoing)
 - created_at
 
-**Related**: [Transfers](./app-layer/off-chain/transfers#off-chain-processing), [Query Methods](./app-layer/off-chain/queries#get_ledger_entries)
+**Related**: [Transfers](../off-chain/transfers#off-chain-processing), [Query Methods](../off-chain/queries#get_ledger_entries)
 
 ---
 
@@ -195,7 +195,7 @@ User-facing transaction record showing transfers, deposits, withdrawals, and <To
 - `app_deposit` - Funds locked in <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
 - `app_withdrawal` - Funds released from <Tooltip content={tooltipDefinitions.appChannel}>app session</Tooltip>
 
-**Related**: [Query Methods](./app-layer/off-chain/queries#get_ledger_transactions)
+**Related**: [Query Methods](../off-chain/queries#get_ledger_transactions)
 
 ---
 
@@ -209,7 +209,7 @@ Constant in `state.data` signaling special states. Magic numbers enable smart co
 - **CHANOPEN** = 7877 (0x1EC5) - Initial funding state
 - **CHANCLOSE** = 7879 (0x1EC7) - Final closing state
 
-**Related**: [Protocol Reference](./protocol-reference#magic-numbers), [Data Structures](./app-layer/on-chain/data-structures)
+**Related**: [Protocol Reference](./protocol-reference#magic-numbers), [Data Structures](../protocol/on-chain/data-structures)
 
 ---
 
@@ -221,7 +221,7 @@ Unique number ensuring <Tooltip content={tooltipDefinitions.channelId}>channel i
 
 **Typical Value**: Timestamp in milliseconds
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#channel), [Channel Creation](./app-layer/off-chain/channel-methods#create_channel)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel), [Channel Creation](../off-chain/channel-methods#create_channel)
 
 ---
 
@@ -233,17 +233,17 @@ The off-chain communication protocol for state channel operations. A lightweight
 - **NitroRPC/0.2**: Legacy (basic state updates)
 - **NitroRPC/0.4**: Current (intent system)
 
-**Related**: [Off-Chain RPC Protocol](./app-layer/off-chain/overview), [Message Format](./app-layer/off-chain/message-format)
+**Related**: [Off-Chain RPC Protocol](../off-chain/overview), [Message Format](../off-chain/message-format)
 
 ---
 
-### VirtualApp (App Layer / YApps)
+### Nitrolite
 
-The App Layer protocol for state channels and application hosting. Includes on-chain contracts (Custody, Adjudicator) and the off-chain Nitro RPC protocol. Also known as YApps.
+The on-chain smart contract protocol for state channels. Defines the structure of channels, states, and the rules for creation, updates, and closure.
 
 **Version**: 0.5.0 (Mainnet deployments live; not production yet)
 
-**Related**: [On-Chain Protocol](./app-layer/on-chain/overview), [Protocol Reference](./protocol-reference#protocol-versions)
+**Related**: [On-Chain Protocol](../protocol/on-chain/overview), [Protocol Reference](./protocol-reference#protocol-versions)
 
 ---
 
@@ -257,7 +257,7 @@ An entity (identified by a <Tooltip content={tooltipDefinitions.walletAddress}>w
 - Index 0: Creator (user)
 - Index 1: Clearnode
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#channel), [Protocol Reference](./protocol-reference#participant-indices)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#channel), [Protocol Reference](./protocol-reference#participant-indices)
 
 ---
 
@@ -280,7 +280,7 @@ quorum: 80
 // - Alice alone (40 < 80) ✗
 ```
 
-**Related**: [App Sessions](./app-layer/off-chain/app-sessions#create_app_session), [Governance Examples](./app-layer/off-chain/app-sessions#governance-examples)
+**Related**: [App Sessions](../off-chain/app-sessions#create_app_session), [Governance Examples](../off-chain/app-sessions#governance-examples)
 
 ---
 
@@ -292,7 +292,7 @@ A unique identifier for an RPC request, used for correlating requests and respon
 
 **Type**: uint64
 
-**Related**: [Message Format](./app-layer/off-chain/message-format#general-structure)
+**Related**: [Message Format](../off-chain/message-format#general-structure)
 
 ---
 
@@ -308,7 +308,7 @@ A temporary cryptographic key delegated by a user's main wallet that provides a 
 - Expiration time
 - Gasless signing (no wallet prompts)
 
-**Related**: [Authentication](./app-layer/off-chain/authentication), [Communication Flows](./communication-flows#authentication-flow)
+**Related**: [Authentication](../off-chain/authentication), [Communication Flows](./communication-flows#authentication-flow)
 
 ---
 
@@ -323,7 +323,7 @@ A snapshot of the <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip
 - `allocations` - Fund distribution
 - `sigs` - Participant signatures
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#state)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#state)
 
 ---
 
@@ -342,7 +342,7 @@ packedState = abi.encode(
 )
 ```
 
-**Related**: [Data Structures](./app-layer/on-chain/data-structures#packed-state)
+**Related**: [Data Structures](../protocol/on-chain/data-structures#packed-state)
 
 ---
 
@@ -358,7 +358,7 @@ An abstraction that aggregates a user's funds across multiple blockchain network
 - Cross-chain transfers without bridges
 - Single balance for all operations
 
-**Related**: [Architecture](./architecture#fund-flow), [Transfers](./app-layer/off-chain/transfers#unified-balance-mechanics)
+**Related**: [Architecture](../protocol/architecture#fund-flow), [Transfers](../off-chain/transfers#unified-balance-mechanics)
 
 ---
 
@@ -370,7 +370,7 @@ Voting power assigned to a participant in an <Tooltip content={tooltipDefinition
 
 **Usage**: Sum of signer weights must meet <Tooltip content={tooltipDefinitions.sessionThreshold}>quorum</Tooltip> for state updates to be valid.
 
-**Related**: [App Sessions](./app-layer/off-chain/app-sessions#create_app_session)
+**Related**: [App Sessions](../off-chain/app-sessions#create_app_session)
 
 ---
 
@@ -404,10 +404,10 @@ A user's blockchain address (0x-prefixed hex string, 20 bytes) that identifies t
 
 For detailed explanations of these terms with examples, diagrams, and use cases, refer to:
 
-- **Core Concepts**: [Terminology](./terminology)
-- **On-Chain Details**: [On-Chain Protocol](./app-layer/on-chain/overview)
-- **Off-Chain Details**: [Off-Chain RPC Protocol](./app-layer/off-chain/overview)
-- **Implementation**: [Quick Start Guide](/docs/build/quick-start), [Implementation Checklist](./implementation-checklist)
+- **Core Concepts**: [Terminology](../protocol/terminology)
+- **On-Chain Details**: [On-Chain Protocol](../protocol/on-chain/overview)
+- **Off-Chain Details**: [Off-Chain RPC Protocol](../off-chain/overview)
+- **Implementation**: [Quick Start Guide](./quick-start), [Implementation Checklist](./implementation-checklist)
 
 :::tip Using This Glossary
 Press `Ctrl+F` (or `Cmd+F` on Mac) to search for specific terms. Most terms also appear as tooltips throughout the documentation for quick reference.

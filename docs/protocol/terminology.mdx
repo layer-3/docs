@@ -48,31 +48,15 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 ## On-Chain Contracts
 
-**Custody Contract**: The main on-chain contract implementing the VirtualApp protocol. It provides the functionality to lock and unlock funds; create, close and challenge a channel; track channel state, and coordinate with adjudicators to validate state transitions on state updates.
+**Custody Contract**: The main on-chain contract implementing the Nitrolite protocol. It provides the functionality to lock and unlock funds; create, close and challenge a channel; track channel state, and coordinate with adjudicators to validate state transitions on state updates.
 
 **Adjudicator**: A smart contract that defines the rules for validating state transitions during all channel lifecycle operations. The adjudicator's `adjudicate(...)` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
 
-## Protocol Layers
+## Protocol Components
 
-**Decentralized Layer (YNP)**: The peer-to-peer overlay network — Kademlia DHT, BLS threshold clusters, elastic security, and the liquidity layer. Manages account state, cross-shard transfers, and settlement.
+**Nitrolite**: The on-chain smart contract protocol.
 
-**App Layer (VirtualApp)**: The state channel protocol (also known as YApps) — on-chain custody and adjudicator contracts, plus the off-chain Nitro RPC protocol for fast state updates.
-
-**Nitro RPC**: The off-chain communication protocol used by the App Layer for channel operations, transfers, and app sessions.
-
-## Decentralized Layer Terms
-
-**NodeID**: A 256-bit identity derived from on-chain randomness at registration. Each NodeID requires collateral.
-
-**Signing Cluster (C_sign)**: The set of *k* nodes closest to an account's key in the DHT, responsible for BLS threshold signing.
-
-**Replication Set (C_watch)**: A larger ring of *r* nodes that independently verify signing cluster state. Always a superset of the signing cluster.
-
-**Certificate**: The protocol's universal primitive for state change — a cluster-attested operation carrying a BLS threshold signature.
-
-**Escrow Certificate**: A certificate authorizing a withdrawal from the network to L1.
-
-**Dispute Certificate**: A certificate produced by the replication set to override a fraudulent withdrawal.
+**Nitro RPC**: The off-chain communication protocol.
 
 :::tip Quick Reference
 These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.
