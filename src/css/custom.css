@@ -1165,6 +1165,11 @@ pre.codeBlock_bY9V[style*="background-color"],
   border-left: 3px solid rgba(26, 255, 0, 0.6);
 }
 
+/* Version badge spacing */
+.theme-doc-version-badge {
+  margin-bottom: 1rem !important;
+}
+
 /* Version Switcher Styles */
 .navbar-version-dropdown {
   margin-right: 0.5rem;

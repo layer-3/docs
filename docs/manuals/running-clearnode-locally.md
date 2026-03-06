@@ -12,8 +12,8 @@ This manual explains how to run a Clearnode locally using Docker Compose for dev
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/erc7824/nitrolite.git
-cd virtualapp/clearnode
+git clone https://github.com/layer-3/nitrolite.git
+cd nitrolite/clearnode
 ```
 
 ### 2. Configuration Setup
