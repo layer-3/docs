@@ -1,0 +1,165 @@
+---
+title: API Reference
+description: Complete API reference for the Clearnode Go SDK
+sidebar_position: 2
+---
+
+# Go SDK API Reference
+
+## State Operations (Off-Chain)
+
+```go
+client.Deposit(ctx, blockchainID, asset, amount)      // Prepare deposit state
+client.Withdraw(ctx, blockchainID, asset, amount)     // Prepare withdrawal state
+client.Transfer(ctx, recipientWallet, asset, amount)  // Prepare transfer state
+client.CloseHomeChannel(ctx, asset)                   // Prepare finalize state
+client.Acknowledge(ctx, asset)                        // Acknowledge received state
+```
+
+All return `(*core.State, error)`. Use `Checkpoint` to settle on-chain.
+
+---
+
+## Blockchain Settlement
+
+```go
+client.Checkpoint(ctx, asset)                         // Settle latest state on-chain
+client.Challenge(ctx, state)                          // Submit on-chain challenge
+client.ApproveToken(ctx, chainID, asset, amount)      // Approve ChannelHub to spend tokens
+client.GetOnChainBalance(ctx, chainID, asset, wallet) // Query on-chain token balance
+```
+
+`Checkpoint` routes automatically based on transition type and channel status:
+- **Void** → creates channel
+- **Deposit/Withdrawal** → checkpoints state
+- **Finalize** → closes channel
+
+---
+
+## Node Information
+
+```go
+client.Ping(ctx)                        // Health check
+client.GetConfig(ctx)                   // Node configuration
+client.GetBlockchains(ctx)              // Supported blockchains
+client.GetAssets(ctx, &blockchainID)    // Supported assets (nil for all)
+```
+
+---
+
+## User Queries
+
+```go
+client.GetBalances(ctx, wallet)             // User balances
+client.GetTransactions(ctx, wallet, opts)   // Transaction history (paginated)
+```
+
+---
+
+## Channel Queries
+
+```go
+client.GetHomeChannel(ctx, wallet, asset)               // Home channel info
+client.GetEscrowChannel(ctx, escrowChannelID)           // Escrow channel info
+client.GetLatestState(ctx, wallet, asset, onlySigned)   // Latest state
+```
+
+---
+
+## App Registry
+
+```go
+apps, meta, err := client.GetApps(ctx, &sdk.GetAppsOptions{
+    AppID:       &appID,
+    OwnerWallet: &wallet,
+})
+
+err := client.RegisterApp(ctx, "my-app", `{"name": "My App"}`, false)
+```
+
+---
+
+## App Sessions
+
+```go
+sessions, meta, err := client.GetAppSessions(ctx, opts)
+def, err := client.GetAppDefinition(ctx, appSessionID)
+sessionID, version, status, err := client.CreateAppSession(ctx, def, data, sigs)
+nodeSig, err := client.SubmitAppSessionDeposit(ctx, update, sigs, asset, amount)
+err := client.SubmitAppState(ctx, update, sigs)
+batchID, err := client.RebalanceAppSessions(ctx, signedUpdates)
+```
+
+---
+
+## Session Keys — App Sessions
+
+```go
+state := app.AppSessionKeyStateV1{
+    UserAddress:    client.GetUserAddress(),
+    SessionKey:     "0xSessionKey...",
+    Version:        1,
+    ApplicationIDs: []string{"app1"},
+    AppSessionIDs:  []string{},
+    ExpiresAt:      time.Now().Add(24 * time.Hour),
+}
+sig, err := client.SignSessionKeyState(state)
+state.UserSig = sig
+err = client.SubmitAppSessionKeyState(ctx, state)
+
+states, err := client.GetLastAppKeyStates(ctx, userAddress, nil)
+```
+
+---
+
+## Session Keys — Channels
+
+```go
+state := core.ChannelSessionKeyStateV1{
+    UserAddress: client.GetUserAddress(),
+    SessionKey:  "0xSessionKey...",
+    Version:     1,
+    Assets:      []string{"usdc", "weth"},
+    ExpiresAt:   time.Now().Add(24 * time.Hour),
+}
+sig, err := client.SignChannelSessionKeyState(state)
+state.UserSig = sig
+err = client.SubmitChannelSessionKeyState(ctx, state)
+
+states, err := client.GetLastChannelKeyStates(ctx, userAddress, nil)
+```
+
+---
+
+## Utilities
+
+```go
+client.Close()                              // Close connection
+client.WaitCh()                             // Connection monitor channel
+client.SignState(state)                     // Sign a state (advanced)
+client.GetUserAddress()                     // Get signer's address
+client.SetHomeBlockchain(asset, chainID)    // Set default blockchain
+```
+
+---
+
+## Types
+
+```go
+// Core types
+core.State              // Channel state
+core.Channel            // Channel info
+core.Transition         // State transition
+core.Transaction        // Transaction record
+core.Asset              // Asset info
+core.Blockchain         // Blockchain info
+core.ChannelSessionKeyStateV1  // Channel session key state
+
+// App types
+app.AppV1               // Application definition
+app.AppInfoV1           // Application info with timestamps
+app.AppSessionInfoV1    // Session info
+app.AppDefinitionV1     // Session definition
+app.AppStateUpdateV1    // Session update
+app.AppSessionKeyStateV1  // App session key state
+```

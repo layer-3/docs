@@ -1,0 +1,71 @@
+---
+title: YELLOW Token
+description: Understanding the YELLOW utility token and its role in the Yellow Network
+sidebar_position: 6
+---
+
+# YELLOW Token
+
+YELLOW is the utility token that provides access to the goods and services supplied by Layer3 Fintech Ltd. within the Yellow Network. It has a fixed supply of **10 billion tokens** — no new tokens can ever be created, and there is no burn mechanism.
+
+## Token Functions
+
+### 1. Mandatory Security Deposit for Node Operators
+
+Every node operator must post YELLOW tokens as collateral to register on the network. This is the core mechanism that makes the network secure.
+
+- **Prevents spam attacks** — flooding the network with malicious nodes requires real collateral for each one.
+- **Deters fraud** — if a node participates in a fraudulent transaction, its collateral is automatically seized ("slashed") through on-chain fraud proofs.
+- **Scales with responsibility** — as a node guards higher-value accounts, the protocol requires more collateral at risk.
+
+The minimum collateral starts at 10,000 YELLOW and scales up to 125,000 YELLOW as the network grows.
+
+### 2. Service Access Fee
+
+All network services — clearing, settlement, data delivery, app subscriptions — require the consumption of YELLOW as a service access fee. Users who hold YELLOW pay fees directly at a discounted rate.
+
+Protocol fees from clearing and trading operations are locked into the collateral of the nodes that processed them, increasing those operators' slashing exposure and strengthening network security over time.
+
+### 3. Dispute Resolution Access
+
+App builders who register applications on the network post YELLOW as a service quality guarantee. Users who have disputes with an application pay a processing fee in YELLOW to access independent arbitration. If the dispute is upheld, the app builder's collateral can be slashed.
+
+## On-Chain Contract
+
+The `YellowToken` contract is a standard ERC-20 with EIP-2612 permit functionality. The entire 10 billion supply is minted to the Treasury at deployment.
+
+| Property | Value |
+|----------|-------|
+| Name | Yellow |
+| Symbol | YELLOW |
+| Supply | 10,000,000,000 (fixed) |
+| Decimals | 18 |
+| Permit | EIP-2612 gasless approvals |
+| Mint/Burn | None — supply is immutable |
+
+## Token Allocation
+
+| Allocation | Percentage | Purpose |
+|------------|-----------|---------|
+| Founders | 10% | Subject to 6-month cliff and 60-month linear vesting |
+| Token Sales | 12.5% | Distributed to participants who require YELLOW for service access |
+| Community Treasury | 30% | Grants for app builders who consume YELLOW for services |
+| Foundation Treasury | 20% | Funds ongoing R&D and delivery of Yellow Network services |
+| Network Growth Incentives | 25% | Distributed automatically based on network scale |
+| Ecosystem Accessibility Reserve | 2.5% | Ensures YELLOW remains accessible for its intended utility |
+
+## What YELLOW Is Not
+
+- It does not represent ownership in Layer3 Fintech Ltd. or any affiliated entity.
+- It does not entitle holders to dividends, profit-sharing, or any form of financial return.
+- It is not designed to maintain a stable value — there is no peg, no reserve backing, and no stabilisation mechanism.
+- Holding YELLOW alone does not grant participation in protocol parameter administration — that requires actively operating a node.
+
+## Key Numbers
+
+| Metric | Value |
+|--------|-------|
+| Total supply | 10,000,000,000 (fixed) |
+| Minimum node collateral | 10,000 YELLOW (scales to 125,000) |
+| Collateral unlock period | 14 days |
+| Fee range | 0.1% — 0.4% (dynamic) |

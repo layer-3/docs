@@ -1,0 +1,130 @@
+---
+title: Configuration
+description: Client options, signers, and error handling for the TypeScript SDK
+sidebar_position: 3
+---
+
+# Configuration
+
+## Client Options
+
+Configuration is passed as variadic options to `Client.create()`:
+
+```typescript
+import {
+  Client,
+  createSigners,
+  withBlockchainRPC,
+  withHandshakeTimeout,
+  withErrorHandler,
+} from '@yellow-org/sdk';
+
+const client = await Client.create(
+  wsURL,
+  stateSigner,
+  txSigner,
+  withBlockchainRPC(chainId, rpcURL),  // Blockchain RPC (required for checkpoint)
+  withHandshakeTimeout(10000),          // Connection timeout in ms (default: 5000)
+  withErrorHandler(errorFn),            // Connection error handler
+);
+```
+
+### `withBlockchainRPC(chainId, rpcURL)`
+
+Configures an EVM blockchain RPC endpoint. Required for `checkpoint()`, `approveToken()`, and other on-chain operations. Can be called multiple times for multi-chain setups:
+
+```typescript
+const client = await Client.create(
+  wsURL, stateSigner, txSigner,
+  withBlockchainRPC(80002n, process.env.POLYGON_RPC!),
+  withBlockchainRPC(11155111n, process.env.SEPOLIA_RPC!),
+);
+```
+
+### `withHandshakeTimeout(ms)`
+
+Sets the WebSocket handshake timeout. Defaults to 5000ms.
+
+### `withErrorHandler(fn)`
+
+Registers a callback for connection errors:
+
+```typescript
+withErrorHandler((error) => {
+  console.error('[Connection Error]', error);
+})
+```
+
+## Home Blockchain
+
+`setHomeBlockchain(asset, blockchainId)` sets the default blockchain for an asset. Required before `transfer()` on a new channel (where no chain context exists yet).
+
+```typescript
+await client.setHomeBlockchain('usdc', 80002n);
+```
+
+:::warning
+This mapping is **immutable** once set for the client instance. The asset must be supported on the specified blockchain.
+:::
+
+## Error Handling
+
+All errors include context about what failed:
+
+```typescript
+try {
+  const state = await client.deposit(80002n, 'usdc', amount);
+  const txHash = await client.checkpoint('usdc');
+} catch (error) {
+  console.error('Operation failed:', error);
+}
+```
+
+### Common Errors
+
+| Error Message | Cause | Solution |
+|--------------|-------|----------|
+| `"channel not created, deposit first"` | Transfer before deposit | Deposit funds first |
+| `"home blockchain not set for asset"` | Missing `setHomeBlockchain()` | Call `setHomeBlockchain()` before transfer |
+| `"blockchain client not configured"` | Missing `withBlockchainRPC()` | Add `withBlockchainRPC()` configuration |
+| `"insufficient balance"` | Not enough funds | Deposit more funds |
+| `"failed to sign state"` | Invalid private key or state | Check signer configuration |
+| `"no channel exists for asset"` | Checkpoint without a co-signed state | Call `deposit()`, `withdraw()`, etc. first |
+| `"transition type ... does not require a blockchain operation"` | Checkpoint on unsupported transition | Only checkpoint after deposit, withdraw, close, or acknowledge |
+
+## BigInt for Chain IDs
+
+Chain IDs use JavaScript's `bigint` type:
+
+```typescript
+const polygonAmoy = 80002n;
+const ethereum = 1n;
+const sepolia = 11155111n;
+
+await client.deposit(polygonAmoy, 'usdc', amount);
+```
+
+## Decimal.js for Amounts
+
+All token amounts use `Decimal` from `decimal.js` to avoid floating-point issues:
+
+```typescript
+import Decimal from 'decimal.js';
+
+const amount = new Decimal(100);
+const precise = new Decimal('123.456');
+
+await client.deposit(chainId, 'usdc', amount);
+```
+
+## Viem Integration
+
+The SDK uses `viem` for Ethereum interactions:
+
+```typescript
+import { privateKeyToAccount } from 'viem/accounts';
+import { EthereumMsgSigner } from '@yellow-org/sdk';
+
+const account = privateKeyToAccount('0x...');
+const stateSigner = new EthereumMsgSigner(account);
+```

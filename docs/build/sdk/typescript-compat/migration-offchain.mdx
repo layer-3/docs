@@ -1,0 +1,108 @@
+---
+title: "Migration: Off-Chain"
+description: Off-chain migration from v0.5.3 to the compat layer
+sidebar_position: 4
+---
+
+# Off-Chain Migration Guide
+
+Covers authentication, app sessions, transfers, ledger queries, and event polling when migrating from v0.5.3.
+
+## Authentication
+
+v1.0.0 handles authentication internally when using `NitroliteClient`. For legacy WebSocket-auth code paths, the compat layer keeps `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, and `createEIP712AuthMessageSigner` available.
+
+## App Sessions
+
+### List
+
+**Before:** `createGetAppSessionsMessage` + `sendRequest` + `parseGetAppSessionsResponse`
+
+**After:**
+
+```typescript
+const sessions = await client.getAppSessionsList();
+```
+
+### Create
+
+**Before:**
+
+```typescript
+const msg = await createAppSessionMessage(signer.sign, { definition, allocations });
+const raw = await sendRequest(msg);
+parseCreateAppSessionResponse(raw);
+```
+
+**After:**
+
+```typescript
+await client.createAppSession(definition, allocations);
+```
+
+### Close
+
+**Before:** `createCloseAppSessionMessage` + send + parse
+
+**After:**
+
+```typescript
+await client.closeAppSession(appSessionId, allocations);
+```
+
+### Submit State
+
+**Before:** `createSubmitAppStateMessage` + send
+
+**After:**
+
+```typescript
+await client.submitAppState(params);
+```
+
+## Transfers
+
+**Before:**
+
+```typescript
+const msg = await createTransferMessage(signer.sign, { destination, allocations });
+await sendRequest(msg);
+```
+
+**After:**
+
+```typescript
+await client.transfer(destination, allocations);
+```
+
+## Ledger Queries
+
+**Before:** `createGetLedgerBalancesMessage` / `createGetLedgerEntriesMessage` + send + parse
+
+**After:**
+
+```typescript
+const balances = await client.getBalances();
+const entries = await client.getLedgerEntries();
+```
+
+## Event Polling
+
+v0.5.3 used WebSocket push events (`ChannelUpdate`, `BalanceUpdate`). v1.0.0 uses polling. The `EventPoller` bridges this gap:
+
+```typescript
+import { EventPoller } from '@yellow-org/sdk-compat';
+
+const poller = new EventPoller(client, {
+  onChannelUpdate: (channels) => updateUI(channels),
+  onBalanceUpdate: (balances) => updateBalances(balances),
+  onAssetsUpdate:  (assets)   => updateAssets(assets),
+  onError:         (err)      => console.error(err),
+}, 5000);
+
+poller.start();
+```
+
+## RPC Compatibility Helpers
+
+The `create*Message` and `parse*Response` functions still exist so existing imports compile. Most are transitional placeholders. Prefer `NitroliteClient` methods directly for new code.

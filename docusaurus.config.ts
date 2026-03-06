@@ -69,8 +69,13 @@ const config: Config = {
           includeCurrentVersion: true,
           versions: {
             current: {
-              label: require('./package.json').version,
-              path: '', // Root path (docs/)
+              label: '1.x',
+              path: '',
+              banner: 'none',
+            },
+            '0.5.x': {
+              label: '0.5.x',
+              path: '0.5.x',
               banner: 'none',
             },
           },
@@ -133,12 +138,6 @@ const config: Config = {
         },
         {
           type: 'doc',
-          docId: 'contracts/index',
-          label: 'Contracts',
-          position: 'left',
-        },
-        {
-          type: 'doc',
           docId: 'manuals/index',
           label: 'Manuals',
           position: 'left',
@@ -191,10 +190,6 @@ const config: Config = {
             {
               label: 'Build',
               to: '/docs/build/quick-start',
-            },
-            {
-              label: 'Contracts',
-              to: '/docs/contracts',
             },
             {
               label: 'Manuals',

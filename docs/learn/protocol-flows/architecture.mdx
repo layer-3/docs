@@ -1,0 +1,105 @@
+---
+title: "Protocol Architecture (Petal Diagram)"
+description: "A visual and technical breakdown of the Nitrolite Protocol architecture, covering the four core petals and three operational layers."
+sidebar_position: 1
+---
+
+# Protocol Architecture (Petal Diagram)
+
+The **Petal Diagram** is the central architectural reference for the Nitrolite Protocol. It maps how different actions -- Deposits, Withdrawals, Transfers, and App Sessions -- interact with various blockchains, all centered on a user's channel ("My Channel").
+
+<img src="/img/protocol-petal-diagram.png" alt="Nitrolite Protocol Petal Diagram" style={{maxWidth: '100%'}} />
+
+*The diagram represents the architecture centered on a user's channel and maps how different actions interact with various blockchains.*
+
+---
+
+## The Four Petals
+
+### Petal 1: My Home Chain (Deposits and Withdrawals)
+
+The **Home Chain** is the blockchain chosen by the user when they first create their channel or deposit a specific token.
+
+:::info Important Choice
+When selecting your Home Chain, consider that this is the blockchain where your funds will be **enforced on-chain**. If you are unable to agree with the Node on a next state (e.g., in a dispute scenario), you can withdraw your funds on this specific blockchain. Choose a chain where you have easy access and are comfortable transacting.
+:::
+
+**The Flow:**
+
+- **Deposit:** When a user deposits for the first time, that specific chain (e.g., Polygon) becomes the "Home Chain" for that token.
+- **Optimization:** This process improves upon the previous version by **skipping the custody ledger step**, reducing one step and improving UX.
+- **Mechanism:** Users transfer funds directly from their ERC-20 token balance via approvals, saving one transaction compared to the old protocol.
+- **Withdrawal:** The withdrawal process follows the exact same direct logic as the deposit.
+
+**Key Benefit:** Direct fund transfers without intermediate custody steps result in reduced gas costs and improved UX.
+
+---
+
+### Petal 2: Another Chain (Cross-Chain Support)
+
+When a user already has a Home Chain (e.g., Polygon) with funds and wants to deposit funds from a *different* chain (e.g., Linea or Base), the protocol uses a specialized bridge mechanism.
+
+**The Challenge:** Since the user's Home Chain is already defined, the protocol needs a different mechanism to handle deposits from a non-home chain.
+
+**The Solution -- The Bridge:**
+
+- The protocol implements a specialized bridge solution.
+- Cross-chain deposits work similarly to cross-chain transfers, but with **atomic properties** -- ensuring the action either fully completes or doesn't happen at all.
+- Atomicity is achieved not via smart contract infrastructure alone, but with the help of the participants. Both the User and the Node can see whether the process is failing on one chain and can cancel the process on another chain.
+
+**Key Property:** Atomic execution guarantees -- no partial states or stuck funds.
+
+---
+
+### Petal 3: Transfers (Sender and Receiver State)
+
+Unlike state changes within a single channel, transfers between *two different users* are not strictly "atomic" because the two users have **unrelated states**. You cannot update the receiver's state on-chain immediately when the sender initiates the transfer.
+
+**The Solution -- Aggregated State Updates:**
+
+- **Sender Action:** The sender submits their new state (showing funds sent).
+- **Verification:** If the Clearnode accepts this state as valid, it prepares a "pending state" for the Receiver.
+- **Receiver Action (Aggregation):** If a receiver gets multiple transfers from different people, they do **not** need to sign a state update for every single transfer.
+- **Efficiency:** The "receive" updates are **aggregated**. Only the Node signs the aggregated states; the Receiver doesn't need to. However, when such states may be aggregated with a "send", "lock", or "withdraw", then the Receiver needs to sign these new states.
+- It is in the Receiver's security interest to own the latest state (to be able to challenge with it if the network goes down). The main challenge for the Receiver is to obtain the "receive" state signed by the Node if they are offline or not connected to the Node.
+- In v1.0, not only the receiver but anyone can subscribe for state updates, enabling users to hire **User Watchtowers** that listen to "receive" state updates and store such states for the User.
+
+**Key Optimization:** Batch processing reduces signature overhead and improves throughput.
+
+---
+
+### Petal 4: App Sessions (The "Virtual Layer")
+
+App Sessions function as a **Virtual Layer** within the protocol.
+
+**The Node Mechanism:**
+
+- When a user enters an App Session (locks funds), those funds move to the Node.
+- These funds are technically locked on the Node's wallet and are **not directly enforced by the State Channel** during the session.
+
+**Security and Risk:**
+
+- If the Node misbehaves, the user can currently only recover funds that are *not* locked in an active session.
+
+:::note
+This is a limitation in the current version of the protocol. Future work to improve App Session security through Node Watchtowers and cryptographic proofs is planned.
+:::
+
+- To simplify security, the protocol restricts App Sessions to **one participant deposit of one token per session update**.
+
+**Future Validation -- Node Watchtowers:**
+
+- **Third-Party Node Observers (Node Watchtowers)** will validate actions on the Virtual Layer.
+- If they detect misbehavior by the Node, they can intervene or slash, ensuring the system remains trustless.
+
+**UX Philosophy:** The Virtual Layer stays flexible (allowing flexible app sessions, settlements, and swaps), while the **Fundamental Layer** (Deposits/Withdrawals/Transfers) remains strictly enforced on-chain.
+
+---
+
+## Protocol Layers
+
+| Layer | Description | Security Level |
+| --- | --- | --- |
+| **Fundamental Layer** | Deposits/Withdrawals (on-chain) and Transfers (off-chain) | Strictly enforced on-chain (High Security) |
+| **Virtual Layer** | App Sessions and internal movements | Broker/Watchtower model (High Flexibility) |
+| **Cross-Chain** | Managed via specialized bridge | Atomic swap properties |
