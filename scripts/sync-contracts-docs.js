@@ -3,8 +3,6 @@
  * into docs/contracts/ with Docusaurus-compatible frontmatter
  * and category metadata.
  *
- * Generates the Deployed Addresses page from @yellow-org/contracts.
- *
  * Usage: node scripts/sync-contracts-docs.js
  *
  * Safe to re-run — it wipes docs/contracts/ and rebuilds from source.
@@ -15,32 +13,6 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'vendors', 'yellow', 'docs');
 const DEST = path.join(ROOT, 'docs', 'contracts');
-
-// ---------------------------------------------------------------------------
-// On-chain addresses from @yellow-org/contracts
-// ---------------------------------------------------------------------------
-
-let addresses;
-try {
-  addresses = require('@yellow-org/contracts').addresses;
-} catch {
-  addresses = null;
-}
-
-const CHAINS = {
-  1: { name: 'Ethereum Mainnet', explorer: 'https://etherscan.io/address' },
-  11155111: { name: 'Sepolia Testnet', explorer: 'https://sepolia.etherscan.io/address' },
-};
-
-const ADDRESS_LABELS = {
-  yellowToken: 'YellowToken',
-  nodeRegistry: 'NodeRegistry',
-  appRegistry: 'AppRegistry',
-  governor: 'YellowGovernor',
-  timelock: 'TimelockController',
-  treasury: 'Treasury',
-  faucet: 'Faucet',
-};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -97,6 +69,7 @@ function copyWithFrontmatter(srcFile, destFile, { title, description, sidebarPos
   content = content.replace(/^<!-- AUTO-GENERATED.*?-->\n*/m, '');
 
   // Escape curly braces in prose so MDX doesn't treat them as JSX expressions.
+  // Only escape {word} patterns outside of code blocks/fences.
   content = escapeCurlyBracesOutsideCode(content);
 
   const frontmatter = [
@@ -130,66 +103,6 @@ function writeCategory(dir, { label, position, link }) {
 }
 
 // ---------------------------------------------------------------------------
-// Address page generator
-// ---------------------------------------------------------------------------
-
-function generateAddressesPage() {
-  const lines = [
-    '---',
-    'title: "Deployed Addresses"',
-    'description: "Mainnet and testnet contract addresses for Yellow Network."',
-    'sidebar_position: 2',
-    'displayed_sidebar: contractsSidebar',
-    '---',
-    '',
-    '',
-    '# Deployed Addresses',
-    '',
-  ];
-
-  if (!addresses) {
-    lines.push('> Install `@yellow-org/contracts` and re-run `npm run sync:contracts` to populate addresses.', '');
-    return lines.join('\n');
-  }
-
-  for (const [chainIdStr, addrs] of Object.entries(addresses)) {
-    const chainId = Number(chainIdStr);
-    const chain = CHAINS[chainId];
-    if (!chain) continue;
-
-    lines.push(`## ${chain.name} (Chain ID: ${chainId})`, '');
-    lines.push('| Contract | Address |', '|---|---|');
-
-    for (const [key, label] of Object.entries(ADDRESS_LABELS)) {
-      const addr = addrs[key];
-      if (addr) {
-        lines.push(`| ${label} | [\`${addr}\`](${chain.explorer}/${addr}) |`);
-      } else {
-        lines.push(`| ${label} | — |`);
-      }
-    }
-    lines.push('');
-  }
-
-  lines.push(
-    '## Using in Code',
-    '',
-    '```ts',
-    'import { addresses } from "@yellow-org/contracts";',
-    '',
-    '// Mainnet',
-    'addresses[1].yellowToken;',
-    '',
-    '// Sepolia',
-    'addresses[11155111].faucet;',
-    '```',
-    '',
-  );
-
-  return lines.join('\n');
-}
-
-// ---------------------------------------------------------------------------
 // Document mapping
 // ---------------------------------------------------------------------------
 
@@ -201,7 +114,12 @@ const DOCS = {
     description: 'Overview of Yellow Network smart contracts, governance, and on-chain infrastructure.',
     sidebarPosition: 1,
   },
-  // 'addresses' is generated from @yellow-org/contracts — not copied from vendor
+  addresses: {
+    src: 'operations/addresses.md',
+    title: 'Deployed Addresses',
+    description: 'Mainnet and testnet contract addresses for Yellow Network.',
+    sidebarPosition: 2,
+  },
   faq: {
     src: 'FAQ.md',
     title: 'FAQ',
@@ -372,16 +290,7 @@ function main() {
     });
   }
 
-  // Generate addresses page from @yellow-org/contracts
-  const addressesPage = generateAddressesPage();
-  fs.writeFileSync(path.join(DEST, 'addresses.md'), addressesPage);
-  if (addresses) {
-    console.log('  generated  addresses.md  (from @yellow-org/contracts)');
-  } else {
-    console.warn('  generated  addresses.md  (WARNING: @yellow-org/contracts not installed)');
-  }
-
-  // Copy and transform each document from vendor
+  // Copy and transform each document
   let count = 0;
   const missing = [];
 
@@ -406,7 +315,7 @@ function main() {
     }
   }
 
-  console.log(`\nSynced ${count} vendor docs + 1 generated into docs/contracts/`);
+  console.log(`\nSynced ${count} docs into docs/contracts/`);
   console.log('\nStructure:');
 
   // Print tree
@@ -422,7 +331,9 @@ function main() {
       const isLast = i === entries.length - 1;
       const connector = isLast ? '└── ' : '├── ';
       const full = path.join(dir, entry.name);
+
       if (entry.name === '_category_.json') return; // skip noise
+
       console.log(`${prefix}${connector}${entry.name}`);
       if (entry.isDirectory()) {
         printTree(full, prefix + (isLast ? '    ' : '│   '));
