@@ -1,0 +1,235 @@
+---
+title: Overview
+description: Compatibility layer bridging Nitrolite SDK v0.5.3 API to v1.0.0
+sidebar_position: 1
+---
+
+# TypeScript Compat SDK
+
+Compatibility layer that bridges the Nitrolite SDK **v0.5.3 API** to the **v1.0.0 runtime**, letting existing dApps upgrade to the new protocol with minimal code changes.
+
+## Why Use the Compat Layer
+
+The v1.0.0 protocol introduces breaking changes across 14 dimensions — wire format, authentication, WebSocket lifecycle, unit system, asset resolution, and more. A direct migration touches 20+ files per app with deep, scattered rewrites.
+
+The compat layer centralises this complexity into **~1,000 lines** that absorb the protocol differences, reducing per-app integration effort by an estimated **56–70%**.
+
+## Installation
+
+```bash
+npm install @yellow-org/sdk-compat
+# peer dependencies
+npm install @yellow-org/sdk viem
+```
+
+## Quick Start
+
+```typescript
+import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
+
+// Create client (replaces new Client(ws, signer))
+const client = await NitroliteClient.create({
+  wsURL: 'wss://clearnode.example.com/ws',
+  walletClient,          // viem WalletClient with account
+  chainId: 11155111,     // Sepolia
+  blockchainRPCs: blockchainRPCsFromEnv(),
+});
+
+// Deposit (creates channel if needed)
+await client.deposit(tokenAddress, 11_000_000n);
+
+// Query
+const channels = await client.getChannels();
+const balances = await client.getBalances();
+const sessions = await client.getAppSessionsList();
+
+// Transfer
+await client.transfer(recipientAddress, [{ asset: 'usdc', amount: '5.0' }]);
+
+// Cleanup
+await client.closeChannel();
+await client.close();
+```
+
+## Method Cheat Sheet
+
+### Channel Operations
+
+| Method | Description |
+|--------|-------------|
+| `deposit(token, amount)` | Deposit to channel (creates if needed) |
+| `depositAndCreateChannel(token, amount)` | Alias for `deposit()` |
+| `withdrawal(token, amount)` | Withdraw from channel |
+| `closeChannel(params?)` | Close open channels (optionally for a specific token) |
+| `resizeChannel({ allocate_amount, token })` | Resize an existing channel |
+| `challengeChannel({ state })` | Challenge a channel on-chain |
+| `createChannel()` | No-op in v1 (channel creation is implicit on `deposit()`) |
+
+### Queries
+
+| Method | Description |
+|--------|-------------|
+| `getChannels()` | List all ledger channels |
+| `getChannelData(channelId)` | Full channel + state for a specific channel |
+| `getBalances(wallet?)` | Get ledger balances |
+| `getLedgerEntries(wallet?)` | Get transaction history |
+| `getAppSessionsList(wallet?, status?)` | List app sessions |
+| `getLastAppSessionsListError()` | Last error from `getAppSessionsList()` (if any) |
+| `getAssetsList()` | List supported assets |
+| `getAccountInfo()` | Aggregate balance + channel count |
+| `getConfig()` | Node configuration |
+
+### Transfers
+
+| Method | Description |
+|--------|-------------|
+| `transfer(destination, allocations)` | Off-chain transfer to another participant |
+
+### App Sessions
+
+| Method | Description |
+|--------|-------------|
+| `createAppSession(definition, allocations, quorumSigs?)` | Create an app session |
+| `closeAppSession(appSessionId, allocations, quorumSigs?)` | Close an app session |
+| `submitAppState(params)` | Submit state update (operate/deposit/withdraw/close) |
+| `getAppDefinition(appSessionId)` | Get session definition |
+
+### App Session Signing Helpers
+
+| Helper | Description |
+|--------|-------------|
+| `packCreateAppSessionHash(params)` | Deterministic hash for `createAppSession` quorum signing |
+| `packSubmitAppStateHash(params)` | Deterministic hash for `submitAppState` quorum signing |
+| `toWalletQuorumSignature(signature)` | Prefix wallet signature for app-session quorum format |
+| `toSessionKeyQuorumSignature(signature)` | Prefix session key signature (`0xa2`) for quorum format |
+
+### Session Keys
+
+| Method | Description |
+|--------|-------------|
+| `signChannelSessionKeyState(state)` | Sign a channel session-key state |
+| `submitChannelSessionKeyState(state)` | Register channel session-key |
+| `getLastChannelKeyStates(userAddress, sessionKey?)` | Get active channel session-key states |
+| `signSessionKeyState(state)` | Sign an app-session key state |
+| `submitSessionKeyState(state)` | Register app-session key |
+| `getLastKeyStates(userAddress, sessionKey?)` | Get active app-session key states |
+
+### Asset Resolution
+
+| Method | Description |
+|--------|-------------|
+| `resolveToken(tokenAddress)` | Look up asset info by token address |
+| `resolveAsset(symbol)` | Look up asset info by symbol |
+| `resolveAssetDisplay(tokenAddress, chainId?)` | Get display-friendly symbol + decimals |
+| `getTokenDecimals(tokenAddress)` | Get decimals for a token |
+| `formatAmount(tokenAddress, rawAmount)` | Raw bigint → human-readable string |
+| `parseAmount(tokenAddress, humanAmount)` | Human-readable string → raw bigint |
+| `findOpenChannel(tokenAddress, chainId?)` | Find an open channel for a given token |
+
+### Lifecycle
+
+| Method | Description |
+|--------|-------------|
+| `ping()` | Health check |
+| `close()` | Close the WebSocket connection |
+| `refreshAssets()` | Re-fetch the asset map from the clearnode |
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `innerClient` | `Client` (readonly) | The underlying v1.0.0 SDK Client |
+| `userAddress` | `Address` (readonly) | The connected wallet address |
+
+## Configuration
+
+```typescript
+interface NitroliteClientConfig {
+  wsURL: string;                           // Clearnode WebSocket URL
+  walletClient: WalletClient;              // viem WalletClient with account
+  chainId: number;                         // Chain ID (e.g. 11155111)
+  blockchainRPCs?: Record<number, string>; // Chain ID → RPC URL map
+  channelSessionKeySigner?: {              // Optional session key for quick approvals
+    sessionKeyPrivateKey: Hex;
+    walletAddress: Address;
+    metadataHash: Hex;
+    authSig: Hex;
+  };
+}
+```
+
+### Environment Variables
+
+`blockchainRPCsFromEnv()` reads from `NEXT_PUBLIC_BLOCKCHAIN_RPCS`:
+
+```text
+NEXT_PUBLIC_BLOCKCHAIN_RPCS=11155111:https://rpc.sepolia.io,1:https://mainnet.infura.io/v3/KEY
+```
+
+## Accessing the v1.0.0 SDK
+
+The underlying v1.0.0 `Client` is exposed for advanced use cases not covered by the compat surface:
+
+```typescript
+const v1Client = client.innerClient;
+await v1Client.getHomeChannel(wallet, 'usdc');
+await v1Client.checkpoint('usdc');
+await v1Client.approveToken(chainId, 'usdc', amount);
+```
+
+## Error Handling
+
+| Error Class | Code | Description |
+|-------------|------|-------------|
+| `AllowanceError` | `ALLOWANCE_INSUFFICIENT` | Token approval needed |
+| `UserRejectedError` | `USER_REJECTED` | User cancelled in wallet |
+| `InsufficientFundsError` | `INSUFFICIENT_FUNDS` | Not enough balance |
+| `NotInitializedError` | `NOT_INITIALIZED` | Client not connected |
+
+```typescript
+import { getUserFacingMessage, AllowanceError } from '@yellow-org/sdk-compat';
+
+try {
+  await client.deposit(token, amount);
+} catch (err) {
+  // Convert raw errors to typed compat errors
+  const typed = NitroliteClient.classifyError(err);
+  if (typed instanceof AllowanceError) {
+    // prompt user to approve token spending
+  }
+  showToast(getUserFacingMessage(err));
+}
+```
+
+## Event Polling
+
+v0.5.3 used WebSocket push events. v1.0.0 uses polling. The `EventPoller` bridges this gap:
+
+```typescript
+import { EventPoller } from '@yellow-org/sdk-compat';
+
+const poller = new EventPoller(client, {
+  onChannelUpdate: (channels) => updateUI(channels),
+  onBalanceUpdate: (balances) => updateBalances(balances),
+  onAssetsUpdate:  (assets)   => updateAssets(assets),
+  onError:         (err)      => console.error(err),
+}, 5000);
+
+poller.start();
+```
+
+## Next.js Integration
+
+Add to `transpilePackages` in `next.config.ts`:
+
+```typescript
+const nextConfig = {
+  transpilePackages: ['@yellow-org/sdk', '@yellow-org/sdk-compat'],
+};
+```
+
+## Migration Guides
+
+- [Migration Overview](./migration-overview) — Pattern changes, import swaps
+- [On-Chain Changes](./migration-onchain) — Deposits, withdrawals, channels
+- [Off-Chain Changes](./migration-offchain) — Auth, app sessions, transfers

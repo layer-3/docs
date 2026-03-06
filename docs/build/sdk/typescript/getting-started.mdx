@@ -1,0 +1,184 @@
+---
+title: Getting Started
+description: Install and set up the Yellow TypeScript SDK
+sidebar_position: 1
+---
+
+# Getting Started with @yellow-org/sdk
+
+The TypeScript SDK for Clearnode payment channels provides both high-level and low-level operations in a unified client.
+
+:::tip Migrating from v0.5.3?
+If you are migrating from `@layer-3/nitrolite@v0.5.3`, consider using the [`@yellow-org/sdk-compat`](../typescript-compat/overview) package first. It maps the familiar v0.5.3 API to the v1.0.0 runtime with minimal code changes.
+:::
+
+## Installation
+
+```bash
+npm install @yellow-org/sdk
+# or
+yarn add @yellow-org/sdk
+# or
+pnpm add @yellow-org/sdk
+```
+
+## Requirements
+
+- **Node.js** 20.0.0 or later
+- **TypeScript** 5.3.0 or later (for development)
+- A running **Clearnode** instance or access to a public node
+- A **blockchain RPC endpoint** for on-chain operations via `checkpoint()`
+
+## Quick Start
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function main() {
+  // 1. Create signers from private key
+  const { stateSigner, txSigner } = createSigners(
+    process.env.PRIVATE_KEY as `0x${string}`
+  );
+
+  // 2. Create unified client
+  const client = await Client.create(
+    'wss://clearnode.example.com/ws',
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(80002n, 'https://polygon-amoy.alchemy.com/v2/KEY')
+  );
+
+  try {
+    // 3. Build and co-sign deposit state off-chain
+    const state = await client.deposit(80002n, 'usdc', new Decimal(100));
+    console.log('Deposit state version:', state.version);
+
+    // 4. Settle on-chain via checkpoint
+    const txHash = await client.checkpoint('usdc');
+    console.log('On-chain tx:', txHash);
+
+    // 5. Transfer (off-chain only, no checkpoint needed)
+    const transferState = await client.transfer(
+      '0xRecipient...',
+      'usdc',
+      new Decimal(50)
+    );
+
+    // 6. Low-level operations on the same client
+    const config = await client.getConfig();
+    const balances = await client.getBalances(client.getUserAddress());
+  } finally {
+    await client.close();
+  }
+}
+
+main().catch(console.error);
+```
+
+## Creating a Client
+
+The `Client` is the single entry point for all operations.
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+
+// Step 1: Create signers from private key
+const { stateSigner, txSigner } = createSigners('0x1234...');
+
+// Step 2: Create unified client
+const client = await Client.create(
+  wsURL,
+  stateSigner,  // For signing channel states
+  txSigner,     // For signing blockchain transactions
+  withBlockchainRPC(chainId, rpcURL),  // Required for checkpoint()
+  withHandshakeTimeout(10000),          // Optional: connection timeout
+);
+
+// Step 3: (Optional) Set home blockchain for assets
+// Required for transfer() operations that may trigger channel creation
+await client.setHomeBlockchain('usdc', 80002n);
+```
+
+## Signer Types
+
+The SDK provides two signer types:
+
+### EthereumMsgSigner (for channel states)
+
+Signs channel state updates with EIP-191 "Ethereum Signed Message" prefix. Used for all off-chain operations.
+
+```typescript
+import { EthereumMsgSigner } from '@yellow-org/sdk';
+import { privateKeyToAccount } from 'viem/accounts';
+
+// From private key
+const signer = new EthereumMsgSigner('0x...');
+
+// From viem account
+const account = privateKeyToAccount('0x...');
+const signer2 = new EthereumMsgSigner(account);
+```
+
+### EthereumRawSigner (for blockchain transactions)
+
+Signs raw hashes directly without prefix. Used for on-chain operations like deposits, withdrawals, and channel creation.
+
+```typescript
+import { EthereumRawSigner } from '@yellow-org/sdk';
+
+const signer = new EthereumRawSigner('0x...');
+```
+
+### createSigners() Helper
+
+Creates both signers from a single private key:
+
+```typescript
+import { createSigners } from '@yellow-org/sdk';
+
+const { stateSigner, txSigner } = createSigners('0x...');
+```
+
+## Key Concepts
+
+### Two-Step Pattern
+
+Payment channels use versioned states signed by both user and node:
+
+```typescript
+// Step 1: Build and co-sign state off-chain
+const state = await client.deposit(chainId, 'usdc', amount);
+
+// Step 2: Settle on-chain (when needed)
+const txHash = await client.checkpoint('usdc');
+```
+
+### Channel Lifecycle
+
+1. **Void** — No channel exists
+2. **Create** — `deposit()` creates channel on-chain via `checkpoint()`
+3. **Open** — Channel active; can deposit, withdraw, transfer
+4. **Challenged** — Dispute initiated (advanced)
+5. **Closed** — Channel finalized (advanced)
+
+### TypeScript Conventions
+
+```typescript
+// Use bigint literals for chain IDs
+const polygonAmoy = 80002n;
+
+// Use Decimal.js for amounts
+import Decimal from 'decimal.js';
+const amount = new Decimal(100);
+
+// Viem Address type for wallet addresses
+import type { Address } from 'viem';
+const wallet: Address = '0x1234...';
+```
+
+## Next Steps
+
+- [API Reference](./api-reference) — Full method documentation
+- [Configuration](./configuration) — Client options and error handling
+- [Examples](./examples) — Complete working examples

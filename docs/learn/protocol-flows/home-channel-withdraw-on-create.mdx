@@ -1,0 +1,433 @@
+---
+title: "Home Channel Withdraw on Create Flow"
+description: "A comprehensive breakdown of the special-case flow for users who have received off-chain funds but need to create an on-chain channel to withdraw them."
+sidebar_position: 7
+---
+
+# Home Channel Withdraw on Create Flow
+
+This document provides a comprehensive breakdown of the **Home Channel Withdraw On Create From State** flow as defined in the Nitrolite v1.0 protocol. This is a **special case flow** that handles users who have received off-chain funds (have a pending state) but don't yet have an on-chain channel.
+
+This scenario commonly occurs when a user receives a transfer before ever depositing -- they need to create an on-chain channel to withdraw their received funds.
+
+---
+
+## Actors in the Flow
+
+```mermaid
+graph LR
+    U["User"] --> C["Client"]
+    C <--> N["Node (Clearnode)"]
+    C --> HC["HomeChain"]
+    HC -.-> N
+
+    style U stroke:#333
+    style C stroke:#333
+    style N stroke:#333
+    style HC stroke:#4CAF50
+```
+
+| Actor | Role |
+| --- | --- |
+| **User** | The human user initiating the withdrawal |
+| **Client** | SDK/Application managing states on behalf of the user |
+| **Node** | The Clearnode that contains the user's pending state |
+| **HomeChain** | The blockchain where the channel will be created |
+
+---
+
+## Prerequisites
+
+Before this flow begins:
+
+1. **Client** is connected to the Node via WebSocket.
+2. **Node contains a state with no channel** -- user has an off-chain state (e.g., from receiving transfers) but no on-chain home channel.
+3. **User wants to withdraw** funds from their off-chain balance.
+
+:::info Key Scenario
+This flow is critical for users who receive funds before ever depositing. For example, if Alice sends funds to Bob, but Bob has never created a channel, Bob's state exists off-chain in the Node. When Bob wants to withdraw, this flow creates his channel and withdraws in one operation.
+:::
+
+---
+
+## Key Concepts
+
+### State Without Channel
+
+Unlike a new user (who has no state at all), this user has an off-chain state but no on-chain channel:
+
+| Aspect | New User | This User |
+| --- | --- | --- |
+| **Has off-chain state** | No | Yes |
+| **Has on-chain channel** | No | No |
+| **Has balance** | No | Yes (from receives) |
+| **Node returns** | `channel_not_found` error | State with no home chain |
+
+### Why This Flow Exists
+
+The Nitrolite protocol allows users to **receive off-chain transfers without having a channel**. The Node tracks these states and signs them. However, to withdraw, the user must:
+
+1. Create an on-chain channel (to have a settlement destination).
+2. Submit the withdrawal state via channel creation.
+
+This flow combines both operations.
+
+---
+
+## Phase 1: Withdrawal Initiation
+
+```mermaid
+sequenceDiagram
+    actor User
+    actor Client
+
+    User->>Client: withdraw(blockchainId, asset, amount)
+    Note over Client: User initiates withdrawal request
+```
+
+The **User** calls the `withdraw` function on the **Client** SDK:
+
+| Parameter | Description | Example |
+| --- | --- | --- |
+| `blockchainId` | The blockchain ID to create channel and withdraw on | `137` (Polygon) |
+| `asset` | The asset symbol to withdraw | `usdc` |
+| `amount` | The amount to withdraw | `50.0` |
+
+---
+
+## Phase 2: Fetching Current State (No Home Chain)
+
+```mermaid
+sequenceDiagram
+    actor Client
+    actor Node
+
+    Client->>Node: GetLastState(UserWallet, asset)
+    Note right of Node: GetLastState(userWallet, asset)
+    Node->>Client: Returns a state with no home chain
+```
+
+1. **Client** requests the latest state from the Node.
+2. **Node** finds the user's state (from receiving transfers).
+3. **Node returns a state with no home chain** -- indicating off-chain balance exists but no channel.
+
+### The State Returned
+
+| Field | Value |
+| --- | --- |
+| `version` | >= 1 (from receive transitions) |
+| `home_channel_id` | null/empty |
+| `home_ledger` | Contains balance from receives |
+| `transitions` | Contains `transfer_receive` entries |
+
+Unlike "creation from scratch" (which returns an error), this returns an actual state -- but without a home channel ID.
+
+---
+
+## Phase 3: Building the Withdrawal State with Channel Definition
+
+```mermaid
+sequenceDiagram
+    actor Client
+
+    Note over Client: newChannelDefinition()
+    Note over Client: createNextState(currentState) returns state
+    Note over Client: GetTokenAddress(blockchainId, asset)
+    Note over Client: state.setHomeToken(blockchainId, tokenAddress)
+    Note over Client: state.ApplyChannelCreation(channelDef,<br/>blockchainId, tokenAddress, nodeAddress)
+    Note over Client: state.ApplyHomeWithdrawalTransition(amount)
+    Note over Client: signState(state) returns userSig
+```
+
+### 3.1 Create Channel Definition
+
+```
+newChannelDefinition() -> channelDef
+```
+
+Since no channel exists, the Client needs to create one:
+
+| Field | Value |
+| --- | --- |
+| `nonce` | Unique number (can be random, derived from timestamp, or an increment from the previous nonce) |
+| `challengeDuration` | Default challenge period |
+| `user` | User wallet address |
+| `node` | Node wallet address |
+| `metadata` | Application-specific metadata (`bytes32`) |
+
+### 3.2 Create Next State
+
+```
+createNextState(currentState) -> state
+```
+
+Creates a new state based on the **existing pending state** (not a new empty state).
+
+### 3.3 Apply Channel Creation
+
+```
+state.ApplyChannelCreation(channelDef, blockchainId, tokenAddress, nodeAddress)
+```
+
+Sets up the state with the channel definition, token information, and node address. This also computes and sets the State ID internally.
+
+### 3.4 Apply Withdrawal Transition
+
+```
+state.ApplyHomeWithdrawalTransition(amount)
+```
+
+Creates and applies the withdrawal transition internally:
+
+| Field | Value |
+| --- | --- |
+| `type` | `home_withdrawal` |
+| `tx_hash` | State ID reference |
+| `account_id` | User wallet address |
+| `amount` | Withdrawal amount |
+
+### 3.5 Sign
+
+The user signs the state.
+
+---
+
+## Phase 4: Requesting Channel Creation with Withdrawal
+
+```mermaid
+sequenceDiagram
+    actor Client
+    actor Node
+
+    Client->>Node: RequestCreateChannel(channelDef, state, userSig)
+    Note right of Node: GetLastState(userWallet, asset)<br/>returns pendingState
+    Note right of Node: ValidateChannelDefinition(channelDef)
+    Note right of Node: ValidateStateTransition(pendingState, state)
+    Note right of Node: StoreChannel(channel)
+    Note right of Node: StoreState(state)
+    Node->>Client: Return node signature
+```
+
+### Key Difference from Regular Creation
+
+| Aspect | Regular Creation | This Flow |
+| --- | --- | --- |
+| **Previous state** | nil (no state) | pendingState (has balance) |
+| **Validation** | `ValidateStateTransition(nil, state)` | `ValidateStateTransition(pendingState, state)` |
+| **Initial transition** | `home_deposit` | `home_withdrawal` |
+
+### Node Validation Steps
+
+| Step | Operation | Purpose |
+| --- | --- | --- |
+| 1 | `GetLastState(...)` | Get the pending state (with balance) |
+| 2 | `ValidateChannelDefinition(...)` | Ensure valid nonce and challenge |
+| 3 | `ValidateStateTransition(...)` | Validate from pending to withdrawal state |
+| 4 | `StoreChannel(channel)` | Create channel record |
+| 5 | `StoreState(state)` | Store the withdrawal state |
+
+### Validation Rules
+
+The Node validates:
+
+- **Version continuity** from pending state
+- **Sufficient balance** for withdrawal (from received funds)
+- **Valid signatures**
+- **No overdraft** beyond received balance
+
+---
+
+## Phase 5: On-Chain Channel Creation
+
+```mermaid
+sequenceDiagram
+    actor Client
+    actor HomeChain
+    actor Node
+
+    Note over Client: GetChannelId(channelDef)
+    Note over Client: PackChannelDefinition(channelDef)
+    Note over Client: PackState(channelId, state)
+    Client->>HomeChain: createChannel(packedChannelDef, packedState)
+    HomeChain->>Client: Return Tx Hash
+    HomeChain-->>Node: Emits ChannelCreated + ChannelWithdrawn Events
+```
+
+### What Happens On-Chain
+
+The `createChannel` call does **both** operations atomically:
+
+1. **Creates the channel** on the blockchain (emits `ChannelCreated`).
+2. **Processes the withdrawal** state with negative net flow (emits `ChannelWithdrawn`).
+3. **Releases funds** to the user's wallet.
+
+### On-Chain State After Creation
+
+| Field | Value |
+| --- | --- |
+| `channel_id` | Hash of definition |
+| `status` | `OPERATING` |
+| `state_version` | Current version |
+| `locked_funds` | Balance minus withdrawal |
+
+### Where Do Funds Come From?
+
+Since this is a withdrawal without deposit:
+
+- **Node must provide liquidity** -- the Node covers the withdrawal from its own funds.
+- **Net effect**: User receives tokens, Node's locked funds increase.
+- **Security**: Node trusts the off-chain state it already signed.
+
+---
+
+## Phase 6: Event Handling and Completion
+
+```mermaid
+sequenceDiagram
+    actor Node
+    actor Client
+    actor User
+
+    Note right of Node: HandleChannelCreated()
+    Note right of Node: UpdateChannel(channel)
+    Node-->>Client: Sends ChannelUpdate and BalanceUpdate
+    Client-->>User: Returns success
+```
+
+The Client returns success to the User, confirming:
+
+- Home channel created successfully
+- Withdrawal processed
+- Funds received in their wallet
+
+---
+
+## Complete Flow Diagram
+
+```mermaid
+sequenceDiagram
+    actor User
+    actor Client
+    actor Node
+    actor HomeChain
+
+    rect rgb(40, 40, 100)
+        Note over User,Client: Phase 1: Initiation
+        User->>Client: withdraw(blockchainId, asset, amount)
+    end
+
+    rect rgb(100, 40, 40)
+        Note over Client,Node: Phase 2: Fetch Pending State
+        Client->>Node: GetLastState(UserWallet, asset)
+        Node->>Client: Returns state with no home chain
+    end
+
+    rect rgb(40, 100, 40)
+        Note over Client: Phase 3: Build State
+        Note over Client: newChannelDefinition() + createNextState()
+        Note over Client: Build withdrawal transition + sign
+    end
+
+    rect rgb(100, 100, 40)
+        Note over Client,Node: Phase 4: Request Creation
+        Client->>Node: RequestCreateChannel(channelDef, state, userSig)
+        Note over Node: Validate from pendingState
+        Node->>Client: Return node signature
+    end
+
+    rect rgb(100, 40, 100)
+        Note over Client,HomeChain: Phase 5: On-Chain Creation
+        Client->>HomeChain: createChannel(...)
+        HomeChain->>Client: Return Tx Hash
+        HomeChain-->>Node: ChannelCreated + ChannelWithdrawn Events
+    end
+
+    rect rgb(40, 100, 100)
+        Note over Node,User: Phase 6: Completion
+        Node-->>Client: ChannelUpdate and BalanceUpdate
+        Client-->>User: Returns success
+    end
+```
+
+---
+
+## Key Concepts Summary
+
+### State Lifecycle in This Flow
+
+```mermaid
+flowchart LR
+    A["Pending State<br/>(no channel, has balance<br/>from receives)"] --> B["Create Channel +<br/>Withdrawal State"]
+    B --> C["On-Chain Channel<br/>(OPERATING)"]
+    C --> D["User Receives<br/>Withdrawn Funds"]
+
+    style A fill:#ff9800
+    style D fill:#4caf50
+```
+
+### Comparison: Three Channel Creation Scenarios
+
+| Scenario | User Has State? | Initial Transition | API Method |
+| --- | --- | --- | --- |
+| **From Scratch** | No (`channel_not_found` error) | `home_deposit` | `request_creation` |
+| **Withdraw on Create** | Yes (pending state) | `home_withdrawal` | `request_creation` |
+| **Regular Withdrawal** | Yes + Channel exists | `home_withdrawal` | `submit_state` |
+
+### Who Provides Withdrawal Funds?
+
+```mermaid
+flowchart LR
+    subgraph Off-Chain["Off-Chain (Node DB)"]
+        A["User has 100 USDC<br/>(from receives)"]
+    end
+    subgraph On-Chain["On-Chain (Smart Contract)"]
+        B["Node provides 50 USDC<br/>(from liquidity pool)"]
+    end
+    C["User's Wallet<br/>receives 50 USDC"]
+
+    A -.->|balance tracked| B
+    B -->|actual tokens| C
+
+    style A fill:#2196f3
+    style B fill:#ff9800
+    style C fill:#4caf50
+```
+
+The Node trusts the off-chain state because it already co-signed all receive transitions.
+
+---
+
+## Security Considerations
+
+### Why Is This Safe?
+
+1. **Node already signed receives** -- All `transfer_receive` transitions were co-signed by Node.
+2. **Version continuity** -- Withdrawal state must increment from pending state.
+3. **Balance enforcement** -- Cannot withdraw more than received balance.
+4. **On-chain verification** -- Smart contract validates both signatures.
+
+### Invariants Preserved
+
+| Invariant | How It Applies |
+| --- | --- |
+| **Version monotonicity** | Withdrawal version > pending state version |
+| **Signature authorization** | Both User and Node sign the withdrawal state |
+| **No overdraft** | Withdrawal amount must not exceed received balance |
+
+---
+
+## Error Scenarios
+
+| Scenario | Cause | Resolution |
+| --- | --- | --- |
+| **No pending state** | User has never received funds | Use regular "from scratch" flow |
+| **Insufficient balance** | Withdrawal exceeds received amount | Reduce withdrawal amount |
+| **Channel already exists** | User already has a home channel | Use regular withdrawal flow |
+
+---
+
+## Related Flows
+
+- [Home Channel Creation Flow](./home-channel-creation)
+- [Home Channel Withdrawal Flow](./home-channel-withdrawal)
+- [Transfer Communication Flow](./transfer-flow)

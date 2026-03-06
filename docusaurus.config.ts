@@ -69,8 +69,13 @@ const config: Config = {
           includeCurrentVersion: true,
           versions: {
             current: {
-              label: require('./package.json').version,
-              path: '', // Root path (docs/)
+              label: '1.x',
+              path: '',
+              banner: 'none',
+            },
+            '0.5.x': {
+              label: '0.5.x',
+              path: '0.5.x',
               banner: 'none',
             },
           },
@@ -87,6 +92,9 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
+  clientModules: [
+    './src/clientModules/hideContractsOn05x.js',
+  ],
   plugins: [
     [
       'docusaurus-lunr-search',
@@ -132,10 +140,10 @@ const config: Config = {
           position: 'left',
         },
         {
-          type: 'doc',
-          docId: 'contracts/index',
+          to: '/docs/contracts',
           label: 'Contracts',
           position: 'left',
+          className: 'navbar-contracts-link',
         },
         {
           type: 'doc',
@@ -191,10 +199,6 @@ const config: Config = {
             {
               label: 'Build',
               to: '/docs/build/quick-start',
-            },
-            {
-              label: 'Contracts',
-              to: '/docs/contracts',
             },
             {
               label: 'Manuals',

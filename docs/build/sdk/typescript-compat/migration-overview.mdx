@@ -1,0 +1,69 @@
+---
+title: Migration Overview
+description: Migrating from v0.5.3 to the compat layer
+sidebar_position: 2
+---
+
+# Migrating from v0.5.3 to Compat Layer
+
+This guide explains how to migrate your Nitrolite dApp from the v0.5.3 SDK to the compat layer, which bridges the old API to the v1.0.0 runtime with minimal code changes.
+
+## Why Use the Compat Layer
+
+A direct migration from v0.5.3 to v1.0.0 touches **20+ files** per app with deep, scattered rewrites. The compat layer reduces this to **~5 file changes** per app.
+
+## Installation
+
+```bash
+npm install @yellow-org/sdk-compat
+# Peer dependencies
+npm install @yellow-org/sdk viem
+```
+
+## Import Swap
+
+| Before (v0.5.3) | After (compat) |
+|-----------------|----------------|
+| `import { createGetChannelsMessage, parseGetChannelsResponse } from '@layer-3/nitrolite'` | `import { NitroliteClient } from '@yellow-org/sdk-compat'` |
+| Types: `AppSession`, `LedgerChannel`, `RPCAppDefinition` | Same types — re-exported from `@yellow-org/sdk-compat` |
+
+For **types**, just change the package name. For **functions**, switch to client methods instead of `create*Message` / `parse*Response`.
+
+## The Key Pattern Change
+
+**Before (v0.5.3):** create-sign-send-parse
+
+```typescript
+const msg = await createGetChannelsMessage(signer.sign, addr);
+const raw = await sendRequest(msg);
+const parsed = parseGetChannelsResponse(raw);
+const channels = parsed.params.channels;
+```
+
+**After (compat):** direct client method
+
+```typescript
+const client = await NitroliteClient.create(config);
+const channels = await client.getChannels();
+```
+
+## What Stays the Same
+
+- **Type shapes:** `AppSession`, `LedgerChannel`, `RPCAppDefinition`, `RPCBalance`, `RPCAsset`, etc.
+- **Response formats:** Balances, ledger entries, app sessions — same structure as v0.5.3.
+- **Auth helpers:** `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT` remain available.
+
+## What Changes
+
+| Concern | v0.5.3 | Compat |
+|---------|--------|--------|
+| WebSocket | App creates and manages `WebSocket` | Managed internally by the client |
+| Signing | App passes `signer.sign` into every message | Internal — client uses `WalletClient` |
+| Amounts | Raw `BigInt` everywhere | Compat accepts both; conversion handled internally |
+| Contract addresses | Manual config | Fetched from clearnode `get_config` |
+| Channel creation | Explicit `createChannel()` | Implicit on first `deposit()` |
+
+## Next Steps
+
+- [On-Chain Changes](./migration-onchain) — Deposits, withdrawals, channel operations, amount handling
+- [Off-Chain Changes](./migration-offchain) — App sessions, transfers, ledger queries, event polling
