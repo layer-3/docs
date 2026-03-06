@@ -298,3 +298,13 @@ Governance is non-transferable, non-delegable, and terminates immediately upon c
 ---
 
 *This is a public-facing summary of the Yellow Network Whitepaper v2.0. For the full regulatory whitepaper including MiCA compliance details, sustainability indicators, and complete legal disclosures, please contact [legal@layer3.foundation](mailto:legal@layer3.foundation).*
+
+---
+
+## MiCA White Paper Filing History
+
+The following versions of the YELLOW crypto-asset white paper have been filed under the Markets in Crypto-Assets Regulation (EU) 2023/1114:
+
+| Version | Date of Notification | Status | Document |
+|---|---|---|---|
+| v1.2 | 2025-11-14 | Current | [YELLOW MiCA White Paper v1.2 (PDF)](/assets/YELLOW_MiCA_White_Paper_v.1.2.pdf) |

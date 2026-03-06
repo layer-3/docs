@@ -1,20 +1,20 @@
 /**
  * Syncs smart-contract documentation from vendors/yellow/docs
- * into docs/contracts/ with Docusaurus-compatible frontmatter
+ * into docs/build/api/contracts/ with Docusaurus-compatible frontmatter
  * and category metadata.
  *
- * Generates the Deployed Addresses page from @yellow-org/contracts.
+ * Generates the Deployed Addresses page (as index) from @yellow-org/contracts.
  *
  * Usage: node scripts/sync-contracts-docs.js
  *
- * Safe to re-run — it wipes docs/contracts/ and rebuilds from source.
+ * Safe to re-run — it wipes docs/build/api/contracts/ and rebuilds from source.
  */
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'vendors', 'yellow', 'docs');
-const DEST = path.join(ROOT, 'docs', 'contracts');
+const DEST = path.join(ROOT, 'docs', 'build', 'api', 'contracts');
 
 // ---------------------------------------------------------------------------
 // On-chain addresses from @yellow-org/contracts
@@ -104,7 +104,7 @@ function copyWithFrontmatter(srcFile, destFile, { title, description, sidebarPos
     `title: "${title}"`,
     `description: "${description}"`,
     `sidebar_position: ${sidebarPosition}`,
-    `displayed_sidebar: contractsSidebar`,
+    `displayed_sidebar: buildSidebar`,
     '---',
     '',
     '',
@@ -117,11 +117,12 @@ function copyWithFrontmatter(srcFile, destFile, { title, description, sidebarPos
 /**
  * Write a Docusaurus _category_.json file.
  */
-function writeCategory(dir, { label, position, link }) {
+function writeCategory(dir, { label, position, link, key }) {
   ensureDir(dir);
   const data = {
     label,
     position,
+    ...(key && { key }),
     link: link || { type: 'generated-index' },
     collapsible: false,
     collapsed: false,
@@ -138,8 +139,8 @@ function generateAddressesPage() {
     '---',
     'title: "Deployed Addresses"',
     'description: "Mainnet and testnet contract addresses for Yellow Network."',
-    'sidebar_position: 2',
-    'displayed_sidebar: contractsSidebar',
+    'sidebar_position: 1',
+    'displayed_sidebar: buildSidebar',
     '---',
     '',
     '',
@@ -194,19 +195,13 @@ function generateAddressesPage() {
 // ---------------------------------------------------------------------------
 
 const DOCS = {
-  // Top-level pages
-  index: {
-    src: 'what-is-yellow.md',
-    title: 'Smart Contracts',
-    description: 'Overview of Yellow Network smart contracts, governance, and on-chain infrastructure.',
-    sidebarPosition: 1,
-  },
-  // 'addresses' is generated from @yellow-org/contracts — not copied from vendor
+  // 'index' (Deployed Addresses) is generated from @yellow-org/contracts — not copied from vendor
+  // README / what-is-yellow.md is intentionally skipped
   faq: {
     src: 'FAQ.md',
     title: 'FAQ',
     description: 'Frequently asked questions about Yellow Network smart contracts.',
-    sidebarPosition: 7,
+    sidebarPosition: 2,
   },
 
   // Protocol
@@ -343,9 +338,16 @@ const CATEGORIES = [
   { dir: 'protocol', label: 'Protocol', position: 3 },
   { dir: 'api-reference', label: 'Contract API Reference', position: 4 },
   { dir: 'api-reference/interfaces', label: 'Interfaces', position: 8 },
-  { dir: 'sdk', label: 'SDK', position: 5 },
+  { dir: 'sdk', label: 'SDK', position: 5, key: 'contracts-sdk' },
   { dir: 'integration', label: 'Integration', position: 6 },
 ];
+
+// Parent category written outside DEST (in docs/build/api/)
+const API_CATEGORY = {
+  dir: path.join(ROOT, 'docs', 'build', 'api'),
+  label: 'API',
+  position: 3,
+};
 
 // ---------------------------------------------------------------------------
 // Main
@@ -359,12 +361,25 @@ function main() {
     process.exit(1);
   }
 
-  console.log('Syncing smart-contract docs from vendors/yellow/docs...\n');
+  console.log('Syncing smart-contract docs from vendors/yellow/docs into docs/build/api/contracts/...\n');
 
   // Clean and recreate destination
   cleanDir(DEST);
 
-  // Write category files
+  // Write parent API category (docs/build/api/)
+  writeCategory(API_CATEGORY.dir, {
+    label: API_CATEGORY.label,
+    position: API_CATEGORY.position,
+  });
+
+  // Write Contracts category at DEST root
+  writeCategory(DEST, {
+    label: 'Contracts',
+    position: 1,
+    link: { type: 'doc', id: 'build/api/contracts/index' },
+  });
+
+  // Write sub-category files
   for (const cat of CATEGORIES) {
     writeCategory(path.join(DEST, cat.dir), {
       label: cat.label,
@@ -374,11 +389,11 @@ function main() {
 
   // Generate addresses page from @yellow-org/contracts
   const addressesPage = generateAddressesPage();
-  fs.writeFileSync(path.join(DEST, 'addresses.md'), addressesPage);
+  fs.writeFileSync(path.join(DEST, 'index.md'), addressesPage);
   if (addresses) {
-    console.log('  generated  addresses.md  (from @yellow-org/contracts)');
+    console.log('  generated  index.md  (Deployed Addresses, from @yellow-org/contracts)');
   } else {
-    console.warn('  generated  addresses.md  (WARNING: @yellow-org/contracts not installed)');
+    console.warn('  generated  index.md  (Deployed Addresses, WARNING: @yellow-org/contracts not installed)');
   }
 
   // Copy and transform each document from vendor
@@ -406,7 +421,7 @@ function main() {
     }
   }
 
-  console.log(`\nSynced ${count} vendor docs + 1 generated into docs/contracts/`);
+  console.log(`\nSynced ${count} vendor docs + 1 generated into docs/build/api/contracts/`);
   console.log('\nStructure:');
 
   // Print tree
@@ -430,7 +445,7 @@ function main() {
     });
   }
 
-  console.log('docs/contracts/');
+  console.log('docs/build/api/contracts/');
   printTree(DEST, '');
 }
 

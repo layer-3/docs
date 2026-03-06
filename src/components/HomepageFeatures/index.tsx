@@ -50,7 +50,7 @@ const FeatureList: FeatureItem[] = [
         and contribute to decentralized infrastructure.
       </>
     ),
-    link: '/docs/manuals',
+    link: '/docs/guides/manuals/running-clearnode-locally',
   },
   {
     title: 'Join the Community',

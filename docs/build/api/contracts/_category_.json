@@ -1,0 +1,10 @@
+{
+  "label": "Contracts",
+  "position": 1,
+  "link": {
+    "type": "doc",
+    "id": "build/api/contracts/index"
+  },
+  "collapsible": false,
+  "collapsed": false
+}

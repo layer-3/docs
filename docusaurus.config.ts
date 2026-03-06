@@ -92,9 +92,7 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
-  clientModules: [
-    './src/clientModules/hideContractsOn05x.js',
-  ],
+  clientModules: [],
   plugins: [
     [
       'docusaurus-lunr-search',
@@ -137,18 +135,6 @@ const config: Config = {
           type: 'doc',
           docId: 'protocol/introduction',
           label: 'Protocol',
-          position: 'left',
-        },
-        {
-          to: '/docs/contracts',
-          label: 'Contracts',
-          position: 'left',
-          className: 'navbar-contracts-link',
-        },
-        {
-          type: 'doc',
-          docId: 'manuals/index',
-          label: 'Manuals',
           position: 'left',
         },
         {
@@ -199,10 +185,6 @@ const config: Config = {
             {
               label: 'Build',
               to: '/docs/build/quick-start',
-            },
-            {
-              label: 'Manuals',
-              to: '/docs/manuals',
             },
             {
               label: 'Guides',
