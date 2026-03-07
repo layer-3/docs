@@ -92,7 +92,6 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
-  clientModules: [],
   plugins: [
     [
       'docusaurus-lunr-search',
