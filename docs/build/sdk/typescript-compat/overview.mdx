@@ -103,34 +103,6 @@ await client.close();
 | `toWalletQuorumSignature(signature)` | Prefix wallet signature for app-session quorum format |
 | `toSessionKeyQuorumSignature(signature)` | Prefix session key signature (`0xa2`) for quorum format |
 
-### Security Token Locking
-
-| Method | Description |
-|--------|-------------|
-| `approveSecurityToken(amount, chainId?)` | Approve the locking contract to spend tokens |
-| `escrowSecurityTokens(targetWallet, amount, chainId?)` | Lock tokens for a target address |
-| `initiateSecurityTokensWithdrawal(chainId?)` | Start the unlock process |
-| `cancelSecurityTokensWithdrawal(chainId?)` | Cancel a pending unlock (relock) |
-| `withdrawSecurityTokens(destination, chainId?)` | Withdraw after the unlock period |
-| `getLockedBalance(wallet?, chainId?)` | Query locked balance (returns `Decimal`) |
-
-The `chainId` parameter is optional and defaults to the chain configured at client creation.
-
-**Lifecycle:** `approve` → `escrow` → *(optionally)* `initiateWithdrawal` → *(wait)* → `withdraw`
-
-```typescript
-import Decimal from 'decimal.js';
-
-await client.approveSecurityToken(new Decimal('1000'));
-await client.escrowSecurityTokens(walletAddress, new Decimal('1000'));
-
-const balance = await client.getLockedBalance();
-// To withdraw: initiate unlock, wait for period, then withdraw
-await client.initiateSecurityTokensWithdrawal();
-// ... after unlock period ...
-await client.withdrawSecurityTokens(destinationAddress);
-```
-
 ### Session Keys
 
 | Method | Description |

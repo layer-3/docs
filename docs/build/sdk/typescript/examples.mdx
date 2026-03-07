@@ -347,51 +347,6 @@ async function setupSessionKey(client: Client) {
 }
 ```
 
-## Security Token Locking
-
-Lock YELLOW tokens as security collateral via the locking contract (NonSlashableAppRegistry).
-
-```typescript
-import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
-import Decimal from 'decimal.js';
-
-async function lockSecurityTokens() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
-  const chainId = 11155111n;
-
-  const client = await Client.create(
-    'wss://clearnode.example.com/ws',
-    stateSigner,
-    txSigner,
-    withBlockchainRPC(chainId, 'https://rpc.sepolia.io')
-  );
-
-  const wallet = txSigner.getAddress();
-  const amount = new Decimal('1000');
-
-  // 1. Approve the locking contract to spend tokens
-  await client.approveSecurityToken(chainId, amount);
-
-  // 2. Lock tokens (for yourself or another address)
-  await client.escrowSecurityTokens(wallet, chainId, amount);
-
-  // 3. Check locked balance
-  const balance = await client.getLockedBalance(chainId, wallet);
-  console.log('Locked balance:', balance.toString());
-
-  // 4. Initiate withdrawal (starts unlock period)
-  await client.initiateSecurityTokensWithdrawal(chainId);
-
-  // 5a. Cancel if needed (relock)
-  await client.cancelSecurityTokensWithdrawal(chainId);
-
-  // 5b. Or after unlock period elapses, withdraw
-  await client.withdrawSecurityTokens(chainId, wallet);
-
-  await client.close();
-}
-```
-
 ## Connection Monitoring
 
 ```typescript
