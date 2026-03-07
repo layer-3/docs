@@ -10,7 +10,7 @@ const baseUrl = '/';
 const config: Config = {
   title: 'Yellow Network',
   tagline: 'Decentralized clearing and settlement network.\nDevelop Yellow Apps with instant finality.',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   customFields: {
     packageVersion: require('./package.json').version,
