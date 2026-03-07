@@ -37,7 +37,7 @@ The Foundation controls 50% of total supply, subject to linear vesting.
 
 ---
 
-## About the Offeror
+## About the Issuer
 
 **Layer3 Fintech Ltd.**
 
@@ -81,14 +81,7 @@ Yellow aims to create a decentralised clearing and settlement framework where bu
 
 Yellow is an open-source software framework developed through multi-entity collaboration:
 
-| Entity | Function |
-|---|---|
-| Layer3 Fintech Ltd. (BVI) | Integration, Maintenance, and Supply of Goods and Services (Issuer) |
-| Clearsync Ltd. (UK) | Core Technology Development |
-| Helios Technologies SAS (France) | Core Technology Development |
-| Openware SAS (France) | Core Technology Development |
-
-The core state channel technology builds on academic research from statechannels.org and the VirtualApp framework, developed in collaboration with Consensys and other open-source contributors. Approximately 60 core developers contribute across the open-source codebase, with over 100 third-party applications launched on the network in 2025.
+The core state channel technology builds on academic research from statechannels.org and the Nitro framework, developed in collaboration with Consensys and other open-source contributors. Approximately 60 core developers contribute across the open-source codebase, with over 100 third-party applications launched on the network in 2025.
 
 ### Token Utility
 
@@ -108,6 +101,7 @@ YELLOW is consumed when accessing protocol services: each protocol operation req
 **Reached:**
 
 **2024:**
+
 - State Channel and Account Abstraction R&D
 - Launch of the Yellow Smart Account
 - Launch of the Yellow Wallet
@@ -116,6 +110,7 @@ YELLOW is consumed when accessing protocol services: each protocol operation req
 - Finalization of the Core Protocol Architecture
 
 **2025:**
+
 - Production Release of the Yellow SDK
 - Network Expansion to 6 New EVM Chains
 - Official Launch of the Yellow Builder Program
@@ -124,6 +119,7 @@ YELLOW is consumed when accessing protocol services: each protocol operation req
 **Outlook:**
 
 **2025-2026:**
+
 - Public Release of the NeoDAX Brokerage Software
 - Finalization of the Clearing Network Architecture
 - Public Release of the Yellow Clearing Network
@@ -182,16 +178,19 @@ Applications built on top of the Ledger Layer. Application-level state updates a
 ### Protocols and Technical Standards
 
 **Layer 1 — On-chain standards**
+
 - ERC-20 token standard on Ethereum
 - Custody smart contracts for on-chain asset custody and withdrawal settlement
 - NodeRegistry and AppRegistry contracts for node/application registration and collateral management
 
 **Layer 2 — Ledger Layer protocols**
+
 - Peer-to-peer network protocol with deterministic, decentralised routing
 - Threshold signature protocol (BLS) requiring supermajority for state updates
 - Virtual State Channel protocol for off-chain balance management and cross-chain clearing
 
 **Layer 3 — Application Layer standards**
+
 - AppLayer RPC API for application-to-clearnode interaction
 - AppLayerClient library for Virtual State Channel control and cryptographic signing
 - Yellow SDK abstracting channel management, multi-chain settlement, and unified balances (e.g., 50 USDC on Ethereum + 50 USDC on Base = 100 USDC unified balance)
@@ -295,6 +294,10 @@ Governance is non-transferable, non-delegable, and terminates immediately upon c
 - [github.com/layer-3/clearnet](https://github.com/layer-3/clearnet) — Yellow network node repository (open-source client software and smart contracts)
 - [github.com/layer-3/docs](https://github.com/layer-3/docs) — Documentation website repository
 
----
+## MiCA White Paper Filing History
 
-*This is a public-facing summary of the Yellow Network Whitepaper v2.0. For the full regulatory whitepaper including MiCA compliance details, sustainability indicators, and complete legal disclosures, please contact [legal@layer3.foundation](mailto:legal@layer3.foundation).*
+The following versions of the YELLOW crypto-asset white paper have been filed under the Markets in Crypto-Assets Regulation (EU) 2023/1114:
+
+| Version | Date of Notification | Status | Document |
+|---|---|---|---|
+| v1.2 | 2025-11-14 | Current | [YELLOW MiCA White Paper v1.2 (PDF)](/assets/YELLOW_MiCA_White_Paper_v.1.2.pdf) |

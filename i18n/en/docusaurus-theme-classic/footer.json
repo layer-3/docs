@@ -23,10 +23,6 @@
     "message": "Build",
     "description": "The label of footer link with label=Build linking to /docs/build/quick-start"
   },
-  "link.item.label.Manuals": {
-    "message": "Manuals",
-    "description": "The label of footer link with label=Manuals linking to /docs/manuals"
-  },
   "link.item.label.Guides": {
     "message": "Guides",
     "description": "The label of footer link with label=Guides linking to /docs/guides"
