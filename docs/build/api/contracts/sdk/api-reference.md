@@ -86,4 +86,4 @@ type ContractAddresses = {
 
 ### Current Addresses
 
-See [Deployed Addresses](../operations/addresses.md) for the full list.
+See [Deployed Addresses](../index.md) for the full list.

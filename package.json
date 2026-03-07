@@ -16,8 +16,7 @@
     "sync:contracts": "node scripts/sync-contracts-docs.js",
     "version:remove": "node scripts/remove-version.js",
     "version:reset": "node scripts/reset-versions.js",
-    "version:release": "node scripts/release-version.js",
-    "check-links": "node scripts/check-links.mjs"
+    "version:release": "node scripts/release-version.js"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.2",
