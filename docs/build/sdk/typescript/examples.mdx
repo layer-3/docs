@@ -347,6 +347,51 @@ async function setupSessionKey(client: Client) {
 }
 ```
 
+## Security Token Locking
+
+Register an app by locking security tokens:
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function lockAndRegisterApp() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const client = await Client.create(
+    process.env.WS_URL!,
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(11155111n, process.env.SEPOLIA_RPC!),
+  );
+
+  const chainId = 11155111n;
+  const lockAmount = new Decimal(100);
+
+  // Approve the locking contract to spend tokens
+  await client.approveSecurityToken(chainId, lockAmount);
+
+  // Lock tokens for yourself
+  const userAddress = client.getUserAddress();
+  await client.escrowSecurityTokens(userAddress, chainId, lockAmount);
+
+  // Check locked balance
+  const balance = await client.getLockedBalance(chainId, userAddress);
+  console.log('Locked balance:', balance.toString());
+
+  // Register an app (requires locked tokens)
+  await client.registerApp('my-app', '{"name": "My App", "description": "Demo"}', false);
+  console.log('App registered');
+
+  // Later: initiate unlock
+  // await client.initiateSecurityTokensWithdrawal(chainId);
+
+  // After unlock period: withdraw
+  // await client.withdrawSecurityTokens(chainId, userAddress);
+
+  await client.close();
+}
+```
+
 ## Connection Monitoring
 
 ```typescript
