@@ -55,6 +55,23 @@ withErrorHandler((error) => {
 })
 ```
 
+### Blockchain Configuration
+
+The node's `getConfig()` and `getBlockchains()` methods return blockchain details including contract addresses:
+
+```typescript
+const config = await client.getConfig();
+for (const chain of config.blockchains) {
+  console.log(`${chain.name} (${chain.id})`);
+  console.log(`  ChannelHub: ${chain.channelHubAddress}`);
+  if (chain.lockingContractAddress) {
+    console.log(`  Locking: ${chain.lockingContractAddress}`);
+  }
+}
+```
+
+The `lockingContractAddress` field is set on blockchains that support security token locking. When present, the `escrowSecurityTokens`, `approveSecurityToken`, and other locking methods can be used on that chain.
+
 ## Home Blockchain
 
 `setHomeBlockchain(asset, blockchainId)` sets the default blockchain for an asset. Required before `transfer()` on a new channel (where no chain context exists yet).
