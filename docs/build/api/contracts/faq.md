@@ -1,7 +1,7 @@
 ---
 title: "FAQ"
 description: "Frequently asked questions about Yellow Network smart contracts."
-sidebar_position: 7
+sidebar_position: 2
 displayed_sidebar: buildSidebar
 ---
 

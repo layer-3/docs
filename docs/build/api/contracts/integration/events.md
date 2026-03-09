@@ -18,7 +18,7 @@ Emitted by both NodeRegistry and AppRegistry (inherited from Locker).
 | `Locked` | `user` (address), `deposited` (uint256), `newBalance` (uint256) | `user` |
 | `Relocked` | `user` (address), `balance` (uint256) | `user` |
 | `UnlockInitiated` | `user` (address), `balance` (uint256), `availableAt` (uint256) | `user` |
-| `Withdrawn` | `user` (address), `balance` (uint256) | `user` |
+| `Withdrawn` | `user` (address), `destination` (address), `balance` (uint256) | `user`, `destination` |
 
 ## Voting Events
 
@@ -36,6 +36,7 @@ Emitted by AppRegistry only.
 
 | Event | Parameters | Indexed |
 |---|---|---|
+| `MinSlashAmountUpdated` | `oldAmount` (uint256), `newAmount` (uint256) | — |
 | `RoleAdminChanged` | `role` (bytes32), `previousAdminRole` (bytes32), `newAdminRole` (bytes32) | `role`, `previousAdminRole`, `newAdminRole` |
 | `RoleGranted` | `role` (bytes32), `account` (address), `sender` (address) | `role`, `account`, `sender` |
 | `RoleRevoked` | `role` (bytes32), `account` (address), `sender` (address) | `role`, `account`, `sender` |

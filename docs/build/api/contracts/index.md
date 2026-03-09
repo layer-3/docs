@@ -5,6 +5,7 @@ sidebar_position: 1
 displayed_sidebar: buildSidebar
 ---
 
+
 # Deployed Addresses
 
 ## Ethereum Mainnet (Chain ID: 1)
@@ -37,8 +38,8 @@ displayed_sidebar: buildSidebar
 import { addresses } from "@yellow-org/contracts";
 
 // Mainnet
-addresses[1].yellowToken
+addresses[1].yellowToken;
 
 // Sepolia
-addresses[11155111].faucet
+addresses[11155111].faucet;
 ```
