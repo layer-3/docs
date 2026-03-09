@@ -6,7 +6,7 @@ displayed_sidebar: buildSidebar
 ---
 
 # ISlash
-[Git Source](https://github.com/layer-3/yellow/blob/f97fcc52ddfdc5918cb91b2af5538abb0060ee27/src/interfaces/ISlash.sol)
+[Git Source](https://github.com/layer-3/yellow/blob/dcd9928fb0cdf7b35bc4cae06401284b2529d311/src/interfaces/ISlash.sol)
 
 **Title:**
 ISlash
@@ -66,5 +66,21 @@ The recipient cannot be the adjudicator calling slash.
 
 ```solidity
 error RecipientIsAdjudicator();
+```
+
+### RecipientIsUser
+The recipient cannot be the slashed user.
+
+
+```solidity
+error RecipientIsUser();
+```
+
+### SlashAmountTooLow
+The slash amount is below the minimum and does not equal the full balance.
+
+
+```solidity
+error SlashAmountTooLow();
 ```
 
