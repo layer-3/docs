@@ -79,7 +79,12 @@ type ContractAddresses = {
   appRegistry: `0x${string}`;
   governor: `0x${string}`;
   timelock: `0x${string}`;
-  treasury: `0x${string}`;
+  treasuryFounder: `0x${string}`;
+  treasuryCommunity: `0x${string}`;
+  treasuryTokenSale: `0x${string}`;
+  treasuryFoundation: `0x${string}`;
+  treasuryNetwork: `0x${string}`;
+  treasuryLiquidity: `0x${string}`;
   faucet?: `0x${string}`;  // testnet only
 };
 ```

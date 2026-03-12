@@ -6,7 +6,7 @@ displayed_sidebar: buildSidebar
 ---
 
 # NodeRegistry
-[Git Source](https://github.com/layer-3/yellow/blob/dcd9928fb0cdf7b35bc4cae06401284b2529d311/src/NodeRegistry.sol)
+[Git Source](https://github.com/layer-3/yellow/blob/11ed85c3dabaaddeee431052032791a80eaf2a0e/src/NodeRegistry.sol)
 
 **Inherits:**
 [Locker](/src/Locker.sol/abstract.Locker.md), Votes

@@ -384,6 +384,7 @@ function main() {
     writeCategory(path.join(DEST, cat.dir), {
       label: cat.label,
       position: cat.position,
+      key: cat.key,
     });
   }
 
