@@ -228,6 +228,24 @@ const nextConfig = {
 };
 ```
 
+## Automated Migration with Codemod
+
+If you are migrating an existing codebase from `@erc7824/nitrolite` (v0.4–v0.5.3) or `@layer-3/nitrolite`, the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool can automate much of the upgrade for you.
+
+:::tip Codemod available
+Run the codemod to handle import rewrites, client constructor migration, auth field renames, and package.json updates automatically. Patterns that require manual judgment (RPC call collapse, WebSocket removal) are flagged with `// TODO [codemod]` comments pointing to the exact replacement.
+
+```bash
+# Scan your codebase for old patterns (no changes made)
+npx tsx src/cli.ts scan --path ./src
+
+# Apply all transforms + update dependencies
+npx tsx src/cli.ts run --path ./src --update-deps
+```
+
+See the [codemod README](https://github.com/layer-3/yellow-sdk-codemod#readme) for the full list of transforms and options.
+:::
+
 ## Migration Guides
 
 - [Migration Overview](./migration-overview) — Pattern changes, import swaps
