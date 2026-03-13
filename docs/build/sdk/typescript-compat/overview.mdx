@@ -9,9 +9,9 @@ sidebar_position: 1
 Compatibility layer that bridges the Nitrolite SDK **v0.5.3 API** to the **v1.0.0 runtime**, letting existing dApps upgrade to the new protocol with minimal code changes.
 
 <details>
-<summary><strong>Already integrated with <code>@erc7824/nitrolite</code> or <code>@layer-3/nitrolite</code>?</strong></summary>
+<summary><strong>Already integrated with <code>@erc7824/nitrolite</code>?</strong></summary>
 
-If your app is already built on `@erc7824/nitrolite` (v0.4 through v0.5.3) or `@layer-3/nitrolite`, you can speed up the migration using the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool. It handles the repetitive parts of the upgrade automatically: rewriting imports, migrating client constructors, renaming auth fields, and updating your `package.json`. Where the change requires context (collapsing RPC call chains, removing manual WebSocket setup), the codemod leaves a `// TODO [codemod]` comment with the exact replacement so you know what to do.
+If your app is already built on `@erc7824/nitrolite` (v0.4 through v0.5.3), you can speed up the migration using the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool. It handles the repetitive parts of the upgrade automatically: rewriting imports, migrating client constructors, renaming auth fields, and updating your `package.json`. Where the change requires context (collapsing RPC call chains, removing manual WebSocket setup), the codemod leaves a `// TODO [codemod]` comment with the exact replacement so you know what to do.
 
 ```bash
 # Clone the codemod and install its dependencies
