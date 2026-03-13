@@ -8,6 +8,23 @@ sidebar_position: 1
 
 Compatibility layer that bridges the Nitrolite SDK **v0.5.3 API** to the **v1.0.0 runtime**, letting existing dApps upgrade to the new protocol with minimal code changes.
 
+<details>
+<summary><strong>Already integrated with <code>@erc7824/nitrolite</code> or <code>@layer-3/nitrolite</code>?</strong></summary>
+
+If your app is already built on `@erc7824/nitrolite` (v0.4 through v0.5.3) or `@layer-3/nitrolite`, you can speed up the migration using the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool. It handles the repetitive parts of the upgrade automatically: rewriting imports, migrating client constructors, renaming auth fields, and updating your `package.json`. Where the change requires context (collapsing RPC call chains, removing manual WebSocket setup), the codemod leaves a `// TODO [codemod]` comment with the exact replacement so you know what to do.
+
+```bash
+# First, scan to see what needs changing (no files are modified)
+npx tsx src/cli.ts scan --path ./src
+
+# Then apply all transforms and update dependencies
+npx tsx src/cli.ts run --path ./src --update-deps
+```
+
+After running, search for `TODO [codemod]` in your codebase and work through the remaining items. See the [codemod README](https://github.com/layer-3/yellow-sdk-codemod#readme) for the full list of transforms and CLI options.
+
+</details>
+
 ## Why Use the Compat Layer
 
 The v1.0.0 protocol introduces breaking changes across 14 dimensions — wire format, authentication, WebSocket lifecycle, unit system, asset resolution, and more. A direct migration touches 20+ files per app with deep, scattered rewrites.
@@ -227,24 +244,6 @@ const nextConfig = {
   transpilePackages: ['@yellow-org/sdk', '@yellow-org/sdk-compat'],
 };
 ```
-
-## Automated Migration with Codemod
-
-If you are migrating an existing codebase from `@erc7824/nitrolite` (v0.4–v0.5.3) or `@layer-3/nitrolite`, the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool can automate much of the upgrade for you.
-
-:::tip Codemod available
-Run the codemod to handle import rewrites, client constructor migration, auth field renames, and package.json updates automatically. Patterns that require manual judgment (RPC call collapse, WebSocket removal) are flagged with `// TODO [codemod]` comments pointing to the exact replacement.
-
-```bash
-# Scan your codebase for old patterns (no changes made)
-npx tsx src/cli.ts scan --path ./src
-
-# Apply all transforms + update dependencies
-npx tsx src/cli.ts run --path ./src --update-deps
-```
-
-See the [codemod README](https://github.com/layer-3/yellow-sdk-codemod#readme) for the full list of transforms and options.
-:::
 
 ## Migration Guides
 
