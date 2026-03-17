@@ -6,7 +6,7 @@ displayed_sidebar: buildSidebar
 ---
 
 # ILock
-[Git Source](https://github.com/layer-3/yellow/blob/f97fcc52ddfdc5918cb91b2af5538abb0060ee27/src/interfaces/ILock.sol)
+[Git Source](https://github.com/layer-3/yellow/blob/11ed85c3dabaaddeee431052032791a80eaf2a0e/src/interfaces/ILock.sol)
 
 **Title:**
 ILock
@@ -146,7 +146,7 @@ event Relocked(address indexed user, uint256 balance);
 ### Withdrawn
 
 ```solidity
-event Withdrawn(address indexed user, uint256 balance);
+event Withdrawn(address indexed user, address indexed destination, uint256 balance);
 ```
 
 **Parameters**
@@ -154,6 +154,7 @@ event Withdrawn(address indexed user, uint256 balance);
 |Name|Type|Description|
 |----|----|-----------|
 |`user`|`address`|The user that withdrew.|
+|`destination`|`address`|The address that received the tokens.|
 |`balance`|`uint256`|The amount withdrawn.|
 
 ## Errors

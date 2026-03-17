@@ -12,6 +12,10 @@ This guide explains how to migrate your Nitrolite dApp from the v0.5.3 SDK to th
 
 A direct migration from v0.5.3 to v1.0.0 touches **20+ files** per app with deep, scattered rewrites. The compat layer reduces this to **~5 file changes** per app.
 
+:::tip Automate with Codemod
+Before migrating manually, try the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod). It rewrites `@erc7824/nitrolite` imports, renames auth fields, migrates client constructors, updates `package.json`, and flags RPC patterns with `// TODO [codemod]` comments for the remaining manual steps.
+:::
+
 ## Installation
 
 ```bash
