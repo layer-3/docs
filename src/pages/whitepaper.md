@@ -24,16 +24,7 @@ The total supply of YELLOW is 10,000,000,000 tokens. The issue price for the mos
 
 **Token allocation:**
 
-| Allocation | Percentage |
-|---|---|
-| Founders | 10% |
-| Token Sales | 12.5% |
-| Community Treasury | 30% |
-| Foundation Treasury | 20% |
-| Network Growth Incentives | 25% |
-| Ecosystem Accessibility Reserve | 2.5% |
-
-The Foundation controls 50% of total supply, subject to linear vesting.
+![Token Allocation](/img/token-allocation.png)
 
 ---
 
