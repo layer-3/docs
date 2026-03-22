@@ -148,6 +148,65 @@ const allowance = await client.checkTokenAllowance(80002n, '0xToken...', '0xOwne
 
 ---
 
+## Security Token Locking
+
+Methods for interacting with the on-chain Locking (NonSlashableAppRegistry) contract. Used for staking security tokens to register apps and receive gated action allowances.
+
+### `approveSecurityToken(chainId, amount)`
+
+Approves the Locking contract to spend tokens. Must be called before `escrowSecurityTokens`.
+
+```typescript
+const txHash = await client.approveSecurityToken(11155111n, new Decimal(100));
+```
+
+### `escrowSecurityTokens(targetWalletAddress, blockchainId, amount)`
+
+Locks tokens into the Locking contract for a target address.
+
+```typescript
+const txHash = await client.escrowSecurityTokens(
+  '0xTargetWallet...',
+  11155111n,
+  new Decimal(100),
+);
+```
+
+### `getLockedBalance(chainId, wallet)`
+
+Queries the locked balance for a wallet.
+
+```typescript
+const balance = await client.getLockedBalance(11155111n, '0xWallet...');
+console.log('Locked:', balance.toString());
+```
+
+### `initiateSecurityTokensWithdrawal(blockchainId)`
+
+Starts the unlock process. After the unlock period elapses, `withdrawSecurityTokens` can be called.
+
+```typescript
+const txHash = await client.initiateSecurityTokensWithdrawal(11155111n);
+```
+
+### `cancelSecurityTokensWithdrawal(blockchainId)`
+
+Re-locks tokens that are in the unlocking state, cancelling the pending unlock.
+
+```typescript
+const txHash = await client.cancelSecurityTokensWithdrawal(11155111n);
+```
+
+### `withdrawSecurityTokens(blockchainId, destinationWalletAddress)`
+
+Withdraws unlocked tokens to a destination address. Can only be called after the unlock period has elapsed.
+
+```typescript
+const txHash = await client.withdrawSecurityTokens(11155111n, '0xDestination...');
+```
+
+---
+
 ## Node Information
 
 ```typescript
