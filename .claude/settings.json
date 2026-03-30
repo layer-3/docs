@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "npm start*",
+      "npm run build*",
+      "npm run serve*",
+      "npm run typecheck*",
+      "npm run sync:*",
+      "npm run version:*",
+      "npx prettier*",
+      "npx docusaurus*",
+      "git status*",
+      "git log*",
+      "git diff*",
+      "git branch*",
+      "gh pr *",
+      "gh issue *",
+      "gh run *"
+    ],
+    "deny": [
+      "git push --force*",
+      "git reset --hard*",
+      "rm -rf *",
+      "npm publish*"
+    ]
+  }
+}
