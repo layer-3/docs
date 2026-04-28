@@ -87,7 +87,7 @@ Common structures: [AppDefinition](#appdefinition) • [Allocation](#allocation)
 | `allocations` | Allocation[] | Yes | Initial funds to transfer from participants' unified balance accounts | [↓ Structure](#allocation) |
 | `session_data` | string | No | Application-specific initial state (JSON string, max 64KB recommended)<br/>This is application-specific; protocol doesn't validate content | — |
 
-#### Session Identifier {#session-identifier}
+#### Session Identifier
 
 `app_session_id` is derived deterministically from the entire <Tooltip content={tooltipDefinitions.appDefinition}>App definition</Tooltip>:
 
@@ -110,7 +110,7 @@ appSessionId = keccak256(JSON.stringify({
 
 Implementation reference: `clearnode/app_session_service.go`.
 
-#### AppDefinition {#appdefinition}
+#### AppDefinition
 
 | Field | Type | Required | Description | Default | Allowed Values | Notes |
 |-------|------|----------|-------------|---------|----------------|-------|
@@ -133,7 +133,7 @@ Implementation reference: `clearnode/app_session_service.go`.
 }
 ```
 
-#### Allocation {#allocation}
+#### Allocation
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
