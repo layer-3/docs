@@ -252,17 +252,30 @@ function DocSidebarItemCategoryCollapsible({
             updateCollapsed();
           }}
         />
-        <Link
-          className={clsx(styles.categoryLink, 'menu__link', 'menu__link--sublist', {
-            'menu__link--sublist-caret': !href,
-            'menu__link--active': isActive,
-          })}
-          onClick={handleItemClick}
-          aria-current={isCurrentPage ? 'page' : undefined}
-          href={hrefWithSSRFallback ?? '#'}
-          {...props}>
-          <CategoryLinkLabel label={label} />
-        </Link>
+        {href ? (
+          <Link
+            className={clsx(styles.categoryLink, 'menu__link', 'menu__link--sublist', {
+              'menu__link--active': isActive,
+            })}
+            onClick={handleItemClick}
+            aria-current={isCurrentPage ? 'page' : undefined}
+            href={hrefWithSSRFallback}
+            {...props}>
+            <CategoryLinkLabel label={label} />
+          </Link>
+        ) : (
+          <span
+            className={clsx(
+              styles.categoryLink,
+              styles.categoryLabel,
+              'menu__link',
+              'menu__link--sublist',
+              'menu__link--sublist-caret',
+              {'menu__link--active': isActive},
+            )}>
+            <CategoryLinkLabel label={label} />
+          </span>
+        )}
       </div>
 
       <Collapsible lazy as="ul" className="menu__list" collapsed={collapsed}>
