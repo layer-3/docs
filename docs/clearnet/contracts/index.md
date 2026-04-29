@@ -2,7 +2,7 @@
 title: "Deployed Addresses"
 description: "Mainnet and testnet contract addresses for Yellow Network."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 

@@ -2,7 +2,7 @@
 title: "Collateral & Staking"
 description: "Lock/unlock state machine for NodeRegistry and AppRegistry."
 sidebar_position: 3
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Collateral

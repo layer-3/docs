@@ -2,7 +2,7 @@
 title: "NodeRegistry"
 description: "Node operator registry with voting power."
 sidebar_position: 3
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # NodeRegistry

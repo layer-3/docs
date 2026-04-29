@@ -2,7 +2,7 @@
 title: "Faucet"
 description: "Testnet token faucet."
 sidebar_position: 7
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Faucet

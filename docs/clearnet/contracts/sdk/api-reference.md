@@ -2,7 +2,7 @@
 title: "SDK API Reference"
 description: "All exports: ABIs, addresses, and types."
 sidebar_position: 2
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # SDK — API Reference

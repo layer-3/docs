@@ -2,7 +2,7 @@
 title: "Governance"
 description: "On-chain parameter administration via YellowGovernor."
 sidebar_position: 2
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Protocol Parameter Administration

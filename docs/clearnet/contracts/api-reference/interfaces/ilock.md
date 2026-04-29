@@ -2,7 +2,7 @@
 title: "ILock"
 description: "Lock/unlock/withdraw interface."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # ILock

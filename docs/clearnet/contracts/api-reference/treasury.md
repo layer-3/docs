@@ -2,7 +2,7 @@
 title: "Treasury"
 description: "Secure vault for Foundation assets."
 sidebar_position: 6
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Treasury

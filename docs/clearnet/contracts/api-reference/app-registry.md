@@ -2,7 +2,7 @@
 title: "AppRegistry"
 description: "App builder registry with slashing."
 sidebar_position: 4
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # AppRegistry

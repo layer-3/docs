@@ -2,7 +2,7 @@
 title: "Slashing"
 description: "Adjudicator slashing and cooldown mechanism."
 sidebar_position: 4
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Slashing

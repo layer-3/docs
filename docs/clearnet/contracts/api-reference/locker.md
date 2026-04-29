@@ -2,7 +2,7 @@
 title: "Locker"
 description: "Abstract lock/unlock/withdraw state machine."
 sidebar_position: 2
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Locker

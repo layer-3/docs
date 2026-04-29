@@ -2,7 +2,7 @@
 title: "Getting Started"
 description: "Install, import, and use the contracts SDK."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # SDK — Getting Started

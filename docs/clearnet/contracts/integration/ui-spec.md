@@ -2,7 +2,7 @@
 title: "UI Specification"
 description: "Frontend implementation guide."
 sidebar_position: 3
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # UI Specification

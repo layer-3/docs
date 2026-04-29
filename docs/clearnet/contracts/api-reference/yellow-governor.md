@@ -2,7 +2,7 @@
 title: "YellowGovernor"
 description: "OpenZeppelin Governor for protocol parameters."
 sidebar_position: 5
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # YellowGovernor

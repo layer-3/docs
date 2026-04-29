@@ -2,7 +2,7 @@
 title: "Examples"
 description: "Code samples for viem, ethers.js, and wagmi."
 sidebar_position: 3
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # SDK — Examples

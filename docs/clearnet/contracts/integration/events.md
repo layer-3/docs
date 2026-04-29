@@ -2,7 +2,7 @@
 title: "Events"
 description: "Contract events for real-time subscriptions."
 sidebar_position: 2
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Events

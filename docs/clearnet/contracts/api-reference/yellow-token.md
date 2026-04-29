@@ -2,7 +2,7 @@
 title: "YellowToken"
 description: "ERC-20 token with fixed 10B supply."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # YellowToken

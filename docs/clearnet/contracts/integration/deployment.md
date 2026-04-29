@@ -2,7 +2,7 @@
 title: "Deployment"
 description: "Deploying contracts and configuration."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Deployment

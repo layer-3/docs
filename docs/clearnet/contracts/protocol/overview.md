@@ -2,7 +2,7 @@
 title: "Protocol Overview"
 description: "Architecture, contracts, and how they fit together."
 sidebar_position: 1
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Protocol Overview

@@ -2,7 +2,7 @@
 title: "Treasury"
 description: "Foundation asset management."
 sidebar_position: 5
-displayed_sidebar: buildSidebar
+displayed_sidebar: clearnetSidebar
 ---
 
 # Treasury
