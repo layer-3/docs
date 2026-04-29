@@ -8,6 +8,7 @@
 
 import React, {type ReactNode} from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import {useLocation} from '@docusaurus/router';
 import {
   useThemeConfig,
@@ -29,6 +30,13 @@ import styles from './styles.module.css';
 
 type ShowOn = 'nitrolite' | 'clearnet' | 'portal' | 'all';
 
+// Subsite homepages: where the badge link and breadcrumb home should land.
+// /clearnet has no dedicated homepage yet; falls back to its first doc.
+const SUBSITE_HOME: Record<'nitrolite' | 'clearnet', string> = {
+  nitrolite: '/nitrolite',
+  clearnet: '/clearnet/introduction',
+};
+
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
   return useThemeConfig().navbar.items as NavbarItemConfig[];
@@ -41,16 +49,28 @@ function currentSubsite(pathname: string): 'nitrolite' | 'clearnet' | 'portal' {
 }
 
 function shouldShowItem(item: NavbarItemConfig, pathname: string): boolean {
-  const showOn = (item as {customProps?: {showOn?: ShowOn}}).customProps?.showOn;
-  if (!showOn || showOn === 'all') return true;
-  const sub = currentSubsite(pathname);
-  return showOn === sub;
+  const customProps = (item as {customProps?: {showOn?: ShowOn; hideOnPaths?: string[]}}).customProps;
+  const showOn = customProps?.showOn;
+  if (showOn && showOn !== 'all' && showOn !== currentSubsite(pathname)) {
+    return false;
+  }
+  if (customProps?.hideOnPaths?.some((p) => pathname === p || pathname === `${p}/`)) {
+    return false;
+  }
+  return true;
 }
 
 function SubsiteBadge({sub}: {sub: 'nitrolite' | 'clearnet' | 'portal'}) {
   if (sub === 'portal') return null;
   const label = sub === 'nitrolite' ? 'Nitrolite' : 'Clearnet';
-  return <span className={styles.subsiteBadge} aria-label={`Currently viewing ${label} docs`}>{label}</span>;
+  return (
+    <Link
+      to={SUBSITE_HOME[sub]}
+      className={styles.subsiteBadge}
+      aria-label={`${label} home`}>
+      {label}
+    </Link>
+  );
 }
 
 function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {

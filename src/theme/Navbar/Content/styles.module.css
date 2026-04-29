@@ -22,18 +22,25 @@ See https://github.com/facebook/docusaurus/pull/11142
   padding-right: 0;
 }
 
-/* Sub-site badge: yellow rectangle showing which docs you're viewing */
-.subsiteBadge {
+/* Sub-site badge: yellow rectangle that links to the sub-site homepage. */
+.subsiteBadge,
+.subsiteBadge:hover,
+.subsiteBadge:focus,
+.subsiteBadge:visited {
   display: inline-flex;
   align-items: center;
   margin: 0 1rem 0 0.5rem;
   padding: 0.25rem 0.75rem;
   background-color: #FDDA16;
-  color: #1c1e21;
+  color: #1c1e21 !important;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.25rem;
   border-radius: 4px;
-  user-select: none;
+  text-decoration: none !important;
   white-space: nowrap;
+}
+
+.subsiteBadge:hover {
+  background-color: #FCD002;
 }

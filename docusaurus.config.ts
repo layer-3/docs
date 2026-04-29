@@ -135,7 +135,7 @@ const config: Config = {
       items: [
         // Portal-only product entry links
         {
-          to: '/nitrolite/learn',
+          to: '/nitrolite',
           label: 'Nitrolite',
           position: 'left',
           customProps: { showOn: 'portal' },
@@ -216,7 +216,7 @@ const config: Config = {
           'aria-label': 'GitHub repository',
           customProps: { showOn: 'all' },
         },
-        // Version dropdown only on Nitrolite (Clearnet is unversioned)
+        // Version dropdown only on Nitrolite (Clearnet is unversioned).
         {
           type: 'docsVersionDropdown',
           position: 'right',

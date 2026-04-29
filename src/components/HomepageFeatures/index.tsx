@@ -26,7 +26,7 @@ const FeatureList: FeatureItem[] = [
         finality, real-time trading, and cross-chain settlement.
       </>
     ),
-    link: '/nitrolite/learn',
+    link: '/nitrolite',
   },
   {
     title: 'Clearnet',
