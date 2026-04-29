@@ -59,8 +59,9 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
-          routeBasePath: '/docs',
+          path: './docs/nitrolite',
+          sidebarPath: './sidebars-nitrolite.ts',
+          routeBasePath: '/nitrolite',
           editUrl:
             'https://github.com/layer-3/docs/tree/master/',
           sidebarCollapsed: false,
@@ -94,6 +95,20 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
   plugins: [
     [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'clearnet',
+        path: './docs/clearnet',
+        routeBasePath: '/clearnet',
+        sidebarPath: './sidebars-clearnet.ts',
+        editUrl: 'https://github.com/layer-3/docs/tree/master/',
+        sidebarCollapsed: false,
+        sidebarCollapsible: false,
+        breadcrumbs: true,
+        // No versions block — Clearnet starts unversioned
+      },
+    ],
+    [
       'docusaurus-lunr-search',
       {
         languages: ['en'],
@@ -118,39 +133,81 @@ const config: Config = {
         srcDark: 'img/themes/dark/logo.svg',
       },
       items: [
+        // Nitrolite navbar items (shown on /nitrolite/* and /)
         {
           type: 'doc',
           docId: 'learn/index',
           label: 'Learn',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
         },
         {
           type: 'doc',
           docId: 'build/quick-start/index',
           label: 'Build',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
         },
         {
           type: 'doc',
-          docId: 'protocol/introduction',
+          docId: 'protocol/terminology',
           label: 'Protocol',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
         },
+        // Clearnet navbar items (shown on /clearnet/*)
+        {
+          type: 'doc',
+          docsPluginId: 'clearnet',
+          docId: 'introduction',
+          label: 'Introduction',
+          position: 'left',
+          customProps: { showOn: 'clearnet' },
+        },
+        {
+          type: 'doc',
+          docsPluginId: 'clearnet',
+          docId: 'architecture',
+          label: 'Architecture',
+          position: 'left',
+          customProps: { showOn: 'clearnet' },
+        },
+        {
+          type: 'doc',
+          docsPluginId: 'clearnet',
+          docId: 'decentralized-layer/overview',
+          label: 'Decentralized Layer',
+          position: 'left',
+          customProps: { showOn: 'clearnet' },
+        },
+        {
+          type: 'doc',
+          docsPluginId: 'clearnet',
+          docId: 'contracts/index',
+          label: 'Contracts',
+          position: 'left',
+          customProps: { showOn: 'clearnet' },
+        },
+        // Shared items (always shown)
         {
           to: '/whitepaper',
           label: 'Whitepaper',
           position: 'left',
+          customProps: { showOn: 'all' },
         },
         {
           href: 'https://github.com/layer-3',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
+          customProps: { showOn: 'all' },
         },
+        // Version dropdown only on Nitrolite (Clearnet is unversioned)
         {
           type: 'docsVersionDropdown',
           position: 'right',
           className: 'navbar-version-dropdown',
+          customProps: { showOn: 'nitrolite' },
         },
       ],
     },
@@ -169,16 +226,42 @@ const config: Config = {
           ],
         },
         {
-          title: 'Docs',
+          title: 'Nitrolite',
           items: [
             {
               label: 'Learn',
-              to: '/docs/learn',
+              to: '/nitrolite/learn',
             },
             {
               label: 'Build',
-              to: '/docs/build/quick-start',
+              to: '/nitrolite/build/quick-start',
             },
+            {
+              label: 'Protocol',
+              to: '/nitrolite/protocol/terminology',
+            },
+          ],
+        },
+        {
+          title: 'Clearnet',
+          items: [
+            {
+              label: 'Introduction',
+              to: '/clearnet/introduction',
+            },
+            {
+              label: 'Architecture',
+              to: '/clearnet/architecture',
+            },
+            {
+              label: 'Contracts',
+              to: '/clearnet/contracts',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
             {
               label: 'Whitepaper',
               to: '/whitepaper',
