@@ -17,66 +17,28 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Learn the Basics',
-    imageSrc: require('@site/static/img/themes/light/icons/learn.png').default,
-    imageSrcDark: require('@site/static/img/themes/dark/icons/learn.png').default,
-    description: (
-      <>
-        Understand the fundamentals of Yellow Network, its architecture,
-        and how decentralized clearing and settlement works.
-      </>
-    ),
-    link: '/docs/learn',
-  },
-  {
-    title: 'Build a Yellow App',
+    title: 'Nitrolite',
     imageSrc: require('@site/static/img/themes/light/icons/build.png').default,
     imageSrcDark: require('@site/static/img/themes/dark/icons/build.png').default,
     description: (
       <>
-        Create decentralized applications using Yellow SDK with real-time
-        trading capabilities and instant cross-chain settlements.
+        State channel SDK for building decentralized apps with instant
+        finality, real-time trading, and cross-chain settlement.
       </>
     ),
-    link: '/docs/build/quick-start',
+    link: '/nitrolite/learn',
   },
   {
-    title: 'Run a Clearnode',
+    title: 'Clearnet',
     imageSrc: require('@site/static/img/themes/light/icons/clearnode.png').default,
     imageSrcDark: require('@site/static/img/themes/dark/icons/clearnode.png').default,
     description: (
       <>
-        Set up and operate a clearnode to provide network services
-        and contribute to decentralized infrastructure.
+        Decentralized clearing and settlement protocol — peer-to-peer overlay
+        network, smart contracts, governance, and node operations.
       </>
     ),
-    link: '/docs/learn',
-  },
-  {
-    title: 'Join the Community',
-    imageSrc: require('@site/static/img/themes/light/icons/community.png').default,
-    imageSrcDark: require('@site/static/img/themes/dark/icons/community.png').default,
-    description: (
-      <>
-        Connect with developers, traders, and node operators in our
-        Discord community and contribute to the ecosystem.
-      </>
-    ),
-    link: 'https://discord.com/invite/yellownetwork',
-    isExternal: true,
-  },
-  {
-    title: 'Apply for Grants',
-    imageSrc: require('@site/static/img/themes/light/icons/grants.png').default,
-    imageSrcDark: require('@site/static/img/themes/dark/icons/grants.png').default,
-    description: (
-      <>
-        Get funding support for your Yellow Network project through
-        our grants program for innovative applications and integrations.
-      </>
-    ),
-    link: 'https://forms.yellow.org/build',
-    isExternal: true,
+    link: '/clearnet/introduction',
   },
 ];
 
@@ -89,7 +51,7 @@ function Feature({title, imageSrc, imageSrcDark, description, link, isExternal}:
     : { to: link };
 
   return (
-    <div className={clsx('col col--4 col--sm-6 col--md-4', styles.featureCol)}>
+    <div className={clsx('col col--6', styles.featureCol)}>
       <Link 
         {...linkProps}
         className={styles.featureLink}
