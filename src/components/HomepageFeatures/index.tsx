@@ -51,7 +51,7 @@ function Feature({title, imageSrc, imageSrcDark, description, link, isExternal}:
     : { to: link };
 
   return (
-    <div className={clsx('col col--6', styles.featureCol)}>
+    <div className={clsx('col col--4', styles.featureCol)}>
       <Link 
         {...linkProps}
         className={styles.featureLink}
@@ -72,7 +72,7 @@ export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className="row">
+        <div className="row" style={{justifyContent: 'center'}}>
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
           ))}

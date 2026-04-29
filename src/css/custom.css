@@ -489,13 +489,14 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
   color: #ffffff !important;
 }
 
-/* Footer 4-column layout */
+/* Footer 6-column layout: logo + 5 link columns */
 .footer__links {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: auto repeat(5, 1fr);
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  align-items: start;
 }
 
 /* Align footer logo with content */
@@ -551,7 +552,7 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 
 @media screen and (max-width: 996px) {
   .footer__links {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto repeat(2, 1fr);
     gap: 1.5rem;
   }
 }

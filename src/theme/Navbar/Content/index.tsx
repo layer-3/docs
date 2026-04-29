@@ -27,7 +27,7 @@ import NavbarSearch from '@theme/Navbar/Search';
 
 import styles from './styles.module.css';
 
-type ShowOn = 'nitrolite' | 'clearnet' | 'all';
+type ShowOn = 'nitrolite' | 'clearnet' | 'portal' | 'all';
 
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
@@ -44,8 +44,13 @@ function shouldShowItem(item: NavbarItemConfig, pathname: string): boolean {
   const showOn = (item as {customProps?: {showOn?: ShowOn}}).customProps?.showOn;
   if (!showOn || showOn === 'all') return true;
   const sub = currentSubsite(pathname);
-  if (sub === 'portal') return false;
   return showOn === sub;
+}
+
+function SubsiteBadge({sub}: {sub: 'nitrolite' | 'clearnet' | 'portal'}) {
+  if (sub === 'portal') return null;
+  const label = sub === 'nitrolite' ? 'Nitrolite' : 'Clearnet';
+  return <span className={styles.subsiteBadge} aria-label={`Currently viewing ${label} docs`}>{label}</span>;
 }
 
 function NavbarItems({items}: {items: NavbarItemConfig[]}): ReactNode {
@@ -105,6 +110,7 @@ export default function NavbarContent(): ReactNode {
   const [leftItems, rightItems] = splitNavbarItems(filteredItems);
 
   const searchBarItem = items.find((item) => item.type === 'search');
+  const sub = currentSubsite(pathname);
 
   return (
     <NavbarContentLayout
@@ -112,6 +118,7 @@ export default function NavbarContent(): ReactNode {
         <>
           {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
           <NavbarLogo />
+          <SubsiteBadge sub={sub} />
           <NavbarItems items={leftItems} />
         </>
       }

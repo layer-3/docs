@@ -133,7 +133,20 @@ const config: Config = {
         srcDark: 'img/themes/dark/logo.svg',
       },
       items: [
-        // Nitrolite navbar items (shown on /nitrolite/* and /)
+        // Portal-only product entry links
+        {
+          to: '/nitrolite/learn',
+          label: 'Nitrolite',
+          position: 'left',
+          customProps: { showOn: 'portal' },
+        },
+        {
+          to: '/clearnet/introduction',
+          label: 'Clearnet',
+          position: 'left',
+          customProps: { showOn: 'portal' },
+        },
+        // Nitrolite navbar items (shown on /nitrolite/*)
         {
           type: 'doc',
           docId: 'learn/index',
@@ -188,13 +201,14 @@ const config: Config = {
           position: 'left',
           customProps: { showOn: 'clearnet' },
         },
-        // Shared items (always shown)
+        // Whitepaper only on portal
         {
           to: '/whitepaper',
           label: 'Whitepaper',
           position: 'left',
-          customProps: { showOn: 'all' },
+          customProps: { showOn: 'portal' },
         },
+        // GitHub link visible on all sub-sites
         {
           href: 'https://github.com/layer-3',
           position: 'right',
