@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 sidebar_label: Quick Start
 title: Quick Start
 description: Build your first Yellow App in 5 minutes - a complete beginner's guide
