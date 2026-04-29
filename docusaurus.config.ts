@@ -137,12 +137,6 @@ const config: Config = {
           position: 'left',
         },
         {
-          type: 'doc',
-          docId: 'guides/index',
-          label: 'Guides',
-          position: 'left',
-        },
-        {
           to: '/whitepaper',
           label: 'Whitepaper',
           position: 'left',
@@ -184,10 +178,6 @@ const config: Config = {
             {
               label: 'Build',
               to: '/docs/build/quick-start',
-            },
-            {
-              label: 'Guides',
-              to: '/docs/guides',
             },
             {
               label: 'Whitepaper',
