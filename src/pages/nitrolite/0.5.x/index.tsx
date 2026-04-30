@@ -66,7 +66,7 @@ const FeatureList: FeatureItem[] = [
         Discord community and contribute to the ecosystem.
       </>
     ),
-    link: 'https://discord.com/invite/yellownetwork',
+    link: 'https://t.me/YellowSDKCommunity',
     isExternal: true,
   },
   {

@@ -38,7 +38,19 @@ const FeatureList: FeatureItem[] = [
         network, smart contracts, governance, and node operations.
       </>
     ),
-    link: '/clearnet/introduction',
+    link: '/clearnet/learn/introduction',
+  },
+  {
+    title: 'Whitepaper',
+    imageSrc: require('@site/static/img/themes/light/icons/learn.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/learn.png').default,
+    description: (
+      <>
+        The Yellow Network whitepaper — protocol design, economic model,
+        and technical reference for the decentralized clearing layer.
+      </>
+    ),
+    link: '/whitepaper',
   },
 ];
 

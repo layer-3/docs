@@ -141,7 +141,7 @@ const config: Config = {
           customProps: { showOn: 'portal' },
         },
         {
-          to: '/clearnet/introduction',
+          to: '/clearnet/learn/introduction',
           label: 'Clearnet',
           position: 'left',
           customProps: { showOn: 'portal' },
@@ -168,36 +168,12 @@ const config: Config = {
           position: 'left',
           customProps: { showOn: 'nitrolite' },
         },
-        // Clearnet navbar items (shown on /clearnet/*)
+        // Clearnet navbar items (shown on /clearnet/*) — single "Learn" entry
+        // is a plain link to Introduction, not a doc reference, so the navbar
+        // item itself doesn't represent a page.
         {
-          type: 'doc',
-          docsPluginId: 'clearnet',
-          docId: 'introduction',
-          label: 'Introduction',
-          position: 'left',
-          customProps: { showOn: 'clearnet' },
-        },
-        {
-          type: 'doc',
-          docsPluginId: 'clearnet',
-          docId: 'architecture',
-          label: 'Architecture',
-          position: 'left',
-          customProps: { showOn: 'clearnet' },
-        },
-        {
-          type: 'doc',
-          docsPluginId: 'clearnet',
-          docId: 'decentralized-layer/overview',
-          label: 'Decentralized Layer',
-          position: 'left',
-          customProps: { showOn: 'clearnet' },
-        },
-        {
-          type: 'doc',
-          docsPluginId: 'clearnet',
-          docId: 'contracts/index',
-          label: 'Contracts',
+          to: '/clearnet/learn/introduction',
+          label: 'Learn',
           position: 'left',
           customProps: { showOn: 'clearnet' },
         },
@@ -210,7 +186,7 @@ const config: Config = {
         },
         // GitHub link visible on all sub-sites
         {
-          href: 'https://github.com/layer-3',
+          href: 'https://github.com/layer-3/docs',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -261,15 +237,15 @@ const config: Config = {
           items: [
             {
               label: 'Introduction',
-              to: '/clearnet/introduction',
+              to: '/clearnet/learn/introduction',
             },
             {
               label: 'Architecture',
-              to: '/clearnet/architecture',
+              to: '/clearnet/learn/architecture',
             },
             {
               label: 'Contracts',
-              to: '/clearnet/contracts',
+              to: '/clearnet/learn/contracts',
             },
           ],
         },
@@ -285,6 +261,10 @@ const config: Config = {
         {
           title: 'Community',
           items: [
+            {
+              label: 'Telegram',
+              href: 'https://t.me/YellowSDKCommunity',
+            },
             {
               label: 'Discord',
               href: 'https://discord.com/invite/yellownetwork',

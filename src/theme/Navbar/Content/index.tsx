@@ -34,7 +34,7 @@ type ShowOn = 'nitrolite' | 'clearnet' | 'portal' | 'all';
 // /clearnet has no dedicated homepage yet; falls back to its first doc.
 const SUBSITE_HOME: Record<'nitrolite' | 'clearnet', string> = {
   nitrolite: '/nitrolite',
-  clearnet: '/clearnet/introduction',
+  clearnet: '/clearnet/learn/introduction',
 };
 
 function useNavbarItems() {

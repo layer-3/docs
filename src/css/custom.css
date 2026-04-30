@@ -644,8 +644,8 @@ a.menu__link.menu__link--sublist.menu__link--active:hover {
 .footer__col:first-child,
 .footer__col:first-child .footer__items,
 .footer__col:first-child .footer__item {
-  padding-left: 0 !important;
   margin-left: 0 !important;
+  margin-right: 2rem !important;
   text-align: left !important;
 }
 

@@ -50,11 +50,11 @@ const FeatureList: FeatureItem[] = [
     imageSrcDark: require('@site/static/img/themes/dark/icons/community.png').default,
     description: (
       <>
-        Connect with developers, traders, and node operators in our
-        Discord community and contribute to the ecosystem.
+        Connect with users, developers, and traders in our
+        Telegram community and contribute to the ecosystem.
       </>
     ),
-    link: 'https://discord.com/invite/yellownetwork',
+    link: 'https://t.me/YellowSDKCommunity',
     isExternal: true,
   },
   {

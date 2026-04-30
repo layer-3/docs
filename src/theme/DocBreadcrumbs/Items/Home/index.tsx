@@ -1,7 +1,7 @@
 /**
  * Swizzled from @docusaurus/theme-classic.
  * The home icon points to the current sub-site's homepage instead of the
- * global root: /nitrolite/* → /nitrolite, /clearnet/* → /clearnet/introduction.
+ * global root: /nitrolite/* → /nitrolite, /clearnet/* → /clearnet/learn/introduction.
  */
 
 import React, {type ReactNode} from 'react';
@@ -18,7 +18,7 @@ function subsiteHome(pathname: string): string {
   // breadcrumbs land on the 0.5.x homepage instead of the v1 homepage.
   if (pathname.startsWith('/nitrolite/0.5.x')) return '/nitrolite/0.5.x';
   if (pathname.startsWith('/nitrolite')) return '/nitrolite';
-  if (pathname.startsWith('/clearnet')) return '/clearnet/introduction';
+  if (pathname.startsWith('/clearnet')) return '/clearnet/learn/introduction';
   return '/';
 }
 
