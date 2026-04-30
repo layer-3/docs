@@ -1,0 +1,46 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+Hide color mode toggle in small viewports
+ */
+@media (max-width: 996px) {
+  .colorModeToggle {
+    display: none;
+  }
+}
+
+/*
+Restore some Infima style that broke with CSS Cascade Layers
+See https://github.com/facebook/docusaurus/pull/11142
+ */
+:global(.navbar__items--right) > :last-child {
+  padding-right: 0;
+}
+
+/* Sub-site badge: yellow rectangle that links to the sub-site homepage. */
+.subsiteBadge,
+.subsiteBadge:hover,
+.subsiteBadge:focus,
+.subsiteBadge:visited {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 1rem 0 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: #FDDA16;
+  color: #1c1e21 !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 4px;
+  text-decoration: none !important;
+  white-space: nowrap;
+}
+
+.subsiteBadge:hover {
+  background-color: #FCD002;
+}
