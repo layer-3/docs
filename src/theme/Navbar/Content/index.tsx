@@ -134,7 +134,7 @@ export default function NavbarContent(): ReactNode {
   const filteredItems = items.filter((item) => shouldShowItem(item, pathname));
   const [leftItems, rightItems] = splitNavbarItems(filteredItems);
 
-  const searchBarItem = items.find((item) => item.type === 'search');
+  const searchBarItem = filteredItems.find((item) => item.type === 'search');
   const sub = currentSubsite(pathname);
 
   return (
