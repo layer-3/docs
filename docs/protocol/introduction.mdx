@@ -1,79 +1,85 @@
 ---
 sidebar_position: 1
-title: "Introduction"
+title: "Overview"
+slug: /protocol/app-layer/overview
+description: "Nitrolite protocol roles, layers, design goals, and version scope."
 ---
 
-import Tooltip from '@site/src/components/Tooltip';
-import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+# Overview
 
-# Introduction
+Nitrolite is a state channel protocol for high-speed off-chain interaction while preserving on-chain security guarantees. Users exchange signed state updates off-chain with Nodes, and any user can enforce the latest agreed state on the blockchain layer at any time.
 
-## What is Yellow Protocol?
-
-Yellow Protocol is a layered system for decentralized clearing, settlement, and application hosting across multiple blockchains. It is developed and maintained by Layer3 Fintech Ltd. and operated by independent node operators running open-source <Tooltip content={tooltipDefinitions.clearnode}>clearnode</Tooltip> software.
-
-The protocol is composed of two distinct layers:
-
-1. **Decentralized Layer** — A peer-to-peer overlay network (the Yellow Network Protocol, or YNP) that uses a Kademlia DHT, BLS threshold signatures, and elastic security to manage accounts, route transactions, and settle assets across chains.
-
-2. **App Layer (VirtualApp)** — A <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> protocol (also known as YApps) that enables off-chain interactions between <Tooltip content={tooltipDefinitions.participant}>participants</Tooltip> with minimal on-chain operations. It forms a unified virtual ledger for applications to escrow funds while being fully abstracted from the underlying blockchain.
-
-:::info On-Chain Contracts
-Both layers currently deploy their own on-chain smart contracts. These are expected to be merged into a unified contract suite once testnet concludes.
+:::info Language-agnostic specification
+This section describes protocol rules and invariants. It is not tied to a particular programming language, package, or transport implementation.
 :::
-
-```mermaid
-graph TB
-  subgraph DL["Decentralized Layer"]
-    direction TB
-    DHT["Kademlia DHT & Routing"]
-    CLUSTERS["BLS Threshold Clusters"]
-    ELASTIC["Elastic Security & Collateral"]
-    LIQUIDITY["Liquidity Layer & AMM"]
-    DL_CHAIN["Registry, Custody, Governor"]
-  end
-
-  subgraph AL["App Layer (VirtualApp)"]
-    direction TB
-    OFFCHAIN["Off-Chain Nitro RPC"]
-    AL_CHAIN["Custody & Adjudicator Contracts"]
-    APPS["YApps (Chess, DEX, Payments, ...)"]
-  end
-
-  subgraph L1["Blockchains"]
-    CHAINS["Ethereum, Arbitrum, Base, Polygon, ..."]
-  end
-
-  DL --> AL
-  AL --> L1
-  DL_CHAIN -.-> L1
-  AL_CHAIN -.-> L1
-
-  style DL fill:#e1f5ff,stroke:#9ad7ff,color:#111
-  style AL fill:#fff4e1,stroke:#ffd497,color:#111
-  style L1 fill:#f0f0f0,stroke:#c9c9c9,color:#111
-```
 
 ## Design Goals
 
-- **Scalability**: Move high-frequency operations off-chain; throughput scales with the number of users
-- **Cost Efficiency**: Minimize gas fees by reducing on-chain transactions to deposits, withdrawals, and disputes
-- **Security**: Value-proportional security — the cost to corrupt a cluster always exceeds the value it protects
-- **Interoperability**: Support multiple blockchains and assets through a unified clearing layer
-- **Developer Experience**: Provide clear, implementable specifications for both layers
+The protocol is designed to achieve:
 
-## Specification Scope
+- **Off-chain scalability**: minimize on-chain transactions by moving state advancement off-chain.
+- **Blockchain security guarantees**: allow any user to fall back to the blockchain layer to enforce the latest state.
+- **Cross-chain asset interaction**: operate on assets across multiple blockchains through a unified model.
+- **Extensibility**: support additional functionality through protocol extensions without modifying the core protocol.
 
-This documentation defines the Yellow Protocol in a **programming language-agnostic manner**. Implementers can use these specifications to build compliant implementations in any language (Go, Python, Rust, JavaScript, etc.).
+## System Roles
 
-| Section | Layer | Covers |
-|---------|-------|--------|
-| [Decentralized Layer](./decentralized-layer/overview) | Network | DHT topology, cluster lifecycle, elastic security, protocol lifecycle, liquidity, security analysis |
+| Role | Protocol responsibility |
+| --- | --- |
+| User | Opens channels, signs state updates, and holds assets within the protocol. |
+| Node | Facilitates off-chain state advancement, manages channels, and syncs with the blockchain layer. |
+| Blockchain | Validates enforceable incoming states, stores states, holds assets, and resolves disputes. |
 
-:::caution Language Independence
-Implementation-specific details are referenced but not mandated by this specification. The protocol description is abstract and can be implemented in any programming language.
-:::
+## High-Level Architecture
 
-## RFC 2119 Keywords
+The system operates in three conceptual layers:
 
-The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+```mermaid
+flowchart TB
+  protocol["Protocol layer: validity, advancement, enforcement rules"]
+  offchain["Off-chain layer: signed state update exchange"]
+  chain["Blockchain layer: asset custody and state enforcement"]
+
+  protocol --> offchain
+  offchain --> chain
+  chain --> protocol
+```
+
+| Layer | Scope |
+| --- | --- |
+| Protocol layer | Rules for state validity, advancement, and enforcement. |
+| Off-chain layer | Signed state update exchange with a Node. |
+| Blockchain layer | Contracts that hold assets and enforce states. |
+
+## Core Concepts
+
+**Channels** are state containers shared between a User and a Node. Each channel holds user asset allocations and supports off-chain state updates. A channel is defined by immutable parameters including participants, asset, challenge duration, and approved signature validators.
+
+**States** represent the current agreed asset allocations and metadata shared between a User and a Node. Each state contains a home ledger, a non-home ledger, a version number, and the transition that produced it.
+
+**State advancement** is the off-chain process by which a User and a Node exchange signed state transitions. Each new state MUST have a version exactly one greater than the previous state.
+
+**State enforcement** is the process by which any party MAY submit the latest signed state to the blockchain layer. The blockchain layer validates signatures, version ordering, and ledger invariants before accepting a state.
+
+**Unified assets** represent the same asset across multiple blockchains. The protocol normalizes amounts by decimal precision when comparing allocations across chains.
+
+**Extensions** provide additional protocol functionality, such as application sessions. Extensions interact with channels through commit and release transitions.
+
+## Protocol Layers
+
+| Layer | Defines |
+| --- | --- |
+| Core Protocol | Channels, states, state advancement rules, and enforcement mechanisms. |
+| Extension Layer | Additional functionality that interacts with the core protocol through defined interfaces. |
+| Blockchain Layer | Channel creation, deposits, checkpoints, escrow operations, and fund release. |
+
+## Version Scope
+
+This documentation describes the current Nitrolite protocol.
+
+Compatibility expectations:
+
+- State structures and signing rules defined in this version are stable.
+- Extension interfaces may evolve in future versions.
+- Blockchain layer contracts are version-specific.
+- Channel identifiers include the protocol version in their hashing function to prevent cross-version replay.
