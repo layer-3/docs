@@ -168,6 +168,13 @@ const config: Config = {
           position: 'left',
           customProps: { showOn: 'nitrolite' },
         },
+        {
+          type: 'doc',
+          docId: 'guides/index',
+          label: 'Guides',
+          position: 'left',
+          customProps: { showOn: 'nitrolite', onlyIfPathStartsWith: '/nitrolite/0.5.x' },
+        },
         // Clearnet navbar items (shown on /clearnet/*) — single "Learn" entry
         // is a plain link to Introduction, not a doc reference, so the navbar
         // item itself doesn't represent a page.

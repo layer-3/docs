@@ -31,11 +31,13 @@ import styles from './styles.module.css';
 type ShowOn = 'nitrolite' | 'clearnet' | 'portal' | 'all';
 
 // Subsite homepages: where the badge link and breadcrumb home should land.
-// /clearnet has no dedicated homepage yet; falls back to its first doc.
-const SUBSITE_HOME: Record<'nitrolite' | 'clearnet', string> = {
-  nitrolite: '/nitrolite',
-  clearnet: '/clearnet/learn/introduction',
-};
+// For Nitrolite, the homepage is version-aware: 0.5.x stays on 0.5.x.
+function subsiteHome(sub: 'nitrolite' | 'clearnet', pathname: string): string {
+  if (sub === 'nitrolite') {
+    return pathname.startsWith('/nitrolite/0.5.x') ? '/nitrolite/0.5.x' : '/nitrolite';
+  }
+  return '/clearnet/learn/introduction';
+}
 
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
@@ -49,7 +51,7 @@ function currentSubsite(pathname: string): 'nitrolite' | 'clearnet' | 'portal' {
 }
 
 function shouldShowItem(item: NavbarItemConfig, pathname: string): boolean {
-  const customProps = (item as {customProps?: {showOn?: ShowOn; hideOnPaths?: string[]}}).customProps;
+  const customProps = (item as {customProps?: {showOn?: ShowOn; hideOnPaths?: string[]; onlyIfPathStartsWith?: string}}).customProps;
   const showOn = customProps?.showOn;
   if (showOn && showOn !== 'all' && showOn !== currentSubsite(pathname)) {
     return false;
@@ -57,15 +59,18 @@ function shouldShowItem(item: NavbarItemConfig, pathname: string): boolean {
   if (customProps?.hideOnPaths?.some((p) => pathname === p || pathname === `${p}/`)) {
     return false;
   }
+  if (customProps?.onlyIfPathStartsWith && !pathname.startsWith(customProps.onlyIfPathStartsWith)) {
+    return false;
+  }
   return true;
 }
 
-function SubsiteBadge({sub}: {sub: 'nitrolite' | 'clearnet' | 'portal'}) {
+function SubsiteBadge({sub, pathname}: {sub: 'nitrolite' | 'clearnet' | 'portal'; pathname: string}) {
   if (sub === 'portal') return null;
   const label = sub === 'nitrolite' ? 'Nitrolite' : 'Clearnet';
   return (
     <Link
-      to={SUBSITE_HOME[sub]}
+      to={subsiteHome(sub, pathname)}
       className={styles.subsiteBadge}
       aria-label={`${label} home`}>
       {label}
@@ -138,7 +143,7 @@ export default function NavbarContent(): ReactNode {
         <>
           {!mobileSidebar.disabled && <NavbarMobileSidebarToggle />}
           <NavbarLogo />
-          <SubsiteBadge sub={sub} />
+          <SubsiteBadge sub={sub} pathname={pathname} />
           <NavbarItems items={leftItems} />
         </>
       }
