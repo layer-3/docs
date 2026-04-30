@@ -76,7 +76,7 @@ Create a file `app.js` and connect to the Yellow Network.
 :::
 
 ```javascript title="app.js" showLineNumbers
-import { createAppSessionMessage, parseRPCResponse } from '@erc7824/nitrolite';
+import { createAppSessionMessage, parseAnyRPCResponse } from '@erc7824/nitrolite';
 
 // Connect to Yellow Network (using sandbox for testing)
 const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
