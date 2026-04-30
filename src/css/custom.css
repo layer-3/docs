@@ -26,7 +26,7 @@
   --ifm-font-weight-base: 300;
   --ifm-font-weight-semibold: 500;
   --ifm-font-weight-bold: 500;
-  --doc-sidebar-width: 315px;
+  --doc-sidebar-width: 270px;
   --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.3871 14.3851L18.4748 18.4728M14.3871 14.3851C11.4453 17.327 6.67557 17.327 3.73377 14.3851C0.791869 11.4433 0.791869 6.67362 3.73377 3.73182C6.67557 0.789916 11.4453 0.789916 14.3871 3.73182C17.329 6.67362 17.329 11.4433 14.3871 14.3851Z" stroke="%238E8E8E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 }
 
@@ -69,8 +69,8 @@
   font-family: 'Poppins', sans-serif !important;
   font-weight: 300 !important;
   font-style: normal !important;
-  font-size: 16px !important;
-  line-height: 24px !important;
+  font-size: 15px !important;
+  line-height: 17px !important;
   letter-spacing: 0.15px !important;
   vertical-align: middle !important;
 }
@@ -82,8 +82,8 @@
   font-family: 'Poppins', sans-serif !important;
   font-weight: 500 !important;
   font-style: normal !important;
-  font-size: 16px !important;
-  line-height: 24px !important;
+  font-size: 15px !important;
+  line-height: 17px !important;
   letter-spacing: 0.15px !important;
   vertical-align: middle !important;
 }
@@ -143,12 +143,11 @@ a.menu__link--active {
   background-color: #EDEDED;
 }
 
-/* Level 3 leaf vertical line: align with the level-2 collapsible chevron above
- * it. The previous `left: 8px` offset shifted this line away from the chevron,
- * breaking the chevron-on-line invariant.
+/* Level 3 leaf vertical line: align with the level-2 collapsible chevron,
+ * which sits at padding-left: 32px on its container.
  */
 .menu__list .menu__list .menu__list .menu__link:not(.menu__link--sublist):not(.menu__link--sublist-caret)::before {
-  left: 0;
+  left: 12px;
 }
 
 /* Add proper padding for all sidebar items with borders */
@@ -156,17 +155,30 @@ a.menu__link--active {
   position: relative;
 }
 
-/* Add extra spacing only for sub-items (level-2 items under categories) */
+/* Double the default horizontal padding of the central doc content column */
+[class*='docItemCol'] {
+  padding: 0 40px !important;
+}
+
+/* Nested indentation — each level shifts further right */
 .theme-doc-sidebar-item-link-level-2 .menu__link {
   padding-left: 32px !important;
 }
 
 .menu__list .menu__list .menu__link:not(.menu__link--sublist) {
-  padding-left: 24px !important;
+  padding-left: 20px !important;
+}
+
+/* Level-2 category headers (e.g. "TypeScript SDK" under "SDK") —
+ * chevron at 28px so it aligns with sibling doc items */
+.menu__list .menu__list .menu__list-item-collapsible,
+.menu__list .menu__list .menu__list-item-collapsible--active,
+.menu__list .menu__list .menu__list-item-collapsible:hover {
+  padding-left: 28px !important;
 }
 
 .menu__list .menu__list .menu__list .menu__link:not(.menu__link--sublist) {
-  padding-left: 32px !important;
+  padding-left: 36px !important;
 }
 
 /* Table of contents styling - use darker/lighter colors instead of theme colors */
@@ -209,6 +221,23 @@ a.table-of-contents__link.table-of-contents__link--active code {
 [data-theme='dark'] .table-of-contents__link:hover,
 [data-theme='dark'] .table-of-contents__link:hover code {
   color: #cccccc !important;
+}
+
+/* Remove left padding from the right TOC column */
+.col.col--3 {
+  padding-left: 0 !important;
+}
+
+/* "ON THIS PAGE:" heading above the TOC */
+.theme-doc-toc-desktop::before {
+  content: 'ON THIS PAGE:';
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  margin-left: 6px;
 }
 
 /* Pagination navigation styling */
