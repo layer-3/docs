@@ -14,11 +14,12 @@ function HomepageHeader() {
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title" style={{color: 'white'}}>
-          Explore the <span style={{color: '#FDDA16'}}>SDK</span>
+          Build. Trade. <span style={{color: '#FDDA16'}}>Unify.</span>
         </Heading>
         <p className="hero__subtitle">
-          Decentralized clearing and settlement network<br />
-          Develop Yellow Apps with instant finality.
+          Leverage our trustless infrastructure to create powerful businesses
+          that are governed by logic — giving you the freedom to focus on your
+          vision, not the operations.
         </p>
       </div>
     </header>

@@ -8,6 +8,55 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Architecture
 
+## System Overview
+
+Yellow Protocol consists of two distinct layers — the **Decentralized Layer** for network consensus and settlement, and the **App Layer (VirtualApp)** for <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations. Together they enable scalable, secure cross-chain clearing and application hosting.
+
+### Two-Layer Architecture
+
+```mermaid
+%%{init: { "flowchart": { "htmlLabels": true } }}%%
+graph TB
+  subgraph DL["Decentralized Layer"]
+    direction LR
+    DHT["Kademlia DHT"]
+    BLS["BLS Clusters"]
+    SECURITY["Elastic Security"]
+  end
+
+  subgraph AL["App Layer — VirtualApp"]
+    direction LR
+    RPC["Nitro RPC"]
+    CHANNELS["State Channels"]
+    SESSIONS["YApps / App Sessions"]
+  end
+
+  subgraph OnChain["On-Chain Contracts"]
+    direction LR
+    DL_CONTRACTS["Registry, Custody, Governor"]
+    AL_CONTRACTS["Custody, Adjudicator"]
+  end
+
+  subgraph Blockchain["Blockchains"]
+    CHAIN["Ethereum, Arbitrum, Base, Polygon, Linea, BNB"]
+  end
+
+  DL --> AL
+  DL_CONTRACTS --> Blockchain
+  AL_CONTRACTS --> Blockchain
+
+  style DL fill:#e1f5ff,stroke:#9ad7ff,color:#111
+  style AL fill:#fff4e1,stroke:#ffd497,color:#111
+  style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
+  style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
+```
+
+:::info Contract Convergence
+Both layers currently deploy their own on-chain contracts. These are expected to be merged into a unified contract suite once testnet concludes.
+:::
+
+For the Decentralized Layer architecture (DHT topology, cluster formation, elastic security), see [Decentralized Layer Overview](./decentralized-layer/overview).
+
 ## App Layer Architecture
 
 The <Tooltip content={tooltipDefinitions.virtualAppProtocol}>VirtualApp</Tooltip> App Layer architecture consists of multiple components working together to enable state channel operations:
@@ -77,7 +126,7 @@ sequenceDiagram
     participant Client
     participant Clearnode
     participant Blockchain
-    
+
     Client->>Clearnode: create_channel request
     Clearnode->>Client: channel struct + signed initial state (clearnode signature)
     Client->>Client: Add own signature
@@ -99,7 +148,7 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 1. <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> exchange signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates:
 
    - **For Payment Channels** (User ↔ <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>): States are exchanged directly via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
-   
+
    - **For <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
 
 2. No blockchain transactions required
@@ -142,7 +191,7 @@ graph LR
     A[Active Channel] --> B{Parties Agree?}
     B -->|Yes| C[Cooperative Close<br/>Fast, Cheap]
     B -->|No| D[Challenge-Response<br/>Slow, Secure]
-    
+
     style C fill:#90EE90,stroke:#333,color:#111
     style D fill:#FFB6C1,stroke:#333,color:#111
 ```
@@ -153,7 +202,7 @@ The following diagram illustrates how funds flow through the VirtualApp protocol
 
 ```mermaid
 graph TB
-    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]    
+    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]
     B -->|resize| D["Unified Balance<br/>(Clearnode)"]
     B <-->|resize| C["Channel-Locked<br/>(Custody SC)"]
     C <-->|resize| D
@@ -161,7 +210,7 @@ graph TB
     E -->|withdraw / close session| D
     D -->|resize / close channel| B
     B -->|withdraw| A
-    
+
     style A fill:#90EE90,stroke:#333,color:#111
     style B fill:#87CEEB,stroke:#333,color:#111
     style C fill:#FFD700,stroke:#333,color:#111
