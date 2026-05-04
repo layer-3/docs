@@ -19,11 +19,11 @@
     "version:release": "node scripts/release-version.js"
   },
   "dependencies": {
-    "@docusaurus/core": "3.10.0",
-    "@docusaurus/faster": "3.10.0",
-    "@docusaurus/preset-classic": "3.10.0",
-    "@docusaurus/theme-mermaid": "3.10.0",
-    "@docusaurus/theme-search-algolia": "3.10.0",
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/faster": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
+    "@docusaurus/theme-mermaid": "3.10.1",
+    "@docusaurus/theme-search-algolia": "3.10.1",
     "@mdx-js/react": "^3.1.1",
     "@tippyjs/react": "^4.2.6",
     "clsx": "^2.0.0",
@@ -34,13 +34,13 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.10.0",
-    "@docusaurus/tsconfig": "3.10.0",
-    "@docusaurus/types": "3.10.0",
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/tsconfig": "3.10.1",
+    "@docusaurus/types": "3.10.1",
     "@tailwindcss/postcss": "^4.2.4",
     "@yellow-org/contracts": "^1.0.4",
     "autoprefixer": "^10.5.0",
-    "postcss": "^8.5.12",
+    "postcss": "^8.5.14",
     "tailwindcss": "^4.1.17",
     "typescript": "~6.0.3"
   },
