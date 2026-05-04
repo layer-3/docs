@@ -1,10 +1,10 @@
 /**
  * Swizzled from @docusaurus/theme-classic.
  *
- * The only change vs upstream: when the user is on the Nitrolite homepage
- * (/nitrolite or /nitrolite/0.5.x), the dropdown links and the trigger label
- * point to the equivalent homepage in the other version, not to the docs
- * default. Everywhere else, behavior is unchanged.
+ * Changes vs upstream:
+ * - Nitrolite homepages switch between equivalent homepage routes.
+ * - Nitrolite Protocol pages without a doc-id match in another version fall
+ *   back to that version's Protocol introduction instead of the docs default.
  */
 
 import React, {type ReactNode} from 'react';
@@ -43,6 +43,8 @@ const NITROLITE_HOMEPAGES: Record<string, string> = {
   current: '/nitrolite',
   '0.5.x': '/nitrolite/0.5.x',
 };
+
+const NITROLITE_PROTOCOL_INTRO_DOC_ID = 'protocol/introduction';
 
 function isOnNitroliteHomepage(pathname: string): boolean {
   return Object.values(NITROLITE_HOMEPAGES).some(
@@ -99,6 +101,18 @@ function getVersionMainDoc(version: GlobalVersion): GlobalDoc {
   return version.docs.find((doc) => doc.id === version.mainDocId)!;
 }
 
+function getVersionProtocolIntroDoc(
+  version: GlobalVersion,
+): GlobalDoc | undefined {
+  return version.docs.find((doc) => doc.id === NITROLITE_PROTOCOL_INTRO_DOC_ID);
+}
+
+function isOnNitroliteProtocolDoc(
+  activeDocContext: ActiveDocContext,
+): boolean {
+  return activeDocContext.activeDoc?.id.startsWith('protocol/') ?? false;
+}
+
 function getVersionTargetPath(
   version: GlobalVersion,
   activeDocContext: ActiveDocContext,
@@ -106,6 +120,13 @@ function getVersionTargetPath(
 ): string {
   if (onHomepage && NITROLITE_HOMEPAGES[version.name]) {
     return NITROLITE_HOMEPAGES[version.name]!;
+  }
+  if (isOnNitroliteProtocolDoc(activeDocContext)) {
+    return (
+      activeDocContext.alternateDocVersions[version.name]?.path ??
+      getVersionProtocolIntroDoc(version)?.path ??
+      getVersionMainDoc(version).path
+    );
   }
   return (
     activeDocContext.alternateDocVersions[version.name]?.path ??

@@ -1,5 +1,4 @@
 ---
-sidebar_position: 3
 title: "Cryptography and Signing"
 description: "Canonical encoding, digest construction, signature envelopes, validation modes, session keys, and replay protection."
 ---
@@ -25,7 +24,7 @@ Cryptography in the Nitrolite protocol serves three functions:
 
 ## Canonical Encoding
 
-Protocol objects that require signing MUST be encoded into a canonical binary representation before hashing. The canonical encoding uses RLP encoding (`abi.encode` in Solidity) as defined by Ethereum RLP references, ensuring deterministic byte sequences regardless of implementation language.
+Protocol objects that require signing MUST be encoded into a canonical binary representation before hashing. The canonical encoding uses Solidity ABI encoding (`abi.encode`), which produces deterministic 32-byte-word-aligned byte sequences regardless of implementation language.
 
 ## Message Digest Construction
 

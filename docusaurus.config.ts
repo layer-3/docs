@@ -235,7 +235,7 @@ const config: Config = {
             },
             {
               label: 'Protocol',
-              to: '/nitrolite/protocol/app-layer/overview',
+              to: '/nitrolite/protocol/introduction',
             },
           ],
         },
