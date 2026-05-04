@@ -1,79 +1,95 @@
 ---
-sidebar_position: 2
 title: "Terminology"
+description: "Canonical Nitrolite protocol terms used throughout the App Layer specification."
 ---
-
-import Tooltip from '@site/src/components/Tooltip';
-import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 # Terminology
 
-## Core Concepts
+This page defines protocol terms used throughout the App Layer specification. Each term is defined once, and other pages in this section use these terms consistently.
 
-**Channel**: {tooltipDefinitions.channel}
+## Naming Conventions
 
-**State**: {tooltipDefinitions.channelState}
+- Protocol entities use CamelCase, for example `ChannelState` and `AppSession`.
+- Field names use CamelCase, for example `ChannelId` and `StateVersion`.
+- Operations use lowercase with hyphens in document references, for example `state-advancement`.
 
-**Participant**: {tooltipDefinitions.participant}
+## Core Entities
 
-**Clearnode**: {tooltipDefinitions.clearnode}
+| Term | Definition |
+| --- | --- |
+| Channel | A state container shared between a User and a Node that allows off-chain state updates while maintaining on-chain security guarantees. Each channel operates on a single unified asset. |
+| Channel Definition | The immutable parameters that define a channel: User, Node, asset, nonce, challenge duration, and approved signature validators. A channel definition is fixed at creation time and MUST NOT change during the channel lifecycle. |
+| Channel State | The current agreed configuration of a channel, including home and non-home ledger allocations, a version number, and a transition field. |
+| Participant | An entity that holds a signing key and participates in a channel. Each channel has exactly two participants: a User and a Node. |
+| Asset | A representation of value identified by a human-readable symbol and decimal precision. Assets are identified independently of any specific blockchain. |
 
-**Creator**: {tooltipDefinitions.creatorParticipant}
+## State Concepts
 
-**App Sessions**: {tooltipDefinitions.appChannel}
+| Term | Definition |
+| --- | --- |
+| State | An abstract data structure representing the current configuration of a protocol entity at a specific version. |
+| State Version | A monotonically increasing integer that identifies the order of state updates. During off-chain advancement, each new state MUST have a version exactly one greater than the previous state. |
+| State Advancement | The process of updating a protocol entity's state off-chain through signed transitions exchanged between participants. |
+| State Enforcement | The process of submitting a signed state to the blockchain layer for on-chain validation and enforcement. |
+| Transition | A typed operation that describes the reason and parameters for a state update. Each transition carries a type, transaction identifier, account identifier, and amount. |
+| Intent | A value derived from the transition type that determines how the blockchain layer processes an enforced state. |
 
-**Unified Balance**: {tooltipDefinitions.unifiedBalance}
+## Cryptographic Concepts
 
-**Session Key**: {tooltipDefinitions.sessionKey}
+| Term | Definition |
+| --- | --- |
+| Signature | A cryptographic proof that a specific key holder authorized a specific message. The protocol uses ECDSA over secp256k1. |
+| Signer | An entity capable of producing signatures. Each signer is associated with a specific key. |
+| Session Key | A delegated signing key authorized by a participant's primary key to sign state updates on their behalf within an authorization scope. |
+| Signature Validation Mode | A mechanism that determines how a signature is verified. The protocol currently defines default mode (`0x00`) and session key mode (`0x01`). |
 
-## Identifiers
-
-**channelId**: {tooltipDefinitions.channelId}
-
-**packedState**: {tooltipDefinitions.packedState}
-
-**requestId**: A unique identifier for an RPC request, used for correlating requests and responses formatted as a 0x-prefixed hex string (32 bytes).
-
-**appSessionId**: {tooltipDefinitions.appSessionId} Used for all subsequent operations on that specific app session.
-
-**accountId**: An identifier for an account or app session within the unified ledger. Can be either a 0x-prefixed hex string or a wallet address.
-
-**chainId**: {tooltipDefinitions.chainId} Examples: 1 (Ethereum Mainnet), 137 (Polygon), 8453 (Base), 42161 (Arbitrum One), 10 (Optimism).
-
-**assetSymbol**: {tooltipDefinitions.assetSymbol} Asset symbols are consistent across chains.
-
-**walletAddress**: {tooltipDefinitions.walletAddress} Used to identify participants in channels and app sessions.
-
-**userId**: Identifies a user after authentication to the Clearnode. Currently, this is always equivalent to the user's walletAddress.
-
-## On-Chain Contracts
-
-**Custody Contract**: The main on-chain contract implementing the VirtualApp protocol. It provides the functionality to lock and unlock funds; create, close and challenge a channel; track channel state, and coordinate with adjudicators to validate state transitions on state updates.
-
-**Adjudicator**: A smart contract that defines the rules for validating state transitions during all channel lifecycle operations. The adjudicator's `adjudicate(...)` function is called by the Custody contract to verify whether a new state is valid based on previous states and application-specific logic. Examples include SimpleConsensus (requires both signatures) and Remittance (only sender must sign).
-
-## Protocol Layers
-
-**Decentralized Layer (YNP)**: The peer-to-peer overlay network — Kademlia DHT, BLS threshold clusters, elastic security, and the liquidity layer. Manages account state, cross-shard transfers, and settlement.
-
-**App Layer (VirtualApp)**: The state channel protocol (also known as YApps) — on-chain custody and adjudicator contracts, plus the off-chain Nitro RPC protocol for fast state updates.
-
-**Nitro RPC**: The off-chain communication protocol used by the App Layer for channel operations, transfers, and app sessions.
-
-## Decentralized Layer Terms
-
-**NodeID**: A 256-bit identity derived from on-chain randomness at registration. Each NodeID requires collateral.
-
-**Signing Cluster (C_sign)**: The set of *k* nodes closest to an account's key in the DHT, responsible for BLS threshold signing.
-
-**Replication Set (C_watch)**: A larger ring of *r* nodes that independently verify signing cluster state. Always a superset of the signing cluster.
-
-**Certificate**: The protocol's universal primitive for state change — a cluster-attested operation carrying a BLS threshold signature.
-
-**Escrow Certificate**: A certificate authorizing a withdrawal from the network to L1.
-
-**Dispute Certificate**: A certificate produced by the replication set to override a fraudulent withdrawal.
-
-:::tip Quick Reference
-These terms are used throughout the protocol specification. Bookmark this page for easy reference while reading other sections.
+:::warning Session key authority
+Session key authorization MUST be associated with the same address as the channel's User or Node participant. Participants SHOULD treat session-key compromise as equivalent to control of the participant's authority within the scope they issued, for the duration of the validity window.
 :::
+
+## Ledger Concepts
+
+| Term | Definition |
+| --- | --- |
+| Ledger | A record of asset allocations within a channel, associated with a specific blockchain. Each ledger tracks User and Node allocations and net flows, and MUST satisfy the allocation/net-flow invariant. |
+| Home Ledger | The primary ledger of a channel state, associated with the blockchain where the state is enforced. |
+| Non-Home Ledger | A secondary ledger tracking asset allocations on a blockchain other than the home chain. Used for cross-chain escrow operations and migrations. |
+| Home Chain | The blockchain identified by the home ledger's chain identifier. The home chain determines where enforcement operations are executed and MAY change through migration. |
+| Locked Funds | The total assets held by the blockchain enforcement contract on behalf of a channel. Unless the channel is being closed, `UserAllocation + NodeAllocation` MUST equal the locked funds. |
+| Vault | A pool of available funds maintained by the Node on a specific blockchain, separate from any specific channel. |
+| WAD Normalization | Scaling chain-specific asset amounts to the asset's configured decimal precision for exact, lossless cross-chain comparisons. |
+
+WAD normalization is:
+
+```text
+NormalizedAmount = Amount * 10^(18 - ChainDecimals)
+```
+
+Each unified asset defines a canonical decimal precision used during protocol interactions. The maximum supported decimal precision is 18.
+
+## State Signing Categories
+
+| Term | Definition |
+| --- | --- |
+| Mutually Signed State | A state that carries valid signatures from both the User and the Node. Only mutually signed states are enforceable on-chain. |
+| Node-Issued Pending State | A state produced by the Node that carries only the Node's signature. A pending state is NOT enforceable on-chain and becomes mutually signed only after the User acknowledges it. |
+| Channel Status | A specific on-chain channel data configuration throughout the lifecycle, including operating, disputed, migrating-in, and migrated-out statuses. |
+| Escrow Channel Identifier | A 32-byte hash derived deterministically from the home channel identifier and state version. It uniquely identifies each escrow operation. |
+
+## Protocol Operations
+
+| Operation | Definition |
+| --- | --- |
+| Checkpoint | Submitting a signed state to the blockchain layer so the latest agreed state is recorded on-chain. |
+| Challenge | An on-chain operation where a participant disputes the current enforced state by submitting a signed state and challenger signature. |
+| Commit | Moving assets from a channel into an extension, such as an application session. |
+| Release | Returning assets from an extension back to channel allocations. |
+| Escrow | A two-phase mechanism for cross-chain operations: initiate locks funds, finalize releases them upon cooperative completion or after a timeout. |
+
+## Extension Concepts
+
+| Term | Definition |
+| --- | --- |
+| Extension | An additional protocol module that provides functionality beyond the core channel protocol. |
+| Application Session | An extension that enables off-chain application functionality. Application sessions hold committed assets and maintain their own state. |
+| Application State | The state associated with an application session, tracking committed assets and application-specific data. |

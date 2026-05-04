@@ -1,0 +1,111 @@
+---
+title: "Cryptography and Signing"
+description: "Canonical encoding, digest construction, signature envelopes, validation modes, session keys, and replay protection."
+---
+
+# Cryptography and Signing
+
+Protocol cryptography defines how signable objects are encoded, hashed, and signed. The rules are algorithms and canonical procedures independent of any specific programming language.
+
+## Purpose
+
+Cryptography in the Nitrolite protocol serves three functions:
+
+1. **Authentication**: prove that a participant authorized a state update.
+2. **Integrity**: ensure signed data has not been modified.
+3. **Replay protection**: prevent previously signed states from being reused in unintended contexts.
+
+## Cryptographic Algorithms
+
+| Primitive | Protocol rule |
+| --- | --- |
+| Signature algorithm | ECDSA over the secp256k1 curve, producing a 65-byte signature `(r, s, v)`. |
+| Hash function | Keccak-256, producing a 32-byte digest. |
+
+## Canonical Encoding
+
+Protocol objects that require signing MUST be encoded into a canonical binary representation before hashing. The canonical encoding uses Solidity ABI encoding (`abi.encode`), which produces deterministic 32-byte-word-aligned byte sequences regardless of implementation language.
+
+## Message Digest Construction
+
+The digest of a signable payload is constructed as follows:
+
+1. Encode the object using canonical encoding.
+2. Prepend the EIP-191 personal message prefix: the ASCII string `"\x19Ethereum Signed Message:\n"`, followed by the decimal length of the encoded bytes, then the encoded bytes.
+3. Compute the Keccak-256 hash of the prefixed message.
+
+The resulting 32-byte digest is the value that is signed.
+
+## ECDSA Signature Format
+
+| Field | Size | Description |
+| --- | --- | --- |
+| `R` | 32 bytes | ECDSA r component. |
+| `S` | 32 bytes | ECDSA s component. |
+| `V` | 1 byte | Recovery identifier. |
+
+The signer's address is recovered from the signature and the message digest. The protocol does not transmit the signer's public key or address alongside the signature.
+
+## Protocol Signature Envelope
+
+A protocol signature wraps the raw ECDSA signature with a validation mode prefix:
+
+```text
+ProtocolSignature = ValidationMode || SignatureData
+```
+
+The first byte (`ValidationMode`) determines the validation method. The remaining bytes (`SignatureData`) contain mode-specific data, including the raw signature.
+
+## Signature Validation Modes
+
+| Mode | Rule |
+| --- | --- |
+| Default mode (`0x00`) | `SignatureData` contains the raw ECDSA signature `(R, S, V)`. The recovered address MUST match the expected participant address. |
+| Session key mode (`0x01`) | `SignatureData` contains a session key authorization and the session key's ECDSA signature over the state data, ABI-encoded as a tuple. |
+
+For session key mode, the validator first verifies that the participant authorized the session key, then verifies that the session key produced a valid signature over the state. The authorization MUST be associated with the same address as the channel's User or Node participant. The recovered session key address MUST match the authorized session key address.
+
+:::info Session keys and enforcement
+Session-key signatures are valid for both off-chain state advancement and on-chain enforcement, provided the session key validation mode is among the channel's approved signature validators.
+:::
+
+## Signable Object Classes
+
+The signing framework accommodates multiple classes of signable objects:
+
+- **Channel objects**: primarily channel state, session key registration, and challenger signature.
+- **Extension objects**: primarily extension entity state, such as application session state, signed by the relevant session participants.
+
+Channel and extension states are identified by unique entity identifiers and follow the same canonical encoding and digest construction rules. Future protocol extensions MAY introduce additional signable object classes without changing the core signing rules.
+
+## Session Key Authorization
+
+A participant MAY delegate signing authority to a session key. Authorization is constructed as follows:
+
+1. The participant signs a message containing the session key address and authorization metadata hash.
+2. The authorization signature is produced using the participant's primary key.
+3. The session key MAY then produce signatures on behalf of the participant within the authorized scope.
+
+Session key signatures MUST include the authorization proof alongside the session key signature. The authorization proof is canonically encoded as a tuple containing the session key authorization and the raw signature bytes.
+
+### Authorization Metadata
+
+The authorization metadata defines the scope of a session key. It MUST contain at least:
+
+| Field | Purpose |
+| --- | --- |
+| `version` | Replay and revocation guard for the participant's session-key delegations. A higher version supersedes prior versions. |
+| `expires_at` | Bounds the delegation lifetime. Signatures produced after expiry MUST be rejected. |
+
+Implementations MAY extend the metadata with additional restrictions, for example authorized assets, allowed transitions, channels, recipients, or per-asset spending limits. Restrictions that an implementation does not encode and enforce are not applied.
+
+Only the `keccak256` hash of the canonically encoded metadata is bound into the authorization signature. The full metadata is supplied alongside the signature at validation time. This allows off-chain metadata extensions without changing the on-chain validator, while requiring the off-chain layer to decode and enforce every field it understands.
+
+## Replay Protection
+
+The protocol prevents replay attacks through:
+
+- **Entity identifier**: each signable entity has a unique identifier derived from its definition.
+- **State version**: each state includes a monotonically increasing version number. The blockchain layer MUST reject states whose version is less than or equal to the currently enforced version.
+- **Blockchain identifier**: states include blockchain-specific identifiers to prevent cross-chain replay.
+- **Smart contract version**: the channel entity identifier incorporates a contract version, currently as the first byte, preventing replay across deployments.
