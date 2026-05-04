@@ -126,7 +126,7 @@ sequenceDiagram
     participant Client
     participant Clearnode
     participant Blockchain
-    
+
     Client->>Clearnode: create_channel request
     Clearnode->>Client: channel struct + signed initial state (clearnode signature)
     Client->>Client: Add own signature
@@ -148,7 +148,7 @@ Channel opening requires cooperation between both parties, ensuring mutual agree
 1. <Tooltip content={tooltipDefinitions.participant}>Participants</Tooltip> exchange signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> updates:
 
    - **For Payment Channels** (User ↔ <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>): States are exchanged directly via <Tooltip content={tooltipDefinitions.nitroRpc}>Nitro RPC</Tooltip>
-   
+
    - **For <Tooltip content={tooltipDefinitions.appChannel}>App Sessions</Tooltip>** (Multi-party): State exchange is managed by the App itself (peer-to-peer). Once the state has enough signatures to satisfy quorum, a responsible party submits the signed state to the <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip>
 
 2. No blockchain transactions required
@@ -191,7 +191,7 @@ graph LR
     A[Active Channel] --> B{Parties Agree?}
     B -->|Yes| C[Cooperative Close<br/>Fast, Cheap]
     B -->|No| D[Challenge-Response<br/>Slow, Secure]
-    
+
     style C fill:#90EE90,stroke:#333,color:#111
     style D fill:#FFB6C1,stroke:#333,color:#111
 ```
@@ -202,7 +202,7 @@ The following diagram illustrates how funds flow through the VirtualApp protocol
 
 ```mermaid
 graph TB
-    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]    
+    A["User Wallet<br/>(ERC-20)"] -->|deposit| B["Available<br/>(Custody SC)"]
     B -->|resize| D["Unified Balance<br/>(Clearnode)"]
     B <-->|resize| C["Channel-Locked<br/>(Custody SC)"]
     C <-->|resize| D
@@ -210,7 +210,7 @@ graph TB
     E -->|withdraw / close session| D
     D -->|resize / close channel| B
     B -->|withdraw| A
-    
+
     style A fill:#90EE90,stroke:#333,color:#111
     style B fill:#87CEEB,stroke:#333,color:#111
     style C fill:#FFD700,stroke:#333,color:#111

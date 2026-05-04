@@ -163,7 +163,7 @@ const config: Config = {
         },
         {
           type: 'doc',
-          docId: 'protocol/protocol-reference',
+          docId: 'protocol/introduction',
           label: 'Protocol',
           position: 'left',
           customProps: { showOn: 'nitrolite' },
@@ -235,7 +235,7 @@ const config: Config = {
             },
             {
               label: 'Protocol',
-              to: '/nitrolite/protocol/terminology',
+              to: '/nitrolite/protocol/introduction',
             },
           ],
         },

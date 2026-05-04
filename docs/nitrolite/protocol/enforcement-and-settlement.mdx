@@ -1,0 +1,146 @@
+---
+title: "Enforcement and Settlement"
+description: "On-chain enforceability, checkpointing, challenges, close paths, validation rules, and failure conditions."
+---
+
+# Enforcement and Settlement
+
+Enforcement is the mechanism by which off-chain state is reflected on-chain. It provides regular state synchronization and dispute resolution.
+
+The blockchain layer is the ultimate arbiter of channel state and provides security guarantees that do not depend on participant cooperation.
+
+## Enforceable State Requirements
+
+A state is enforceable on-chain if and only if:
+
+- It is mutually signed by both the User and the Node.
+- Its signatures use validation modes approved by the channel.
+- It has passed off-chain state advancement validation.
+- The Node has sufficient balance on the target chain to cover any required fund locking.
+
+:::warning Pending states are not enforceable
+Node-issued pending states carry only the Node's signature. They are NOT enforceable until the User acknowledges them, producing a mutually signed state.
+:::
+
+## Enforcement Model
+
+- Participants advance state off-chain through signed updates.
+- At any time, any party MAY submit the latest mutually signed state to the blockchain layer.
+- The blockchain layer validates the submitted state and updates its record.
+- On-chain state always reflects the latest successfully checkpointed state.
+
+The on-chain state MAY lag behind the off-chain state during normal operation for transitions with the `OPERATE` intent.
+
+## Locked Funds Model
+
+The blockchain layer tracks locked funds for each channel. Locked funds represent assets held by the enforcement contract on behalf of the channel.
+
+Rules:
+
+- Locked funds increase when assets are pulled from the User or from the Node's vault into the channel.
+- Locked funds decrease when assets are released to the User or the Node.
+- Unless the channel is being closed, `UserAllocation + NodeAllocation` MUST equal locked funds.
+- Locked funds MUST never be negative.
+
+The Node maintains a vault balance per token on each chain. When a transition requires the Node to lock additional funds, the required amount is deducted from the Node's vault and added to the channel's locked funds.
+
+| Operation | User fund effect | Node fund effect | Locked funds effect |
+| --- | --- | --- | --- |
+| `DEPOSIT` | Pull from User | Adjust by Node net flow delta | Increase by total deltas |
+| `WITHDRAW` | Release to User | Adjust by Node net flow delta | Decrease by total deltas |
+| `OPERATE` | No User fund movement | Adjust by Node delta | Adjust by Node delta only |
+| `CLOSE` | Release `UserAllocation` to User | Release `NodeAllocation` to Node | Set to zero |
+| Challenge | No fund movement | No fund movement | Unchanged; status changes |
+
+## Channel Creation
+
+Channels are created through an enforcement operation. A channel does not need to be created on-chain with its initial off-chain-created state. Any validly signed state MAY be used for on-chain creation if the channel does not yet exist on-chain.
+
+The state submitted for channel creation MAY carry a `DEPOSIT`, `WITHDRAW`, or `OPERATE` intent.
+
+## State Submission
+
+State submission covers checkpoint, deposit, and withdrawal operations:
+
+1. A participant constructs the enforcement representation of a signed state.
+2. The participant submits the enforcement representation with all required signatures.
+3. The blockchain layer validates the submission.
+4. If valid, on-chain state is updated and fund movements are applied.
+
+Intent-specific behavior:
+
+| Intent | Validation and effect |
+| --- | --- |
+| `OPERATE` | User net flow has not changed and Node allocation is zero. No User fund movement occurs. |
+| `DEPOSIT` | User net flow delta is positive. Deposited amount is pulled from the User and added to locked funds. |
+| `WITHDRAW` | User net flow delta is negative. Withdrawn amount is released from locked funds to the User. |
+
+In all cases, the Node's fund delta is adjusted according to the Node net flow change.
+
+## Challenge Operation
+
+A challenge lets a participant dispute the current on-chain state by submitting a signed state and a separate challenger signature.
+
+The challenger signature is distinct from state signatures. It is produced by signing the enforcement representation of the candidate state with `"challenge"` appended to the signing data. Only the User or Node MAY act as challenger. A participant MAY share a valid challenger signature with a third party that initiates the challenge.
+
+Challenge process:
+
+1. The challenger submits a candidate state, state signatures, challenger signature, and challenger participant index.
+2. The channel MUST NOT be in `DISPUTE`, `MIGRATED_OUT`, or `CLOSED` status.
+3. The candidate version MUST be greater than or equal to the current on-chain version.
+4. If the candidate version is strictly greater, the blockchain layer validates and applies the new state.
+5. The channel status becomes `DISPUTED`, and challenge expiry is set to current time plus challenge duration.
+
+During the challenge period, any participant MAY respond with a valid state whose version is strictly greater than the disputed state. It is NOT possible to file another challenge while a channel is already disputed.
+
+After the challenge period expires without resolution, the disputed state becomes final. A separate close call is still required to release locked funds.
+
+## Close Operation
+
+Two close paths exist:
+
+| Path | Rule |
+| --- | --- |
+| Cooperative close | A participant submits a state with the `CLOSE` intent, signed by all participants. |
+| Unilateral close | After challenge expiry, any party MAY call close without additional signatures. Funds are released according to the last enforced state's allocations. |
+
+It is not possible to close an already `CLOSED` or `MIGRATED_OUT` channel. In both close paths, locked funds are set to zero and the channel lifecycle ends.
+
+## Enforcement Validation
+
+The blockchain layer applies common validation rules when processing enforcement operations:
+
+1. The submitted state MUST reference the correct channel identifier.
+2. The home ledger chain identifier MUST match the current blockchain.
+3. The state version MUST be strictly greater than the currently recorded version.
+4. All required signatures MUST be present and valid.
+5. Approved signature validation modes MUST be respected.
+6. The ledger invariant MUST hold: `UserAllocation + NodeAllocation == UserNetFlow + NodeNetFlow`.
+7. Resulting locked funds MUST be non-negative.
+8. Unless the channel is being closed, the sum of allocations MUST equal resulting locked funds.
+9. The Node MUST have sufficient available vault funds when required to lock additional assets.
+
+## Escrow and Migration Enforcement
+
+| Operation | On-chain effect |
+| --- | --- |
+| Escrow Deposit Initiate | On home chain: state updated, Node funds adjusted. On non-home chain: escrow record created, User funds locked. |
+| Escrow Deposit Finalize | On home chain: state updated, User allocation increased. On non-home chain: escrowed funds released to the Node's vault. |
+| Escrow Withdrawal Initiate | On home chain: state updated. On non-home chain: escrow record created, Node funds locked from vault. |
+| Escrow Withdrawal Finalize | On home chain: state updated, User allocation decreased. On non-home chain: escrowed funds released to User. |
+| Migration Initiate | On old home chain: state updated. On new home chain: channel created with migrating-in status, Node funds locked. |
+| Migration Finalize | On new home chain: channel transitions to operating. On old home chain: all locked funds released, channel marked as migrated out. |
+
+## Failure Conditions
+
+Enforcement MAY fail due to:
+
+- Invalid signatures.
+- Stale state version.
+- Inconsistent allocations.
+- Allocation and locked-funds mismatch.
+- Unknown channel, except during channel creation.
+- Insufficient Node funds.
+- Invalid intent.
+- Chain mismatch.
+- Incorrect channel status.

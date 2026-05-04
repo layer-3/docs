@@ -74,11 +74,29 @@ const sidebars: SidebarsConfig = {
     },
   ],
   
-  // Protocol section sidebar — only protocol-reference and terminology remain
-  // (introduction, architecture, decentralized-layer moved to Clearnet)
+  // Protocol section sidebar — current Nitrolite App Layer only.
   protocolSidebar: [
-    'protocol/protocol-reference',
-    'protocol/terminology',
+    {
+      type: 'category',
+      label: 'App Layer',
+      items: [
+        {
+          type: 'doc',
+          id: 'protocol/introduction',
+          label: 'Overview',
+        },
+        'protocol/terminology',
+        'protocol/cryptography-and-signing',
+        'protocol/state-and-ledger-model',
+        'protocol/channel-lifecycle',
+        'protocol/enforcement-and-settlement',
+        'protocol/cross-chain-and-assets',
+        'protocol/interaction-model',
+        'protocol/security-and-limitations',
+      ],
+      collapsible: false,
+      collapsed: false,
+    },
   ],
   
   // Default sidebar for standalone pages

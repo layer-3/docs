@@ -1,0 +1,90 @@
+---
+title: "Security and Limitations"
+description: "Nitrolite security goals, off-chain safety guarantees, enforcement guarantees, trust assumptions, known limitations, and future improvements."
+---
+
+# Security and Limitations
+
+This page describes the security guarantees of the Nitrolite protocol, its current trust assumptions, and known limitations.
+
+## Protocol Maturity
+
+The core protocol functionality is implemented and operational. A User MAY operate over a unified asset, deposit and withdraw on any supported blockchain, and conduct most interactions without direct blockchain involvement.
+
+The protocol protects against unauthorized state changes from the User side: no User can unilaterally alter state without valid signatures from all required participants.
+
+:::warning Current trust minimization status
+The protocol is not fully trust-minimized in its current form. The primary remaining trust assumption concerns Node behavior and liquidity.
+:::
+
+## Security Goals
+
+The protocol aims to guarantee:
+
+- **Asset safety**: participants MUST NOT lose assets without signing a state authorizing the change.
+- **State finality**: the latest mutually signed state can always be enforced on-chain.
+- **Non-repudiation**: a participant cannot deny having signed a state.
+- **Censorship resistance**: any party MAY independently enforce state on the blockchain layer.
+
+## Off-Chain Safety
+
+The protocol protects against invalid or malicious state submissions through:
+
+| Mechanism | Rule |
+| --- | --- |
+| Signature requirements | Every state update requires valid signatures from all required participants. No participant can unilaterally change state. |
+| Version ordering | State versions are strictly increasing. Old states cannot replace newer states. |
+| Asset conservation | State transitions MUST preserve total asset amounts within each ledger. No assets can be created or destroyed through state updates. |
+| Transition validation | Each state update MUST satisfy transition-specific rules. Invalid transitions are rejected. |
+
+## Enforcement Guarantees
+
+The blockchain layer provides:
+
+- Any party MAY submit the latest signed state at any time.
+- Only states with valid signatures and a higher version than current on-chain state are accepted.
+- After the challenge period, enforced state becomes final.
+- Final state allocations determine asset distribution.
+
+## Node Liquidity and Cross-Chain Trust
+
+Each User channel is opened with a Node. To maintain cross-chain functionality, the Node MUST hold sufficient liquidity on each supported blockchain to satisfy off-chain state allocations.
+
+When a User with home chain A transfers assets to a User with home chain B, the Node receives the amount on chain A and allocates from its own balance to the recipient on chain B. If the recipient later enforces state on chain B and the Node lacks sufficient liquidity there, on-chain enforcement will fail.
+
+:::caution Cross-chain liquidity trust
+In the current protocol version, users rely on the Node operator to maintain adequate liquidity across supported chains. Users cannot independently verify that this condition holds at all times.
+:::
+
+## Current Trust Assumptions
+
+Participants MUST trust Nodes for:
+
+- **Liveness**: Nodes MUST be online to facilitate off-chain state advancement.
+- **Cross-chain liquidity**: Nodes MUST maintain sufficient funds on each supported chain to honor off-chain allocations.
+- **Cross-chain relay**: Nodes relay cross-chain state updates; trustless cross-chain enforcement is not yet implemented.
+- **Timely enforcement**: Nodes are expected to submit checkpoints when requested.
+
+Participants do not need to trust Nodes for:
+
+- **Single-chain asset custody**: assets on the home chain can always be recovered through on-chain enforcement.
+- **State validity**: invalid states are rejected by signature and validation rules.
+
+## Known Limitations
+
+The following capabilities are not yet implemented:
+
+- Trustless off-chain state operations through Node liquidity enforcement.
+- Validator network for monitoring Node behavior and enforcing correctness.
+- Watchtower services for automated enforcement.
+- Non-EVM blockchain support.
+- Formal verification of protocol rules.
+
+## Future Improvements
+
+The protocol roadmap includes:
+
+- **Validator network**: independent validation of off-chain state advancement and monitoring of on-chain actions.
+- **Extension layer on-chain enforcement**: reducing reliance on Node liquidity trust for extension layer operations.
+- **Non-EVM blockchain support**: redesigning the protocol to support blockchains beyond the EVM ecosystem in a future major protocol version.
+- **Watchtower integration**: automated monitoring and enforcement on behalf of users.

@@ -1,0 +1,152 @@
+---
+title: "State and Ledger Model"
+description: "Nitrolite state structure, channel ledgers, off-chain and enforcement representations, intent mapping, and consistency rules."
+---
+
+# State and Ledger Model
+
+States represent the current agreed configuration of protocol entities. The state model defines what information a state contains, how states are identified and versioned, and how states are represented for off-chain and on-chain use.
+
+## Common State Fields
+
+All protocol states share:
+
+| Field | Description |
+| --- | --- |
+| `EntityId` | 32-byte unique identifier of the entity this state belongs to. |
+| `Version` | 64-bit unsigned integer, monotonically increasing. |
+
+In addition to these common fields, each state contains entity-specific data defined by the respective entity specification.
+
+## State Identification and Versioning
+
+Each state is identified by the combination of its entity identifier and version number.
+
+Rules:
+
+- The entity identifier is derived from the entity definition and is immutable.
+- The version MUST start at 1 for the initial state.
+- Versions are strictly increasing.
+- Off-chain state advancement requires each new version to be exactly the previous version plus one.
+- On-chain enforcement requires only that the submitted version be strictly greater than the currently recorded on-chain version.
+
+## Channel State
+
+The channel state is the primary protocol state. It represents the current configuration of a channel.
+
+| Field | Description |
+| --- | --- |
+| `ChannelId` | 32-byte identifier derived from the channel definition. |
+| `Metadata` | 32-byte hash of channel metadata. |
+| `Version` | 64-bit unsigned integer state version. |
+| `HomeLedger` | Asset allocations on the home chain. |
+| `NonHomeLedger` | Asset allocations on the non-home chain. |
+| `Transition` | Operation that produced this state. |
+| `UserSig` | User signature for the state. |
+| `NodeSig` | Node signature for the state. |
+
+The channel identifier encodes a protocol version byte as its first byte, followed by the hash of the channel definition parameters.
+
+## Ledger
+
+A ledger records asset allocations for a specific blockchain within a channel. Each channel state contains exactly two ledgers: a home ledger and a non-home ledger.
+
+| Field | Description |
+| --- | --- |
+| `ChainId` | Identifier of the blockchain this ledger is associated with. |
+| `Token` | Token contract address on this chain. |
+| `Decimals` | Decimal precision of the token on this chain. |
+| `UserAllocation` | Amount allocated to the User. |
+| `UserNetFlow` | Cumulative net flow for the User; MAY be negative. |
+| `NodeAllocation` | Amount allocated to the Node. |
+| `NodeNetFlow` | Cumulative net flow for the Node; MAY be negative. |
+
+The ledger invariant MUST hold at all times:
+
+```text
+UserAllocation + NodeAllocation == UserNetFlow + NodeNetFlow
+```
+
+All allocation values MUST be non-negative. Net flow values MAY be negative, reflecting outbound transfers or withdrawals that exceed inbound flows.
+
+![State ledger advancement](/img/protocol/state-ledger-advancement.png)
+
+## Empty Non-Home Ledger
+
+When a channel state does not involve cross-chain operations, the non-home ledger MUST be empty.
+
+| Field | Empty value |
+| --- | --- |
+| `ChainId` | `0` |
+| `Token` | Zero address (`0x0000...0000`) |
+| `Decimals` | `0` |
+| `UserAllocation` | `0` |
+| `UserNetFlow` | `0` |
+| `NodeAllocation` | `0` |
+| `NodeNetFlow` | `0` |
+
+An empty non-home ledger is structurally present but zeroed. A non-home ledger with metadata, such as non-zero `ChainId` or `Token`, but zero balances is NOT considered empty.
+
+## Off-Chain Representation
+
+The off-chain representation is the primary operational format of a channel state. It is exchanged between participants during state advancement and is the representation that is signed.
+
+The off-chain representation contains all channel state fields directly, including full transition data: type, transaction identifier, account identifier, and amount.
+
+## Enforcement Representation
+
+The off-chain and enforcement representations depict the same logical state. The enforcement representation is derived deterministically from the off-chain representation.
+
+Preserved fields:
+
+- Version.
+- Home and non-home ledger fields: `ChainId`, `Token`, `Decimals`, `UserAllocation`, `UserNetFlow`, `NodeAllocation`, `NodeNetFlow`.
+
+Derived fields:
+
+- **Intent**: derived from transition type through the intent mapping table.
+- **MetadataHash**: Keccak-256 hash of ABI-encoded transition data: type, transaction identifier, account identifier, and amount.
+
+The enforcement representation is constructed as:
+
+```text
+SignablePayload = AbiEncode(ChannelId, AbiEncode(Version, Intent, MetadataHash, HomeLedger, NonHomeLedger))
+```
+
+Because this mapping is deterministic, signatures over off-chain state are valid for enforcement and vice versa.
+
+## Intent Mapping
+
+| On-chain intent | Transition |
+| --- | --- |
+| `OPERATE` | TransferSend, TransferReceive, Commit, Release, Acknowledgement |
+| `CLOSE` | Finalize |
+| `DEPOSIT` | Home Deposit |
+| `WITHDRAW` | Home Withdrawal |
+| `INITIATE_ESCROW_DEPOSIT` | Escrow Deposit Initiate |
+| `FINALIZE_ESCROW_DEPOSIT` | Escrow Deposit Finalize |
+| `INITIATE_ESCROW_WITHDRAWAL` | Escrow Withdrawal Initiate |
+| `FINALIZE_ESCROW_WITHDRAWAL` | Escrow Withdrawal Finalize |
+| `INITIATE_MIGRATION` | Migration Initiate |
+| `FINALIZE_MIGRATION` | Migration Finalize |
+
+Transitions that map to `OPERATE` do not require on-chain checkpointing under normal operation.
+
+## Transition Field
+
+Each state update includes a transition describing the operation that produced the new state.
+
+| Field | Description |
+| --- | --- |
+| `Type` | Transition type identifier. |
+| `TxId` | Transaction identifier hash. |
+| `AccountId` | Context-dependent account identifier; semantics vary by transition type. |
+| `Amount` | Amount involved in the transition. |
+
+## State Consistency Rules
+
+State validity requirements differ between off-chain advancement and on-chain enforcement. In both contexts, these invariants MUST hold:
+
+- The entity identifier MUST match the entity definition.
+- The version MUST be strictly greater than the previously accepted version.
+- Ledger invariants MUST be satisfied: allocations equal net flows, and allocation values are non-negative.
