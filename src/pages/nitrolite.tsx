@@ -42,7 +42,7 @@ const FeatureList: FeatureItem[] = [
         trading capabilities and instant cross-chain settlements.
       </>
     ),
-    link: '/nitrolite/build/quick-start',
+    link: '/nitrolite/build/getting-started/quickstart',
   },
   {
     title: 'Join the Community',

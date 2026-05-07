@@ -155,8 +155,8 @@ const config: Config = {
           customProps: { showOn: 'nitrolite' },
         },
         {
-          type: 'doc',
-          docId: 'build/quick-start/index',
+          to: '/nitrolite/build/getting-started/quickstart',
+          activeBasePath: '/nitrolite/build',
           label: 'Build',
           position: 'left',
           customProps: { showOn: 'nitrolite' },
@@ -231,7 +231,7 @@ const config: Config = {
             },
             {
               label: 'Build',
-              to: '/nitrolite/build/quick-start',
+              to: '/nitrolite/build/getting-started/quickstart',
             },
             {
               label: 'Protocol',

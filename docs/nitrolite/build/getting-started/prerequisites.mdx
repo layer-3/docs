@@ -1,34 +1,27 @@
 ---
 sidebar_position: 2
 title: Prerequisites & Environment
-description: Set up your development environment for building Yellow Apps
+description: Set up a Node 20 TypeScript environment for @yellow-org/sdk.
 keywords: [prerequisites, setup, development, environment, Node.js, viem]
 ---
 
-import Tooltip from '@site/src/components/Tooltip';
-import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
-
-:::warning[Work in Progress]
-This page was carried over from the v0.5.x documentation and has not yet been fully updated for v1.x. Some terminology, code examples, and API references may be outdated. An update is in progress.
-:::
-
 # Prerequisites & Environment
 
-In this guide, you will set up a complete development environment for building applications on Yellow Network.
+Use this checklist to prepare a local TypeScript project for the v1 Nitrolite SDK.
 
-**Goal**: Have a working local environment ready for Yellow App development.
-
----
+:::tip Choosing your SDK
+New v1 app: use [`@yellow-org/sdk`](../sdk/typescript/getting-started). Migrating from 0.5.3: start with [`@yellow-org/sdk-compat`](../sdk/typescript-compat/overview) and the codemod, then move native flows over when you are ready. See the [SDK overview](../sdk/) for the full decision tree.
+:::
 
 ## System Requirements
 
 | Requirement | Minimum | Recommended |
 |-------------|---------|-------------|
-| **Node.js** | 18.x | 20.x or later |
+| **Node.js** | 20.x | 20.x or later |
 | **npm/yarn/pnpm** | Latest stable | Latest stable |
-| **Operating System** | macOS, Linux, Windows | macOS, Linux |
+| **Operating System** | macOS, Linux, Windows | macOS or Linux |
 
----
+The package declares `engines.node >=20.0.0`. Some package managers only warn on an older runtime, but the SDK and its dependencies are tested against Node 20 or later.
 
 ## Required Knowledge
 
@@ -45,70 +38,48 @@ Before building on Yellow Network, you should be comfortable with:
 If you're new to blockchain development, start with the [Ethereum Developer Documentation](https://ethereum.org/developers) to understand wallets, transactions, and smart contract basics.
 :::
 
----
-
 ## Step 1: Install Node.js
 
-### macOS (using Homebrew)
+### macOS
 
 ```bash
-# Install Homebrew if you don't have it
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install Node.js
 brew install node@20
-
-# Verify installation
-node --version  # Should show v20.x.x
-npm --version   # Should show 10.x.x
+node --version
+npm --version
 ```
 
-### Linux (Ubuntu/Debian)
+### Linux
 
 ```bash
-# Install Node.js via NodeSource
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
-
-# Verify installation
 node --version
 npm --version
 ```
 
 ### Windows
 
-Download and run the installer from [nodejs.org](https://nodejs.org/).
-
----
+Download and run the current LTS installer from [nodejs.org](https://nodejs.org/), then verify `node --version` in a new terminal.
 
 ## Step 2: Install Core Dependencies
 
-Create a new project and install the required packages:
+Create a project and install the v1 SDK:
 
 ```bash
-# Create project directory
-mkdir yellow-app && cd yellow-app
-
-# Initialize project
+mkdir yellow-app
+cd yellow-app
 npm init -y
-
-# Install core dependencies
-npm install @erc7824/nitrolite viem
-
-# Install development dependencies
-npm install -D typescript @types/node tsx
+npm install @yellow-org/sdk decimal.js viem dotenv
+npm install -D typescript @types/node
 ```
-
-### Package Overview
 
 | Package | Purpose |
 |---------|---------|
-| `@erc7824/nitrolite` | Yellow Network SDK for state channel operations |
-| `viem` | Modern Ethereum library for wallet and contract interactions |
-| `typescript` | Type safety and better developer experience |
-| `tsx` | Run TypeScript files directly |
-
----
+| `@yellow-org/sdk` | v1 client for Nitronode payment channels |
+| `decimal.js` | Exact asset amounts without floating-point rounding |
+| `viem` | Wallet, address, and blockchain RPC utilities |
+| `dotenv` | Local `.env` loading for development scripts |
+| `typescript` | Type checking and JavaScript output |
 
 ## Step 3: Configure TypeScript
 
@@ -124,10 +95,9 @@ Create `tsconfig.json`:
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "."
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "scripts/**/*"]
 }
 ```
 
@@ -137,84 +107,63 @@ Update `package.json`:
 {
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/src/index.js"
   }
 }
 ```
 
----
-
 ## Step 4: Set Up Environment Variables
 
-Create `.env` for sensitive configuration:
+Create `.env` for sensitive values:
 
 ```bash
-# .env - Never commit this file!
-
-# Your wallet private key (for development only)
+# .env - never commit this file
 PRIVATE_KEY=0x...
-
-# RPC endpoints
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-BASE_RPC_URL=https://base-sepolia.g.alchemy.com/v2/YOUR_KEY
-
-# Clearnode WebSocket endpoint
-# Production: wss://clearnet.yellow.com/ws
-# Sandbox: wss://clearnet-sandbox.yellow.com/ws
-CLEARNODE_WS_URL=wss://clearnet-sandbox.yellow.com/ws
+RECIPIENT=0x...
+RPC_URL=https://rpc-amoy.polygon.technology
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
 ```
 
-Add to `.gitignore`:
+:::info Sandbox URL - coming soon
+`NITRONODE_WS_URL` intentionally uses a placeholder until the canonical public Nitronode sandbox endpoint is published. Keep the variable name now so the final URL swap is a one-line change.
+:::
+
+Add local files to `.gitignore`:
 
 ```bash
-# .gitignore
 .env
 .env.local
 node_modules/
 dist/
 ```
 
-Install dotenv for loading environment variables:
-
-```bash
-npm install dotenv
-```
-
----
-
 ## Step 5: Wallet Setup
 
-### Development Wallet
+Use a dedicated development wallet. Never reuse a wallet that holds mainnet funds.
 
-For development, create a dedicated wallet:
-
-```typescript
-// scripts/create-wallet.ts
+```typescript title="scripts/create-wallet.ts"
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 const privateKey = generatePrivateKey();
 const account = privateKeyToAccount(privateKey);
 
-console.log('New Development Wallet');
-console.log('----------------------');
+console.log('New development wallet');
 console.log('Address:', account.address);
-console.log('Private Key:', privateKey);
-console.log('\n⚠️  Save this private key securely and add to .env');
+console.log('Private key:', privateKey);
+console.log('Save this key in .env as PRIVATE_KEY.');
 ```
 
 Run it:
 
 ```bash
-npx tsx scripts/create-wallet.ts
+npm run build
+node dist/scripts/create-wallet.js
 ```
 
 ### Get Test Tokens
 
-#### Yellow Network Sandbox Faucet (Recommended)
-
-For testing on the Yellow Network Sandbox, you can request test tokens directly to your unified balance:
+<!-- coming soon: faucet endpoint pending; OQ-6
 
 ```bash
 curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
@@ -222,162 +171,78 @@ curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
   -d '{"userAddress":"<your_wallet_address>"}'
 ```
 
-Replace `<your_wallet_address>` with your actual wallet address.
+-->
 
-:::tip No On-Chain Operations Needed
-Test tokens (ytest.USD) are credited directly to your unified balance on the Sandbox Clearnode. No deposit or channel operations are required—you can start transacting immediately!
-:::
-
-#### Testnet Faucets (For On-Chain Testing)
-
-If you need on-chain test tokens for Sepolia or Base Sepolia:
+If you need on-chain gas or token balances before the sandbox faucet is pinned, use the relevant testnet faucet for your chain and RPC endpoint.
 
 | Network | Faucet |
 |---------|--------|
-| Sepolia | [sepoliafaucet.com](https://sepoliafaucet.com) |
-| Base Sepolia | [base.org/faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet) |
-
-:::warning Development Only
-Never use your main wallet or real funds for development. Always create a separate development wallet with test tokens.
-:::
-
----
+| Polygon Amoy | [Polygon Faucet](https://faucet.polygon.technology/) |
+| Sepolia | [Ethereum Sepolia Faucet](https://sepoliafaucet.com/) |
+| Base Sepolia | [Base Faucet](https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet) |
 
 ## Step 6: Verify Setup
 
-Create `src/index.ts` to verify everything works:
+Create `src/index.ts`:
 
-```typescript
+```typescript title="src/index.ts"
 import 'dotenv/config';
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
 import { createPublicClient, http } from 'viem';
-import { sepolia } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
 
-async function main() {
-  // Verify environment variables
-  const privateKey = process.env.PRIVATE_KEY;
-  if (!privateKey) {
-    throw new Error('PRIVATE_KEY not set in .env');
+const PRIVATE_KEY = process.env.PRIVATE_KEY as `0x${string}`;
+const RPC_URL = process.env.RPC_URL;
+const NITRONODE_WS_URL = process.env.NITRONODE_WS_URL;
+const CHAIN_ID = 80002n;
+
+if (!PRIVATE_KEY) throw new Error('PRIVATE_KEY not set in .env');
+if (!RPC_URL) throw new Error('RPC_URL not set in .env');
+
+const publicClient = createPublicClient({
+  transport: http(RPC_URL),
+});
+
+const blockNumber = await publicClient.getBlockNumber();
+const { stateSigner, txSigner } = createSigners(PRIVATE_KEY);
+
+console.log('Wallet loaded:', stateSigner.getAddress());
+console.log('RPC connected, block:', blockNumber.toString());
+
+if (!NITRONODE_WS_URL || NITRONODE_WS_URL === '<sandbox-url-coming-soon>') {
+  console.log('Nitronode sandbox URL pending; wallet and RPC verified.');
+} else {
+  const client = await Client.create(
+    NITRONODE_WS_URL,
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(CHAIN_ID, RPC_URL),
+  );
+
+  try {
+    console.log('Nitronode connected as:', client.getUserAddress());
+  } finally {
+    await client.close();
   }
-
-  // Create account from private key
-  const account = privateKeyToAccount(privateKey as `0x${string}`);
-  console.log('✓ Wallet loaded:', account.address);
-
-  // Create public client
-  const client = createPublicClient({
-    chain: sepolia,
-    transport: http(process.env.SEPOLIA_RPC_URL),
-  });
-
-  // Check connection
-  const blockNumber = await client.getBlockNumber();
-  console.log('✓ Connected to Sepolia, block:', blockNumber);
-
-  // Check balance
-  const balance = await client.getBalance({ address: account.address });
-  console.log('✓ ETH balance:', balance.toString(), 'wei');
-
-  console.log('\n🎉 Environment setup complete!');
 }
-
-main().catch(console.error);
 ```
 
 Run the verification:
 
 ```bash
-npm run dev
+npm run build
+npm start
 ```
 
-Expected output:
+Until the sandbox URL is live, the script should stop after confirming the wallet and blockchain RPC. Once the URL is available, it also connects through `Client.create()` and prints `client.getUserAddress()`.
 
-```
-✓ Wallet loaded: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
-✓ Connected to Sepolia, block: 12345678
-✓ ETH balance: 100000000000000000 wei
+## When to add client options
 
-🎉 Environment setup complete!
-```
+Use `withBlockchainRPC(chainId, rpcURL)` when you call any method that needs on-chain settlement, including `checkpoint()`, `approveToken()`, token allowance checks, deposits, or withdrawals.
 
----
-
-## Project Structure
-
-Recommended folder structure for Yellow Apps:
-
-```
-yellow-app/
-├── src/
-│   ├── index.ts          # Entry point
-│   ├── config.ts         # Configuration
-│   ├── client.ts         # VirtualApp client setup
-│   ├── auth.ts           # Authentication logic
-│   └── channels/
-│       ├── create.ts     # Channel creation
-│       ├── transfer.ts   # Transfer operations
-│       └── close.ts      # Channel closure
-├── scripts/
-│   └── create-wallet.ts  # Utility scripts
-├── .env                  # Environment variables (git-ignored)
-├── .gitignore
-├── package.json
-└── tsconfig.json
-```
-
----
-
-## Supported Networks
-
-To get the current list of supported chains and contract addresses, query the Clearnode's `get_config` endpoint:
-
-```javascript
-// Example: Fetch supported chains and contract addresses
-const ws = new WebSocket('wss://clearnet-sandbox.yellow.com/ws');
-
-ws.onopen = () => {
-  const request = {
-    req: [1, 'get_config', {}, Date.now()],
-    sig: [] // get_config is a public endpoint, no signature required
-  };
-  ws.send(JSON.stringify(request));
-};
-
-ws.onmessage = (event) => {
-  const response = JSON.parse(event.data);
-  console.log('Supported chains:', response.res[2].chains);
-  console.log('Contract addresses:', response.res[2].contracts);
-};
-```
-
-:::tip Dynamic Configuration
-The `get_config` method returns real-time information about supported chains, contract addresses, and Clearnode capabilities. This ensures you always have the most up-to-date network information.
-:::
-
----
+Use `withApplicationID(appID)` when you want Nitronode records tagged with the application that produced them. This is optional metadata, but useful once multiple apps share the same node or wallet.
 
 ## Next Steps
 
-Your environment is ready! Continue to:
-
-- **[Key Terms & Mental Models](./key-terms.mdx)** — Understand the core concepts
-- **[Quickstart](./quickstart.mdx)** — Build your first Yellow App
-- **[State Channels vs L1/L2](/nitrolite/learn/core-concepts/state-channels-vs-l1-l2)** — Deep dive into state channels
-
----
-
-## Common Issues
-
-### "Module not found" errors
-Ensure you have `"type": "module"` in `package.json` and are using ESM imports.
-
-### "Cannot find module 'viem'"
-Run `npm install` to ensure all dependencies are installed.
-
-### RPC rate limiting
-Use a dedicated RPC provider (Infura, Alchemy) instead of public endpoints for production.
-
-### TypeScript errors with viem
-Ensure your `tsconfig.json` has `"moduleResolution": "bundler"` or `"node16"`.
-
-
+- [Quickstart](./quickstart) - make your first deposit and transfer.
+- [Key Terms & Mental Models](./key-terms) - learn the vocabulary used across the docs.
+- [TypeScript SDK](../sdk/typescript/getting-started) - read the full SDK guide.
