@@ -10,7 +10,7 @@ keywords: [prerequisites, setup, development, environment, Node.js, viem]
 Use this checklist to prepare a local TypeScript project for the v1 Nitrolite SDK.
 
 :::tip Choosing your SDK
-New v1 app: use [`@yellow-org/sdk`](../sdk/typescript/getting-started). Migrating from 0.5.3: start with [`@yellow-org/sdk-compat`](../sdk/typescript-compat/overview) and the codemod, then move native flows over when you are ready. See the [SDK overview](../sdk/) for the full decision tree.
+New v1 app: use [`@yellow-org/sdk`](../sdk/typescript/getting-started). Migrating from 0.5.3: read the [migration overview](../sdk/typescript-compat/overview) before moving native flows over. See the [SDK overview](../sdk/) for the full decision tree.
 :::
 
 ## System Requirements
@@ -119,14 +119,16 @@ Create `.env` for sensitive values:
 
 ```bash
 # .env - never commit this file
-PRIVATE_KEY=0x...
-RECIPIENT=0x...
-RPC_URL=https://rpc-amoy.polygon.technology
-NITRONODE_WS_URL=<sandbox-url-coming-soon>
+USER_PRIVATE_KEY=0x...
+APP_PRIVATE_KEY=0x...
+NITRONODE_WS_URL=wss://nitronode-stress.yellow.org/v1/ws
+RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CHAIN_ID=11155111
+ASSET=yellow
 ```
 
-:::info Sandbox URL - coming soon
-`NITRONODE_WS_URL` intentionally uses a placeholder until the canonical public Nitronode sandbox endpoint is published. Keep the variable name now so the final URL swap is a one-line change.
+:::info Test endpoint
+`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against. The quickstart lifecycle example uses the current public stress endpoint and Sepolia test assets.
 :::
 
 Add local files to `.gitignore`:
@@ -151,7 +153,7 @@ const account = privateKeyToAccount(privateKey);
 console.log('New development wallet');
 console.log('Address:', account.address);
 console.log('Private key:', privateKey);
-console.log('Save this key in .env as PRIVATE_KEY.');
+console.log('Save this key in .env as USER_PRIVATE_KEY or APP_PRIVATE_KEY.');
 ```
 
 Run it:
@@ -190,12 +192,12 @@ import 'dotenv/config';
 import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
 import { createPublicClient, http } from 'viem';
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY as `0x${string}`;
+const USER_PRIVATE_KEY = process.env.USER_PRIVATE_KEY as `0x${string}`;
 const RPC_URL = process.env.RPC_URL;
 const NITRONODE_WS_URL = process.env.NITRONODE_WS_URL;
-const CHAIN_ID = 80002n;
+const CHAIN_ID = BigInt(process.env.CHAIN_ID || '11155111');
 
-if (!PRIVATE_KEY) throw new Error('PRIVATE_KEY not set in .env');
+if (!USER_PRIVATE_KEY) throw new Error('USER_PRIVATE_KEY not set in .env');
 if (!RPC_URL) throw new Error('RPC_URL not set in .env');
 
 const publicClient = createPublicClient({
@@ -203,13 +205,13 @@ const publicClient = createPublicClient({
 });
 
 const blockNumber = await publicClient.getBlockNumber();
-const { stateSigner, txSigner } = createSigners(PRIVATE_KEY);
+const { stateSigner, txSigner } = createSigners(USER_PRIVATE_KEY);
 
 console.log('Wallet loaded:', stateSigner.getAddress());
 console.log('RPC connected, block:', blockNumber.toString());
 
-if (!NITRONODE_WS_URL || NITRONODE_WS_URL === '<sandbox-url-coming-soon>') {
-  console.log('Nitronode sandbox URL pending; wallet and RPC verified.');
+if (!NITRONODE_WS_URL) {
+  console.log('Nitronode URL not set; wallet and RPC verified.');
 } else {
   const client = await Client.create(
     NITRONODE_WS_URL,
@@ -233,7 +235,7 @@ npm run build
 npm start
 ```
 
-Until the sandbox URL is live, the script should stop after confirming the wallet and blockchain RPC. Once the URL is available, it also connects through `Client.create()` and prints `client.getUserAddress()`.
+Without a Nitronode URL, the script stops after confirming the wallet and blockchain RPC. With a v1 Nitronode URL, it also connects through `Client.create()` and prints `client.getUserAddress()`.
 
 ## When to add client options
 
@@ -243,6 +245,6 @@ Use `withApplicationID(appID)` when you want Nitronode records tagged with the a
 
 ## Next Steps
 
-- [Quickstart](./quickstart) - make your first deposit and transfer.
+- [Quickstart](./quickstart) - run the native v1 channel and app-session lifecycle.
 - [Key Terms & Mental Models](./key-terms) - learn the vocabulary used across the docs.
 - [TypeScript SDK](../sdk/typescript/getting-started) - read the full SDK guide.

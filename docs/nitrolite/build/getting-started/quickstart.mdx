@@ -1,206 +1,214 @@
 ---
 title: Quickstart
-description: Create a v1 Nitrolite client, fund a channel, and send a transfer with @yellow-org/sdk.
+description: Run a native v1 TypeScript SDK channel and app-session lifecycle.
 sidebar_position: 1
 displayed_sidebar: buildSidebar
 ---
 
 # Quickstart
 
-Build a minimal Nitrolite script that connects to Nitronode, signs channel states with your wallet, deposits USDC into a home channel, sends an off-chain transfer, and closes the connection cleanly.
+Run a complete native v1 Nitrolite flow with `@yellow-org/sdk`: connect to Nitronode, prepare a home channel, create an app session, deposit into it, operate, withdraw, and close the session.
 
-:::info Sandbox URL - coming soon
-The canonical public Nitronode sandbox WebSocket URL is still being pinned by the ops team. Use the literal placeholder shown below, then replace it in the WebSocket URL line only when the final hostname is published.
-:::
-
-:::tip Migrating from 0.5.3?
-Already on `@erc7824/nitrolite@0.5.3`? Skip ahead to [Migrating from 0.5.3](../sdk/typescript-compat/overview) - you'll probably want `@yellow-org/sdk-compat` plus the `@yellow-org/nitrolite-codemod`, not this guide.
-:::
+The runnable source lives in [`examples/nitrolite-v1-lifecycle`](https://github.com/layer-3/docs/tree/main/examples/nitrolite-v1-lifecycle). The snippets below explain the stages; the checked-in example is the source of truth.
 
 ## Prerequisites
 
-Before you start, make sure you have:
+You need:
 
 - Node.js 20 or later.
-- A development wallet private key with testnet gas.
-- A blockchain RPC endpoint for Polygon Amoy or your target chain.
-- `decimal.js` for exact asset amounts.
-- `viem` for wallet and address types used by the SDK.
+- A disposable user wallet with Sepolia gas and the selected test asset.
+- A separate app signer wallet. It can be unfunded for this example.
+- A Sepolia RPC URL.
+- A v1 Nitronode WebSocket URL.
 
-See [Prerequisites & Environment](./prerequisites) for a full setup checklist.
+See [Prerequisites & Environment](./prerequisites) for the full setup checklist.
 
-## Step 1: Install
+## Step 1: Install and configure
 
-Create a new TypeScript project and install the v1 SDK:
+Clone the docs repo, enter the tested example package, and install its isolated dependencies:
 
 ```bash
-mkdir yellow-quickstart
-cd yellow-quickstart
-npm init -y
-npm install @yellow-org/sdk decimal.js viem dotenv
-npm install -D typescript @types/node
+git clone https://github.com/layer-3/docs.git
+cd docs/examples/nitrolite-v1-lifecycle
+cp .env.example .env
+npm install
 ```
 
-Set the project to ESM and add a build script:
+Edit `.env`:
 
-```json title="package.json"
-{
-  "type": "module",
-  "scripts": {
-    "build": "tsc"
-  }
-}
+```bash title=".env"
+USER_PRIVATE_KEY=0x...
+APP_PRIVATE_KEY=0x...
+NITRONODE_WS_URL=wss://nitronode-stress.yellow.org/v1/ws
+RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CHAIN_ID=11155111
+ASSET=yellow
+
+CHANNEL_DEPOSIT_AMOUNT=0.01
+APP_DEPOSIT_AMOUNT=0.005
+OPERATE_AMOUNT=0.001
+WITHDRAW_AMOUNT=0.002
 ```
 
-Add a minimal `tsconfig.json`:
+Use a dedicated test wallet. Do not reuse a wallet that holds mainnet funds.
 
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "dist"
-  },
-  "include": ["src/**/*"]
-}
-```
+## Step 2: Connect clients
 
-## Step 2: Create signers
+The example creates separate SDK clients for the user and the app signer:
 
-`createSigners()` builds the two signer objects the client needs: one for off-chain channel states and one for blockchain transactions.
+```typescript
+const userSigners = createSigners(config.userPrivateKey);
+const appSigners = createSigners(config.appPrivateKey);
 
-```typescript title="src/index.ts"
-import 'dotenv/config';
-import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
-import Decimal from 'decimal.js';
-
-const PRIVATE_KEY = process.env.PRIVATE_KEY as `0x${string}`;
-const RECIPIENT = process.env.RECIPIENT as `0x${string}`;
-const RPC_URL = process.env.RPC_URL;
-const CHAIN_ID = 80002n; // Polygon Amoy
-const ASSET = 'usdc';
-
-if (!PRIVATE_KEY) throw new Error('Set PRIVATE_KEY in .env');
-if (!RECIPIENT) throw new Error('Set RECIPIENT in .env');
-if (!RPC_URL) throw new Error('Set RPC_URL in .env');
-
-const { stateSigner, txSigner } = createSigners(PRIVATE_KEY);
-
-console.log('Wallet address:', stateSigner.getAddress());
-```
-
-## Step 3: Connect
-
-Create the client with a Nitronode WebSocket URL, both signers, and a chain RPC endpoint for on-chain settlement.
-
-```typescript title="src/index.ts"
-const NITRONODE_WS_URL = '<sandbox-url-coming-soon>'; // Replace with the canonical sandbox URL.
-
-const client = await Client.create(
-  NITRONODE_WS_URL,
-  stateSigner,
-  txSigner,
-  withBlockchainRPC(CHAIN_ID, RPC_URL),
+const user = await Client.create(
+  config.wsURL,
+  userSigners.stateSigner,
+  userSigners.txSigner,
+  withBlockchainRPC(config.chainId, config.rpcURL),
 );
-
-await client.setHomeBlockchain(ASSET, CHAIN_ID);
-console.log('Connected as:', client.getUserAddress());
 ```
 
-## Step 4: Get test tokens
+`createSigners()` derives both signer types the SDK needs: off-chain state signing and on-chain transaction signing.
 
-<!-- coming soon: faucet endpoint pending; OQ-6
+## Step 3: Prepare the home channel
 
-```bash
-curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
-  -H "Content-Type: application/json" \
-  -d '{"userAddress":"<your_wallet_address>"}'
-```
+The script loads Nitronode config, checks the configured asset, sets the asset home blockchain, and prepares the user home channel.
 
--->
+If the wallet already has a signed funded state, the script continues. Otherwise it runs:
 
-## Step 5: Deposit
+```typescript
+await client.approveToken(chainId, asset, depositAmount);
 
-Deposit builds and co-signs the next channel state off-chain. `checkpoint()` submits that state to the ChannelHub contract so the deposit is enforced on-chain.
-
-```typescript title="src/index.ts"
-await client.approveToken(CHAIN_ID, ASSET, new Decimal(5));
-
-const depositState = await client.deposit(CHAIN_ID, ASSET, new Decimal(5));
+const depositState = await client.deposit(chainId, asset, depositAmount);
 console.log('Deposit state version:', depositState.version);
 
-const depositTx = await client.checkpoint(ASSET);
-console.log('Deposit checkpoint tx:', depositTx);
+const txHash = await client.checkpoint(asset);
+console.log('Deposit checkpoint tx:', txHash);
 ```
 
-`approveToken()` is only needed before the first checkpoint for a token, or when you need to increase allowance.
+`deposit()` creates a co-signed channel state. `checkpoint()` submits that state to ChannelHub so the deposit is enforced on-chain.
 
-## Step 6: Transfer
+## Step 4: Create the app session
 
-Transfers advance the signed off-chain state. They do not need a checkpoint unless you want to settle the latest state on-chain.
+The app session has two participants: the user wallet and the app signer. Both sign the packed session definition.
 
-```typescript title="src/index.ts"
-const transferState = await client.transfer(
-  RECIPIENT,
-  ASSET,
-  new Decimal(1),
-);
+```typescript
+const definition: AppDefinitionV1 = {
+  applicationId: appID,
+  participants: [
+    { walletAddress: userAddress, signatureWeight: 1 },
+    { walletAddress: appAddress, signatureWeight: 1 },
+  ],
+  quorum: 2,
+  nonce: BigInt(Date.now()) * 1_000_000n,
+};
 
-console.log('Transfer transition:', transferState.transition.type);
+const payload = packCreateAppSessionRequestV1(definition, sessionData);
+const userSig = await userSessionSigner.signMessage(payload);
+const appSig = await appSessionSigner.signMessage(payload);
+
+const created = await client.createAppSession(definition, sessionData, [userSig, appSig]);
 ```
 
-## Step 7: Clean up
+## Step 5: Deposit into the app session
 
-Always close the client when your script is done:
+The user commits part of the home-channel balance into the app session with a deposit intent:
 
-```typescript title="src/index.ts"
-await client.close();
+```typescript
+const update: AppStateUpdateV1 = {
+  appSessionId: created.appSessionId,
+  intent: AppStateUpdateIntent.Deposit,
+  version: 2n,
+  allocations: [
+    { participant: userAddress, asset, amount: appDepositAmount },
+    { participant: appAddress, asset, amount: new Decimal(0) },
+  ],
+  sessionData: JSON.stringify({ intent: 'user_deposit' }),
+};
+
+await client.submitAppSessionDeposit(update, [userSig, appSig], asset, appDepositAmount);
 ```
 
-A complete script should wrap the channel operations in `try` / `finally` so the WebSocket closes even if a request fails.
+## Step 6: Operate, withdraw, and close
 
-```typescript title="src/index.ts"
-try {
-  await client.approveToken(CHAIN_ID, ASSET, new Decimal(5));
+After the app session is funded, the remaining stages use `submitAppState()` with different intents:
 
-  const depositState = await client.deposit(CHAIN_ID, ASSET, new Decimal(5));
-  console.log('Deposit state version:', depositState.version);
-
-  const depositTx = await client.checkpoint(ASSET);
-  console.log('Deposit checkpoint tx:', depositTx);
-
-  const transferState = await client.transfer(
-    RECIPIENT,
-    ASSET,
-    new Decimal(1),
-  );
-  console.log('Transfer transition:', transferState.transition.type);
-} finally {
-  await client.close();
-}
+```typescript
+await client.submitAppState(operateUpdate, operateSignatures);
+await client.submitAppState(withdrawUpdate, withdrawSignatures);
+await client.submitAppState(closeUpdate, closeSignatures);
 ```
 
-Run it after the sandbox URL is available and your `.env` values are set:
+- `Operate` moves a small purchase amount from the user allocation to the app signer allocation.
+- `Withdraw` releases part of the user allocation back to the home channel.
+- `Close` finalizes the app session and returns the remaining allocations.
+
+The example leaves the home channel open by default. Set `CLOSE_HOME_CHANNEL=true` only when you intentionally want to close the example channel after the app-session lifecycle.
+
+## Step 7: Run it
+
+Build and run the lifecycle:
 
 ```bash
 npm run build
-node dist/index.js
+npm run lifecycle
 ```
+
+A successful run prints each stage.
+
+<details>
+<summary>Sanitized sample output</summary>
+
+```text
+== Connect clients ==
+user=0xUSER_WALLET
+app=0xAPP_SIGNER
+
+== Inspect Nitronode config and set home blockchain ==
+node=0xNITRONODE_SIGNER version=13a90cd
+chain=ethereum_sepolia id=11155111
+asset=yellow decimals=18
+
+== Prepare user home channel ==
+signed state before prepare: version=2 transition=40 homeBalance=0.005 homeChannel=0xHOME_CHANNEL_ID
+pending state before prepare: version=4 transition=41 homeBalance=0.009 homeChannel=0xHOME_CHANNEL_ID
+acknowledging pending yellow channel state
+ack checkpoint tx=0xCHECKPOINT_TX_HASH
+home channel ready: version=5 transition=1 homeBalance=0.009 homeChannel=0xHOME_CHANNEL_ID
+
+== Run app-session lifecycle ==
+registering app=docs-v1-lifecycle-... owner=0xAPP_SIGNER
+app registry is disabled on this node; continuing with app-session creation
+created app session=0xAPP_SESSION_ID version=1 status=open
+after create: version=1 closed=false user=0 app=0
+app-session deposit nodeSig=0xNODE_SIGNATURE
+after app deposit: version=2 closed=false user=0.005 app=0
+after operate: version=3 closed=false user=0.004 app=0.001
+after withdraw: version=4 closed=false user=0.002 app=0.001
+after close: version=5 closed=true user=0 app=0
+
+== Final queries ==
+final signed channel state: version=6 transition=40 homeBalance=0.004 homeChannel=0xHOME_CHANNEL_ID
+final app session: version=5 closed=true user=0 app=0
+
+== Optional cleanup ==
+home-channel close skipped; set CLOSE_HOME_CHANNEL=true to run cleanup
+
+Lifecycle complete.
+```
+
+</details>
 
 ## What just happened
 
-- `createSigners()` derived wallet-backed signers for off-chain states and on-chain transactions.
-- `Client.create()` opened a v1 Nitronode WebSocket connection and attached a blockchain RPC endpoint for `checkpoint()`.
-- `deposit()` prepared a mutually signed channel state, then `checkpoint()` enforced it on-chain through ChannelHub.
-- `transfer()` advanced the off-chain channel state using `Decimal` amounts so asset precision stays exact.
+- `Client.create()` opened v1 Nitronode WebSocket connections for both signers.
+- `setHomeBlockchain()` selected the settlement chain for the asset.
+- `approveToken()`, `deposit()`, and `checkpoint()` prepared and enforced the user's home channel.
+- `packCreateAppSessionRequestV1()` and `packAppStateUpdateV1()` produced the exact hashes participants signed.
+- `createAppSession()`, `submitAppSessionDeposit()`, and `submitAppState()` moved through the app-session lifecycle.
 
 ## Next steps
 
 - [Configuration](../sdk/typescript/configuration) - timeouts, RPC endpoints, application IDs, and error handling.
-- [Multi-party app sessions](../sdk/multi-party-app-sessions) - commit channel funds into app sessions.
-- [Errors and recovery](../sdk/typescript/configuration#error-handling) - handle connection and operation failures.
-- [Migrating from 0.5.3](../sdk/typescript-compat/overview) - use the compat package and codemod before moving to native v1 APIs.
+- [Multi-party app sessions](../sdk/multi-party-app-sessions) - expand the same lifecycle to more participants.
+- [Key Terms & Mental Models](./key-terms) - learn the vocabulary used across the docs.
