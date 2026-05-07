@@ -12,37 +12,49 @@ These deployed examples show different ways to build on Nitrolite. Use the live 
 Stack and SDK details reflect the linked repositories when this page was added. The repositories are the source of truth if an example changes after deployment.
 :::
 
-<div className="row">
-  <div className="col col--4 margin-bottom--lg">
-    <div className="card" style={{height: '100%'}}>
+<div className="nitrolite-example-list">
+<div className="card nitrolite-example-card">
+  <div className="nitrolite-example-card__layout">
+    <a className="nitrolite-example-card__media" href="https://cosign-demo-two.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img className="nitrolite-example-card__image" src="/img/nitrolite/examples/cosign-demo.png" alt="Co-Sign Checkout front page" />
+    </a>
+    <div className="nitrolite-example-card__content">
       <div className="card__header">
-        <h3>Co-Sign Checkout</h3>
+        <h2>Co-Sign Checkout</h2>
       </div>
       <div className="card__body">
-        <p>
+        <p className="nitrolite-example-card__summary">
           A shared checkout demo where two participants create a cart, co-sign checkout actions,
           move funds into an app-session cart, propose purchases, close the cart, and withdraw
           remaining shared-wallet funds.
         </p>
-        <h4>Functionality</h4>
-        <ul>
-          <li>Two-party shared cart and approval flow.</li>
-          <li>Shared Wallet balance layer plus Checkout Cart app session.</li>
-          <li>Purchase proposals, session-key assisted approvals, cart close, and wallet withdrawal.</li>
-          <li>YUSD and YELLOW on Ethereum Sepolia.</li>
-        </ul>
-        <h4>Stack</h4>
-        <ul>
-          <li>Next.js 15, React 19, TypeScript, Tailwind CSS.</li>
-          <li>Supabase for rooms, proposals, events, and server-side proposal state.</li>
-          <li>Vercel deployment with a scheduled proposal-expiration route.</li>
-          <li>MetaMask SDK and viem for wallet and chain access.</li>
-        </ul>
-        <h4>SDKs</h4>
-        <ul>
-          <li>Vendored <code>@yellow-org/sdk</code> 1.2.0.</li>
-          <li>Vendored <code>@yellow-org/sdk-compat</code> 1.2.0.</li>
-        </ul>
+        <div className="nitrolite-example-card__details">
+          <div>
+            <h3>Functionality</h3>
+            <ul>
+              <li>Two-party shared cart and approval flow.</li>
+              <li>Shared Wallet plus Checkout Cart app session.</li>
+              <li>Purchase proposals, cart close, and wallet withdrawal.</li>
+              <li>YUSD and YELLOW on Ethereum Sepolia.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Stack</h3>
+            <ul>
+              <li>Next.js, React, TypeScript, Tailwind CSS.</li>
+              <li>Supabase rooms, proposals, and events.</li>
+              <li>Vercel deployment with scheduled proposal expiration.</li>
+              <li>MetaMask SDK and viem.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>SDKs</h3>
+            <ul>
+              <li><code>@yellow-org/sdk</code></li>
+              <li><code>@yellow-org/sdk-compat</code></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div className="card__footer">
         <a className="button button--primary button--sm margin-right--sm" href="https://cosign-demo-two.vercel.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
@@ -50,37 +62,51 @@ Stack and SDK details reflect the linked repositories when this page was added. 
       </div>
     </div>
   </div>
+</div>
 
-  <div className="col col--4 margin-bottom--lg">
-    <div className="card" style={{height: '100%'}}>
+<div className="card nitrolite-example-card">
+  <div className="nitrolite-example-card__layout">
+    <a className="nitrolite-example-card__media" href="https://nitrolite-go-example-production.up.railway.app/" target="_blank" rel="noopener noreferrer">
+      <img className="nitrolite-example-card__image" src="/img/nitrolite/examples/nitrolite-store.png" alt="Nitrolite Store front page" />
+    </a>
+    <div className="nitrolite-example-card__content">
       <div className="card__header">
-        <h3>Nitrolite Store</h3>
+        <h2>Nitrolite Store</h2>
       </div>
       <div className="card__body">
-        <p>
+        <p className="nitrolite-example-card__summary">
           A content-store reference app with a Go backend and browser frontend. The shopper connects
           MetaMask, opens a store app session, adds funds, buys catalog content, reads purchased
           content, and withdraws the remaining balance.
         </p>
-        <h4>Functionality</h4>
-        <ul>
-          <li>MetaMask shopper identity with backend app signing.</li>
-          <li>Frontend-constructed app-session updates that the Go backend validates and submits.</li>
-          <li>Instant catalog purchase and content gating after successful app-session updates.</li>
-          <li>YUSD and YELLOW catalog pricing on Ethereum Sepolia.</li>
-        </ul>
-        <h4>Stack</h4>
-        <ul>
-          <li>Go 1.25 service serving both API and built web UI.</li>
-          <li>React 19, Vite 8, TypeScript frontend.</li>
-          <li>SQLite persistence, Docker image, and Railway deployment shape.</li>
-          <li>MetaMask and viem in the browser.</li>
-        </ul>
-        <h4>SDKs</h4>
-        <ul>
-          <li>Go backend uses <code>github.com/layer-3/nitrolite/sdk/go</code> through <code>github.com/layer-3/nitrolite</code> v1.2.0.</li>
-          <li>Frontend uses <code>@yellow-org/sdk</code> 1.2.1 and <code>@yellow-org/sdk-compat</code> 1.2.1.</li>
-        </ul>
+        <div className="nitrolite-example-card__details">
+          <div>
+            <h3>Functionality</h3>
+            <ul>
+              <li>MetaMask shopper identity with backend app signing.</li>
+              <li>Frontend-constructed app-session updates.</li>
+              <li>Catalog purchase and content gating.</li>
+              <li>YUSD and YELLOW pricing on Ethereum Sepolia.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Stack</h3>
+            <ul>
+              <li>Go service serving API and built web UI.</li>
+              <li>React, Vite, TypeScript frontend.</li>
+              <li>SQLite persistence, Docker, Railway.</li>
+              <li>MetaMask and viem in the browser.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>SDKs</h3>
+            <ul>
+              <li><code>github.com/layer-3/nitrolite/sdk/go</code></li>
+              <li><code>@yellow-org/sdk</code></li>
+              <li><code>@yellow-org/sdk-compat</code></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div className="card__footer">
         <a className="button button--primary button--sm margin-right--sm" href="https://nitrolite-go-example-production.up.railway.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
@@ -88,36 +114,49 @@ Stack and SDK details reflect the linked repositories when this page was added. 
       </div>
     </div>
   </div>
+</div>
 
-  <div className="col col--4 margin-bottom--lg">
-    <div className="card" style={{height: '100%'}}>
+<div className="card nitrolite-example-card">
+  <div className="nitrolite-example-card__layout">
+    <a className="nitrolite-example-card__media" href="https://nexus-testnet-sepolia-ten.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img className="nitrolite-example-card__image" src="/img/nitrolite/examples/nexus-p2p-transfer.png" alt="Nexus P2P Transfer front page" />
+    </a>
+    <div className="nitrolite-example-card__content">
       <div className="card__header">
-        <h3>Nexus P2P Transfer</h3>
+        <h2>Nexus P2P Transfer</h2>
       </div>
       <div className="card__body">
-        <p>
+        <p className="nitrolite-example-card__summary">
           A workshop-style content app that demonstrates wallet connection, Nitrolite session setup,
           balance polling, and instant peer-to-peer support payments to post authors.
         </p>
-        <h4>Functionality</h4>
-        <ul>
-          <li>MetaMask connection and Sepolia network selection.</li>
-          <li>Nitrolite client session with balance and asset polling.</li>
-          <li>Post list with small support transfers to author wallets.</li>
-          <li>YUSD and YELLOW asset selection on Ethereum Sepolia.</li>
-        </ul>
-        <h4>Stack</h4>
-        <ul>
-          <li>Preact with Hooks, TypeScript, and Vite.</li>
-          <li>CSS Modules for application styling.</li>
-          <li>viem for wallet access and asset-unit conversion.</li>
-          <li>Vercel-hosted static frontend.</li>
-        </ul>
-        <h4>SDKs</h4>
-        <ul>
-          <li><code>@yellow-org/sdk</code> 1.2.1.</li>
-          <li><code>@yellow-org/sdk-compat</code> 1.2.1 with <code>NitroliteClient</code> and <code>EventPoller</code>.</li>
-        </ul>
+        <div className="nitrolite-example-card__details">
+          <div>
+            <h3>Functionality</h3>
+            <ul>
+              <li>MetaMask connection and Sepolia network selection.</li>
+              <li>Nitrolite client session with balance polling.</li>
+              <li>Small support transfers to author wallets.</li>
+              <li>YUSD and YELLOW asset selection.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Stack</h3>
+            <ul>
+              <li>Preact with Hooks, TypeScript, and Vite.</li>
+              <li>CSS Modules for app styling.</li>
+              <li>viem for wallet access and amount conversion.</li>
+              <li>Vercel-hosted static frontend.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>SDKs</h3>
+            <ul>
+              <li><code>@yellow-org/sdk</code></li>
+              <li><code>@yellow-org/sdk-compat</code></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div className="card__footer">
         <a className="button button--primary button--sm margin-right--sm" href="https://nexus-testnet-sepolia-ten.vercel.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
@@ -126,4 +165,4 @@ Stack and SDK details reflect the linked repositories when this page was added. 
     </div>
   </div>
 </div>
-
+</div>

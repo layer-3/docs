@@ -218,6 +218,101 @@ a.table-of-contents__link.table-of-contents__link--active code {
   color: #333333 !important;
 }
 
+/* Nitrolite Build examples page */
+.nitrolite-example-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.nitrolite-example-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.nitrolite-example-card__layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 44%) minmax(0, 1fr);
+}
+
+.nitrolite-example-card__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ifm-color-emphasis-100);
+  border-right: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.nitrolite-example-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.nitrolite-example-card__content {
+  min-width: 0;
+}
+
+.nitrolite-example-card__content .card__header h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.nitrolite-example-card__summary {
+  margin-bottom: 1rem;
+}
+
+.nitrolite-example-card__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.nitrolite-example-card__details > div:last-child {
+  grid-column: 1 / -1;
+}
+
+.nitrolite-example-card__details code {
+  overflow-wrap: anywhere;
+}
+
+.nitrolite-example-card__details h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.nitrolite-example-card__details ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.nitrolite-example-card__details li {
+  margin-bottom: 0.35rem;
+}
+
+@media (max-width: 996px) {
+  .nitrolite-example-card__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .nitrolite-example-card__media {
+    aspect-ratio: 16 / 10;
+    border-right: 0;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  }
+}
+
+@media (max-width: 640px) {
+  .nitrolite-example-card__details {
+    grid-template-columns: 1fr;
+  }
+}
+
 [data-theme='dark'] .table-of-contents__link:hover,
 [data-theme='dark'] .table-of-contents__link:hover code {
   color: #cccccc !important;
