@@ -6,11 +6,13 @@ sidebar_position: 3
 
 # On-Chain Migration Guide
 
-Covers deposits, withdrawals, channel operations, amount handling, and contract addresses when migrating from v0.5.3.
+This page covers deposits, withdrawals, channel operations, amount handling, and contract-address migration for apps moving from `@erc7824/nitrolite@0.5.3` to `@yellow-org/sdk-compat`.
 
 ## Deposits
 
-**Before (v0.5.3):** Manual approve → deposit → createChannel
+In v1, home-channel creation is implicit on first deposit. Apps should stop sending a separate `createChannel` workflow.
+
+**Before:** manual approve, deposit, and channel creation.
 
 ```typescript
 await approveToken(custody, tokenAddress, amount);
@@ -18,63 +20,104 @@ await sendRequest(createDepositMessage(signer.sign, { token: tokenAddress, amoun
 await sendRequest(createCreateChannelMessage(signer.sign, { token: tokenAddress, amount }));
 ```
 
-**After (compat):** Single call — approval and channel creation are implicit
+**After:** one compat call with raw token units.
 
 ```typescript
+const amount = 11_000_000n; // 11 USDC when the token has 6 decimals
 await client.deposit(tokenAddress, amount);
 ```
 
+`deposit()` resolves the token to a v1 asset, sets the home blockchain, calls the native deposit path, and checkpoints. If token allowance is missing, the compat client retries after approval through the v1 SDK.
+
 ## Withdrawals
 
-**Before (v0.5.3):** Manual close → checkpoint → withdraw
+**Before:** close or resize workflow plus a manual withdrawal request.
 
 ```typescript
-const closeMsg = await createCloseChannelMessage(signer.sign, { channel_id });
-const raw = await sendRequest(closeMsg);
+const closeMsg = await createCloseChannelMessage(signer.sign, channelId, destination);
+await sendRequest(closeMsg);
 await sendRequest(createWithdrawMessage(signer.sign, { token, amount }));
 ```
 
-**After (compat):** Single call
+**After:** one compat call with raw token units.
 
 ```typescript
+const amount = 5_000_000n; // 5 USDC
 await client.withdrawal(tokenAddress, amount);
 ```
 
 ## Channel Operations
 
-| Operation | v0.5.3 | Compat |
-|-----------|--------|--------|
-| Create | Explicit `createChannel()` | Implicit on first `deposit()` |
-| Close | `createCloseChannelMessage` + send + parse | `client.closeChannel()` |
-| Resize | `createResizeChannelMessage` + send + parse | `client.resizeChannel({ allocate_amount, token })` |
+| Operation | v0.5.3 habit | Compat behavior |
+|---|---|---|
+| Create | `createChannel()` | Unsupported as a standalone flow; first `deposit()` creates the home channel when needed |
+| Close | `createCloseChannelMessage` + send + parse | `client.closeChannel()` or `client.closeChannel({ tokenAddress })` |
+| Resize | `createResizeChannelMessage` + send + parse | `client.resizeChannel({ allocate_amount, token })`, implemented through deposit |
+| Checkpoint | `checkpointChannel(...)` | Fail-fast stub; use `client.innerClient.checkpoint(asset)` |
+| Challenge | `challengeChannel({ state })` | Delegates to the v1 challenge path |
 
 ## Amount Handling
 
-**Before (v0.5.3):** Raw `BigInt` everywhere; app must handle decimals
+Compat does not accept one universal amount shape. Use the canonical [amount-units table](./overview#amount-units) before changing production amounts.
 
 ```typescript
-const amount = 11_000_000n; // 11 USDC (6 decimals)
+// Raw token-unit bigint for deposit and withdrawal.
+await client.deposit(usdcTokenAddress, 11_000_000n);
+await client.withdrawal(usdcTokenAddress, 5_000_000n);
+
+// Helpers for display conversion.
+const formatted = client.formatAmount(usdcTokenAddress, 11_000_000n); // "11"
+const parsed = client.parseAmount(usdcTokenAddress, '11.0');          // 11_000_000n
 ```
 
-**After (compat):** Accepts both; conversion handled internally
+Transfers are different. A transfer allocation uses a raw asset-unit string:
 
 ```typescript
-// Raw BigInt still works
-await client.deposit(tokenAddress, 11_000_000n);
-
-// Or use helpers
-const formatted = client.formatAmount(tokenAddress, 11_000_000n); // "11.0"
-const parsed = client.parseAmount(tokenAddress, "11.0");           // 11_000_000n
+await client.transfer(recipientAddress, [
+  { asset: 'usdc', amount: '5000000' },
+]);
 ```
 
-For transfers and allocations, compat accepts human-readable strings: `{ asset: 'usdc', amount: '5.0' }`.
+App-session allocations are different again: they use human-readable decimal strings. Keep these three cases separate during review.
 
 ## Contract Addresses
 
-**Before (v0.5.3):** Manual config
+**Before:** apps often carried manual contract maps.
 
 ```typescript
 const addresses = { custody: '0x...', adjudicator: '0x...' };
 ```
 
-**After (compat):** Fetched from clearnode `get_config` — no manual setup. The `addresses` field in config is deprecated and ignored.
+**After:** contract and asset metadata comes from Nitronode config and asset discovery. The `addresses` config field is deprecated and ignored.
+
+```typescript
+const config = await client.getConfig();
+const assets = await client.getAssetsList();
+```
+
+If an on-chain helper needs an RPC URL for a chain, pass `blockchainRPCs` when creating `NitroliteClient` or use `blockchainRPCsFromEnv()`.
+
+```typescript
+const client = await NitroliteClient.create({
+  wsURL: '<sandbox-url-coming-soon>',
+  walletClient,
+  chainId: 11155111,
+  blockchainRPCs: {
+    11155111: process.env.SEPOLIA_RPC_URL!,
+  },
+});
+```
+
+## Approval Helpers
+
+Compat exposes allowance helpers for migration code that still thinks in raw token units:
+
+```typescript
+const allowance = await client.getTokenAllowance(tokenAddress);
+
+if (allowance < 11_000_000n) {
+  await client.approveTokens(tokenAddress, 11_000_000n);
+}
+```
+
+For native v1-only flows, use `client.innerClient.approveToken(chainId, asset, amount)` with `Decimal`.
