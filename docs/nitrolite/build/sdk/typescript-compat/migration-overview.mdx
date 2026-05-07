@@ -13,8 +13,13 @@ Use this guide when an existing app depends on `@erc7824/nitrolite@0.5.3` and ne
 Run the codemod before hand-editing. It rewrites imports, migrates client constructors, renames auth fields, updates dependencies, and leaves `TODO [codemod]` comments where a human needs to collapse a workflow.
 
 ```bash
-npx -y @yellow-org/nitrolite-codemod scan --path /path/to/your-app/src
-npx -y @yellow-org/nitrolite-codemod run --path /path/to/your-app --update-deps
+git clone https://github.com/layer-3/yellow-sdk-codemod.git
+cd yellow-sdk-codemod
+npm install
+npm run build
+
+node dist/cli.js scan --path /path/to/your-app/src
+node dist/cli.js run --path /path/to/your-app --update-deps
 ```
 
 Then search for the manual markers:
@@ -23,7 +28,7 @@ Then search for the manual markers:
 rg "TODO \\[codemod\\]" /path/to/your-app
 ```
 
-See the [overview](./overview) for the command sequence and `npx -y @yellow-org/nitrolite-codemod list` for available transforms.
+See the [overview](./overview) for the command sequence and `node dist/cli.js list` for available transforms.
 
 ## Install Compat
 
@@ -91,6 +96,23 @@ See the canonical [amount-units table](./overview#amount-units).
 | Channel creation | App calls `createChannel()` | First `deposit()` creates the home channel when needed |
 | Server-push events | App handles pushed channel and balance events | Use [EventPoller](./event-poller) |
 | Errors | App matches raw strings | Use typed errors and [Errors and recovery](./errors) |
+
+## Manual Review Checklist
+
+After the codemod runs, review each changed area before shipping:
+
+| Area | What to check |
+|---|---|
+| Imports | `@erc7824/nitrolite`, `@layer-3/nitrolite`, and vendored tarballs are gone from app source |
+| Client setup | `new NitroliteClient(...)` and `createNitroliteClient(...)` are replaced with `NitroliteClient.create({ wsURL, walletClient, chainId, blockchainRPCs })` |
+| Auth | `app_name`, `expire`, `participant`, and `challenge` are migrated to `application`, `expires_at`, `session_key`, `scope`, and `allowances` |
+| RPC chains | `create*Message` + `sendRequest` + `parse*Response` call chains are replaced with client methods or consciously kept as transitional helpers |
+| Channel operations | `createChannel`, `depositToChannel`, and old `approveToken` wrappers are replaced with `deposit`, `withdrawal`, `approveTokens`, or a direct `innerClient` call |
+| Events | WebSocket push handlers are replaced with [EventPoller](./event-poller) or app-owned polling |
+| Contract config | `custody`, `adjudicator`, `CUSTODIES`, and `ADJUDICATORS` constants are removed; config comes from Nitronode |
+| Amounts | Transfer amounts are raw asset-unit strings; app-session allocations are human-readable decimal strings |
+| Errors | Raw string matching is replaced with `NitroliteClient.classifyError()` and `getUserFacingMessage()` |
+| SSR | Do not import `Client` from `@yellow-org/sdk-compat`; import SDK classes directly from `@yellow-org/sdk` |
 
 ## Unsupported Surfaces
 

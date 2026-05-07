@@ -15,17 +15,23 @@ The published npm package audited for this migration path is `@erc7824/nitrolite
 <details>
 <summary><strong>Already integrated with <code>@erc7824/nitrolite</code>?</strong></summary>
 
-Speed up the migration with <code>@yellow-org/nitrolite-codemod</code>:
+Speed up the migration with the `yellow-sdk-codemod` repository:
 
 ```bash
+# Clone the codemod and install its dependencies
+git clone https://github.com/layer-3/yellow-sdk-codemod.git
+cd yellow-sdk-codemod
+npm install
+npm run build
+
 # Scan your codebase for migrate-able patterns (no files modified)
-npx -y @yellow-org/nitrolite-codemod scan --path /path/to/your-app/src
+node dist/cli.js scan --path /path/to/your-app/src
 
 # Apply transforms (and update package.json deps)
-npx -y @yellow-org/nitrolite-codemod run --path /path/to/your-app --update-deps
+node dist/cli.js run --path /path/to/your-app --update-deps
 ```
 
-After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `npx -y @yellow-org/nitrolite-codemod list` for the full transform list.
+After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `node dist/cli.js list` for the full transform list.
 
 </details>
 
