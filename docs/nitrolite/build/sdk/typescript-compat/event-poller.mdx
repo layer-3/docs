@@ -1,0 +1,98 @@
+---
+title: "EventPoller: bridging the dropped server-push model"
+description: Polling bridge for migrated v0.5.3 event handlers
+sidebar_position: 5
+---
+
+# EventPoller
+
+`EventPoller` is the compat bridge for apps that used 0.5.3-style pushed channel, balance, or asset updates. The v1 runtime does not preserve that server-push event model, so compat polls the query methods and calls your existing UI update hooks.
+
+Use it when the rest of your app still expects callbacks. If you are already rewriting the state layer, call `client.getChannels()`, `client.getBalances()`, and `client.getAssetsList()` directly.
+
+## Public Surface
+
+```typescript
+import { EventPoller } from '@yellow-org/sdk-compat';
+
+const poller = new EventPoller(client, callbacks, intervalMs);
+
+poller.start();
+poller.stop();
+poller.setInterval(10000);
+```
+
+The constructor takes the compat `NitroliteClient`, optional `EventPollerCallbacks`, and an optional interval in milliseconds. The default interval is `5000`.
+
+```typescript
+interface EventPollerCallbacks {
+  onChannelUpdate?: (channels: LedgerChannel[]) => void;
+  onBalanceUpdate?: (balances: LedgerBalance[]) => void;
+  onAssetsUpdate?: (assets: ClearNodeAsset[]) => void;
+  onError?: (error: Error) => void;
+}
+```
+
+`onAssetsUpdate` keeps the legacy asset shape for backwards compatibility. New native v1 code should read the asset surface directly from `@yellow-org/sdk`.
+
+## Full Example
+
+```typescript
+import {
+  EventPoller,
+  NitroliteClient,
+  getUserFacingMessage,
+} from '@yellow-org/sdk-compat';
+
+const client = await NitroliteClient.create({
+  wsURL: '<sandbox-url-coming-soon>',
+  walletClient,
+  chainId: 11155111,
+  blockchainRPCs,
+});
+
+const poller = new EventPoller(client, {
+  onChannelUpdate: (channels) => {
+    channelStore.replace(channels);
+  },
+  onBalanceUpdate: (balances) => {
+    balanceStore.replace(balances);
+  },
+  onAssetsUpdate: (assets) => {
+    assetStore.replace(assets);
+  },
+  onError: (err) => {
+    showToast(getUserFacingMessage(err));
+  },
+}, 5000);
+
+poller.start();
+
+window.addEventListener('beforeunload', () => {
+  poller.stop();
+});
+```
+
+## Intervals
+
+Use `2000` to `5000` ms during active deposits, withdrawals, or app-session transitions. Use `5000` to `10000` ms for normal dashboards, and `15000` to `30000` ms for background views. Switch intervals as the user moves between active and passive flows:
+
+```typescript
+poller.setInterval(isTransitionPending ? 3000 : 10000);
+```
+
+## Failure Behavior
+
+Each poll cycle calls:
+
+- `client.getChannels()`
+- `client.getBalances()`
+- `client.getAssetsList()`
+
+Those requests run independently. If one fails, `EventPoller` calls `onError` for that failure and still delivers fulfilled results from the other requests.
+
+`EventPoller` does not renew auth tokens, persist state, or replace your app cache. It gives migrated apps a single start/stop lifecycle and one error path while they move away from pushed WebSocket events.
+
+## Moving to Native v1
+
+When you remove compat, remove `EventPoller` too. Native v1 apps should own their own refresh policy and call SDK query methods such as `client.getChannels(wallet)`, `client.getBalances(wallet)`, and `client.getAssets()` from the screen that needs the data.
