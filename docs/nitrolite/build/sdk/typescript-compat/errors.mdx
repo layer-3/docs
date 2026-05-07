@@ -154,11 +154,21 @@ If a transfer uses `5.0`, fix it before retrying. Compat transfer uses raw asset
 Retry with capped backoff only after approval and state preconditions are satisfied. Keep the visible message behind `getUserFacingMessage(err)`:
 
 ```typescript
-for (const waitMs of [1000, 3000, 5000]) try {
-  await client.innerClient.checkpoint('usdc');
-  break;
-} catch (err) {
-  showToast(getUserFacingMessage(err));
-  await new Promise((resolve) => setTimeout(resolve, waitMs));
+let lastError: unknown;
+
+for (const waitMs of [1000, 3000, 5000]) {
+  try {
+    await client.innerClient.checkpoint('usdc');
+    lastError = undefined;
+    break;
+  } catch (err) {
+    lastError = err;
+    showToast(getUserFacingMessage(err));
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+  }
+}
+
+if (lastError) {
+  throw lastError;
 }
 ```

@@ -85,6 +85,8 @@ await client.createAppSession(definition, [
 ### Submit State
 
 ```typescript
+import { RPCAppStateIntent } from '@yellow-org/sdk-compat';
+
 await client.submitAppState({
   app_session_id: appSessionId,
   intent: RPCAppStateIntent.Operate,
