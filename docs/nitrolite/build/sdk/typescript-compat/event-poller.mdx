@@ -91,7 +91,7 @@ Each poll cycle calls:
 
 Those requests run independently. If one fails, `EventPoller` calls `onError` for that failure and still delivers fulfilled results from the other requests.
 
-`EventPoller` does not renew auth tokens, persist state, or replace your app cache. It gives migrated apps a single start/stop lifecycle and one error path while they move away from pushed WebSocket events.
+`EventPoller` does not renew auth tokens, persist state, or replace your app cache. It gives migrated apps a single start/stop lifecycle and normalizes channel, balance, and asset polling failures into one `onError` path while they move away from pushed WebSocket events.
 
 ## Moving to Native v1
 
