@@ -30,6 +30,29 @@ rg "TODO \\[codemod\\]" /path/to/your-app
 
 See the [overview](./overview) for the command sequence and `node dist/cli.js list` for available transforms.
 
+## MCP-Assisted Migration
+
+:::info Coming soon
+The Yellow SDK MCP server is proposed for npm publication as `@yellow-org/sdk-mcp`. Until that package is published, treat this as a preview of the assisted workflow, not a command that should work today.
+:::
+
+After publication, connect the MCP server to your AI coding tool:
+
+```bash
+# Coming soon: run this only after @yellow-org/sdk-mcp is published
+codex mcp add nitrolite -- npx -y @yellow-org/sdk-mcp@^1
+```
+
+Then use the MCP as a second review pass after the codemod:
+
+1. Run `server_info` to confirm the MCP content version matches the SDK version you are migrating to.
+2. Use the `migrate-from-v053` prompt to walk through changed files and unresolved `TODO [codemod]` markers.
+3. Use `validate_import` when you are unsure whether a symbol belongs to `@yellow-org/sdk-compat` or native `@yellow-org/sdk`.
+4. Use `get_rpc_method` to map old `create*Message` + `sendRequest` + `parse*Response` flows onto the v1 wire method.
+5. Use `lookup_method`, `lookup_type`, or `search_api` to verify direct v1 SDK replacements before reaching for `client.innerClient`.
+
+MCP assistance does not replace the manual checklist below. It gives your coding tool the SDK, compat, Go SDK, protocol, examples, and migration context it needs to review the migration with fewer stale assumptions.
+
 ## Install Compat
 
 ```bash

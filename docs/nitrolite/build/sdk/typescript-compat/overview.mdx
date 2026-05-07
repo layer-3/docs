@@ -33,6 +33,17 @@ node dist/cli.js run --path /path/to/your-app --update-deps
 
 After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `node dist/cli.js list` for the full transform list.
 
+:::info MCP-assisted migration - coming soon
+The Yellow SDK MCP server is planned for npm as `@yellow-org/sdk-mcp`, but it is not published yet. After it is available, connect it to an MCP-compatible coding tool and use it as a migration assistant alongside the codemod:
+
+```bash
+# Coming soon: run this only after @yellow-org/sdk-mcp is published
+codex mcp add nitrolite -- npx -y @yellow-org/sdk-mcp@^1
+```
+
+Then ask your assistant to run the `migrate-from-v053` prompt, check uncertain symbols with `validate_import`, map old RPC helper chains with `get_rpc_method`, and verify native SDK replacements with `lookup_method`, `lookup_type`, or `search_api`.
+:::
+
 </details>
 
 ## Why Use Compat
