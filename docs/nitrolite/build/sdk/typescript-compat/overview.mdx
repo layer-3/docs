@@ -34,14 +34,7 @@ node dist/cli.js run --path /path/to/your-app --update-deps
 After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `node dist/cli.js list` for the full transform list.
 
 :::info MCP-assisted migration - coming soon
-The Yellow SDK MCP server is planned for npm as `@yellow-org/sdk-mcp`, but it is not published yet. After it is available, connect it to an MCP-compatible coding tool and use it as a migration assistant alongside the codemod. Setup examples are available for Claude Code, Claude Desktop, Codex, Cursor, and VS Code in the [migration overview](./migration-overview#mcp-assisted-migration).
-
-```bash
-# Coming soon: client configs launch this only after @yellow-org/sdk-mcp is published
-npx -y @yellow-org/sdk-mcp@^1
-```
-
-Then ask your assistant to run the `migrate-from-v053` prompt, check uncertain symbols with `validate_import`, map old RPC helper chains with `get_rpc_method`, and verify native SDK replacements with `lookup_method`, `lookup_type`, or `search_api`.
+The Yellow SDK MCP server is planned for npm as `@yellow-org/sdk-mcp`, but it is not published yet. After it lands, use it as a second review pass for unresolved codemod markers, uncertain imports, old RPC helper chains, and direct v1 SDK replacements. See the [migration overview](./migration-overview#mcp-assisted-migration) for the planned workflow.
 :::
 
 </details>
@@ -101,85 +94,21 @@ await client.close();
 
 ## Method Cheat Sheet
 
-### Channel Operations
-
-| Method | Description |
+| Area | Covered surface |
 |---|---|
-| `deposit(token, amount)` | Deposit raw token units to the home channel; creates the channel if needed |
-| `depositAndCreateChannel(token, amount)` | Alias for `deposit()` |
-| `withdrawal(token, amount)` | Withdraw raw token units from the home channel |
-| `closeChannel(params?)` | Close open home channels, optionally scoped by token |
-| `resizeChannel({ allocate_amount, token })` | Adds funds through the deposit path |
-| `challengeChannel({ state })` | Challenge a channel on-chain |
-| `acknowledge(tokenAddress)` | Acknowledge a pending state for the token's asset |
-| `checkpointChannel(...)` | Fail-fast migration shim; use `client.innerClient.checkpoint(asset)` |
+| Channel operations | `deposit`, `depositAndCreateChannel`, `withdrawal`, `closeChannel`, `resizeChannel`, `challengeChannel`, `acknowledge` |
+| Query methods | `getChannels`, `getChannelData`, `getBalances`, `getLedgerEntries`, `getAppSessionsList`, `getAssetsList`, `getAccountInfo`, `getConfig`, `getBlockchains`, `getActionAllowances` |
+| Transfers | `transfer(destination, allocations)` with raw asset-unit strings |
+| App sessions | `createAppSession`, `closeAppSession`, `submitAppState`, `getAppDefinition`, `registerApp`, `getApps` |
+| App-session signing | `packCreateAppSessionHash`, `packSubmitAppStateHash`, `toWalletQuorumSignature`, `toSessionKeyQuorumSignature` |
+| Auth helpers | `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, `createEIP712AuthMessageSigner` |
+| Event polling | `EventPoller` polls `getChannels()`, `getBalances()`, and `getAssetsList()` and emits legacy-shaped callbacks |
 
-### Queries
-
-| Method | Description |
-|---|---|
-| `getChannels()` | List ledger channels |
-| `getChannelData(channelId)` | Full channel and state for a specific channel |
-| `getBalances(wallet?)` | Get ledger balances |
-| `getLedgerEntries(wallet?)` | Get transaction history |
-| `getAppSessionsList(wallet?, status?)` | List app sessions |
-| `getAssetsList()` | List supported assets |
-| `getAccountInfo()` | Aggregate balance and channel count |
-| `getConfig()` | Nitronode configuration |
-| `getBlockchains()` | Supported blockchains from the node |
-| `getActionAllowances(wallet?)` | Action allowances for a wallet |
-
-### Transfers
-
-| Method | Description |
-|---|---|
-| `transfer(destination, allocations)` | Off-chain transfer to another participant. Amounts are raw asset-unit strings |
-
-### App Sessions
-
-| Method | Description |
-|---|---|
-| `createAppSession(definition, allocations, quorumSigs, opts?)` | Create an app session with v1 remapping |
-| `closeAppSession(appSessionId, allocations, quorumSigs)` | Close an app session |
-| `submitAppState(params)` | Submit an app-session operate, deposit, withdraw, or close update |
-| `getAppDefinition(appSessionId)` | Get the session definition |
-| `registerApp(appID, metadata, creationApprovalNotRequired)` | Register an application when the node enables app registry |
-| `getApps(options?)` | List registered applications |
-
-### App Session Signing Helpers
-
-| Helper | Description |
-|---|---|
-| `packCreateAppSessionHash(params)` | Deterministic hash for `createAppSession` quorum signing |
-| `packSubmitAppStateHash(params)` | Deterministic hash for `submitAppState` quorum signing |
-| `toWalletQuorumSignature(signature)` | Prefix a wallet signature for compat app-session quorum format |
-| `toSessionKeyQuorumSignature(signature)` | Prefix an app-session key signature with `0xa2` |
-
-### Auth Helpers
-
-| Helper | Description |
-|---|---|
-| `createAuthRequestMessage(params)` | Builds a v1-compatible auth request in the legacy envelope |
-| `createAuthVerifyMessage(signer, response)` | Signs and builds an auth verify request |
-| `createAuthVerifyMessageWithJWT(jwt)` | Builds JWT-based auth verify |
-| `createEIP712AuthMessageSigner(wallet, partialMessage, domain)` | Creates an EIP-712 signer for auth verify challenges |
-
-### Event Polling
-
-| Helper | Description |
-|---|---|
-| `EventPoller` | Polls `getChannels()`, `getBalances()`, and `getAssetsList()` and emits legacy-shaped callbacks |
+`checkpointChannel(...)` is exported as a fail-fast migration shim; use `client.innerClient.checkpoint(asset)` instead.
 
 See [EventPoller](./event-poller) for the cookbook.
 
-### Lifecycle
-
-| Method | Description |
-|---|---|
-| `ping()` | Health check |
-| `close()` | Close the WebSocket connection |
-| `waitForClose()` | Resolve when the connection closes |
-| `refreshAssets()` | Re-fetch the asset map from Nitronode |
+Lifecycle helpers include `ping()`, `close()`, `waitForClose()`, and `refreshAssets()`.
 
 ## What Compat Does Not Preserve
 
