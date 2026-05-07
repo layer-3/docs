@@ -36,12 +36,92 @@ See the [overview](./overview) for the command sequence and `node dist/cli.js li
 The Yellow SDK MCP server is proposed for npm publication as `@yellow-org/sdk-mcp`. Until that package is published, treat this as a preview of the assisted workflow, not a command that should work today.
 :::
 
-After publication, connect the MCP server to your AI coding tool:
+After publication, connect the MCP server to your MCP-compatible client. Choose the setup that matches your tool.
+
+### Claude Code
+
+For your current project:
+
+```bash
+# Coming soon: run this only after @yellow-org/sdk-mcp is published
+claude mcp add --transport stdio nitrolite -- npx -y @yellow-org/sdk-mcp@^1
+```
+
+For a shareable project config, add this to `.mcp.json` at the repository root:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, or `%APPDATA%\Claude\claude_desktop_config.json` on Windows, then restart Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### Codex
 
 ```bash
 # Coming soon: run this only after @yellow-org/sdk-mcp is published
 codex mcp add nitrolite -- npx -y @yellow-org/sdk-mcp@^1
 ```
+
+### Cursor
+
+Add this to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### VS Code
+
+Add this to `.vscode/mcp.json` in your workspace, or to your VS Code user MCP config:
+
+```json
+{
+  "servers": {
+    "nitrolite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+You can also install it from the VS Code command line:
+
+```bash
+# Coming soon: run this only after @yellow-org/sdk-mcp is published
+code --add-mcp '{"name":"nitrolite","type":"stdio","command":"npx","args":["-y","@yellow-org/sdk-mcp@^1"]}'
+```
+
+Any MCP-compatible client that supports stdio servers can launch the package with the same `npx -y @yellow-org/sdk-mcp@^1` command after publication.
 
 Then use the MCP as a second review pass after the codemod:
 
