@@ -6,17 +6,63 @@ sidebar_position: 4
 
 # Off-Chain Migration Guide
 
-Covers authentication, app sessions, transfers, ledger queries, and event polling when migrating from v0.5.3.
+This page covers authentication, app sessions, transfers, ledger queries, and event polling when moving 0.5.3 app code to `@yellow-org/sdk-compat`.
 
 ## Authentication
 
-v1.0.0 handles authentication internally when using `NitroliteClient`. For legacy WebSocket-auth code paths, the compat layer keeps `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, and `createEIP712AuthMessageSigner` available.
+Native `NitroliteClient` usage handles connection authentication inside the client. Legacy auth helper imports are split into three buckets.
+
+### Available and Functional
+
+These helpers are exported and implemented for migration code that still owns a WebSocket auth flow:
+
+```typescript
+import {
+  createAuthRequestMessage,
+  createAuthVerifyMessage,
+  createAuthVerifyMessageWithJWT,
+  createEIP712AuthMessageSigner,
+} from '@yellow-org/sdk-compat';
+```
+
+The v1 auth request fields are `application`, `expires_at`, `session_key`, `scope`, and `allowances`. The codemod flags older `app_name`, `expire`, `participant`, and `challenge` usage for review.
+
+### Exported but Fail Fast
+
+Workflow helpers that cannot map honestly to a single live v1 RPC remain exported so old imports compile, but throw with migration guidance:
+
+```typescript
+createTransferMessage;
+createCreateChannelMessage;
+createCloseChannelMessage;
+createResizeChannelMessage;
+```
+
+Use `NitroliteClient` methods instead.
+
+### Parse v1 Payloads Into 0.5.x Shapes
+
+The `parse*Response` helpers normalize known v1 response payloads into the older app-facing response shape:
+
+```typescript
+parseGetChannelsResponse;
+parseGetLedgerBalancesResponse;
+parseGetLedgerEntriesResponse;
+parseGetAppSessionsResponse;
+parseCreateAppSessionResponse;
+parseCloseAppSessionResponse;
+parseSubmitAppStateResponse;
+parseGetAppDefinitionResponse;
+parseAnyRPCResponse;
+```
+
+These are migration aids, not a reason to keep an app-owned RPC transport indefinitely.
 
 ## App Sessions
 
 ### List
 
-**Before:** `createGetAppSessionsMessage` + `sendRequest` + `parseGetAppSessionsResponse`
+**Before:** `createGetAppSessionsMessage` + `sendRequest` + `parseGetAppSessionsResponse`.
 
 **After:**
 
@@ -26,83 +72,105 @@ const sessions = await client.getAppSessionsList();
 
 ### Create
 
-**Before:**
+App-session allocation strings remain human-readable decimal strings:
 
 ```typescript
-const msg = await createAppSessionMessage(signer.sign, { definition, allocations });
-const raw = await sendRequest(msg);
-parseCreateAppSessionResponse(raw);
-```
+const appAmount = '5.0'; // human-readable app-session decimal string
 
-**After:**
-
-```typescript
-await client.createAppSession(definition, allocations);
-```
-
-### Close
-
-**Before:** `createCloseAppSessionMessage` + send + parse
-
-**After:**
-
-```typescript
-await client.closeAppSession(appSessionId, allocations);
+await client.createAppSession(definition, [
+  { participant: userAddress, asset: 'usdc', amount: appAmount },
+], quorumSigs);
 ```
 
 ### Submit State
 
-**Before:** `createSubmitAppStateMessage` + send
+```typescript
+await client.submitAppState({
+  app_session_id: appSessionId,
+  intent: RPCAppStateIntent.Operate,
+  version,
+  allocations,
+  quorum_sigs: quorumSigs,
+});
+```
 
-**After:**
+### Close
 
 ```typescript
-await client.submitAppState(params);
+await client.closeAppSession(appSessionId, allocations, quorumSigs);
 ```
 
 ## Transfers
 
-**Before:**
+Transfer allocations are raw asset-unit strings, not human-readable decimal strings.
+
+**Before:** helper workflow.
 
 ```typescript
 const msg = await createTransferMessage(signer.sign, { destination, allocations });
 await sendRequest(msg);
 ```
 
-**After:**
+**After:** compat method.
 
 ```typescript
-await client.transfer(destination, allocations);
+await client.transfer(destination, [
+  { asset: 'usdc', amount: '5000000' },
+]);
 ```
+
+That example means 5 USDC when the asset has 6 decimals. See the [amount-units table](./overview#amount-units).
 
 ## Ledger Queries
 
-**Before:** `createGetLedgerBalancesMessage` / `createGetLedgerEntriesMessage` + send + parse
+**Before:** create, send, parse.
 
-**After:**
+```typescript
+const msg = await createGetLedgerBalancesMessage(signer.sign, accountId);
+const raw = await sendRequest(msg);
+const balances = parseGetLedgerBalancesResponse(raw).params.ledgerBalances;
+```
+
+**After:** direct client calls.
 
 ```typescript
 const balances = await client.getBalances();
 const entries = await client.getLedgerEntries();
+const channels = await client.getChannels();
 ```
 
 ## Event Polling
 
-v0.5.3 used WebSocket push events (`ChannelUpdate`, `BalanceUpdate`). v1.0.0 uses polling. The `EventPoller` bridges this gap:
+0.5.3 apps often listened for pushed channel and balance updates. Compat replaces that with `EventPoller`, which polls the same query methods your app can call directly.
 
 ```typescript
 import { EventPoller } from '@yellow-org/sdk-compat';
 
 const poller = new EventPoller(client, {
-  onChannelUpdate: (channels) => updateUI(channels),
+  onChannelUpdate: (channels) => updateChannels(channels),
   onBalanceUpdate: (balances) => updateBalances(balances),
-  onAssetsUpdate:  (assets)   => updateAssets(assets),
-  onError:         (err)      => console.error(err),
+  onAssetsUpdate: (assets) => updateAssets(assets),
+  onError: (err) => reportError(err),
 }, 5000);
 
 poller.start();
 ```
 
-## RPC Compatibility Helpers
+See the [EventPoller cookbook](./event-poller) for lifecycle, interval, and cleanup guidance.
 
-The `create*Message` and `parse*Response` functions still exist so existing imports compile. Most are transitional placeholders. Prefer `NitroliteClient` methods directly for new code.
+## Error Handling
+
+Wrap migrated calls with typed error handling instead of string-matching raw wallet or RPC errors:
+
+```typescript
+import { getUserFacingMessage, NitroliteClient } from '@yellow-org/sdk-compat';
+
+try {
+  await client.transfer(destination, [{ asset: 'usdc', amount: '5000000' }]);
+} catch (err) {
+  const typed = NitroliteClient.classifyError(err);
+  showToast(getUserFacingMessage(typed));
+}
+```
+
+See [Errors and recovery](./errors) for recovery recipes.

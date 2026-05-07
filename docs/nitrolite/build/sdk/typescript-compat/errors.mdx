@@ -1,0 +1,164 @@
+---
+title: "Errors and recovery (compat)"
+description: Typed compat errors and recovery recipes for migrated apps
+sidebar_position: 6
+---
+
+# Errors and Recovery
+
+At app boundaries, classify raw wallet or SDK failures and show only UI-safe copy:
+
+```typescript
+import { NitroliteClient, getUserFacingMessage } from '@yellow-org/sdk-compat';
+
+try {
+  await client.deposit(tokenAddress, 11_000_000n);
+} catch (err) {
+  const typed = NitroliteClient.classifyError(err);
+  showToast(getUserFacingMessage(typed));
+  throw typed;
+}
+```
+
+## Error Catalogue
+
+| Error class | Code | Trigger | Recovery |
+|---|---|---|---|
+| `CompatError` | varies | Base compat failure | Log `error.code`; show `getUserFacingMessage(error)` |
+| `AllowanceError` | `ALLOWANCE_INSUFFICIENT` | ChannelHub needs ERC-20 allowance | Approve, then retry |
+| `UserRejectedError` | `USER_REJECTED` | Wallet rejected a signature or transaction | Show retry UI; do not auto-loop prompts |
+| `InsufficientFundsError` | `INSUFFICIENT_FUNDS` | Not enough gas or token balance | Show funding guidance |
+| `NotInitializedError` | `NOT_INITIALIZED` | Wallet/client is disconnected | Reconnect and recreate the client |
+| `OngoingStateTransitionError` | `ONGOING_STATE_TRANSITION` | Previous transition still finalizing | Poll status, then retry |
+
+## Allowance
+
+Compat token helpers use token addresses and raw token units:
+
+```typescript
+import { AllowanceError, NitroliteClient, getUserFacingMessage } from '@yellow-org/sdk-compat';
+
+try {
+  await client.deposit(tokenAddress, 11_000_000n);
+} catch (err) {
+  const typed = NitroliteClient.classifyError(err);
+  showToast(getUserFacingMessage(typed));
+
+  if (typed instanceof AllowanceError) {
+    await client.approveTokens(tokenAddress, 11_000_000n);
+    await client.deposit(tokenAddress, 11_000_000n);
+  }
+}
+```
+
+When you fall through to native v1, use `client.innerClient.approveToken(chainId, asset, amount)` with `Decimal`:
+
+```typescript
+import Decimal from 'decimal.js';
+
+try {
+  await client.innerClient.checkpoint('usdc');
+} catch (err) {
+  showToast(getUserFacingMessage(err));
+  await client.innerClient.approveToken(11155111n, 'usdc', new Decimal(11));
+  await client.innerClient.checkpoint('usdc');
+}
+```
+
+## Prompt and Reconnect
+
+For `UserRejectedError`, show `getUserFacingMessage(error)` and expose an explicit retry button. Do not auto-loop wallet prompts. For `NotInitializedError`, reconnect the wallet and recreate `NitroliteClient` before retrying.
+
+## Ongoing Transition
+
+Use `EventPoller` to wait for channel status to settle before enabling another write:
+
+```typescript
+import {
+  EventPoller,
+  OngoingStateTransitionError,
+  NitroliteClient,
+  getUserFacingMessage,
+} from '@yellow-org/sdk-compat';
+
+try {
+  await client.deposit(tokenAddress, 11_000_000n);
+} catch (err) {
+  const typed = NitroliteClient.classifyError(err);
+  showToast(getUserFacingMessage(typed));
+
+  if (typed instanceof OngoingStateTransitionError) {
+    const poller = new EventPoller(client, {
+      onChannelUpdate: (channels) => {
+        if (!channels.some((channel) => channel.status === 'resizing')) {
+          poller.stop();
+          enableRetry();
+        }
+      },
+      onError: (pollError) => showToast(getUserFacingMessage(pollError)),
+    }, 3000);
+    poller.start();
+  }
+}
+```
+
+## Insufficient Funds
+
+```typescript
+import { InsufficientFundsError, NitroliteClient, getUserFacingMessage } from '@yellow-org/sdk-compat';
+
+try {
+  await client.deposit(tokenAddress, 11_000_000n);
+} catch (err) {
+  const typed = NitroliteClient.classifyError(err);
+  showToast(getUserFacingMessage(typed));
+
+  if (typed instanceof InsufficientFundsError) {
+    const tokenBalance = await client.getTokenBalance(tokenAddress);
+    renderFundingHelp({ tokenBalance, chainId: 11155111 });
+  }
+}
+```
+
+## Missing RPC URL
+
+On-chain helpers throw `No RPC URL configured for chain ...` when `blockchainRPCs` is missing. Fix the client config with `blockchainRPCs: { 80002: process.env.POLYGON_AMOY_RPC_URL! }`.
+
+```typescript
+try {
+  await client.getOpenChannels();
+} catch (err) {
+  showToast(getUserFacingMessage(err));
+  if (err instanceof Error && err.message.includes('No RPC URL configured')) promptForRpcUrl();
+}
+```
+
+## Unsupported Asset or Wrong Amount Unit
+
+```typescript
+try {
+  await client.transfer(destination, [{ asset: 'usdc', amount: '5000000' }]);
+} catch (err) {
+  showToast(getUserFacingMessage(err));
+
+  if (err instanceof Error && err.message.includes('Unknown asset')) {
+    renderSupportedAssets(await client.getAssetsList());
+  }
+}
+```
+
+If a transfer uses `5.0`, fix it before retrying. Compat transfer uses raw asset-unit strings. Keep the [amount-units table](./overview#amount-units) next to migrated payment code reviews.
+
+## Failed Checkpoint
+
+Retry with capped backoff only after approval and state preconditions are satisfied. Keep the visible message behind `getUserFacingMessage(err)`:
+
+```typescript
+for (const waitMs of [1000, 3000, 5000]) try {
+  await client.innerClient.checkpoint('usdc');
+  break;
+} catch (err) {
+  showToast(getUserFacingMessage(err));
+  await new Promise((resolve) => setTimeout(resolve, waitMs));
+}
+```

@@ -1,39 +1,39 @@
 ---
 title: Overview
-description: Compatibility layer bridging Nitrolite SDK v0.5.3 API to v1.0.0
+description: Compatibility layer bridging selected Nitrolite SDK v0.5.3 APIs to the v1 runtime
 sidebar_position: 1
 ---
 
 # TypeScript Compat SDK
 
-Compatibility layer that bridges the Nitrolite SDK **v0.5.3 API** to the **v1.0.0 runtime**, letting existing dApps upgrade to the new protocol with minimal code changes.
+`@yellow-org/sdk-compat` is a migration layer for apps already built on the published `@erc7824/nitrolite@0.5.3` API. It keeps selected app-facing calls available while routing them through the native v1 `@yellow-org/sdk` runtime.
+
+:::note Package naming
+The published npm package audited for this migration path is `@erc7824/nitrolite@0.5.3`. Some older internal docs refer to the same 0.5.3 codebase as `@layer-3/nitrolite`.
+:::
 
 <details>
 <summary><strong>Already integrated with <code>@erc7824/nitrolite</code>?</strong></summary>
 
-If your app is already built on `@erc7824/nitrolite` (v0.4 through v0.5.3), you can speed up the migration using the [yellow-sdk-codemod](https://github.com/layer-3/yellow-sdk-codemod) tool. It handles the repetitive parts of the upgrade automatically: rewriting imports, migrating client constructors, renaming auth fields, and updating your `package.json`. Where the change requires context (collapsing RPC call chains, removing manual WebSocket setup), the codemod leaves a `// TODO [codemod]` comment with the exact replacement so you know what to do.
+Speed up the migration with <code>@yellow-org/nitrolite-codemod</code>:
 
 ```bash
-# Clone the codemod and install its dependencies
-git clone https://github.com/layer-3/yellow-sdk-codemod.git
-cd yellow-sdk-codemod && npm install
+# Scan your codebase for migrate-able patterns (no files modified)
+npx -y @yellow-org/nitrolite-codemod scan --path /path/to/your-app/src
 
-# Scan your project to see what needs changing (no files are modified)
-npx tsx src/cli.ts scan --path /path/to/your-app/src
-
-# Apply all transforms and update dependencies
-npx tsx src/cli.ts run --path /path/to/your-app --update-deps
+# Apply transforms (and update package.json deps)
+npx -y @yellow-org/nitrolite-codemod run --path /path/to/your-app --update-deps
 ```
 
-After running, search for `TODO [codemod]` in your codebase and work through the remaining items. See the [codemod README](https://github.com/layer-3/yellow-sdk-codemod#readme) for the full list of transforms and CLI options.
+After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `npx -y @yellow-org/nitrolite-codemod list` for the full transform list.
 
 </details>
 
-## Why Use the Compat Layer
+## Why Use Compat
 
-The v1.0.0 protocol introduces breaking changes across 14 dimensions — wire format, authentication, WebSocket lifecycle, unit system, asset resolution, and more. A direct migration touches 20+ files per app with deep, scattered rewrites.
+Use compat when a live app needs to move off the 0.5.3 package without rewriting every transport, auth, event, and amount-handling call at once. New apps should start with the native [`@yellow-org/sdk`](../typescript/getting-started) instead.
 
-The compat layer centralises this complexity into **~1,000 lines** that absorb the protocol differences, reducing per-app integration effort by an estimated **56–70%**.
+Compat is a bridge, not full package parity. The underlying v1 client is available as `client.innerClient` for flows that the migration surface cannot model honestly.
 
 ## Installation
 
@@ -43,134 +43,150 @@ npm install @yellow-org/sdk-compat
 npm install @yellow-org/sdk viem
 ```
 
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL in the `wsURL` field below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
 ## Quick Start
 
 ```typescript
 import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
 
-// Create client (replaces new Client(ws, signer))
 const client = await NitroliteClient.create({
-  wsURL: 'wss://clearnode.example.com/ws',
+  wsURL: '<sandbox-url-coming-soon>',
   walletClient,          // viem WalletClient with account
   chainId: 11155111,     // Sepolia
   blockchainRPCs: blockchainRPCsFromEnv(),
 });
 
-// Deposit (creates channel if needed)
 await client.deposit(tokenAddress, 11_000_000n);
 
-// Query
 const channels = await client.getChannels();
 const balances = await client.getBalances();
 const sessions = await client.getAppSessionsList();
 
-// Transfer
-await client.transfer(recipientAddress, [{ asset: 'usdc', amount: '5.0' }]);
+// 5 USDC (6 decimals) as raw asset-unit string:
+await client.transfer(recipientAddress, [{ asset: 'usdc', amount: '5000000' }]);
 
-// Cleanup
-await client.closeChannel();
 await client.close();
 ```
+
+`TransferAllocation.amount` is a raw asset-unit string using the asset's canonical decimals; the compat layer divides by decimals before delegating to the v1 SDK.
+
+## Amount Units
+
+| Method area | Amount format | Example |
+|---|---|---|
+| `deposit`, `withdrawal`, token allowance helpers | raw token-unit `bigint` | `11_000_000n` |
+| `transfer` allocations | raw asset-unit string | `'5000000'` |
+| App-session allocations | human-readable decimal string | `'5.0'` |
+| Direct `@yellow-org/sdk` channel and app amounts | `Decimal` | `new Decimal(5)` |
 
 ## Method Cheat Sheet
 
 ### Channel Operations
 
 | Method | Description |
-|--------|-------------|
-| `deposit(token, amount)` | Deposit to channel (creates if needed) |
+|---|---|
+| `deposit(token, amount)` | Deposit raw token units to the home channel; creates the channel if needed |
 | `depositAndCreateChannel(token, amount)` | Alias for `deposit()` |
-| `withdrawal(token, amount)` | Withdraw from channel |
-| `closeChannel(params?)` | Close open channels (optionally for a specific token) |
-| `resizeChannel({ allocate_amount, token })` | Resize an existing channel |
+| `withdrawal(token, amount)` | Withdraw raw token units from the home channel |
+| `closeChannel(params?)` | Close open home channels, optionally scoped by token |
+| `resizeChannel({ allocate_amount, token })` | Adds funds through the deposit path |
 | `challengeChannel({ state })` | Challenge a channel on-chain |
-| `createChannel()` | No-op in v1 (channel creation is implicit on `deposit()`) |
+| `acknowledge(tokenAddress)` | Acknowledge a pending state for the token's asset |
+| `checkpointChannel(...)` | Fail-fast migration shim; use `client.innerClient.checkpoint(asset)` |
 
 ### Queries
 
 | Method | Description |
-|--------|-------------|
-| `getChannels()` | List all ledger channels |
-| `getChannelData(channelId)` | Full channel + state for a specific channel |
+|---|---|
+| `getChannels()` | List ledger channels |
+| `getChannelData(channelId)` | Full channel and state for a specific channel |
 | `getBalances(wallet?)` | Get ledger balances |
 | `getLedgerEntries(wallet?)` | Get transaction history |
 | `getAppSessionsList(wallet?, status?)` | List app sessions |
-| `getLastAppSessionsListError()` | Last error from `getAppSessionsList()` (if any) |
 | `getAssetsList()` | List supported assets |
-| `getAccountInfo()` | Aggregate balance + channel count |
-| `getConfig()` | Node configuration |
+| `getAccountInfo()` | Aggregate balance and channel count |
+| `getConfig()` | Nitronode configuration |
+| `getBlockchains()` | Supported blockchains from the node |
+| `getActionAllowances(wallet?)` | Action allowances for a wallet |
 
 ### Transfers
 
 | Method | Description |
-|--------|-------------|
-| `transfer(destination, allocations)` | Off-chain transfer to another participant |
+|---|---|
+| `transfer(destination, allocations)` | Off-chain transfer to another participant. Amounts are raw asset-unit strings |
 
 ### App Sessions
 
 | Method | Description |
-|--------|-------------|
-| `createAppSession(definition, allocations, quorumSigs?)` | Create an app session |
-| `closeAppSession(appSessionId, allocations, quorumSigs?)` | Close an app session |
-| `submitAppState(params)` | Submit state update (operate/deposit/withdraw/close) |
-| `getAppDefinition(appSessionId)` | Get session definition |
+|---|---|
+| `createAppSession(definition, allocations, quorumSigs, opts?)` | Create an app session with v1 remapping |
+| `closeAppSession(appSessionId, allocations, quorumSigs)` | Close an app session |
+| `submitAppState(params)` | Submit an app-session operate, deposit, withdraw, or close update |
+| `getAppDefinition(appSessionId)` | Get the session definition |
+| `registerApp(appID, metadata, creationApprovalNotRequired)` | Register an application when the node enables app registry |
+| `getApps(options?)` | List registered applications |
 
 ### App Session Signing Helpers
 
 | Helper | Description |
-|--------|-------------|
+|---|---|
 | `packCreateAppSessionHash(params)` | Deterministic hash for `createAppSession` quorum signing |
 | `packSubmitAppStateHash(params)` | Deterministic hash for `submitAppState` quorum signing |
-| `toWalletQuorumSignature(signature)` | Prefix wallet signature for app-session quorum format |
-| `toSessionKeyQuorumSignature(signature)` | Prefix session key signature (`0xa2`) for quorum format |
+| `toWalletQuorumSignature(signature)` | Prefix a wallet signature for compat app-session quorum format |
+| `toSessionKeyQuorumSignature(signature)` | Prefix an app-session key signature with `0xa2` |
 
-### Session Keys
+### Auth Helpers
 
-| Method | Description |
-|--------|-------------|
-| `signChannelSessionKeyState(state)` | Sign a channel session-key state |
-| `submitChannelSessionKeyState(state)` | Register channel session-key |
-| `getLastChannelKeyStates(userAddress, sessionKey?)` | Get active channel session-key states |
-| `signSessionKeyState(state)` | Sign an app-session key state |
-| `submitSessionKeyState(state)` | Register app-session key |
-| `getLastKeyStates(userAddress, sessionKey?)` | Get active app-session key states |
+| Helper | Description |
+|---|---|
+| `createAuthRequestMessage(params)` | Builds a v1-compatible auth request in the legacy envelope |
+| `createAuthVerifyMessage(signer, response)` | Signs and builds an auth verify request |
+| `createAuthVerifyMessageWithJWT(jwt)` | Builds JWT-based auth verify |
+| `createEIP712AuthMessageSigner(wallet, partialMessage, domain)` | Creates an EIP-712 signer for auth verify challenges |
 
-### Asset Resolution
+### Event Polling
 
-| Method | Description |
-|--------|-------------|
-| `resolveToken(tokenAddress)` | Look up asset info by token address |
-| `resolveAsset(symbol)` | Look up asset info by symbol |
-| `resolveAssetDisplay(tokenAddress, chainId?)` | Get display-friendly symbol + decimals |
-| `getTokenDecimals(tokenAddress)` | Get decimals for a token |
-| `formatAmount(tokenAddress, rawAmount)` | Raw bigint → human-readable string |
-| `parseAmount(tokenAddress, humanAmount)` | Human-readable string → raw bigint |
-| `findOpenChannel(tokenAddress, chainId?)` | Find an open channel for a given token |
+| Helper | Description |
+|---|---|
+| `EventPoller` | Polls `getChannels()`, `getBalances()`, and `getAssetsList()` and emits legacy-shaped callbacks |
+
+See [EventPoller](./event-poller) for the cookbook.
 
 ### Lifecycle
 
 | Method | Description |
-|--------|-------------|
+|---|---|
 | `ping()` | Health check |
 | `close()` | Close the WebSocket connection |
-| `refreshAssets()` | Re-fetch the asset map from the clearnode |
+| `waitForClose()` | Resolve when the connection closes |
+| `refreshAssets()` | Re-fetch the asset map from Nitronode |
 
-## Properties
+## What Compat Does Not Preserve
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `innerClient` | `Client` (readonly) | The underlying v1.0.0 SDK Client |
-| `userAddress` | `Address` (readonly) | The connected wallet address |
+:::warning Compat is curated, not a drop-in
+`@yellow-org/sdk-compat` preserves selected `@erc7824/nitrolite@0.5.3` app-facing APIs. It does not preserve:
+
+- the legacy server-push event model; use [EventPoller](./event-poller)
+- `checkpointChannel(...)`; it is a fail-fast stub, use `client.innerClient.checkpoint(asset)`
+- `get_session_keys` directory-style APIs
+- `get_rpc_history`
+- full root-export parity with `@erc7824/nitrolite@0.5.3`
+
+If your code touches these surfaces, run the codemod first, then use the migration guides below to finish the manual changes.
+:::
 
 ## Configuration
 
 ```typescript
 interface NitroliteClientConfig {
-  wsURL: string;                           // Clearnode WebSocket URL
+  wsURL: string;                           // Nitronode WebSocket URL
   walletClient: WalletClient;              // viem WalletClient with account
-  chainId: number;                         // Chain ID (e.g. 11155111)
-  blockchainRPCs?: Record<number, string>; // Chain ID → RPC URL map
-  channelSessionKeySigner?: {              // Optional session key for quick approvals
+  chainId: number;                         // Chain ID, for example 11155111
+  blockchainRPCs?: Record<number, string>; // Chain ID -> RPC URL map
+  channelSessionKeySigner?: {
     sessionKeyPrivateKey: Hex;
     walletAddress: Address;
     metadataHash: Hex;
@@ -179,17 +195,15 @@ interface NitroliteClientConfig {
 }
 ```
 
-### Environment Variables
-
 `blockchainRPCsFromEnv()` reads from `NEXT_PUBLIC_BLOCKCHAIN_RPCS`:
 
 ```text
 NEXT_PUBLIC_BLOCKCHAIN_RPCS=11155111:https://rpc.sepolia.io,1:https://mainnet.infura.io/v3/KEY
 ```
 
-## Accessing the v1.0.0 SDK
+## Accessing the v1 SDK
 
-The underlying v1.0.0 `Client` is exposed for advanced use cases not covered by the compat surface:
+`Client` is not re-exported from `@yellow-org/sdk-compat` for SSR safety. Import SDK classes directly from `@yellow-org/sdk`, or use the wrapped instance exposed on the compat client:
 
 ```typescript
 const v1Client = client.innerClient;
@@ -200,57 +214,10 @@ await v1Client.approveToken(chainId, 'usdc', amount);
 
 ## Error Handling
 
-| Error Class | Code | Description |
-|-------------|------|-------------|
-| `AllowanceError` | `ALLOWANCE_INSUFFICIENT` | Token approval needed |
-| `UserRejectedError` | `USER_REJECTED` | User cancelled in wallet |
-| `InsufficientFundsError` | `INSUFFICIENT_FUNDS` | Not enough balance |
-| `NotInitializedError` | `NOT_INITIALIZED` | Client not connected |
-
-```typescript
-import { getUserFacingMessage, AllowanceError } from '@yellow-org/sdk-compat';
-
-try {
-  await client.deposit(token, amount);
-} catch (err) {
-  // Convert raw errors to typed compat errors
-  const typed = NitroliteClient.classifyError(err);
-  if (typed instanceof AllowanceError) {
-    // prompt user to approve token spending
-  }
-  showToast(getUserFacingMessage(err));
-}
-```
-
-## Event Polling
-
-v0.5.3 used WebSocket push events. v1.0.0 uses polling. The `EventPoller` bridges this gap:
-
-```typescript
-import { EventPoller } from '@yellow-org/sdk-compat';
-
-const poller = new EventPoller(client, {
-  onChannelUpdate: (channels) => updateUI(channels),
-  onBalanceUpdate: (balances) => updateBalances(balances),
-  onAssetsUpdate:  (assets)   => updateAssets(assets),
-  onError:         (err)      => console.error(err),
-}, 5000);
-
-poller.start();
-```
-
-## Next.js Integration
-
-Add to `transpilePackages` in `next.config.ts`:
-
-```typescript
-const nextConfig = {
-  transpilePackages: ['@yellow-org/sdk', '@yellow-org/sdk-compat'],
-};
-```
+The compat package exports typed errors plus `getUserFacingMessage(error)` for UI-safe messages. See [Errors and recovery](./errors) for the cookbook.
 
 ## Migration Guides
 
-- [Migration Overview](./migration-overview) — Pattern changes, import swaps
-- [On-Chain Changes](./migration-onchain) — Deposits, withdrawals, channels
-- [Off-Chain Changes](./migration-offchain) — Auth, app sessions, transfers
+- [Migration Overview](./migration-overview) - choose the compat path and run the codemod
+- [On-Chain Changes](./migration-onchain) - deposits, withdrawals, channel operations, and amount units
+- [Off-Chain Changes](./migration-offchain) - auth, app sessions, transfers, ledger queries, and polling
