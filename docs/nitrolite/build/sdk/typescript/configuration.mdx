@@ -10,6 +10,10 @@ sidebar_position: 3
 
 Configuration is passed as variadic options to `Client.create()`:
 
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL for `wsURL`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
 ```typescript
 import {
   Client,
@@ -20,7 +24,7 @@ import {
 } from '@yellow-org/sdk';
 
 const client = await Client.create(
-  wsURL,
+  '<sandbox-url-coming-soon>',
   stateSigner,
   txSigner,
   withBlockchainRPC(chainId, rpcURL),  // Blockchain RPC (required for checkpoint)
@@ -57,10 +61,33 @@ withErrorHandler((error) => {
 
 ## Home Blockchain
 
-`setHomeBlockchain(asset, blockchainId)` sets the default blockchain for an asset. Required before `transfer()` on a new channel (where no chain context exists yet).
+`setHomeBlockchain(asset, blockchainId)` sets the default blockchain for an asset. It is required when `transfer()` may need to create a new home channel, because `transfer(recipientWallet, asset, amount)` does not take a chain ID. It is not required for transfers within an existing home channel.
 
 ```typescript
 await client.setHomeBlockchain('usdc', 80002n);
+```
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+
+const client = await Client.create(
+  '<sandbox-url-coming-soon>',
+  stateSigner,
+  txSigner,
+  withBlockchainRPC(80002n, process.env.POLYGON_AMOY_RPC!),
+);
+
+// Required only if this transfer could create the USDC home channel.
+await client.setHomeBlockchain('usdc', 80002n);
+
+await client.transfer(
+  '0xRecipient000000000000000000000000000000000000',
+  'usdc',
+  new Decimal('1.25'),
+);
 ```
 
 :::warning

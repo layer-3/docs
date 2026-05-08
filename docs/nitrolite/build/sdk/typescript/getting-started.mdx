@@ -6,10 +6,10 @@ sidebar_position: 1
 
 # Getting Started with @yellow-org/sdk
 
-The TypeScript SDK for Clearnode payment channels provides both high-level and low-level operations in a unified client.
+The TypeScript SDK for Nitronode payment channels provides both high-level and low-level operations in a unified client.
 
 :::tip Migrating from v0.5.3?
-If you are migrating from `@layer-3/nitrolite@v0.5.3`, consider using the [`@yellow-org/sdk-compat`](../typescript-compat/overview) package first. It maps the familiar v0.5.3 API to the v1.0.0 runtime with minimal code changes.
+If you are migrating from the published `@erc7824/nitrolite@0.5.3` package, consider using [`@yellow-org/sdk-compat`](../typescript-compat/overview) first. Older internal docs may refer to the same 0.5.3 codebase as `@layer-3/nitrolite`; use the published package name when auditing app dependencies.
 :::
 
 ## Installation
@@ -26,10 +26,14 @@ pnpm add @yellow-org/sdk
 
 - **Node.js** 20.0.0 or later
 - **TypeScript** 5.3.0 or later (for development)
-- A running **Clearnode** instance or access to a public node
+- A running **Nitronode** instance or access to a public node
 - A **blockchain RPC endpoint** for on-chain operations via `checkpoint()`
 
 ## Quick Start
+
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL in the `Client.create()` call below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
 
 ```typescript
 import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
@@ -43,7 +47,7 @@ async function main() {
 
   // 2. Create unified client
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, 'https://polygon-amoy.alchemy.com/v2/KEY')
@@ -81,7 +85,12 @@ main().catch(console.error);
 The `Client` is the single entry point for all operations.
 
 ```typescript
-import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import {
+  Client,
+  createSigners,
+  withBlockchainRPC,
+  withHandshakeTimeout,
+} from '@yellow-org/sdk';
 
 // Step 1: Create signers from private key
 const { stateSigner, txSigner } = createSigners('0x1234...');
@@ -99,6 +108,18 @@ const client = await Client.create(
 // Required for transfer() operations that may trigger channel creation
 await client.setHomeBlockchain('usdc', 80002n);
 ```
+
+## Errors and Recovery
+
+The SDK README keeps the [full error catalogue](https://github.com/layer-3/nitrolite/tree/main/sdk/ts#error-handling). These are the failures most builders should handle in their first integration:
+
+| Error | Common cause | Recovery |
+|---|---|---|
+| Insufficient allowance | `checkpoint()` needs ERC-20 approval before the first deposit. | Call `approveToken(chainId, asset, amount)`, then retry `checkpoint(asset)`. |
+| Ongoing transition | A previous state transition is waiting for acknowledgement or settlement. | Query the latest state, acknowledge pending funds when needed, or wait for the in-flight checkpoint. |
+| Missing RPC | `withBlockchainRPC(chainId, rpcURL)` was not configured for an on-chain operation. | Add the RPC option for every chain you deposit, withdraw, approve, or checkpoint on. |
+| Asset not supported | The Nitronode config does not list the requested asset on the selected chain. | Call `getAssets(chainId)` and use one of the returned asset symbols. |
+| Channel not found | The wallet has no home channel or no signed state for that asset yet. | Deposit first, or call `setHomeBlockchain(asset, chainId)` before a transfer that may create the home channel. |
 
 ## Signer Types
 
@@ -156,11 +177,11 @@ const txHash = await client.checkpoint('usdc');
 
 ### Channel Lifecycle
 
-1. **Void** — No channel exists
-2. **Create** — `deposit()` creates channel on-chain via `checkpoint()`
-3. **Open** — Channel active; can deposit, withdraw, transfer
-4. **Challenged** — Dispute initiated (advanced)
-5. **Closed** — Channel finalized (advanced)
+1. **Void**: No channel exists
+2. **Create**: `deposit()` creates channel on-chain via `checkpoint()`
+3. **Open**: Channel active; can deposit, withdraw, transfer
+4. **Challenged**: Dispute initiated (advanced)
+5. **Closed**: Channel finalized (advanced)
 
 ### TypeScript Conventions
 
@@ -179,6 +200,6 @@ const wallet: Address = '0x1234...';
 
 ## Next Steps
 
-- [API Reference](./api-reference) — Full method documentation
-- [Configuration](./configuration) — Client options and error handling
-- [Examples](./examples) — Complete working examples
+- [API Reference](./api-reference): Full method documentation
+- [Configuration](./configuration): Client options and error handling
+- [Examples](./examples): Complete working examples

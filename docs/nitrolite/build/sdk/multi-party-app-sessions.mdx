@@ -1,589 +1,308 @@
 ---
 sidebar_position: 3
 title: Multi-Party Application Sessions
-description: Learn how to create, manage, and close multi-party application sessions using the Yellow Network and VirtualApp protocol
-keywords: [app sessions, multi-party, state channels, quorum, voting, signatures, allocations]
+description: Create, update, withdraw from, and close a native v1 Nitrolite application session
+keywords: [app sessions, multi-party, state channels, quorum, signatures, allocations]
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+# Multi-Party Application Sessions
 
-# Multi-Party Application Sessions Tutorial
-
-## Overview
-
-Application sessions in VirtualApp enable multiple participants to interact within a shared off-chain state channel. This is particularly powerful for use cases requiring coordinated actions between parties without on-chain overhead.
-
-This tutorial demonstrates how to create, manage, and close a multi-party application session using the Yellow Network and VirtualApp protocol.
-
-:::tip Run the Full Example
-The complete runnable script for this tutorial is available at:
-[`scripts/app_sessions/app_session_two_signers.ts`](https://github.com/stevenzeiler/yellow-sdk-tutorials/blob/main/scripts/app_sessions/app_session_two_signers.ts)
-
-```bash
-npx tsx scripts/app_sessions/app_session_two_signers.ts
-```
+:::warning Native v1 API
+This page demonstrates the v1 native API. If you're on `@erc7824/nitrolite@0.5.3` and want a minimal-diff migration, see the [`@yellow-org/sdk-compat` overview](./typescript-compat/overview) first.
 :::
 
-## What is an Application Session?
+Application sessions are shared off-chain states owned by an app. Participants sign each app-session creation and update. Nitronode verifies quorum, stores the latest state, and connects deposits or withdrawals to each participant's home channel.
 
-An **application session** is a multi-party state channel that allows participants to:
+The native v1 TypeScript SDK uses:
 
-- **Execute off-chain logic** without blockchain transactions
-- **Update shared state** with cryptographic signatures
-- **Transfer value** between participants instantly
+- `Client.create()` for each participant connection.
+- `Client.registerApp()` for the `apps.v1.submit_app_version` prerequisite.
+- `Client.createAppSession()` for `app_sessions.v1.create_app_session`.
+- `Client.submitAppSessionDeposit()` for `app_sessions.v1.submit_deposit_state`.
+- `Client.submitAppState()` for `Operate`, `Withdraw`, `Close`, and `Rebalance` updates.
+- `packCreateAppSessionRequestV1()` and `packAppStateUpdateV1()` to hash the exact payload participants sign.
 
-Unlike simple payment channels (1-to-1), application sessions support:
-- Multiple participants (2+)
-- Complex state logic
-- Voting mechanisms (weights and quorum)
-- Flexible allocation rules
+There is no separate `closeAppSession()` helper in `@yellow-org/sdk@1.2.1`; closing is an app-state update with `AppStateUpdateIntent.Close`.
 
 ## Prerequisites
 
-### Environment Setup
-
-You'll need two wallet seed phrases in your `.env` file:
+You need two disposable wallets, a Nitronode WebSocket URL, a chain RPC URL, and enough test funds in the first user's home channel to fund the session.
 
 ```bash
-WALLET_1_SEED_PHRASE="first wallet 12 or 24 word mnemonic here"
-WALLET_2_SEED_PHRASE="second wallet 12 or 24 word mnemonic here"
+USER_1_PRIVATE_KEY=0x...
+USER_2_PRIVATE_KEY=0x...
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
+RPC_URL=https://polygon-amoy.g.alchemy.com/v2/YOUR_KEY
+CHAIN_ID=80002
+ASSET=usdc
 ```
 
-### Funded Wallets
-
-Both wallets should have:
-1. **Funds in Yellow ledger** (deposited via custody contract)
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
----
-
-## Key Concepts
-
-### 1. App Definition
-
-The application definition specifies the rules of the session:
-
-```typescript
-const appDefinition: RPCAppDefinition = {
-    protocol: RPCProtocolVersion.NitroRPC_0_5,
-    participants: [address1, address2],
-    weights: [50, 50],        // Voting power distribution
-    quorum: 100,              // Percentage needed for decisions (100 = unanimous)
-    challenge: 0,             // Challenge period in seconds
-    nonce: Date.now(),        // Unique session ID
-    application: 'Test app',
-};
-```
-
-**Key parameters:**
-
-| Parameter | Description |
-|-----------|-------------|
-| `participants` | Array of wallet addresses involved |
-| `weights` | Voting power for each participant (must sum to 100 or appropriate total) |
-| `quorum` | Required percentage of votes for actions (50 = majority, 100 = unanimous) |
-| `challenge` | Time window for disputing state changes |
-| `nonce` | Unique identifier to prevent replay attacks |
-
-### 2. Allocations
-
-Allocations define how assets are distributed among participants:
-
-<Tabs groupId="environment">
-  <TabItem value="sandbox" label="Sandbox" default>
-
-```typescript
-const allocations: RPCAppSessionAllocation[] = [
-    { participant: address1, asset: 'ytest.usd', amount: '0.01' },
-    { participant: address2, asset: 'ytest.usd', amount: '0.00' }
-];
-```
-
-  </TabItem>
-  <TabItem value="production" label="Production">
-
-```typescript
-const allocations: RPCAppSessionAllocation[] = [
-    { participant: address1, asset: 'usdc', amount: '0.01' },
-    { participant: address2, asset: 'usdc', amount: '0.00' }
-];
-```
-
-  </TabItem>
-</Tabs>
-
-**Rules:**
-- Total allocations cannot exceed session funding
-- Amounts are strings (to maintain precision)
-- Must account for all participants
-
-### 3. Multi-Party Signatures
-
-For actions requiring consensus (closing, etc.), signatures from multiple participants are collected:
-
-```typescript
-// First participant signs
-const closeMessage = await createCloseAppSessionMessage(
-    messageSigner1,
-    { app_session_id: sessionId, allocations: finalAllocations }
-);
-
-// Second participant signs
-const signature2 = await messageSigner2(closeMessage.req);
-
-// Add second signature
-closeMessage.sig.push(signature2);
-
-// Submit with all signatures
-await yellow.sendMessage(JSON.stringify(closeMessage));
-```
-
----
-
-## Step-by-Step Walkthrough
-
-### Step 1: Connect to Yellow Network
-
-<Tabs groupId="environment">
-  <TabItem value="sandbox" label="Sandbox" default>
-
-```typescript
-const yellow = new Client({
-    url: 'wss://clearnet-sandbox.yellow.com/ws',
-});
-
-await yellow.connect();
-console.log('Connected to Yellow clearnet (Sandbox)');
-```
-
-  </TabItem>
-  <TabItem value="production" label="Production">
-
-```typescript
-const yellow = new Client({
-    url: 'wss://clearnet.yellow.com/ws',
-});
-
-await yellow.connect();
-console.log('Connected to Yellow clearnet (Production)');
-```
-
-  </TabItem>
-</Tabs>
-
-### Step 2: Set Up Participant Wallets
-
-```typescript
-// Create wallet clients for both participants
-const wallet1Client = createWalletClient({
-    account: mnemonicToAccount(process.env.WALLET_1_SEED_PHRASE as string),
-    chain: base,
-    transport: http(),
-});
-
-const wallet2Client = createWalletClient({
-    account: mnemonicToAccount(process.env.WALLET_2_SEED_PHRASE as string),
-    chain: base,
-    transport: http(),
-});
-```
-
-### Step 3: Authenticate Both Participants
-
-Each participant needs their own session key:
-
-```typescript
-// Authenticate first participant
-const sessionKey1 = await authenticateWallet(yellow, wallet1Client);
-const messageSigner1 = createECDSAMessageSigner(sessionKey1.privateKey);
-
-// Authenticate second participant
-const sessionKey2 = await authenticateWallet(yellow, wallet2Client);
-const messageSigner2 = createECDSAMessageSigner(sessionKey2.privateKey);
-```
-
-### Step 4: Define Application Configuration
-
-```typescript
-const appDefinition: RPCAppDefinition = {
-    protocol: RPCProtocolVersion.NitroRPC_0_5,
-    participants: [wallet1Client.account.address, wallet2Client.account.address],
-    weights: [50, 50],
-    quorum: 100,
-    challenge: 0,
-    nonce: Date.now(),
-    application: 'Test app',
-};
-```
-
-### Step 5: Create Session with Initial Allocations
-
-<Tabs groupId="environment">
-  <TabItem value="sandbox" label="Sandbox" default>
-
-```typescript
-const allocations = [
-    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.01' },
-    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.00' }
-];
-
-const sessionMessage = await createAppSessionMessage(
-    messageSigner1,
-    { definition: appDefinition, allocations }
-);
-
-const sessionResponse = await yellow.sendMessage(sessionMessage);
-const sessionId = sessionResponse.params.appSessionId;
-```
-
-  </TabItem>
-  <TabItem value="production" label="Production">
-
-```typescript
-const allocations = [
-    { participant: wallet1Client.account.address, asset: 'usdc', amount: '0.01' },
-    { participant: wallet2Client.account.address, asset: 'usdc', amount: '0.00' }
-];
-
-const sessionMessage = await createAppSessionMessage(
-    messageSigner1,
-    { definition: appDefinition, allocations }
-);
-
-const sessionResponse = await yellow.sendMessage(sessionMessage);
-const sessionId = sessionResponse.params.appSessionId;
-```
-
-  </TabItem>
-</Tabs>
-
-### Step 6: Update Session State
-
-You can update allocations to reflect state changes (e.g., a transfer). Since the quorum is 100%, both participants must sign:
-
-<Tabs groupId="environment">
-  <TabItem value="sandbox" label="Sandbox" default>
-
-```typescript
-const newAllocations = [
-    { participant: wallet1Client.account.address, asset: 'ytest.usd', amount: '0.00' },
-    { participant: wallet2Client.account.address, asset: 'ytest.usd', amount: '0.01' }
-];
-
-// Create update message signed by first participant
-const updateMessage = await createSubmitAppStateMessage(
-    messageSigner1,
-    { app_session_id: sessionId, allocations: newAllocations }
-);
-
-const updateMessageJson = JSON.parse(updateMessage);
-
-// Second participant signs the same state update
-const signature2 = await messageSigner2(updateMessageJson.req as RPCData);
-
-// Append second signature to meet quorum requirement
-updateMessageJson.sig.push(signature2);
-
-// Submit with all required signatures
-await yellow.sendMessage(JSON.stringify(updateMessageJson));
-```
-
-  </TabItem>
-  <TabItem value="production" label="Production">
-
-```typescript
-const newAllocations = [
-    { participant: wallet1Client.account.address, asset: 'usdc', amount: '0.00' },
-    { participant: wallet2Client.account.address, asset: 'usdc', amount: '0.01' }
-];
-
-// Create update message signed by first participant
-const updateMessage = await createSubmitAppStateMessage(
-    messageSigner1,
-    { app_session_id: sessionId, allocations: newAllocations }
-);
-
-const updateMessageJson = JSON.parse(updateMessage);
-
-// Second participant signs the same state update
-const signature2 = await messageSigner2(updateMessageJson.req as RPCData);
-
-// Append second signature to meet quorum requirement
-updateMessageJson.sig.push(signature2);
-
-// Submit with all required signatures
-await yellow.sendMessage(JSON.stringify(updateMessageJson));
-```
-
-  </TabItem>
-</Tabs>
-
-### Step 7: Close Session with Multi-Party Signatures
-
-```typescript
-// Create close message (signed by participant 1)
-const closeMessage = await createCloseAppSessionMessage(
-    messageSigner1,
-    { app_session_id: sessionId, allocations: finalAllocations }
-);
-
-const closeMessageJson = JSON.parse(closeMessage);
-
-// Participant 2 signs
-const signature2 = await messageSigner2(closeMessageJson.req as RPCData);
-closeMessageJson.sig.push(signature2);
-
-// Submit with all signatures
-const closeResponse = await yellow.sendMessage(JSON.stringify(closeMessageJson));
-```
-
----
-
-## Running the Example
-
-```bash
-npx tsx scripts/app_session_two_signers.ts
-```
-
-### Expected Output
-
-```
-Connected to Yellow clearnet
-Wallet address: 0x1234...
-Wallet address: 0x5678...
-Session message created: {...}
-Session message sent
-Session response: { appSessionId: '0xabc...' }
-Submit app state message: {...}
-Wallet 2 signed close session message: 0xdef...
-Close session message (with all signatures): {...}
-Close session message sent
-Close session response: { success: true }
-```
-
----
-
-## Use Cases
-
-:::note Asset Names in Examples
-The examples below use `usdc` for production scenarios. When testing on Sandbox, replace `usdc` with `ytest.usd`.
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL for `NITRONODE_WS_URL`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
 :::
 
-### 1. Peer-to-Peer Escrow
+## Step 1: Connect both participants
+
+Each participant has a channel signer, a transaction signer, and an app-session signer. The channel signer signs home-channel states. The app-session signer signs app-session payloads and prefixes signatures with the v1 app-session wallet signer byte.
 
 ```typescript
-// Buyer and seller agree on terms
-const appDefinition = {
-    participants: [buyer, seller],
-    weights: [50, 50],
-    quorum: 100,  // Both must agree to release funds
-    // ...
+import {
+  AppSessionWalletSignerV1,
+  AppStateUpdateIntent,
+  Client,
+  EthereumMsgSigner,
+  createSigners,
+  packAppStateUpdateV1,
+  packCreateAppSessionRequestV1,
+  withBlockchainRPC,
+  type AppDefinitionV1,
+  type AppStateUpdateV1,
+} from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+const wsURL = process.env.NITRONODE_WS_URL ?? '<sandbox-url-coming-soon>';
+const chainId = BigInt(process.env.CHAIN_ID ?? '80002');
+const asset = process.env.ASSET ?? 'usdc';
+
+const user1Key = process.env.USER_1_PRIVATE_KEY as `0x${string}`;
+const user2Key = process.env.USER_2_PRIVATE_KEY as `0x${string}`;
+
+const user1 = createSigners(user1Key);
+const user2 = createSigners(user2Key);
+
+const client1 = await Client.create(
+  wsURL,
+  user1.stateSigner,
+  user1.txSigner,
+  withBlockchainRPC(chainId, process.env.RPC_URL!)
+);
+
+const client2 = await Client.create(
+  wsURL,
+  user2.stateSigner,
+  user2.txSigner,
+  withBlockchainRPC(chainId, process.env.RPC_URL!)
+);
+
+const appSigner1 = new AppSessionWalletSignerV1(new EthereumMsgSigner(user1Key));
+const appSigner2 = new AppSessionWalletSignerV1(new EthereumMsgSigner(user2Key));
+```
+
+Always close both clients in a `finally` block when the flow ends.
+
+## Step 2: Prepare the user home channel
+
+The session deposit comes from `client1`'s home channel. If the channel does not exist yet, create and checkpoint it first.
+
+```typescript
+await client1.setHomeBlockchain(asset, chainId);
+await client2.setHomeBlockchain(asset, chainId);
+
+await client1.approveToken(chainId, asset, new Decimal('20'));
+await client1.deposit(chainId, asset, new Decimal('10'));
+await client1.checkpoint(asset);
+```
+
+If the home channel already has enough signed balance, skip the approve/deposit/checkpoint block and continue.
+
+## Step 3: Define the app session
+
+The native v1 app definition uses `AppDefinitionV1`, not the legacy RPC app-definition and protocol-version shape.
+
+```typescript
+const appId = `checkout-demo-${Date.now()}`;
+
+const definition: AppDefinitionV1 = {
+  applicationId: appId,
+  participants: [
+    { walletAddress: client1.getUserAddress(), signatureWeight: 1 },
+    { walletAddress: client2.getUserAddress(), signatureWeight: 1 },
+  ],
+  quorum: 2,
+  nonce: BigInt(Date.now()),
 };
 
-// Buyer funds escrow
-const allocations = [
-    { participant: buyer, asset: 'usdc', amount: '0' },
-    { participant: seller, asset: 'usdc', amount: '100' }  // Released to seller
+const sessionData = JSON.stringify({ cartId: 'cart-001' });
+```
+
+## Step 4: Register the application via `apps.v1.submit_app_version`
+
+`app_sessions.v1.create_app_session` requires the application to exist in the app registry. If the app is missing, Nitronode returns `application_not_registered`.
+
+The SDK wrapper is `Client.registerApp(appID, metadata, creationApprovalNotRequired)`. It signs the packed app data with the transaction signer and submits `apps.v1.submit_app_version`.
+
+```typescript
+await client1.registerApp(
+  appId,
+  JSON.stringify({ name: 'Checkout demo', version: 1 }),
+  true
+);
+```
+
+If `creationApprovalNotRequired` is `false`, pass the owner's approval signature to `createAppSession()` through the optional `{ ownerSig }` argument.
+
+## Step 5: Create the session
+
+Every participant signs the same create-session hash.
+
+```typescript
+const createHash = packCreateAppSessionRequestV1(definition, sessionData);
+
+const createSigs = [
+  await appSigner1.signMessage(createHash),
+  await appSigner2.signMessage(createHash),
 ];
+
+const { appSessionId, version, status } = await client1.createAppSession(
+  definition,
+  sessionData,
+  createSigs
+);
+
+console.log({ appSessionId, version, status });
 ```
 
-### 2. Multi-Player Gaming
+## Step 6: Deposit into the session
+
+A deposit update moves funds from the user's home channel into the app session.
 
 ```typescript
-const appDefinition = {
-    participants: [player1, player2, player3, player4],
-    weights: [25, 25, 25, 25],
-    quorum: 75,  // 3 out of 4 players must agree
-    challenge: 3600,  // 1 hour challenge period
-    application: 'poker-game',
+const depositUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Deposit,
+  version: 2n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('10') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('0') },
+  ],
+  sessionData,
 };
-```
 
-### 3. Multi-Signature Treasury Management
-
-```typescript
-const appDefinition = {
-    participants: [member1, member2, member3, member4, member5],
-    weights: [20, 20, 20, 20, 20],
-    quorum: 60,  // 60% approval needed
-    application: 'multi-sig-treasury',
-};
-```
-
-### 4. Atomic Swaps
-
-```typescript
-// Party A has USDC, wants ETH
-// Party B has ETH, wants USDC
-const allocations = [
-    { participant: partyA, asset: 'usdc', amount: '100' },
-    { participant: partyA, asset: 'eth', amount: '0' },
-    { participant: partyB, asset: 'usdc', amount: '0' },
-    { participant: partyB, asset: 'eth', amount: '0.05' }
+const depositHash = packAppStateUpdateV1(depositUpdate);
+const depositSigs = [
+  await appSigner1.signMessage(depositHash),
+  await appSigner2.signMessage(depositHash),
 ];
 
-// After swap
-const finalAllocations = [
-    { participant: partyA, asset: 'usdc', amount: '0' },
-    { participant: partyA, asset: 'eth', amount: '0.05' },
-    { participant: partyB, asset: 'usdc', amount: '100' },
-    { participant: partyB, asset: 'eth', amount: '0' }
-];
+const nodeSig = await client1.submitAppSessionDeposit(
+  depositUpdate,
+  depositSigs,
+  asset,
+  new Decimal('10')
+);
+
+console.log('Deposit state node signature:', nodeSig);
 ```
 
----
+## Step 7: Operate on app state
 
-## Advanced Topics
-
-### Dynamic Participants
-
-For applications requiring flexible participation:
+An `Operate` update changes the session's off-chain state without touching the blockchain.
 
 ```typescript
-// Start with 2 participants
-let participants = [user1, user2];
-
-// Add a third participant (requires re-creating session)
-participants.push(user3);
-
-const newAppDefinition = {
-    participants,
-    weights: [33, 33, 34],
-    // ...
-};
-```
-
-### Weighted Voting
-
-Different participants can have different voting power:
-
-```typescript
-const appDefinition = {
-    participants: [founder, participant1, participant2],
-    weights: [50, 30, 20],  // Founder has 50% voting power
-    quorum: 60,  // Founder + one participant = 60%
-    // ...
-};
-```
-
-### Challenge Periods
-
-Add time for participants to dispute state changes:
-
-```typescript
-const appDefinition = {
-    // ...
-    challenge: 86400,  // 24 hours in seconds
+const operateUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Operate,
+  version: 3n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('8') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('2') },
+  ],
+  sessionData: JSON.stringify({ cartId: 'cart-001', purchase: 'item-123' }),
 };
 
-// Participants have 24 hours to challenge a close request before finalization
+const operateHash = packAppStateUpdateV1(operateUpdate);
+await client1.submitAppState(operateUpdate, [
+  await appSigner1.signMessage(operateHash),
+  await appSigner2.signMessage(operateHash),
+]);
 ```
 
-### State Validation
+## Step 8: Withdraw remaining funds
 
-Implement custom logic to validate state transitions:
+Use `Withdraw` when participants move session funds back to home channels.
 
 ```typescript
-function validateStateTransition(
-    oldAllocations: RPCAppSessionAllocation[],
-    newAllocations: RPCAppSessionAllocation[]
-): boolean {
-    // Ensure total amounts are preserved
-    const oldTotal = oldAllocations.reduce((sum, a) => sum + parseFloat(a.amount), 0);
-    const newTotal = newAllocations.reduce((sum, a) => sum + parseFloat(a.amount), 0);
-    
-    return Math.abs(oldTotal - newTotal) < 0.000001;
-}
+const withdrawUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Withdraw,
+  version: 4n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('0') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('0') },
+  ],
+  sessionData: operateUpdate.sessionData,
+};
+
+const withdrawHash = packAppStateUpdateV1(withdrawUpdate);
+await client1.submitAppState(withdrawUpdate, [
+  await appSigner1.signMessage(withdrawHash),
+  await appSigner2.signMessage(withdrawHash),
+]);
 ```
 
----
+## Step 9: Close the session
+
+Close is another signed app-state update. Submit it after final withdrawals or with the final allocation state your app requires.
+
+```typescript
+const closeUpdate: AppStateUpdateV1 = {
+  ...withdrawUpdate,
+  intent: AppStateUpdateIntent.Close,
+  version: 5n,
+};
+
+const closeHash = packAppStateUpdateV1(closeUpdate);
+await client1.submitAppState(closeUpdate, [
+  await appSigner1.signMessage(closeHash),
+  await appSigner2.signMessage(closeHash),
+]);
+```
+
+## Step 10: Query final state and close clients
+
+```typescript
+const { sessions } = await client1.getAppSessions({
+  wallet: client1.getUserAddress(),
+  status: 'closed',
+});
+
+const finalDefinition = await client1.getAppDefinition(appSessionId);
+
+console.log({ sessions, finalDefinition });
+
+await client1.close();
+await client2.close();
+```
+
+## Compat alternative for migrators
+
+If you are still using `@yellow-org/sdk-compat`, do not copy the native snippets above into a compat-only client. Use the compat app-session helpers while migrating call sites, then move to the native `Client` flow when you are ready to own app definitions and signed `AppStateUpdateV1` payloads directly.
+
+```typescript
+// Compat path: keep the 0.5.3-facing surface while the app migrates.
+import { NitroliteClient } from '@yellow-org/sdk-compat';
+
+const compatClient = await NitroliteClient.create({
+  wsURL,
+  walletClient,
+  chainId: Number(chainId),
+  blockchainRPCs,
+});
+```
 
 ## Troubleshooting
 
-### "Authentication failed for participant"
-
-**Cause**: Session key authentication failed
-
-**Solution**:
-- Ensure both `WALLET_1_SEED_PHRASE` and `WALLET_2_SEED_PHRASE` are set in `.env`
-- Verify wallets have been authenticated on Yellow network before
-
-### "Unsupported token"
-
-**Cause**: Using the wrong asset for your environment (e.g., `usdc` on Sandbox or `ytest.usd` on Production)
-
-**Solution**:
-- **Sandbox** (`wss://clearnet-sandbox.yellow.com/ws`): Use `ytest.usd`
-- **Production** (`wss://clearnet.yellow.com/ws`): Use `usdc`
-
-Ensure the asset in your allocations matches the connected network.
-
-### "Insufficient balance"
-
-**Cause**: Participant doesn't have enough funds in Yellow ledger
-
-**Solution**:
-
-Deposit sufficient funds into the yellow network account unified balance for each wallet
-
-### "Invalid signatures"
-
-**Cause**: Not all required signatures were collected
-
-**Solution**:
-- Ensure quorum is met (if quorum is 100, need all signatures)
-- Check that signatures are added in correct order
-- Verify message signers correspond to participants
-
-### "Session already closed"
-
-**Cause**: Trying to update or close an already-finalized session
-
-**Solution**:
-- Create a new session
-- Check session status before operations
-
-### "Quorum not reached"
-
-**Cause**: Insufficient voting weight for action
-
-**Solution**:
-
-```typescript
-// Example: quorum is 60, weights are [30, 30, 40]
-// Need at least 2 participants to sign
-
-// Check current signature weight
-const signatureWeight = signatures.reduce((sum, sig) => {
-    const participantIndex = findParticipantIndex(sig);
-    return sum + weights[participantIndex];
-}, 0);
-
-console.log(`Current weight: ${signatureWeight}, Required: ${quorum}`);
-```
-
----
-
-## Best Practices
-
-1. **Always validate allocations** before submitting state updates
-2. **Store session IDs** for future reference and auditing
-3. **Implement timeout handling** for multi-party signatures
-4. **Use appropriate quorum settings** based on trust model
-5. **Test with small amounts** before production use
-6. **Keep participants informed** of state changes
-7. **Handle disconnections gracefully** (participants may come back)
-8. **Document application logic** for all participants
-
----
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `application_not_registered` | `createAppSession()` ran before app registration. | Call `registerApp()` first; it submits `apps.v1.submit_app_version`. |
+| `quorum_not_met` | Not enough participant signatures for the app definition's quorum. | Sign the same packed hash with enough app-session signers. |
+| `invalid_app_state` | The signed payload does not match the submitted update. | Recompute `packAppStateUpdateV1(update)` and collect fresh signatures. |
+| `channel_not_found` | The depositing user has no ready home channel for `asset`. | Deposit and checkpoint the home channel before `submitAppSessionDeposit()`. |
+| `ongoing_transition` | A prior channel transition is still pending. | Acknowledge or checkpoint the pending state, then retry the app-session update. |
 
 ## Further Reading
 
-- [Protocol](/nitrolite/protocol/introduction) — Protocol specification and architecture
-- [SDK Reference](/nitrolite/build/sdk) — Complete SDK documentation
+- [TypeScript SDK examples](./typescript/examples)
+- [TypeScript SDK API reference](./typescript/api-reference)
+- App-session RPC catalogue: `/nitrolite/api-reference/app-sessions-v1`
+- App registry RPC catalogue: `/nitrolite/api-reference/apps-v1`
