@@ -12,45 +12,35 @@ import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
 Welcome to the Yellow Network learning path. This section builds your understanding from fundamentals to advanced concepts.
 
-Yellow Network is a decentralized clearing and settlement infrastructure that operates as a Layer 3 overlay on top of existing blockchains. It enables businesses — brokers, exchanges, and application developers — to move digital assets across multiple blockchain networks through a unified peer-to-peer ledger, without relying on a centralized intermediary. The network is formed by independent node operators who run open-source clearnode software supplied by Layer3 Fintech Ltd. on their own infrastructure. The YELLOW token provides access to network services including clearing, SDK and developer tools, node operation, the AppRegistry, and dispute resolution.
+Yellow Network is decentralized clearing and settlement infrastructure that operates as a Layer 3 overlay on existing blockchains. It lets businesses, exchanges, and application developers move digital assets through signed channel states. Independent node operators run open-source Nitronode software supplied by Layer3 Fintech Ltd. The SDK and developer tools are open-source and free.
 
----
+:::info What changed in v1
+The v1 protocol uses ChannelHub, Nitronode, channel states, home ledgers, and app sessions. If you are coming from `@erc7824/nitrolite@0.5.3`, start with the [TypeScript compat migration path](/nitrolite/build/sdk/typescript-compat/overview).
+:::
 
 ## Introduction
 
-Start here to understand what Yellow Network solves and how it works.
+**[What Yellow Solves](./introduction/what-yellow-solves.mdx)**: Understand the core problems: scaling, cost, and speed. Learn why <Tooltip content={tooltipDefinitions.channel}>state channels</Tooltip> are the answer for high-frequency applications.
 
-**[What Yellow Solves](./introduction/what-yellow-solves.mdx)** — Understand the core problems: scaling, cost, and speed. Learn why <Tooltip content={tooltipDefinitions.channel}>state channels</Tooltip> are the answer for high-frequency applications.
-
-**[Architecture at a Glance](./introduction/architecture-at-a-glance.mdx)** — See how the three protocol layers (on-chain, off-chain, application) work together to enable fast, secure transactions.
-
----
+**[Architecture at a Glance](./introduction/architecture-at-a-glance.mdx)**: See how the protocol, off-chain, and blockchain layers work together to enable fast channel updates with enforceable settlement.
 
 ## Core Concepts
 
-Deep dive into the technology powering Yellow Network.
+**[State Channels vs L1/L2](./core-concepts/state-channels-vs-l1-l2.mdx)**: Compare state channels with Layer 1 and Layer 2 solutions. Understand when each approach is the right choice.
 
-**[State Channels vs L1/L2](./core-concepts/state-channels-vs-l1-l2.mdx)** — Compare state channels with Layer 1 and Layer 2 solutions. Understand when each approach is the right choice.
+**[Challenge-Response & Disputes](./core-concepts/challenge-response.mdx)**: How Yellow Network handles disputes and ensures your funds are recoverable through the latest mutually signed state.
 
-**[Challenge-Response & Disputes](./core-concepts/challenge-response.mdx)** — How Yellow Network handles disputes and ensures your funds are always recoverable.
-
-**[YELLOW Token](./core-concepts/yellow-token.mdx)** — The utility token powering network services, node operator collateral, and dispute resolution.
-
----
+**[YELLOW Token](./core-concepts/yellow-token.mdx)**: The utility token powering network services, node operator collateral, and dispute resolution.
 
 ## Protocol Flows
 
-Detailed v1 protocol flow documentation for deposits, withdrawals, transfers, and app sessions.
+**[Protocol Architecture](./protocol-flows/architecture.mdx)**: The Petal Diagram: home chain, cross-chain, transfers, and app sessions.
 
-**[Protocol Architecture](./protocol-flows/architecture.mdx)** — The Petal Diagram: Home Chain, Cross-Chain, Transfers, and App Sessions.
+**[Transfer Flow](./protocol-flows/transfer-flow.mdx)**: Off-chain transfers between users via Nitronode.
 
-**[Transfer Flow](./protocol-flows/transfer-flow.mdx)** — Off-chain transfers between users via the Clearnode.
+**[Home Channel Flows](./protocol-flows/home-channel-creation.mdx)**: Channel creation, deposits, and withdrawals on the home chain.
 
-**[Home Channel Flows](./protocol-flows/home-channel-creation.mdx)** — Channel creation, deposits, and withdrawals on the home chain.
-
-**[App Session Deposit](./protocol-flows/app-session-deposit.mdx)** — Depositing funds into app sessions.
-
----
+**[App Session Deposit](./protocol-flows/app-session-deposit.mdx)**: Depositing funds into app sessions.
 
 ## Next Steps
 
@@ -58,6 +48,7 @@ After completing the Learn section, continue to:
 
 - **[Build](/nitrolite/build/getting-started/quickstart)** — Implement complete Yellow Applications
 - **[Protocol](/nitrolite/protocol/introduction)** — Authoritative protocol specification
+- **MCP tools**: Agent-assisted protocol and SDK lookup documentation is coming soon.
 
 ---
 
