@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Protocol pages must declare 'learn_link' in frontmatter to point at their Learn counterpart."
+level: error
+scope: raw
+token: "(?m)^learn_link:"
+min: 1

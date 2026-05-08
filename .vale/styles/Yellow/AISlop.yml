@@ -8,7 +8,7 @@ tokens:
   - "\\bdelve\\b"
   - "\\bleverage\\b"
   - "\\bunlock\\b"
-  - "\\bharness(?:es|ed|ing)?\\b"
+  - "\\bharness(?:es|ed|ing)?\\s+(?:the|your|its|our|all|this|these|those|every|any)\\b"
   - "\\bseamlessly\\b"
   - "\\bseamless\\b"
   - "\\brobust\\b"
