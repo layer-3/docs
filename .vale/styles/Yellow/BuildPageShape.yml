@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Build how-to pages should include TL;DR, Step-by-step, Verify, and Next steps headings."
+level: warning
+scope: raw
+token: "(?m)^## (TL;DR|Step-by-step|Verify|Next steps)\\b"
+min: 4
