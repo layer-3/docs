@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Reference prose should stay terse. Split long paragraphs before they become narrative."
+level: warning
+scope: paragraph
+token: "\\b\\w+\\b"
+max: 90

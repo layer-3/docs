@@ -1,0 +1,11 @@
+extends: existence
+message: "Avoid analogy or metaphor in reference prose: '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - "\\blike a\\b"
+  - "\\blike an\\b"
+  - "\\bas if\\b"
+  - "\\bthink of\\b"
+  - "\\banalogy\\b"
+  - "\\bmetaphor\\b"
