@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Build how-to pages must include a '## TL;DR' heading."
+level: error
+scope: raw
+token: "(?m)^## TL;DR\\b"
+min: 1
