@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Build how-to pages must include a '## Next steps' heading."
+level: error
+scope: raw
+token: "(?m)^## Next steps\\b"
+min: 1
