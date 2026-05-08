@@ -1,253 +1,148 @@
 ---
 sidebar_position: 2
 title: Architecture at a Glance
-description: High-level overview of Yellow Network's three-layer architecture
-keywords: [architecture, state channels, VirtualApp, Clearnode, smart contracts]
+description: High-level overview of Yellow Network's v1 architecture
+keywords: [architecture, state channels, Nitrolite, Nitronode, ChannelHub, smart contracts]
 ---
-
-import Tooltip from '@site/src/components/Tooltip';
-import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
-
-:::warning[Work in Progress]
-This page was carried over from the v0.5.x documentation and has not yet been fully updated for v1.x. Some terminology, code examples, and API references may be outdated. An update is in progress.
-:::
 
 # Architecture at a Glance
 
-In this guide, you will learn how Yellow Network's three protocol layers work together to enable fast, secure, off-chain transactions.
+Yellow Network v1 combines application code, SDK clients, Nitronode coordination, and ChannelHub enforcement so most updates happen off-chain while the latest mutually signed state remains enforceable on-chain.
 
 ---
 
-## The Three Layers
-
-Yellow Network consists of three interconnected layers, each with a specific responsibility:
+## The Four Surfaces
 
 ```mermaid
-graph TB
-    subgraph Application["Application Layer"]
-        direction TB
-        APP["Your Application<br/>Games, Payments, DeFi"]
-    end
+flowchart TB
+  app["Application<br/>Games, payments, exchanges"]
+  sdk["Client SDK + v1 RPC<br/>typed calls and signed envelopes"]
+  node["Nitronode<br/>state validation and coordination"]
+  chain["Blockchain layer<br/>ChannelHub + engines"]
 
-    subgraph OffChain["Off-Chain Layer"]
-        direction LR
-        CLIENT["Client SDK"]
-        BROKER["Clearnode"]
-    end
-
-    subgraph OnChain["On-Chain Layer"]
-        direction TB
-        CONTRACTS["Custody & Adjudicator Contracts"]
-    end
-
-    subgraph Blockchain["Blockchain Layer"]
-        direction TB
-        CHAIN["Ethereum, Polygon, Base, etc."]
-    end
-
-    APP --> CLIENT
-    CLIENT <-->|"Nitro RPC Protocol"| BROKER
-    CLIENT -.->|"On-chain operations"| CONTRACTS
-    BROKER -.->|"Monitors events"| CONTRACTS
-    CONTRACTS --> CHAIN
-
-    style Application fill:#e1f5ff,stroke:#9ad7ff,color:#111
-    style OffChain fill:#fff4e1,stroke:#ffd497,color:#111
-    style OnChain fill:#ffe1f5,stroke:#ffbde6,color:#111
-    style Blockchain fill:#f0f0f0,stroke:#c9c9c9,color:#111
+  app --> sdk
+  sdk <-->|"v1 RPC over WebSocket"| node
+  sdk -->|"deposit, checkpoint, challenge, close"| chain
+  node -->|"checkpoint and escrow coordination"| chain
+  chain -->|"events and enforced state"| node
 ```
 
-| Layer | Purpose | Speed | Cost |
-|-------|---------|-------|------|
-| **Application** | Your business logic and user interface | — | — |
-| **Off-Chain** | Instant state updates via Nitro RPC | < 1 second | Zero gas |
-| **On-Chain** | Fund custody, disputes, final settlement | Block time | Gas fees |
+| Surface | Purpose | Typical speed | Cost |
+|-------|---------|---------------|------|
+| **Application** | Business logic, user interface, app-session rules | User interaction speed | App-defined |
+| **Client SDK + v1 RPC** | Builds signed envelopes and calls Nitronode methods | Network round trip | No gas |
+| **Nitronode** | Validates transitions, signs channel states, coordinates off-chain updates | Sub-second in normal operation | No gas |
+| **Blockchain layer** | ChannelHub state enforcement, locked funds, challenge and close paths | Block time | Gas fees |
 
 ---
 
-## On-Chain Layer: Security Foundation
+## ChannelHub
 
-The on-chain layer provides cryptographic guarantees through smart contracts:
+ChannelHub is the v1 on-chain entrypoint for channel enforcement. It works with ChannelEngine, EscrowDepositEngine, EscrowWithdrawalEngine, and signature validators. Builders interact with ChannelHub as the contract that creates channels, processes deposits and withdrawals, checkpoints signed states, accepts challenges, and closes channels.
 
-### Custody Contract
+ChannelHub validates:
 
-The <Tooltip content={tooltipDefinitions.custodyContract}>**Custody Contract**</Tooltip> is the core of VirtualApp's on-chain implementation. It handles:
+- channel definitions and channel identifiers
+- approved signature validation modes
+- state versions and intents
+- home-ledger and non-home-ledger invariants
+- locked-funds accounting
+- challenge and close status transitions
 
-- **Channel Creation**: Lock funds and establish <Tooltip content={tooltipDefinitions.participant}>participant</Tooltip> relationships
-- **Dispute Resolution**: Process challenges and validate <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>
-- **Final Settlement**: Distribute funds according to signed final state
-- **Fund Management**: Deposit and withdrawal operations
-
-### Adjudicator Contracts
-
-<Tooltip content={tooltipDefinitions.adjudicator}>**Adjudicators**</Tooltip> validate state transitions according to application-specific rules:
-
-- **SimpleConsensus**: Both participants must sign (default for payment channels)
-- **Custom Adjudicators**: Application-specific validation logic
-
-:::info On-Chain Operations
-You only touch the blockchain for:
-
-1. Opening a channel (lock funds)
-2. Resizing a channel (add or remove funds)
-3. Closing a channel (unlock and distribute funds)
-4. Disputing a state (if counterparty is uncooperative)
-
-:::
+Routine transfers and app-session updates are signed off-chain. The blockchain is used for create, deposit, withdraw, checkpoint, challenge, close, escrow, and migration operations.
 
 ---
 
-## Off-Chain Layer: Speed and Efficiency
+## Off-chain layer
 
-The off-chain layer handles high-frequency operations without blockchain transactions.
+The off-chain layer handles frequent state advancement without blockchain transactions.
 
-### Clearnode
+### Nitronode
 
-A <Tooltip content={tooltipDefinitions.clearnode}>**Clearnode**</Tooltip> is operated by independent node operators using open-source software developed and maintained by Layer3 Fintech Ltd. It is the off-chain service that:
+Nitronode is operated by independent node operators using open-source software developed and maintained by Layer3 Fintech Ltd. It:
 
-- Manages the Nitro RPC protocol for <Tooltip content={tooltipDefinitions.channel}>state channel</Tooltip> operations
-- Provides a <Tooltip content={tooltipDefinitions.unifiedBalance}>unified balance</Tooltip> across multiple chains
-- Coordinates payment channels between users
-- Hosts <Tooltip content={tooltipDefinitions.appChannel}>app sessions</Tooltip> for multi-party applications
+- validates v1 channel transitions
+- signs mutually agreed channel states
+- issues pending receive and release states for user acknowledgement
+- coordinates cross-chain escrow and app-session flows
+- serves v1 RPC methods over WebSocket
 
-### Nitro RPC Protocol
+### v1 RPC
 
-**Nitro RPC** is a lightweight protocol optimized for state channel communication:
-
-- **Compact format**: JSON array structure reduces message size by ~30%
-- **Signed messages**: Every request and response is cryptographically signed
-- **Real-time updates**: Bidirectional communication via WebSocket
-
-```javascript
-// Compact Nitro RPC format
-[requestId, method, params, timestamp]
-
-// Example: Transfer 50 USDC
-[42, "transfer", {"destination": "0x...", "amount": "50.0", "asset": "usdc"}, 1699123456789]
-```
+v1 RPC is the wire surface used by SDKs and low-level clients. Builders should prefer the SDK unless they are implementing an SDK, proxy, debugger, or language integration.
 
 ---
 
 ## How Funds Flow
 
-This diagram shows how your tokens move through the system:
+Funds are represented by channel states with a home ledger and, when needed, a non-home ledger.
 
 ```mermaid
-graph TB
-    A["User Wallet<br/>(ERC-20)"] -->|"1. deposit"| B["Available Balance<br/>(Custody Contract)"]
-    B -->|"2. resize"| C["Channel-Locked<br/>(Custody Contract)"]
-    C <-->|"3. resize"| D["Unified Balance<br/>(Clearnode)"]
-    D -->|"4. open session"| E["App Sessions<br/>(Applications)"]
-    E -->|"5. close session"| D
-    D -->|"6. resize/close"| B
-    B -->|"7. withdraw"| A
+flowchart TB
+  wallet["User wallet"]
+  hub["ChannelHub"]
+  home["Home channel<br/>home ledger"]
+  nonhome["Non-home ledger<br/>escrow in progress"]
+  session["App session<br/>extension state"]
 
-    style A fill:#90EE90,stroke:#333,color:#111
-    style B fill:#87CEEB,stroke:#333,color:#111
-    style C fill:#FFD700,stroke:#333,color:#111
-    style D fill:#DDA0DD,stroke:#333,color:#111
-    style E fill:#FFA07A,stroke:#333,color:#111
+  wallet -->|"approve + home deposit"| hub
+  hub -->|"locked funds"| home
+  home <-->|"transfer / acknowledge"| home
+  home -->|"commit"| session
+  session -->|"release"| home
+  home <-->|"escrow initiate / finalize"| nonhome
+  home -->|"home withdrawal / close"| wallet
 ```
 
-### Fund States
-
-| State | Location | What It Means |
-|-------|----------|---------------|
-| **User Wallet** | Your EOA | Full control, on-chain |
-| **Available Balance** | Custody Contract | Deposited, ready for channels |
-| **Channel-Locked** | Custody Contract | Committed to a specific channel |
-| **Unified Balance** | Clearnode | Available for off-chain operations |
-| **App Session** | Application | Locked in a specific app session |
+| Concept | What it means |
+|-------|---------------|
+| **Home channel** | The user and Node channel for a unified asset. |
+| **Home ledger** | The authoritative ledger for the enforcement chain. |
+| **Non-home ledger** | A temporary ledger for cross-chain escrow, withdrawal, or migration. |
+| **App session** | An extension state funded by commit transitions and settled by release transitions. |
 
 ---
 
 ## Channel Lifecycle
 
-A payment channel progresses through distinct states:
+The v1 RPC exposes channel status as `void`, `open`, `challenged`, and `closed`.
 
 ```mermaid
 stateDiagram-v2
     [*] --> VOID
-    VOID --> ACTIVE: create() with both signatures
-    ACTIVE --> ACTIVE: Off-chain updates (zero gas)
-    ACTIVE --> ACTIVE: resize() (add/remove funds)
-    ACTIVE --> FINAL: close() (cooperative)
-    ACTIVE --> DISPUTE: challenge() (if disagreement)
-    DISPUTE --> ACTIVE: checkpoint() (newer state)
-    DISPUTE --> FINAL: Timeout expires
-    FINAL --> [*]
-    
-    note right of ACTIVE: This is where<br/>99% of activity happens
+    VOID --> OPEN: create or deposit
+    OPEN --> OPEN: signed off-chain updates
+    OPEN --> OPEN: checkpoint higher-version state
+    OPEN --> CHALLENGED: challenge
+    CHALLENGED --> OPEN: higher-version response
+    CHALLENGED --> CLOSED: challenge expires and close executes
+    OPEN --> CLOSED: cooperative close
+    CLOSED --> [*]
+
+    note right of OPEN: Normal operation happens here
 ```
 
-:::info Legacy Flow
-The diagram above shows the flow where both participants sign the initial state, creating the channel directly in ACTIVE status. See the [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) section for details.
-:::
+`CHALLENGED` means a participant has submitted a disputed state on-chain and the challenge duration is running. During that window, another participant may respond with a higher-version mutually signed state. If no higher-version response is accepted before expiry, the challenged state can be closed and funds are released according to that enforced state. See [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) and [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement) for the formal rules.
 
 ### Typical Flow
 
-1. **Create**: Both parties sign initial state → channel becomes ACTIVE
-2. **Operate**: Exchange signed states off-chain (unlimited, zero gas)
-3. **Close**: Both sign final state → funds distributed
-
-### Dispute Path (Rare)
-
-If your counterparty becomes unresponsive:
-
-1. **Challenge**: Submit your latest signed state on-chain
-2. **Wait**: Challenge period (typically 24 hours) allows counterparty to respond
-3. **Finalize**: If no newer state is submitted, your state becomes final
-
----
-
-## Communication Patterns
-
-### Opening a Channel
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Clearnode
-    participant Blockchain
-
-    Client->>Clearnode: create_channel request
-    Clearnode->>Client: channel config + Clearnode signature
-    Client->>Client: Sign state
-    Client->>Blockchain: create() with BOTH signatures
-    Blockchain->>Blockchain: Verify, lock funds, emit event
-    Blockchain-->>Clearnode: Event detected
-    Clearnode->>Client: Channel now ACTIVE
-```
-
-### Off-Chain Transfer
-
-```mermaid
-sequenceDiagram
-    participant Sender
-    participant Clearnode
-    participant Receiver
-
-    Sender->>Clearnode: transfer(destination, amount)
-    Clearnode->>Clearnode: Validate, update ledger
-    Clearnode->>Sender: Confirmed ✓
-    Clearnode->>Receiver: balance_update notification
-
-    Note over Sender,Receiver: Complete in < 1 second, zero gas
-```
-
----
+1. **Create or deposit**: The user and Node sign an initial channel state; a deposit state may be submitted to ChannelHub to lock funds.
+2. **Operate**: The user and Node exchange signed states off-chain for transfers, acknowledgements, commits, releases, and other valid transitions.
+3. **Checkpoint or challenge**: Any party may enforce the latest mutually signed state if needed.
+4. **Close**: A final signed state or expired challenge releases funds according to the enforced allocation.
 
 ## Key Takeaways
 
 | Concept | What to Remember |
 |---------|------------------|
-| **On-Chain** | Only for opening, closing, disputes—security layer |
-| **Off-Chain** | Where all the action happens—speed layer |
-| **Clearnode** | Your gateway to the network—coordination layer |
-| **State Channels** | Lock once, transact unlimited times, settle once |
+| **ChannelHub** | The v1 contract entrypoint for enforcement and locked funds. |
+| **Nitronode** | The off-chain coordinator for state advancement and v1 RPC. |
+| **Channel state** | The signed record of allocations, version, transition, and ledgers. |
+| **Home ledger** | The enforceable ledger for the channel's current home chain. |
+| **App session** | An extension funded by commit transitions and settled through release transitions. |
 
 :::success Security Guarantee
-At every stage, funds remain cryptographically secured. You can always recover your funds according to the latest valid signed state, even if a Clearnode becomes unresponsive.
+For the home chain, assets can be recovered through ChannelHub with the latest mutually signed state even if Nitronode becomes unresponsive.
 :::
 
 ---
@@ -256,6 +151,6 @@ At every stage, funds remain cryptographically secured. You can always recover y
 
 Ready to start building? Continue to:
 
-- **[Quickstart](/nitrolite/build/getting-started/quickstart)** — Create your first channel in minutes
-- **[Prerequisites](/nitrolite/build/getting-started/prerequisites)** — Set up your development environment
-- **[Core Concepts](../core-concepts/state-channels-vs-l1-l2.mdx)** — Deep dive into state channels
+- **[Quickstart](/nitrolite/build/getting-started/quickstart)**: Create your first channel in minutes.
+- **[Prerequisites](/nitrolite/build/getting-started/prerequisites)**: Set up your development environment.
+- **[Core Concepts](../core-concepts/state-channels-vs-l1-l2.mdx)**: Deep dive into state channels.
