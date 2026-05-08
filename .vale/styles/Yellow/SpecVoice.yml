@@ -1,0 +1,10 @@
+extends: existence
+message: "Use definitional spec voice instead of narrative phrasing: '%s'."
+level: warning
+ignorecase: true
+tokens:
+  - "\\bwe (?:will|can|should|need to)\\b"
+  - "\\byou (?:will|can|should|need to)\\b"
+  - "\\blet's\\b"
+  - "\\bthis guide (?:shows|walks|explains)\\b"
+  - "\\bin this (?:guide|page|section)\\b"

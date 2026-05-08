@@ -1,0 +1,37 @@
+name: Vale
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/vale.yml"
+      - ".pre-commit-config.yaml"
+      - ".vale.ini"
+      - ".vale/**"
+      - "docs/**/*.md"
+      - "docs/**/*.mdx"
+      - "templates/**/*.md"
+      - "templates/**/*.mdx"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  vale:
+    name: Vale advisory lint
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Vale
+        uses: errata-ai/vale-action@v2.1.1
+        with:
+          files: '["docs", "templates"]'
+          fail_on_error: true
+          filter_mode: added
+          vale_flags: "--minAlertLevel=error"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

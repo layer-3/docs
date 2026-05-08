@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Learn and Protocol pages should declare their counterpart link in frontmatter."
+level: warning
+scope: raw
+token: "(?m)^(protocol_link|learn_link):"
+min: 1
