@@ -15,6 +15,7 @@ These methods build and co-sign a state off-chain. Use [`checkpoint()`](#checkpo
 ### `deposit(blockchainId, asset, amount)`
 
 Prepares a deposit state. Creates a new channel if none exists, otherwise advances the existing state.
+Backing RPC: creates new channels through `channels.v1.request_creation`, then submits signed states through `channels.v1.submit_state`.
 
 ```typescript
 const state = await client.deposit(80002n, 'usdc', new Decimal(100));
@@ -38,6 +39,7 @@ const txHash = await client.checkpoint('usdc');
 ### `withdraw(blockchainId, asset, amount)`
 
 Prepares a withdrawal state to remove funds from the channel.
+Backing RPC: submits the signed withdrawal state through `channels.v1.submit_state`.
 
 ```typescript
 const state = await client.withdraw(80002n, 'usdc', new Decimal(25));
@@ -59,6 +61,7 @@ const txHash = await client.checkpoint('usdc');
 ### `transfer(recipientWallet, asset, amount)`
 
 Prepares an off-chain transfer to another wallet. For existing channels, no checkpoint is needed.
+Backing RPC: submits the sender state through `channels.v1.submit_state`; the node creates the receiver state and returns the signed pair.
 
 ```typescript
 const state = await client.transfer('0xRecipient...', 'usdc', new Decimal(50));
@@ -79,6 +82,7 @@ const state = await client.transfer('0xRecipient...', 'usdc', new Decimal(50));
 ### `closeHomeChannel(asset)`
 
 Prepares a finalize state to close the user's channel for a specific asset.
+Backing RPC: submits the finalize transition through `channels.v1.submit_state`.
 
 ```typescript
 const state = await client.closeHomeChannel('usdc');
@@ -90,6 +94,7 @@ const txHash = await client.checkpoint('usdc');
 ### `acknowledge(asset)`
 
 Acknowledges a received state (e.g., after receiving a transfer).
+Backing RPC: submits the acknowledgement transition through `channels.v1.submit_state`.
 
 ```typescript
 const state = await client.acknowledge('usdc');
@@ -114,12 +119,14 @@ const txHash = await client.checkpoint('usdc');
 ```
 
 **Requires:** Blockchain RPC via `withBlockchainRPC()` and a co-signed state.
+Backing RPC: reads channel context through `channels.v1.get_latest_state` and `channels.v1.get_home_channel`, then sends the on-chain ChannelHub transaction.
 
 ---
 
 ### `challenge(state)`
 
 Submits an on-chain challenge for a channel. Initiates a dispute period.
+Backing RPC: none for submission; the SDK verifies the signed state locally and sends the on-chain ChannelHub challenge transaction.
 
 ```typescript
 const state = await client.getLatestState(wallet, 'usdc', true);
@@ -131,6 +138,7 @@ const txHash = await client.challenge(state);
 ### `approveToken(chainId, asset, amount)`
 
 Approves the ChannelHub contract to spend ERC-20 tokens. Required before depositing.
+Backing RPC: none; this is an ERC-20 approval transaction against the token contract resolved from Nitronode asset config.
 
 ```typescript
 const txHash = await client.approveToken(80002n, 'usdc', new Decimal(1000));
@@ -141,6 +149,7 @@ const txHash = await client.approveToken(80002n, 'usdc', new Decimal(1000));
 ### `checkTokenAllowance(chainId, tokenAddress, owner)`
 
 Checks the current token allowance for the ChannelHub contract.
+Backing RPC: none; this reads the ERC-20 allowance through the configured blockchain RPC.
 
 ```typescript
 const allowance = await client.checkTokenAllowance(80002n, '0xToken...', '0xOwner...');
@@ -156,6 +165,8 @@ const config = await client.getConfig();      // Node configuration
 const chains = await client.getBlockchains(); // Supported blockchains
 const assets = await client.getAssets();      // All assets (or pass blockchainId)
 ```
+
+Backing RPC: `node.v1.ping`, `node.v1.get_config`, and `node.v1.get_assets`. `getBlockchains()` reads the blockchains returned by `node.v1.get_config`.
 
 ---
 
@@ -173,6 +184,8 @@ const { transactions, metadata } = await client.getTransactions(wallet, {
 
 const allowances = await client.getActionAllowances(wallet);
 ```
+
+Backing RPC: `user.v1.get_balances`, `user.v1.get_transactions`, and `user.v1.get_action_allowances`.
 
 ---
 
@@ -193,6 +206,8 @@ const escrow = await client.getEscrowChannel(escrowChannelId);
 const state = await client.getLatestState(wallet, asset, true);
 ```
 
+Backing RPC: `channels.v1.get_channels`, `channels.v1.get_home_channel`, `channels.v1.get_escrow_channel`, and `channels.v1.get_latest_state`.
+
 ---
 
 ## App Registry
@@ -207,6 +222,8 @@ const { apps, metadata } = await client.getApps({
 
 await client.registerApp('my-app', '{"name": "My App"}', false);
 ```
+
+Backing RPC: `apps.v1.get_apps` and `apps.v1.submit_app_version`. Register the app before creating sessions for its `applicationId`.
 
 ---
 
@@ -233,12 +250,16 @@ await client.submitAppState(appUpdate, quorumSigs);
 const batchId = await client.rebalanceAppSessions(signedUpdates);
 ```
 
+Backing RPC: `app_sessions.v1.create_app_session`, `app_sessions.v1.submit_deposit_state`, `app_sessions.v1.submit_app_state`, and `app_sessions.v1.rebalance_app_sessions`.
+
 ### Query
 
 ```typescript
 const { sessions, metadata } = await client.getAppSessions(opts);
 const definition = await client.getAppDefinition(appSessionId);
 ```
+
+Backing RPC: `app_sessions.v1.get_app_sessions` and `app_sessions.v1.get_app_definition`.
 
 ---
 
@@ -260,6 +281,8 @@ await client.submitSessionKeyState({ ...state, user_sig: sig });
 const states = await client.getLastKeyStates('0x1234...');
 ```
 
+Backing RPC: `app_sessions.v1.submit_session_key_state` and `app_sessions.v1.get_last_key_states`.
+
 ---
 
 ## Channel Session Keys
@@ -278,6 +301,8 @@ await client.submitChannelSessionKeyState({ ...state, user_sig: sig });
 
 const states = await client.getLastChannelKeyStates('0x1234...');
 ```
+
+Backing RPC: `channels.v1.submit_session_key_state` and `channels.v1.get_last_key_states`.
 
 ---
 

@@ -10,13 +10,28 @@ import TabItem from '@theme/TabItem';
 
 # Migration Guide
 
-If you are coming from an earlier version of VirtualApp, you will need to account for the following breaking changes.
+If you are coming from an earlier version of VirtualApp, first choose the migration surface:
+
+- If you're using `@yellow-org/sdk-compat`, use this page for legacy protocol semantics and the [compat overview](./typescript-compat/overview) for the codemod workflow.
+- If you're going straight to `@yellow-org/sdk`, use this page as a semantics checklist, then implement new code with the native [TypeScript SDK guide](./typescript/getting-started).
+
+The `@yellow-org/nitrolite-codemod` package is planned for npm. Until it publishes, the [compat overview codemod workflow](./typescript-compat/overview) shows how to clone the source repo, build the CLI, scan your app, and apply the migration transforms. It rewrites package imports, updates dependencies, and leaves `TODO [codemod]` markers where a native v1 decision is required.
+
+## What semantics changed
+
+Amount units are the most important migration boundary:
+
+- If you're using `@yellow-org/sdk-compat`, channel transfers use raw asset-unit strings, such as `'5000000'` for 5 USDC with 6 decimals. See the amount-units table in the [compat overview](./typescript-compat/overview).
+- If you're updating app-session allocations, keep human-decimal strings in the allocation payloads because app state is signed and shared by participants.
+- If you're going straight to `@yellow-org/sdk`, use `Decimal` values for native v1 calls such as `deposit()`, `withdraw()`, `transfer()`, and app-session allocation amounts.
 
 ## 0.5.x Breaking changes
 
+If you're using `@yellow-org/sdk-compat`, treat the snippets in this section as legacy-shape examples to compare with your current app. If you're going straight to `@yellow-org/sdk`, use the native SDK pages for replacement code.
+
 The 0.5.x release includes fundamental protocol changes affecting session keys, channel operations, state signatures, and channel resize rules. The main objective of these changes is to enhance security, and provide better experience for developers and users by ability to limit allowances for specific applications.
 
-**Not ready to migrate?** Unfortunately, at this time Yellow Network does not provide ClearNodes running the previous version of the protocol, so you will need to migrate to the latest version to continue using the Network.
+**Not ready to migrate?** Unfortunately, at this time Yellow Network does not provide Nitronode instances running the previous version of the protocol, so you will need to migrate to the latest version to continue using the Network.
 
 ### Protocol Changes
 
@@ -26,15 +41,15 @@ These protocol-level changes affect all implementations and integrations with th
 
 Session keys now have enhanced properties that define their access levels and capabilities:
 
-- **Application field**: Determines the scope of session key permissions. Setting this to an application name (e.g., "My Trading App") grants application-scoped access with enforced allowances. Setting it to "clearnode" grants root access equivalent to the wallet itself.
+- **Application field**: Determines the scope of session key permissions. Setting this to an application name (e.g., "My Trading App") grants application-scoped access with enforced allowances. Legacy root-access examples may use a broker-specific root marker because that is what older protocol versions expected.
 
 - **Allowances field**: Defines spending limits for application-scoped session keys. These limits are tracked cumulatively across all operations and are enforced by the protocol.
 
-- **Expires_at field**: Uses a bigint timestamp (seconds since epoch). Once expired, session keys are permanently frozen and cannot be reactivated. This is particularly critical for root access keys (application set to "clearnode") - if they expire, you lose the ability to perform channel operations.
+- **Expires_at field**: Uses a bigint timestamp (seconds since epoch). Once expired, session keys are permanently frozen and cannot be reactivated. This is particularly critical for legacy root access keys: if they expire, you lose the ability to perform channel operations.
 
 #### Channel Creation: Separate Create and Fund Steps
 
-Clearnode no longer supports creating channels with an initial deposit. All channels must be created with zero balance and funded separately through a resize operation. This two-step process ensures cleaner state management and prevents edge cases in channel initialization.
+Nitronode no longer supports creating channels with an initial deposit. All channels must be created with zero balance and funded separately through a resize operation. This two-step process ensures cleaner state management and prevents edge cases in channel initialization.
 
 #### State Signatures: Wallet vs Session Key Signing
 
@@ -96,13 +111,13 @@ Implementing the new session key protocol changes:
   ```
 
   </TabItem>
-  <TabItem value="root" label="Root Access (Clearnode)">
+  <TabItem value="root" label="Root Access (legacy)">
 
   ```typescript
   const authRequest = {
     address: '0x...',
     session_key: '0x...',
-    application: 'clearnode', // Special value for root access
+    application: '<legacy-root-application>', // Legacy special value for root access
     allowances: [], // Not enforced for root access
     scope: 'app.create',
     expires_at: BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60) // Long expiration recommended
@@ -113,7 +128,7 @@ Implementing the new session key protocol changes:
 </Tabs>
 
 **Important considerations:**
-- Root access keys (application: "clearnode") cannot perform channel operations after expiration
+- Root access keys that use a legacy root-application marker cannot perform channel operations after expiration
 - Plan expiration times based on your operational needs
 - Application-scoped keys track cumulative spending against allowances
 
@@ -167,7 +182,7 @@ await client.resizeChannel({
 
 #### Resize correctly
 
-Channel resizing must be negotiated with the ClearNode through WebSocket. Use `resize_amount` and `allocate_amount` with correct sign convention (`resize_amount = -allocate_amount`) and help users with non-zero channel balances migrate by resizing to zero or reopening channels.
+Channel resizing must be negotiated with Nitronode through WebSocket. Use `resize_amount` and `allocate_amount` with correct sign convention (`resize_amount = -allocate_amount`) and help users with non-zero channel balances migrate by resizing to zero or reopening channels.
 
 Channel resize can be requested as follows:
 
@@ -179,7 +194,7 @@ const resizeMessage = await createResizeChannelMessage(messageSigner, {
   funds_destination: walletAddress,
 });
 
-const resizeResponse = {}; // send the message and wait for Clearnode's response
+const resizeResponse = {}; // send the message and wait for Nitronode's response
 
 const { params: resizeResponseParams } = parseResizeChannelResponse(resizeResponse);
 const resizeParams = {
@@ -272,9 +287,9 @@ const types = {
 };
 ```
 
-### ClearNode API
+### Nitronode RPC
 
-You should read this section only if you are using the ClearNode API directly.
+You should read this section only if you are using the Nitronode RPC API directly.
 
 #### Update Authentication
 
@@ -301,14 +316,14 @@ Use the new session key parameters with proper `application`, `allowances`, and 
   ```
 
   </TabItem>
-  <TabItem value="root" label="Root Auth (Clearnode)">
+  <TabItem value="root" label="Root Auth (legacy)">
 
   ```json
   {
     "req": [1, "auth_request", {
       "address": "0x1234567890abcdef...",
       "session_key": "0x9876543210fedcba...",
-      "application": "clearnode",
+      "application": "<legacy-root-application>",
       "allowances": [],
       "scope": "app.create",
       "expires_at": 1750659456789
@@ -398,9 +413,9 @@ Response:
 
 ## 0.3.x Breaking changes
 
-The 0.3.x release includes breaking changes to the SDK architecture, smart contract interfaces, and Clearnode API enhancements listed below.
+The 0.3.x release includes breaking changes to the SDK architecture, smart contract interfaces, and Nitronode RPC enhancements listed below.
 
-**Not ready to migrate?** Unfortunately, at this time Yellow Network does not provide ClearNodes running the previous version of the protocol, so you will need to migrate to the latest version to continue using the Network.
+**Not ready to migrate?** Unfortunately, at this time Yellow Network does not provide Nitronode instances running the previous version of the protocol, so you will need to migrate to the latest version to continue using the Network.
 
 ### VirtualApp SDK
 
@@ -445,7 +460,7 @@ const stateSigner = new SessionKeyStateSigner('0x...' as Hex);
 
 The `CreateChannelParams` interface has been fully restructured for better clarity.
 
-You should use the new [`CreateChannel` ClearNode API endpoint](#added-create_channel-method) to get the response, that fully resembles the channel creation parameters.
+You should use the new [`CreateChannel` Nitronode RPC endpoint](#added-create_channel-method) to get the response, that fully resembles the channel creation parameters.
 
 ```typescript
 // remove-start
@@ -590,7 +605,7 @@ const sig: Signature = '0x...';
 
 #### Added: Pagination Types and Parameters
 
-To support pagination in ClearNode API requests, new types and parameters have been added.
+To support pagination in Nitronode RPC requests, new types and parameters have been added.
 
 For now, only `GetLedgerTransactions` request has been updated to include pagination.
 
@@ -605,15 +620,15 @@ export interface PaginationFilters {
 }
 ```
 
-### Clearnode API
+### Nitronode RPC
 
-You should read this section only if you are using the ClearNode API directly, or if you are using the VirtualApp SDK with custom ClearNode API requests.
+You should read this section only if you are using the Nitronode RPC API directly, or if you are using the VirtualApp SDK with custom Nitronode RPC requests.
 
 #### Actions: Structured Request Parameters
 
-ClearNode API requests have migrated from array-based parameters to structured object parameters for improved type safety and API clarity.
+Nitronode RPC requests have migrated from array-based parameters to structured object parameters for improved type safety and API clarity.
 
-Update all your ClearNode API requests to use object-based parameters instead of arrays.
+Update all your Nitronode RPC requests to use object-based parameters instead of arrays.
 
 ```json
 {

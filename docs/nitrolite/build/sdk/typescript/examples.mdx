@@ -6,6 +6,10 @@ sidebar_position: 4
 
 # Examples
 
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL in each `Client.create()` call below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
 ## Basic Deposit and Transfer
 
 ```typescript
@@ -13,10 +17,10 @@ import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
 import Decimal from 'decimal.js';
 
 async function basicExample() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.RPC_URL!)
@@ -59,10 +63,10 @@ import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
 import Decimal from 'decimal.js';
 
 async function multiChainExample() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.POLYGON_RPC!),
@@ -94,9 +98,9 @@ async function multiChainExample() {
 import { Client, createSigners } from '@yellow-org/sdk';
 
 async function queryTransactions() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner
   );
@@ -123,41 +127,60 @@ async function queryTransactions() {
 ## App Session Workflow
 
 ```typescript
-import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import {
+  AppSessionWalletSignerV1,
+  AppStateUpdateIntent,
+  Client,
+  EthereumMsgSigner,
+  createSigners,
+  packAppStateUpdateV1,
+  packCreateAppSessionRequestV1,
+  withBlockchainRPC,
+  type AppDefinitionV1,
+  type AppStateUpdateV1,
+} from '@yellow-org/sdk';
 import Decimal from 'decimal.js';
 
 async function appSessionExample() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+  const appSigner = new AppSessionWalletSignerV1(
+    new EthereumMsgSigner(process.env.PRIVATE_KEY as `0x${string}`)
+  );
+
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.RPC_URL!)
   );
 
   try {
-    const definition = {
+    const definition: AppDefinitionV1 = {
       applicationId: 'chess-v1',
       participants: [
         { walletAddress: client.getUserAddress(), signatureWeight: 1 },
-        { walletAddress: '0xOpponent...', signatureWeight: 1 },
       ],
-      quorum: 2,
+      quorum: 1,
       nonce: 1n,
     };
+
+    await client.registerApp('chess-v1', '{"name":"Chess"}', true);
+
+    const createHash = packCreateAppSessionRequestV1(definition, '{}');
+    const createSig = await appSigner.signMessage(createHash);
 
     const { appSessionId } = await client.createAppSession(
       definition,
       '{}',
-      ['sig1', 'sig2']
+      [createSig]
     );
     console.log('Session created:', appSessionId);
 
     // Deposit to app session
-    const appUpdate = {
+    const appUpdate: AppStateUpdateV1 = {
       appSessionId,
-      intent: 1,
-      version: 1n,
+      intent: AppStateUpdateIntent.Deposit,
+      version: 2n,
       allocations: [{
         participant: client.getUserAddress(),
         asset: 'usdc',
@@ -166,9 +189,12 @@ async function appSessionExample() {
       sessionData: '{}',
     };
 
+    const depositHash = packAppStateUpdateV1(appUpdate);
+    const depositSig = await appSigner.signMessage(depositHash);
+
     const nodeSig = await client.submitAppSessionDeposit(
       appUpdate,
-      ['sig1'],
+      [depositSig],
       'usdc',
       new Decimal(50)
     );
@@ -196,56 +222,77 @@ import {
   type TransactionSigner,
   withBlockchainRPC,
 } from '@yellow-org/sdk';
-import { createWalletClient, custom, type WalletClient } from 'viem';
+import {
+  createWalletClient,
+  custom,
+  type Address,
+  type Hex,
+  type WalletClient,
+} from 'viem';
 import { sepolia } from 'viem/chains';
 
 // Adapt viem WalletClient to SDK's StateSigner (EIP-191 signatures)
-class WalletStateSigner implements StateSigner {
+class BrowserStateSigner implements StateSigner {
   constructor(private wc: WalletClient) {}
 
-  async sign(payload: Uint8Array): Promise<string> {
-    return this.wc.signMessage({
-      account: this.wc.account!,
-      message: { raw: payload },
-    });
+  getAddress(): Address {
+    return this.wc.account!.address;
   }
 
-  getAddress(): string {
-    return this.wc.account!.address;
+  async signMessage(hash: Hex): Promise<Hex> {
+    return await this.wc.signMessage({
+      account: this.wc.account!,
+      message: { raw: hash },
+    });
   }
 }
 
 // Adapt viem WalletClient to SDK's TransactionSigner
-class WalletTransactionSigner implements TransactionSigner {
+class BrowserTransactionSigner implements TransactionSigner {
   constructor(private wc: WalletClient) {}
 
-  async sign(payload: Uint8Array): Promise<string> {
-    return this.wc.signTypedData({
+  getAddress(): Address {
+    return this.wc.account!.address;
+  }
+
+  async sendTransaction(tx: Parameters<WalletClient['sendTransaction']>[0]): Promise<Hex> {
+    return await this.wc.sendTransaction(tx);
+  }
+
+  async signMessage({ raw }: { raw: Hex }): Promise<Hex> {
+    return await this.wc.signMessage({
       account: this.wc.account!,
-      domain: { name: 'Nitrolite', version: '1', chainId: 1 },
-      types: { Nitrolite: [{ name: 'operation', type: 'bytes' }] },
-      primaryType: 'Nitrolite',
-      message: { operation: `0x${Buffer.from(payload).toString('hex')}` },
+      message: { raw },
     });
   }
 
-  getAddress(): string {
-    return this.wc.account!.address;
+  async signPersonalMessage(hash: Hex): Promise<Hex> {
+    return await this.wc.signMessage({
+      account: this.wc.account!,
+      message: { raw: hash },
+    });
   }
 }
 
 async function connectWithWallet() {
-  const walletClient = createWalletClient({
+  const transport = custom(window.ethereum!);
+  const requestClient = createWalletClient({
     chain: sepolia,
-    transport: custom(window.ethereum!),
+    transport,
   });
 
-  const [address] = await walletClient.requestAddresses();
-  const stateSigner = new ChannelDefaultSigner(new WalletStateSigner(walletClient));
-  const txSigner = new WalletTransactionSigner(walletClient);
+  const [address] = await requestClient.requestAddresses();
+  const walletClient = createWalletClient({
+    account: address,
+    chain: sepolia,
+    transport,
+  });
+
+  const stateSigner = new ChannelDefaultSigner(new BrowserStateSigner(walletClient));
+  const txSigner = new BrowserTransactionSigner(walletClient);
 
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withBlockchainRPC(11155111n, 'https://rpc.sepolia.io'),
@@ -283,6 +330,52 @@ async function depositWithApproval(
     } else {
       throw error;
     }
+  }
+}
+```
+
+## Errors and Recovery
+
+```typescript
+import { Client } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function recoverableDeposit(
+  client: Client,
+  chainId: bigint,
+  asset: string,
+  amount: Decimal,
+) {
+  try {
+    await client.deposit(chainId, asset, amount);
+    return await client.checkpoint(asset);
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+
+    if (message.includes('allowance') || message.includes('insufficient')) {
+      await client.approveToken(chainId, asset, amount);
+      return await client.checkpoint(asset);
+    }
+
+    if (message.includes('ongoing')) {
+      await client.acknowledge(asset);
+      return await client.checkpoint(asset);
+    }
+
+    if (message.includes('blockchain client')) {
+      throw new Error(`Missing withBlockchainRPC(${chainId}n, rpcURL) for ${asset}`);
+    }
+
+    if (message.includes('asset')) {
+      const assets = await client.getAssets(chainId);
+      throw new Error(`Unsupported asset ${asset}. Supported assets: ${assets.map((a) => a.symbol).join(', ')}`);
+    }
+
+    if (message.includes('channel')) {
+      throw new Error(`No ready ${asset} channel. Deposit first or call setHomeBlockchain('${asset}', ${chainId}n).`);
+    }
+
+    throw error;
   }
 }
 ```
@@ -353,10 +446,10 @@ async function setupSessionKey(client: Client) {
 import { Client, createSigners, withErrorHandler } from '@yellow-org/sdk';
 
 async function monitorConnection() {
-  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY!);
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    'wss://clearnode.example.com/ws',
+    '<sandbox-url-coming-soon>',
     stateSigner,
     txSigner,
     withErrorHandler((error) => {

@@ -1,6 +1,6 @@
 ---
 title: API Reference
-description: Complete API reference for the Clearnode Go SDK
+description: Complete API reference for the Nitronode Go SDK
 sidebar_position: 2
 ---
 
@@ -92,7 +92,7 @@ batchID, err := client.RebalanceAppSessions(ctx, signedUpdates)
 
 ---
 
-## Session Keys — App Sessions
+## Session Keys: App Sessions
 
 ```go
 state := app.AppSessionKeyStateV1{
@@ -112,7 +112,7 @@ states, err := client.GetLastAppKeyStates(ctx, userAddress, nil)
 
 ---
 
-## Session Keys — Channels
+## Session Keys: Channels
 
 ```go
 state := core.ChannelSessionKeyStateV1{
