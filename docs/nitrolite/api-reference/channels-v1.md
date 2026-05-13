@@ -62,6 +62,9 @@ SDK wrapper: `Client.getChannels(wallet, { asset, status, pagination })`.
 | --- | --- | --- |
 | `channels` | `array<channel>` | List of channels. |
 | `metadata` | [`pagination_metadata`](./types#pagination_metadata) | Pagination information. |
+
+`metadata` is optional and may be absent when the response is not paginated.
+
 Errors: `invalid_parameters`. See [Errors](./errors).
 
 ```json
@@ -104,7 +107,36 @@ SDK wrapper: internal path used by `Client.deposit(...)` when the home channel d
 Errors: `invalid_channel_definition`, `invalid_state`, `channel_already_exists`. See [Errors](./errors).
 
 ```json
-[1, 1005, "channels.v1.request_creation", { "state": { "id": "0xState", "asset": "usdc" }, "channel_definition": { "nonce": "1", "challenge": 86400 } }, 1741344819012]
+[
+  1,
+  1005,
+  "channels.v1.request_creation",
+  {
+    "state": {
+      "id": "0xState",
+      "transition": {
+        "type": "home_deposit",
+        "tx_id": "tx-1",
+        "account_id": "0xUser",
+        "amount": "10.0"
+      },
+      "asset": "usdc",
+      "user_wallet": "0xUser",
+      "epoch": "1",
+      "version": "1",
+      "home_ledger": {
+        "token_address": "0xToken",
+        "blockchain_id": "11155111",
+        "user_balance": "10.0",
+        "user_net_flow": "10.0",
+        "node_balance": "0",
+        "node_net_flow": "0"
+      }
+    },
+    "channel_definition": { "nonce": "1", "challenge": 86400 }
+  },
+  1741344819012
+]
 ```
 
 ## submit_state
@@ -122,7 +154,36 @@ SDK wrapper: internal path used by `Client.deposit(...)`, `Client.transfer(...)`
 Errors: `invalid_transition`, `ongoing_transition`, `channel_not_found`, `denied_until_checkpoint`. See [Errors](./errors).
 
 ```json
-[1, 1006, "channels.v1.submit_state", { "state": { "id": "0xState", "transition": { "type": "transfer_send", "tx_id": "tx-1", "account_id": "0xReceiver", "amount": "1.0" } } }, 1741344819012]
+[
+  1,
+  1006,
+  "channels.v1.submit_state",
+  {
+    "state": {
+      "id": "0xState",
+      "transition": {
+        "type": "transfer_send",
+        "tx_id": "tx-2",
+        "account_id": "0xReceiver",
+        "amount": "1.0"
+      },
+      "asset": "usdc",
+      "user_wallet": "0xUser",
+      "epoch": "1",
+      "version": "2",
+      "home_ledger": {
+        "token_address": "0xToken",
+        "blockchain_id": "11155111",
+        "user_balance": "9.0",
+        "user_net_flow": "9.0",
+        "node_balance": "1.0",
+        "node_net_flow": "1.0"
+      },
+      "user_sig": "0xUserSig"
+    }
+  },
+  1741344819012
+]
 ```
 
 ## submit_session_key_state
@@ -149,14 +210,16 @@ SDK wrapper: `Client.getLastChannelKeyStates(userAddress, sessionKey?)`.
 | --- | --- | --- | --- |
 | `user_address` | `string` | required | User wallet address. |
 | `session_key` | `string` | optional | Optional session key filter. |
+| `pagination` | [`pagination_params`](./types#pagination_params) | optional | Pagination parameters. The `sort` field is not supported and must be omitted; maximum `limit` is 10. |
 
 | Response field | Type | Description |
 | --- | --- | --- |
 | `states` | `array<channel_session_key_state>` | Active channel session key states for the user. |
+| `metadata` | [`pagination_metadata`](./types#pagination_metadata) | Pagination information. |
 Errors: `account_not_found`. See [Errors](./errors).
 
 ```json
-[1, 1008, "channels.v1.get_last_key_states", { "user_address": "0xUser", "session_key": "0xKey" }, 1741344819012]
+[1, 1008, "channels.v1.get_last_key_states", { "user_address": "0xUser", "session_key": "0xKey", "pagination": { "offset": 0, "limit": 10 } }, 1741344819012]
 ```
 
 ## Events
