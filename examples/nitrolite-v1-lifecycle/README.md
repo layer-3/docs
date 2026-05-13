@@ -22,4 +22,8 @@ npm run lifecycle
 
 Use disposable test wallets only. The app signer can be an unfunded test wallet; the user wallet needs Sepolia gas and the selected test asset.
 
+Set `NITRONODE_WS_URL` to the current v1 sandbox or test endpoint provided for your environment before running `npm run lifecycle`.
+
+The script calls `enableNodeLocalAccountTransactions()` after creating each SDK client. This keeps viem's local account attached to `writeContract()` requests in Node.js so `approveToken()` and `checkpoint()` can send transactions through public RPC endpoints. Browser wallet apps do not need this shim.
+
 Set `CLOSE_HOME_CHANNEL=true` only when you intentionally want to close the example home channel after the app-session lifecycle.
