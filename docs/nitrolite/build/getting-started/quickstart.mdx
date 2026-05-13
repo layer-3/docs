@@ -39,7 +39,7 @@ Edit `.env`:
 ```bash title=".env"
 USER_PRIVATE_KEY=0x...
 APP_PRIVATE_KEY=0x...
-NITRONODE_WS_URL=wss://nitronode-stress.yellow.org/v1/ws
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
 RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 CHAIN_ID=11155111
 ASSET=yellow
@@ -49,6 +49,8 @@ APP_DEPOSIT_AMOUNT=0.005
 OPERATE_AMOUNT=0.001
 WITHDRAW_AMOUNT=0.002
 ```
+
+`CHANNEL_DEPOSIT_AMOUNT` is the amount available in the user's home channel. `APP_DEPOSIT_AMOUNT` is the smaller amount committed from that home-channel balance into the app session.
 
 Use a dedicated test wallet. Do not reuse a wallet that holds mainnet funds.
 
@@ -69,6 +71,8 @@ const user = await Client.create(
 ```
 
 `createSigners()` derives both signer types the SDK needs: off-chain state signing and on-chain transaction signing.
+
+The checked-in Node.js script also applies `enableNodeLocalAccountTransactions()` after client creation. Public RPC transports need the local account preserved on `writeContract()` calls, otherwise `approveToken()` and `checkpoint()` can fail with viem account errors. Browser wallet apps do not need this shim.
 
 ## Step 3: Prepare the home channel
 
@@ -100,7 +104,7 @@ const definition: AppDefinitionV1 = {
     { walletAddress: appAddress, signatureWeight: 1 },
   ],
   quorum: 2,
-  nonce: BigInt(Date.now()) * 1_000_000n,
+  nonce: BigInt(Date.now()) * 1_000_000n + BigInt(Math.floor(Math.random() * 1_000_000)),
 };
 
 const payload = packCreateAppSessionRequestV1(definition, sessionData);
@@ -115,10 +119,13 @@ const created = await client.createAppSession(definition, sessionData, [userSig,
 The user commits part of the home-channel balance into the app session with a deposit intent:
 
 ```typescript
+const { sessions } = await client.getAppSessions({ appSessionId: created.appSessionId });
+const session = sessions[0];
+
 const update: AppStateUpdateV1 = {
   appSessionId: created.appSessionId,
   intent: AppStateUpdateIntent.Deposit,
-  version: 2n,
+  version: session.version + 1n,
   allocations: [
     { participant: userAddress, asset, amount: appDepositAmount },
     { participant: appAddress, asset, amount: new Decimal(0) },
@@ -126,7 +133,11 @@ const update: AppStateUpdateV1 = {
   sessionData: JSON.stringify({ intent: 'user_deposit' }),
 };
 
-await client.submitAppSessionDeposit(update, [userSig, appSig], asset, appDepositAmount);
+const updatePayload = packAppStateUpdateV1(update);
+const updateUserSig = await userSessionSigner.signMessage(updatePayload);
+const updateAppSig = await appSessionSigner.signMessage(updatePayload);
+
+await client.submitAppSessionDeposit(update, [updateUserSig, updateAppSig], asset, appDepositAmount);
 ```
 
 ## Step 6: Operate, withdraw, and close
