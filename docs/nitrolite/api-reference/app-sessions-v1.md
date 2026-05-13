@@ -101,6 +101,9 @@ SDK wrapper: `Client.getAppSessions({ appSessionId, wallet, status, page, pageSi
 | --- | --- | --- |
 | `app_sessions` | `array<app_session_info>` | List of application sessions. |
 | `metadata` | [`pagination_metadata`](./types#pagination_metadata) | Pagination information. |
+
+`metadata` is optional and may be absent when the response is not paginated.
+
 Errors: `invalid_parameters`. See [Errors](./errors).
 
 ```json
@@ -154,14 +157,16 @@ SDK wrapper: `Client.getLastKeyStates(userAddress, sessionKey?)`.
 
 | Request field | Type | Presence | Description |
 | --- | --- | --- | --- |
-| `wallet` | `string` | required | User wallet address. |
+| `user_address` | `string` | required | User wallet address. |
 | `session_key` | `string` | optional | Optional session key filter. |
+| `pagination` | [`pagination_params`](./types#pagination_params) | optional | Pagination parameters. The `sort` field is not supported and must be omitted; maximum `limit` is 10. |
 
 | Response field | Type | Description |
 | --- | --- | --- |
 | `states` | `array<app_session_key_state>` | Active app-session key states for the user. |
+| `metadata` | [`pagination_metadata`](./types#pagination_metadata) | Pagination information. |
 Errors: `account_not_found`. See [Errors](./errors).
 
 ```json
-[1, 2008, "app_sessions.v1.get_last_key_states", { "wallet": "0xUser", "session_key": "0xKey" }, 1741344819012]
+[1, 2008, "app_sessions.v1.get_last_key_states", { "user_address": "0xUser", "session_key": "0xKey", "pagination": { "offset": 0, "limit": 10 } }, 1741344819012]
 ```

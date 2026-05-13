@@ -49,6 +49,8 @@ SDK wrapper: `Client.getTransactions(wallet, options)`.
 | `transactions` | `array<transaction>` | Ledger transactions. |
 | `metadata` | [`pagination_metadata`](./types#pagination_metadata) | Pagination information. |
 
+`metadata` is optional and may be absent when the response is not paginated.
+
 Errors: none declared in `docs/api.yaml`.
 
 ```json

@@ -17,8 +17,8 @@ RPC messages use the compact wire envelope described in [Interaction Model](../p
 [1, 1001, "channels.v1.get_home_channel", { "wallet": "0x...", "asset": "usdc" }, 1741344819012]
 ```
 
-:::info Looking for the 0.5.3 helper API?
-If your app still imports legacy 0.5.3 message helpers, start with the [TypeScript compat SDK](../build/sdk/typescript-compat/overview). This section documents the v1 RPC methods, not the legacy helper surface.
+:::info Migrating from 0.5.3?
+New integrations should use the v1 SDKs, not `@erc7824/nitrolite@0.5.3`. For a full rewrite, start with the [native TypeScript SDK](../build/sdk/typescript/getting-started). For a lower-risk migration that preserves selected 0.5.3 helper shapes while you move to v1, start with the [TypeScript compat SDK](../build/sdk/typescript-compat/overview). This section documents the v1 RPC methods, not the legacy helper surface.
 :::
 
 ## Use the SDKs first
@@ -40,6 +40,5 @@ The SDKs handle the `[type, requestId, method, payload, timestamp]` envelope, si
 | `apps.v1` | [Apps](./apps-v1) | App registry lookup and application registration. |
 | `user.v1` | [User](./user-v1) | Balances, transaction history, and action allowances. |
 | `node.v1` | [Node](./node-v1) | Connectivity, node configuration, and supported assets. |
-| `session_keys.v1` | [Session Keys](./session-keys-v1) | Reserved group; methods are not defined in `api.yaml` yet. |
 | Types | [Types](./types) | Field tables for all shared request and response types. |
 | Errors | [Errors](./errors) | Aggregated error messages and suggested user-facing handling. |
