@@ -198,6 +198,10 @@ function enableNodeLocalAccountTransactions(client: Client): void {
   const sdkClient = client as unknown as ClientWithEVMFactory;
   const originalFactory = sdkClient.createEVMClients?.bind(client);
   if (!originalFactory) {
+    console.warn(
+      'Warning: enableNodeLocalAccountTransactions could not patch createEVMClients. ' +
+        'The SDK shape may have changed. LocalAccount preservation may not work on Node.js public RPCs.'
+    );
     return;
   }
 
