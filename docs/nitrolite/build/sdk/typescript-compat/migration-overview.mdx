@@ -87,7 +87,7 @@ Use the same Nitronode URL placeholder pattern as the native v1 quickstart. Repl
 | Legacy use | Compat status | Direct v1 replacement |
 |---|---|---|
 | Auth helpers | Available: `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, `createEIP712AuthMessageSigner` | SDK client auth flow |
-| Channel create or resize helpers | Unsupported or fail-fast where no honest v1 mapping exists | `Client.deposit`, `Client.checkpoint`, lifecycle methods |
+| Channel create or resize helpers | Unsupported or fail-fast where no honest v1 mapping exists | Native `client.innerClient.deposit(...)`, `client.innerClient.checkpoint(asset)`, lifecycle methods |
 | Transfer | Available with raw-amount caveat | `Client.transfer(recipient, asset, Decimal)` |
 | App sessions | Available with v1 remapping | Native app-session methods on `Client` |
 
