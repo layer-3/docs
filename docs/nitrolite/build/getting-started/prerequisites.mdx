@@ -89,8 +89,8 @@ Create `tsconfig.json`:
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -100,6 +100,8 @@ Create `tsconfig.json`:
   "include": ["src/**/*", "scripts/**/*"]
 }
 ```
+
+This config matches the checked-in Node.js lifecycle example. If your app is built by Vite, webpack, or another bundler, `moduleResolution: "bundler"` can be valid there, but do not use it for a plain `tsc` + `node dist/...` script.
 
 Update `package.json`:
 
@@ -121,14 +123,14 @@ Create `.env` for sensitive values:
 # .env - never commit this file
 USER_PRIVATE_KEY=0x...
 APP_PRIVATE_KEY=0x...
-NITRONODE_WS_URL=wss://nitronode-stress.yellow.org/v1/ws
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
 RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 CHAIN_ID=11155111
 ASSET=yellow
 ```
 
 :::info Test endpoint
-`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against. The quickstart lifecycle example uses the current public stress endpoint and Sepolia test assets.
+`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against. Use the current sandbox or test endpoint provided for your environment until the public sandbox URL is pinned.
 :::
 
 Add local files to `.gitignore`:
@@ -165,7 +167,7 @@ node dist/scripts/create-wallet.js
 
 ### Get Test Tokens
 
-<!-- coming soon: faucet endpoint pending; OQ-6
+<!-- coming soon: faucet endpoint pending
 
 ```bash
 curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \

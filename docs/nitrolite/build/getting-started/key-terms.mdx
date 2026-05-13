@@ -10,7 +10,7 @@ keywords: [terminology, glossary, concepts, state channels, mental models]
 Nitrolite uses one shared vocabulary across the SDK, protocol docs, and on-chain contracts. Learn these terms first and the rest of the docs become much easier to scan.
 
 :::info Canonical source
-The protocol source of truth is [Protocol Terminology](../../protocol/terminology). PR7 will add a dedicated Learn glossary; until then, use this page as the builder-facing quick reference.
+The protocol source of truth is [Protocol Terminology](../../protocol/terminology). Use this page as the builder-facing quick reference for the SDK docs.
 :::
 
 ## Core mental model
@@ -22,15 +22,16 @@ Nitrolite lets a user and Nitronode exchange signed channel states off-chain, th
 | Term | What it means | Builder cue |
 |------|---------------|-------------|
 | **Channel** | A state container shared by a user and Nitronode for one unified asset. | The thing your deposits, transfers, withdrawals, and checkpoints update. |
-| **Home Channel** | The default user-Nitronode channel whose home ledger is enforced on its home chain. | Most apps start here. `deposit()`, `transfer()`, and `checkpoint()` act on the home channel for an asset. |
+| **Home Channel** (for a specific Asset) | The default user-Nitronode channel whose home ledger for the Asset is enforced on its home chain. | Most apps start here. `deposit()`, `transfer()`, and `checkpoint()` act on the home channel for an asset. |
 | **Escrow Channel** | A temporary cross-chain channel derived from a home channel for escrow operations. | You meet this when funds move between chains. |
 | **Channel State** | The current agreed channel configuration: ledgers, version, and transition data. | SDK state operations return a state before you decide whether to checkpoint it. |
 | **Channel Definition** | The immutable channel parameters: user, node, asset, nonce, challenge duration, and signature validators. | Fixed at channel creation. Do not model it as app-level mutable config. |
 | **Ledger** | A record of asset allocations and net flows for a specific blockchain inside a channel state. | Ledger math must balance exactly. |
 | **Home Ledger** | The ledger tied to the chain where the current channel state is enforced. | This is the authoritative ledger for checkpoint and challenge flows. |
 | **Non-Home Ledger** | A secondary ledger for a blockchain other than the home chain. | Used by escrow and migration flows, not as a synonym for home channel. |
-| **Vault** | Nitronode's per-chain pool of available funds used to cover required locking during transitions. | Cross-chain availability depends on node liquidity in the right vault. |
+| **(Node) Vault** | Nitronode's per-chain pool of available funds used to cover required locking during transitions. | Cross-chain availability depends on node liquidity in the right vault. |
 | **Asset** | A logical value unit, such as USDC, with a symbol and decimal precision independent of any one chain. | The SDK takes asset symbols like `'usdc'`, not token addresses, for high-level channel operations. |
+| **Token** | The per-blockchain contract representation of an Asset. | Nitronode asset config maps an asset symbol to the token address used on each supported chain. |
 | **Decimal** | An exact decimal amount represented with `decimal.js`. | Use `new Decimal(5)`, not JavaScript floating-point numbers, for SDK amounts. |
 | **App Session** | An application extension that commits channel funds into a multi-party off-chain session. | Games, matching, escrow, and other multi-party flows live here. |
 | **Quorum** | The minimum weighted approval needed for an app session state update. | If weights are `[40, 40, 50]` and quorum is `80`, two participants may be enough. |
@@ -39,7 +40,7 @@ Nitrolite lets a user and Nitronode exchange signed channel states off-chain, th
 | **Checkpoint** | The operation of submitting a signed state to the blockchain layer for enforcement. | `client.checkpoint('usdc')` settles the latest agreed state for that asset. |
 | **Nitronode** | The v1 off-chain coordinator that serves RPC, co-signs valid states, tracks channels, and coordinates app sessions. | This is the node your SDK client connects to over WebSocket. |
 | **ChannelHub** | The v1 on-chain entrypoint for channel create, deposit, withdraw, checkpoint, challenge, and close operations. | The SDK hides most contract calls, but this is the contract enforcing the state. |
-| **Migration** | A transition that moves the channel's home-chain relationship as part of cross-chain operation. | Treat it as protocol state movement, not a package upgrade. |
+| **Migration** | A transition that moves the home-chain channel of a specific Asset to another blockchain. | Treat it as protocol state enforcement configuration, not a package upgrade. |
 | **Transition** | A typed operation explaining why the channel state changed. | Every state advancement carries one transition type. |
 
 ## Channel lifecycle statuses

@@ -21,7 +21,7 @@
   },
   "link.item.label.Build": {
     "message": "Build",
-    "description": "The label of footer link with label=Build linking to /docs/build/quick-start"
+    "description": "The label of footer link with label=Build linking to /nitrolite/build/getting-started/quickstart"
   },
   "link.item.label.Guides": {
     "message": "Guides",
