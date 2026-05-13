@@ -98,6 +98,7 @@ await client.close();
 |---|---|
 | Channel operations | `deposit`, `depositAndCreateChannel`, `withdrawal`, `closeChannel`, `resizeChannel`, `challengeChannel`, `acknowledge` |
 | Query methods | `getChannels`, `getChannelData`, `getBalances`, `getLedgerEntries`, `getAppSessionsList`, `getAssetsList`, `getAccountInfo`, `getConfig`, `getBlockchains`, `getActionAllowances` |
+| On-chain helpers | `getOpenChannels`, `approveTokens`, `getTokenAllowance`, `getTokenBalance` |
 | Transfers | `transfer(destination, allocations)` with raw asset-unit strings |
 | App sessions | `createAppSession`, `closeAppSession`, `submitAppState`, `getAppDefinition`, `registerApp`, `getApps` |
 | App-session signing | `packCreateAppSessionHash`, `packSubmitAppStateHash`, `toWalletQuorumSignature`, `toSessionKeyQuorumSignature` |
