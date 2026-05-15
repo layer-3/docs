@@ -64,10 +64,6 @@ withErrorHandler((error) => {
 `setHomeBlockchain(asset, blockchainId)` sets the default blockchain for an asset. It is required when `transfer()` may need to create a new home channel, because `transfer(recipientWallet, asset, amount)` does not take a chain ID. It is not required for transfers within an existing home channel.
 
 ```typescript
-await client.setHomeBlockchain('usdc', 80002n);
-```
-
-```typescript
 import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
 import Decimal from 'decimal.js';
 
