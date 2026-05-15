@@ -7,7 +7,7 @@ keywords: [architecture, state channels, Nitrolite, Nitronode, ChannelHub, smart
 
 # Architecture at a Glance
 
-Yellow Network v1 combines application code, SDK clients, Nitronode coordination, and ChannelHub enforcement so most updates happen off-chain while the latest mutually signed state remains enforceable on-chain.
+Yellow Network v1 combines application code, SDK clients, off-chain state validation, and ChannelHub enforcement so most updates happen off-chain while the latest mutually signed state remains enforceable on-chain.
 
 ---
 
@@ -59,7 +59,7 @@ The off-chain layer handles frequent state advancement without blockchain transa
 
 ### Nitronode
 
-Nitronode is operated by independent node operators using open-source software developed and maintained by Layer3 Fintech Ltd. It:
+Nitronode is operated by an independent node operator using open-source software developed and maintained by Layer3 Fintech Ltd. It:
 
 - validates v1 channel transitions
 - signs mutually agreed channel states
@@ -97,15 +97,15 @@ flowchart TB
 | Concept | What it means |
 |-------|---------------|
 | **Home channel** | The user and Node channel for a unified asset. |
-| **Home ledger** | The authoritative ledger for the enforcement chain. |
-| **Non-home ledger** | A temporary ledger for cross-chain escrow, withdrawal, or migration. |
+| **Home ledger** | The authoritative single-token ledger for the enforcement chain. |
+| **Non-home ledger** | A temporary single-token ledger for cross-chain escrow, withdrawal, or migration. |
 | **App session** | An extension state funded by commit transitions and settled by release transitions. |
 
 ---
 
 ## Channel Lifecycle
 
-The v1 RPC exposes channel status as `void`, `open`, `challenged`, and `closed`.
+The v1 RPC currently exposes channel status as `void`, `open`, `challenged`, `closing`, and `closed`.
 
 ```mermaid
 stateDiagram-v2
@@ -115,14 +115,15 @@ stateDiagram-v2
     OPEN --> OPEN: checkpoint higher-version state
     OPEN --> CHALLENGED: challenge
     CHALLENGED --> OPEN: higher-version response
-    CHALLENGED --> CLOSED: challenge expires and close executes
-    OPEN --> CLOSED: cooperative close
+    CHALLENGED --> CLOSING: challenge expires; close required
+    OPEN --> CLOSING: cooperative close
+    CLOSING --> CLOSED: close transaction releases funds
     CLOSED --> [*]
 
     note right of OPEN: Normal operation happens here
 ```
 
-`CHALLENGED` means a participant has submitted a disputed state on-chain and the challenge duration is running. During that window, another participant may respond with a higher-version mutually signed state. If no higher-version response is accepted before expiry, the challenged state can be closed and funds are released according to that enforced state. See [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) and [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement) for the formal rules.
+`CHALLENGED` means a participant has submitted a disputed state on-chain and the challenge duration is running. During that window, another participant may respond with a higher-version mutually signed state. If no higher-version response is accepted before expiry, a separate close call is still required before funds are released according to that enforced state. See [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) and [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement) for the formal rules.
 
 ### Typical Flow
 
