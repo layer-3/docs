@@ -34,7 +34,7 @@ Yellow Network uses <Tooltip content={tooltipDefinitions.channel}>**state channe
 
 ### The Core Insight
 
-Most interactions between parties do not need immediate on-chain settlement. Consider a chess game with a `new Decimal("10")` USDC wager:
+Most interactions between parties do not need immediate on-chain settlement. Consider a chess game with a 10 USDC wager:
 
 | Approach | Result |
 | --- | --- |
@@ -66,7 +66,7 @@ Choose Yellow Network when your application needs:
 
 A **Nitronode** is operated by an independent node operator using open-source software. It coordinates v1 RPC, validates state transitions, signs channel updates, and tracks the channel state each user shares with the Node.
 
-In v1, the user's main balance lives in a **home channel**. The home channel has a **home ledger** tied to the chain where the latest state is enforceable. When cross-chain movement is needed, a **non-home ledger** tracks the temporary escrow state until the operation is finalized.
+In v1, the user's main balance lives in **home channels**, one for each asset. The home channel has a **home ledger** tied to the chain where the latest state is enforceable. When cross-chain movement is needed, a **non-home ledger** tracks the temporary escrow state until the operation is finalized.
 
 Typical flow:
 

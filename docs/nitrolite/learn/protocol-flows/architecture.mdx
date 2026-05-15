@@ -21,7 +21,7 @@ The **Petal Diagram** is the central architectural reference for the Nitrolite P
 The **Home Chain** is the blockchain where the user's channel state is enforced for a specific asset.
 
 :::info Important Choice
-When selecting your Home Chain, choose the blockchain where you are comfortable enforcing and withdrawing funds if cooperation with the Node fails.
+When selecting your Home Chain, choose the blockchain where you are most comfortable depositing, enforcing and withdrawing a specific asset if cooperation with the Node fails.
 :::
 
 **The Flow:** The user approves the ChannelHub spender, submits a signed home-deposit state, and ChannelHub pulls ERC-20 tokens or native ETH into the home channel. A home-withdrawal state releases funds from ChannelHub back to the user.
@@ -34,7 +34,7 @@ When a user already has a Home Chain with funds and wants to deposit from a diff
 
 **The Challenge:** The home ledger is authoritative for enforcement, but the user's funds may start on a non-home chain.
 
-**The Solution:** A signed escrow-deposit initiate state creates a non-home escrow record, and a signed finalize state completes the deposit and updates the home ledger. Cross-chain withdrawals mirror this flow. WAD normalization validates cross-chain amounts when token decimals differ.
+**The Solution:** A signed escrow-deposit initiate state creates a non-home escrow record, and a signed finalize state completes the deposit and updates the home ledger. Cross-chain withdrawals mirror this flow. Token decimal normalization validates cross-chain amounts when token precisions differ.
 
 **Key Property:** Escrow coordinates the home ledger and non-home ledger so cross-chain operations can be challenged or finalized according to the protocol rules.
 
@@ -63,7 +63,7 @@ App sessions are extension states funded by commit transitions from the user's h
 - The protocol roadmap includes stronger extension-layer enforcement and watchtower support.
 
 :::note Current trust boundary
-Do not describe app-session funds as fully on-chain enforced in the current protocol version. The core channel layer is enforceable through ChannelHub; extension-layer security is still improving.
+App-session funds are not fully enforced on-chain in the current protocol version. Core channel assets remain recoverable through ChannelHub; extension-layer enforcement is still evolving.
 :::
 
 **UX Philosophy:** Core deposits, withdrawals, transfers, and challenges stay tied to channel-state enforcement, while app sessions provide flexible application logic through the extension layer.
