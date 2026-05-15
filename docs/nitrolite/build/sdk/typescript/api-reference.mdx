@@ -114,12 +114,13 @@ Settles the latest co-signed state on-chain. Routes to the correct contract meth
 - **Deposit/Withdrawal** on existing channel → checkpoints the state
 - **Finalize** → closes the channel
 
+Backing RPC: reads channel context through `channels.v1.get_latest_state` and `channels.v1.get_home_channel`, then sends the on-chain ChannelHub transaction.
+
 ```typescript
 const txHash = await client.checkpoint('usdc');
 ```
 
 **Requires:** Blockchain RPC via `withBlockchainRPC()` and a co-signed state.
-Backing RPC: reads channel context through `channels.v1.get_latest_state` and `channels.v1.get_home_channel`, then sends the on-chain ChannelHub transaction.
 
 ---
 
