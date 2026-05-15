@@ -221,6 +221,8 @@ await client1.submitAppState(operateUpdate, [
 
 Use `Withdraw` when participants move session funds back to home channels.
 
+Setting each allocation to zero in a `Withdraw` update tells the node to release those amounts back to the participant's home channel.
+
 ```typescript
 const withdrawUpdate: AppStateUpdateV1 = {
   appSessionId,
@@ -243,6 +245,8 @@ await client1.submitAppState(withdrawUpdate, [
 ## Step 9: Close the session
 
 Close is another signed app-state update. Submit it after final withdrawals or with the final allocation state your app requires.
+
+This example reuses `withdrawUpdate` intentionally: Close carries forward the same final allocations and session data from the Withdraw step.
 
 ```typescript
 const closeUpdate: AppStateUpdateV1 = {
@@ -282,6 +286,7 @@ If you are still using `@yellow-org/sdk-compat`, do not copy the native snippets
 // Compat path: keep the 0.5.3-facing surface while the app migrates.
 import { NitroliteClient } from '@yellow-org/sdk-compat';
 
+// See the compat overview for walletClient and blockchainRPCs setup.
 const compatClient = await NitroliteClient.create({
   wsURL,
   walletClient,
@@ -304,5 +309,5 @@ const compatClient = await NitroliteClient.create({
 
 - [TypeScript SDK examples](./typescript/examples)
 - [TypeScript SDK API reference](./typescript/api-reference)
-- App-session RPC catalogue: `/nitrolite/api-reference/app-sessions-v1`
-- App registry RPC catalogue: `/nitrolite/api-reference/apps-v1`
+- App-session RPC catalogue: `app_sessions.v1` in the API Reference rebuild.
+- App registry RPC catalogue: `apps.v1` in the API Reference rebuild.

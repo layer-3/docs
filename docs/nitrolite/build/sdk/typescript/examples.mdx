@@ -126,6 +126,8 @@ async function queryTransactions() {
 
 ## App Session Workflow
 
+This example uses a single participant and `quorum: 1` to keep the native SDK wiring short. Use the multi-party app-session guide when you need multiple participants to co-sign the same app definition and state updates.
+
 ```typescript
 import {
   AppSessionWalletSignerV1,
@@ -304,7 +306,7 @@ async function connectWithWallet() {
 
 ## Allowance Handling
 
-On-chain operations like `checkpoint()` require ERC-20 token approval. The example-app pattern detects allowance errors and retries after approval:
+On-chain operations like `checkpoint()` require ERC-20 token approval. This pattern assumes `deposit()` succeeded and only retries the checkpoint transaction. The recovery example below wraps the full deposit plus checkpoint flow.
 
 ```typescript
 import { Client } from '@yellow-org/sdk';
