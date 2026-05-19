@@ -1,72 +1,69 @@
 ---
 title: API Reference
-description: Complete API reference for the Nitronode Go SDK
+description: Complete API reference for the Nitrolite Go SDK
 sidebar_position: 2
 ---
 
 # Go SDK API Reference
 
-## State Operations (Off-Chain)
+The Go SDK package is `github.com/layer-3/nitrolite/sdk/go`. It wraps Nitronode v1 RPC methods and ChannelHub settlement helpers in typed Go methods.
+
+## App-Builder Methods
+
+These are the methods most builders use in normal applications.
+
+### Channel State
 
 ```go
-client.Deposit(ctx, blockchainID, asset, amount)      // Prepare deposit state
-client.Withdraw(ctx, blockchainID, asset, amount)     // Prepare withdrawal state
-client.Transfer(ctx, recipientWallet, asset, amount)  // Prepare transfer state
-client.CloseHomeChannel(ctx, asset)                   // Prepare finalize state
-client.Acknowledge(ctx, asset)                        // Acknowledge received state
+client.Deposit(ctx, blockchainID, asset, amount)      // (*core.State, error)
+client.Withdraw(ctx, blockchainID, asset, amount)     // (*core.State, error)
+client.Transfer(ctx, recipientWallet, asset, amount)  // (*core.State, error)
+client.CloseHomeChannel(ctx, asset)                   // (*core.State, error)
+client.Acknowledge(ctx, asset)                        // (*core.State, error)
 ```
 
-All return `(*core.State, error)`. Use `Checkpoint` to settle on-chain.
+Use `Checkpoint` when the latest prepared state needs on-chain settlement.
 
----
-
-## Blockchain Settlement
+### Settlement
 
 ```go
-client.Checkpoint(ctx, asset)                         // Settle latest state on-chain
-client.Challenge(ctx, state)                          // Submit on-chain challenge
-client.ApproveToken(ctx, chainID, asset, amount)      // Approve ChannelHub to spend tokens
-client.GetOnChainBalance(ctx, chainID, asset, wallet) // Query on-chain token balance
+client.Checkpoint(ctx, asset)                         // (string, error)
+client.Challenge(ctx, state)                          // (string, error)
+client.ApproveToken(ctx, chainID, asset, amount)      // (string, error)
+client.GetOnChainBalance(ctx, chainID, asset, wallet) // (decimal.Decimal, error)
 ```
 
-`Checkpoint` routes automatically based on transition type and channel status:
-- **Void** → creates channel
-- **Deposit/Withdrawal** → checkpoints state
-- **Finalize** → closes channel
+`Checkpoint` routes by transition type and channel status:
 
----
+| Latest state | Effect |
+| --- | --- |
+| Void channel plus deposit state | Creates the channel and locks funds. |
+| Deposit or withdrawal state | Checkpoints and applies the fund movement. |
+| Finalize state | Closes the channel. |
 
-## Node Information
+### Node and Asset Discovery
 
 ```go
-client.Ping(ctx)                        // Health check
-client.GetConfig(ctx)                   // Node configuration
-client.GetBlockchains(ctx)              // Supported blockchains
-client.GetAssets(ctx, &blockchainID)    // Supported assets (nil for all)
+client.Ping(ctx)
+client.GetConfig(ctx)
+client.GetBlockchains(ctx)
+client.GetAssets(ctx, &blockchainID)
+client.SetHomeBlockchain(asset, chainID)
 ```
 
----
-
-## User Queries
+### User and Channel Queries
 
 ```go
-client.GetBalances(ctx, wallet)             // User balances
-client.GetTransactions(ctx, wallet, opts)   // Transaction history (paginated)
+client.GetBalances(ctx, wallet)
+client.GetTransactions(ctx, wallet, opts)
+client.GetHomeChannel(ctx, wallet, asset)
+client.GetEscrowChannel(ctx, escrowChannelID)
+client.GetLatestState(ctx, wallet, asset, onlySigned)
 ```
 
----
+`GetEscrowChannel` is a query helper. Escrow operation guides are not public app-builder docs yet.
 
-## Channel Queries
-
-```go
-client.GetHomeChannel(ctx, wallet, asset)               // Home channel info
-client.GetEscrowChannel(ctx, escrowChannelID)           // Escrow channel info
-client.GetLatestState(ctx, wallet, asset, onlySigned)   // Latest state
-```
-
----
-
-## App Registry
+## App Registry and Sessions
 
 ```go
 apps, meta, err := client.GetApps(ctx, &sdk.GetAppsOptions{
@@ -74,12 +71,8 @@ apps, meta, err := client.GetApps(ctx, &sdk.GetAppsOptions{
     OwnerWallet: &wallet,
 })
 
-err := client.RegisterApp(ctx, "my-app", `{"name": "My App"}`, false)
+err := client.RegisterApp(ctx, "my-app", `{"name":"My App"}`, false)
 ```
-
----
-
-## App Sessions
 
 ```go
 sessions, meta, err := client.GetAppSessions(ctx, opts)
@@ -90,9 +83,11 @@ err := client.SubmitAppState(ctx, update, sigs)
 batchID, err := client.RebalanceAppSessions(ctx, signedUpdates)
 ```
 
----
+Apps are responsible for collecting quorum signatures before calling `CreateAppSession`, `SubmitAppSessionDeposit`, or `SubmitAppState`.
 
-## Session Keys: App Sessions
+## Session Keys
+
+### App Sessions
 
 ```go
 state := app.AppSessionKeyStateV1{
@@ -103,6 +98,7 @@ state := app.AppSessionKeyStateV1{
     AppSessionIDs:  []string{},
     ExpiresAt:      time.Now().Add(24 * time.Hour),
 }
+
 sig, err := client.SignSessionKeyState(state)
 state.UserSig = sig
 err = client.SubmitAppSessionKeyState(ctx, state)
@@ -110,18 +106,17 @@ err = client.SubmitAppSessionKeyState(ctx, state)
 states, err := client.GetLastAppKeyStates(ctx, userAddress, nil)
 ```
 
----
-
-## Session Keys: Channels
+### Channels
 
 ```go
 state := core.ChannelSessionKeyStateV1{
     UserAddress: client.GetUserAddress(),
     SessionKey:  "0xSessionKey...",
     Version:     1,
-    Assets:      []string{"usdc", "weth"},
+    Assets:      []string{"yellow"},
     ExpiresAt:   time.Now().Add(24 * time.Hour),
 }
+
 sig, err := client.SignChannelSessionKeyState(state)
 state.UserSig = sig
 err = client.SubmitChannelSessionKeyState(ctx, state)
@@ -129,37 +124,44 @@ err = client.SubmitChannelSessionKeyState(ctx, state)
 states, err := client.GetLastChannelKeyStates(ctx, userAddress, nil)
 ```
 
----
+## Operator Surface
+
+Security-token methods are operator surface, not the normal app-builder flow.
+
+```go
+client.ApproveSecurityToken(ctx, chainID, amount)
+client.EscrowSecurityTokens(ctx, targetWalletAddress, blockchainID, amount)
+client.InitiateSecurityTokensWithdrawal(ctx, blockchainID)
+client.CancelSecurityTokensWithdrawal(ctx, blockchainID)
+client.WithdrawSecurityTokens(ctx, blockchainID, destinationWalletAddress)
+```
+
+Use these only when building node-operator or security-token tooling.
 
 ## Utilities
 
 ```go
-client.Close()                              // Close connection
-client.WaitCh()                             // Connection monitor channel
-client.SignState(state)                     // Sign a state (advanced)
-client.GetUserAddress()                     // Get signer's address
-client.SetHomeBlockchain(asset, chainID)    // Set default blockchain
+client.Close()
+client.WaitCh()
+client.SignState(state)
+client.GetUserAddress()
 ```
 
----
-
-## Types
+## Common Types
 
 ```go
-// Core types
-core.State              // Channel state
-core.Channel            // Channel info
-core.Transition         // State transition
-core.Transaction        // Transaction record
-core.Asset              // Asset info
-core.Blockchain         // Blockchain info
-core.ChannelSessionKeyStateV1  // Channel session key state
+core.State
+core.Channel
+core.Transition
+core.Transaction
+core.Asset
+core.Blockchain
+core.ChannelSessionKeyStateV1
 
-// App types
-app.AppV1               // Application definition
-app.AppInfoV1           // Application info with timestamps
-app.AppSessionInfoV1    // Session info
-app.AppDefinitionV1     // Session definition
-app.AppStateUpdateV1    // Session update
-app.AppSessionKeyStateV1  // App session key state
+app.AppV1
+app.AppInfoV1
+app.AppSessionInfoV1
+app.AppDefinitionV1
+app.AppStateUpdateV1
+app.AppSessionKeyStateV1
 ```

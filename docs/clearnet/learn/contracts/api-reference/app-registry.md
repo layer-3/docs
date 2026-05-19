@@ -9,7 +9,7 @@ displayed_sidebar: clearnetSidebar
 [Git Source](https://github.com/layer-3/yellow/blob/11ed85c3dabaaddeee431052032791a80eaf2a0e/src/AppRegistry.sol)
 
 **Inherits:**
-[Locker](/src/Locker.sol/abstract.Locker.md), [ISlash](/src/interfaces/ISlash.sol/interface.ISlash.md), AccessControl
+[Locker](./locker), [ISlash](./interfaces/islash), AccessControl
 
 **Title:**
 AppRegistry
@@ -146,4 +146,3 @@ event MinSlashAmountUpdated(uint256 oldAmount, uint256 newAmount);
 ```solidity
 error SlashCooldownActive(uint256 availableAt);
 ```
-

@@ -1,0 +1,80 @@
+---
+title: Examples
+description: Go SDK examples for channels and app sessions
+sidebar_position: 3
+---
+
+# Go SDK Examples
+
+Use these examples as starting points for backend services and CLIs that call Nitronode with `github.com/layer-3/nitrolite/sdk/go`.
+
+## Channel Funding and Transfer
+
+```go
+ctx := context.Background()
+chainID := uint64(11155111)
+asset := "yellow"
+amount := decimal.NewFromFloat(0.01)
+
+if err := client.SetHomeBlockchain(asset, chainID); err != nil {
+    return err
+}
+
+if _, err := client.ApproveToken(ctx, chainID, asset, amount); err != nil {
+    return err
+}
+
+if _, err := client.Deposit(ctx, chainID, asset, amount); err != nil {
+    return err
+}
+
+if _, err := client.Checkpoint(ctx, asset); err != nil {
+    return err
+}
+
+if _, err := client.Transfer(ctx, "0xRecipient...", asset, decimal.NewFromFloat(0.001)); err != nil {
+    return err
+}
+```
+
+## App Session Update
+
+```go
+update := app.AppStateUpdateV1{
+    AppSessionID: appSessionID,
+    Version:      2,
+    Intent:       app.AppStateUpdateIntentOperate,
+    Allocations:  allocations,
+    SessionData:  `{"purchase":"content-1"}`,
+}
+
+// The application gathers quorum signatures before submitting.
+if err := client.SubmitAppState(ctx, update, quorumSigs); err != nil {
+    return err
+}
+```
+
+## Query Latest State
+
+```go
+state, err := client.GetLatestState(ctx, client.GetUserAddress(), "yellow", true)
+if err != nil {
+    return err
+}
+
+fmt.Printf("version=%d transition=%s\n", state.Version, state.Transition.Type)
+```
+
+## Operator Tooling
+
+Security-token calls are for node-operator or administrative tooling, not the normal application path.
+
+```go
+if _, err := client.ApproveSecurityToken(ctx, chainID, decimal.NewFromFloat(100)); err != nil {
+    return err
+}
+
+if _, err := client.EscrowSecurityTokens(ctx, operatorWallet, chainID, decimal.NewFromFloat(100)); err != nil {
+    return err
+}
+```
