@@ -123,7 +123,7 @@ stateDiagram-v2
     note right of OPEN: Normal operation happens here
 ```
 
-`CHALLENGED` means a participant has submitted a disputed state on-chain and the challenge duration is running. During that window, another participant may respond with a higher-version mutually signed state. If no higher-version response is accepted before expiry, a separate close call is still required before funds are released according to that enforced state. See [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) and [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement) for the formal rules.
+`CHALLENGED` means a participant has submitted a candidate state on-chain and the challenge duration is running. During that window, another participant may respond with a higher-version mutually signed state. If no higher-version response is accepted before expiry, a separate close call is still required before funds are released according to that enforced state. See [Channel Lifecycle](/nitrolite/protocol/channel-lifecycle) and [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement) for the formal rules.
 
 ### Typical Flow
 

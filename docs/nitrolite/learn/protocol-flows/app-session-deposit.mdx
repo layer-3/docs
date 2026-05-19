@@ -15,7 +15,7 @@ This document provides a comprehensive breakdown of the **App Session Deposit** 
 ```mermaid
 graph LR
     U["User"] --> SC["SenderClient"]
-    SC <--> N["Node (Clearnode)"]
+    SC <--> N["Nitronode"]
 
     style U stroke:#333
     style SC stroke:#333
@@ -26,7 +26,7 @@ graph LR
 | --- | --- |
 | **User** | The human user initiating the deposit |
 | **SenderClient** | SDK/Application managing states on behalf of the user |
-| **Node** | The Clearnode that validates and coordinates both app session and channel states |
+| **Node** | The Nitronode that validates and coordinates both app session and channel states |
 
 ---
 
@@ -38,6 +38,10 @@ Before the deposit flow begins:
 2. **Node** contains user's state with **Home Channel** information.
 3. An **App Session** already exists (created via `create_app_session`).
 4. User is a **participant** in the target App Session.
+
+:::info Application signature collection
+The application is responsible for collecting the app-session quorum signatures before it submits an app-state update. Nitronode validates the quorum, but it does not gather participant signatures for the app.
+:::
 
 ---
 
@@ -213,7 +217,7 @@ From the on-chain protocol:
 
 ---
 
-## Phase 5: Notifications and Completion
+## Phase 5: Confirmation and Completion
 
 ```mermaid
 sequenceDiagram
@@ -221,16 +225,17 @@ sequenceDiagram
     actor SenderClient
     actor User
 
-    Node->>SenderClient: Sends AppSessionUpdate
     Node->>SenderClient: Return node signature
-    SenderClient->>User: Returns success and tx hash
+    SenderClient->>Node: Query latest app session if needed
+    Node->>SenderClient: Returns latest app session state
+    SenderClient->>User: Returns success
 ```
 
 ### What Gets Returned
 
-1. **AppSessionUpdate** -- Notification of the updated app session state.
-2. **Node signature** -- Confirms the Node has accepted both states.
-3. **Success and tx hash** -- User-facing confirmation.
+1. **Node signature** -- Confirms Nitronode has accepted both states.
+2. **Latest app session state** -- Retrieved by query if the application wants a fresh read after submission.
+3. **Success** -- User-facing confirmation.
 
 ---
 
@@ -269,8 +274,10 @@ sequenceDiagram
 
     rect rgb(0, 0, 230)
         Note over Node,User: Phase 5: Complete
-        Node->>SenderClient: AppSessionUpdate + node signature
-        SenderClient->>User: Returns success and tx hash
+        Node->>SenderClient: Return node signature
+        SenderClient->>Node: Query latest app session if needed
+        Node->>SenderClient: Returns latest app session state
+        SenderClient->>User: Returns success
     end
 ```
 
@@ -301,12 +308,6 @@ This is solved by:
 1. **Single API endpoint** -- Both states are submitted together via `submit_deposit_state`, ensuring the Node processes them as a single atomic operation.
 2. **Verifiable accounting** -- Channel state tracks fund flows, app session tracks allocations.
 3. **Linked validation** -- `EnsureSameDepositAssetAmount` validates that both states reflect the same deposit amount before either is stored.
-
-:::info Note on Quorum
-The `quorum_sigs` parameter must be assembled by the **application itself**. This means the application is responsible for collecting signatures from each participant (based on their signature weights) to meet the quorum threshold before submitting the deposit state to the Node.
-:::
-
----
 
 ## Related Flows
 

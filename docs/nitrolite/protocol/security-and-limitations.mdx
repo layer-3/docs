@@ -48,7 +48,7 @@ The blockchain layer provides:
 
 ## Node Liquidity and Cross-Chain Trust
 
-Each User channel is opened with a Node. To maintain cross-chain functionality, the Node MUST hold sufficient liquidity on each supported blockchain to satisfy off-chain state allocations.
+Each User channel is opened with a Node. Cross-chain functionality depends on the Node operator maintaining enough liquidity on each supported blockchain to satisfy off-chain state allocations.
 
 When a User with home chain A transfers assets to a User with home chain B, the Node receives the amount on chain A and allocates from its own balance to the recipient on chain B. If the recipient later enforces state on chain B and the Node lacks sufficient liquidity there, on-chain enforcement will fail.
 
@@ -58,10 +58,10 @@ In the current protocol version, users rely on the Node operator to maintain ade
 
 ## Current Trust Assumptions
 
-Participants MUST trust Nodes for:
+Participants currently rely on Nodes for:
 
-- **Liveness**: Nodes MUST be online to facilitate off-chain state advancement.
-- **Cross-chain liquidity**: Nodes MUST maintain sufficient funds on each supported chain to honor off-chain allocations.
+- **Liveness**: Nodes need to be online to facilitate off-chain state advancement.
+- **Cross-chain liquidity**: Node operators need sufficient funds on each supported chain to honor off-chain allocations.
 - **Cross-chain relay**: Nodes relay cross-chain state updates; trustless cross-chain enforcement is not yet implemented.
 - **Timely enforcement**: Nodes are expected to submit checkpoints when requested.
 

@@ -1,0 +1,76 @@
+---
+title: Glossary
+description: Core Nitrolite v1 terms for builders and protocol readers.
+sidebar_position: 5
+---
+
+# Glossary
+
+This page defines the terms used across the Nitrolite v1 Learn, Build, Protocol, and API Reference docs.
+
+## Core Terms
+
+| Term | Meaning |
+| --- | --- |
+| **App session** | An off-chain application-specific state funded from a channel through `commit` transitions and settled back through `release` transitions. |
+| **Asset** | A configured token symbol and decimal model that Nitronode recognizes across supported chains. |
+| **Channel** | A user-node relationship for one asset, with signed state updates and an on-chain enforcement path. |
+| **Channel state** | The signed record of channel version, transition, ledgers, and participant signatures. |
+| **ChannelHub** | The v1 on-chain entrypoint for channel creation, deposits, withdrawals, checkpoints, challenges, and close operations. |
+| **Checkpoint** | An on-chain submission that records a valid signed state without necessarily closing the channel. |
+| **Challenge** | An on-chain dispute path where a participant submits a signed state and gives the counterparty time to respond with a newer valid state. |
+| **Home channel** | The user's primary channel for a configured asset. |
+| **Home ledger** | The authoritative ledger for the channel's current enforcement chain. |
+| **Nitronode** | The open-source off-chain coordinator that validates state transitions, signs states, and serves v1 RPC. |
+| **Non-home ledger** | The secondary ledger used when a cross-chain operation is in progress. It is empty during ordinary same-chain operation. |
+| **Pending state** | A Node-issued state with only the Node signature. It becomes enforceable only after the user acknowledges it. |
+| **Quorum** | The signature threshold required by an app session before an app-state update is accepted. |
+| **Session key** | A scoped signing key an application can use for app-session updates without asking the wallet to sign every step. |
+| **Vault** | Node-controlled liquidity used by enforcement and cross-chain accounting paths. |
+
+## Channel Statuses
+
+The v1 RPC status surface uses:
+
+| Status | Meaning |
+| --- | --- |
+| `void` | No channel exists yet. |
+| `open` | The channel exists and can accept normal state updates. |
+| `challenged` | A challenge is active and the response window is running. |
+| `closing` | The channel is in the close path after a final state or expired challenge. |
+| `closed` | Funds have been released and the channel lifecycle is complete. |
+
+## Transition Literals
+
+These are the current `transition_type` literals from the v1 API schema.
+
+| Literal | Meaning |
+| --- | --- |
+| `transfer_send` | Sender-side off-chain transfer. |
+| `transfer_receive` | Receiver-side off-chain transfer. |
+| `release` | Return funds from an app session or extension to the channel. |
+| `commit` | Move funds from the channel into an app session or extension. |
+| `home_deposit` | Same-chain home-channel deposit. |
+| `home_withdrawal` | Same-chain home-channel withdrawal. |
+| `mutual_lock` | Escrow deposit initiate. |
+| `escrow_deposit` | Escrow deposit finalize or complete. |
+| `escrow_lock` | Escrow withdrawal initiate. |
+| `escrow_withdraw` | Escrow withdrawal finalize or complete. |
+| `migrate` | Home-chain migration initiate. |
+| `finalize` | Finalize and close the channel state. |
+
+## Amount Units
+
+Use the SDK method signature as the source of truth for amount shape:
+
+| Surface | Typical amount shape |
+| --- | --- |
+| Native TypeScript SDK | `Decimal` for app-facing method calls. |
+| Compat TypeScript SDK | Raw asset-unit strings for transfer-style methods and raw base units for on-chain-style methods. |
+| API Reference | Wire payload shape from `docs/api.yaml`. |
+
+## Related Pages
+
+- [Architecture at a Glance](./introduction/architecture-at-a-glance)
+- [State and Ledger Model](/nitrolite/protocol/state-and-ledger-model)
+- [Key Terms](/nitrolite/build/getting-started/key-terms)
