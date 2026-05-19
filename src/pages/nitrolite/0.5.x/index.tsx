@@ -54,7 +54,7 @@ const FeatureList: FeatureItem[] = [
         and contribute to decentralized infrastructure.
       </>
     ),
-    link: '/nitrolite/0.5.x/guides/manuals/running-clearnode-locally',
+    link: '/nitrolite/0.5.x/manuals/running-clearnode-locally',
   },
   {
     title: 'Join the Community',

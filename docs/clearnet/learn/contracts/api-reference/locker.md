@@ -9,7 +9,7 @@ displayed_sidebar: clearnetSidebar
 [Git Source](https://github.com/layer-3/yellow/blob/11ed85c3dabaaddeee431052032791a80eaf2a0e/src/Locker.sol)
 
 **Inherits:**
-[ILock](/src/interfaces/ILock.sol/interface.ILock.md), ReentrancyGuard
+[ILock](./interfaces/ilock), ReentrancyGuard
 
 **Title:**
 Locker
@@ -167,4 +167,3 @@ Hook called after relock. Override to add custom logic.
 ```solidity
 function _afterRelock(address account, uint256 balance) internal virtual;
 ```
-

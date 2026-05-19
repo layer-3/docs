@@ -32,8 +32,7 @@ const config: Config = {
   organizationName: 'layer-3', // Usually your GitHub org/user name.
   projectName: 'docs', // Usually your repo name.
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   // SEO metadata - injected into HTML head
   headTags: [
@@ -63,7 +62,7 @@ const config: Config = {
           sidebarPath: './sidebars-nitrolite.ts',
           routeBasePath: '/nitrolite',
           editUrl:
-            'https://github.com/layer-3/docs/tree/master/',
+            'https://github.com/layer-3/docs/tree/main/',
           sidebarCollapsed: false,
           sidebarCollapsible: false,
           breadcrumbs: true,
@@ -91,6 +90,9 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
   themes: ['@docusaurus/theme-mermaid'],
   plugins: [
@@ -101,7 +103,7 @@ const config: Config = {
         path: './docs/clearnet',
         routeBasePath: '/clearnet',
         sidebarPath: './sidebars-clearnet.ts',
-        editUrl: 'https://github.com/layer-3/docs/tree/master/',
+        editUrl: 'https://github.com/layer-3/docs/tree/main/',
         sidebarCollapsed: false,
         sidebarCollapsible: false,
         breadcrumbs: true,
@@ -298,7 +300,7 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
-      defaultLanguage: 'javascript',
+      defaultLanguage: 'typescript',
       magicComments: [
         {
           className: 'git-diff-remove',

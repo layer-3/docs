@@ -9,7 +9,7 @@ displayed_sidebar: clearnetSidebar
 [Git Source](https://github.com/layer-3/yellow/blob/11ed85c3dabaaddeee431052032791a80eaf2a0e/src/NodeRegistry.sol)
 
 **Inherits:**
-[Locker](/src/Locker.sol/abstract.Locker.md), Votes
+[Locker](./locker), Votes
 
 **Title:**
 NodeRegistry
@@ -60,4 +60,3 @@ Returns the locked collateral as weight units for the OZ Votes system.
 ```solidity
 function _getVotingUnits(address account) internal view override returns (uint256);
 ```
-

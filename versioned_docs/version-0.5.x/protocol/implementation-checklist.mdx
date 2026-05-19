@@ -88,13 +88,13 @@ Smart contract interactions for <Tooltip content={tooltipDefinitions.channel}>ch
   - Build state with `intent = FINALIZE` (3), `version = current+1`, `data = "0x"`
   - Require both participant signatures; submit single tx
   - Confirm funds destination and allocations match expectations
-  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#cooperative-closure)
+  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#closure---cooperative)
 
 - [ ] **Dispute / challenge**
   - Persist latest fully signed state for `challenge()`
   - During `DISPUTE`, accept newer state via `checkpoint()` (on-chain) if available
   - After challenge timeout, finalize with `close()` using challenged state
-  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#challenge-phase)
+  - Reference: [Channel Lifecycle](./app-layer/on-chain/channel-lifecycle#closure---challenge-response)
 
 ### Event Listening
 
@@ -179,7 +179,7 @@ RPC communication with <Tooltip content={tooltipDefinitions.clearnode}>clearnode
   - `cu` (Channel Update) - Channel status changed
   - `tr` (Transfer) - Incoming/outgoing transfer
   - `asu` (App Session Update) - App session state changed
-  - Reference: [Notifications](./app-layer/off-chain/queries#notifications)
+  - Reference: [Notifications](./app-layer/off-chain/queries#notifications-server-to-client)
 
 :::tip Method Prioritization
 Start with: authentication → create_channel → transfer → get_ledger_balances. Add other methods as needed for your use case.
@@ -329,7 +329,7 @@ Robust error handling for production reliability.
   - No numeric error codes; errors have descriptive messages only
   - Common errors: "authentication required", "insufficient balance", "channel not found", "session expired, please re-authenticate"
   - Always check if response method is `"error"`
-  - Reference: [Error Handling](./protocol-reference#error-handling)
+  - Reference: [Error Response](./app-layer/off-chain/message-format#error-response)
 
 ### Transaction Errors
 

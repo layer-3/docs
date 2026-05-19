@@ -1,18 +1,19 @@
 ---
 title: Getting Started
-description: Install and set up the Nitronode Go SDK
+description: Install and set up the Nitrolite Go SDK
 sidebar_position: 1
 ---
 
 # Getting Started with the Go SDK
 
-Go SDK for Nitronode payment channels providing both high-level and low-level operations in a unified client.
+The Go SDK lives in the Nitrolite module at `github.com/layer-3/nitrolite/sdk/go`. Use it for backend services, workers, and CLI tools that need typed access to Nitronode v1 RPC plus ChannelHub settlement helpers.
 
 ## Requirements
 
 - Go 1.25.7 or later
-- Running Nitronode instance
-- Blockchain RPC endpoint (for `Checkpoint` settlement)
+- A Nitronode WebSocket endpoint
+- A blockchain RPC endpoint for chains where you call `Checkpoint`, `Challenge`, or `ApproveToken`
+- A signer for channel states and a signer for blockchain transactions
 
 ## Installation
 
@@ -32,6 +33,8 @@ package main
 import (
     "context"
     "fmt"
+    "log"
+
     "github.com/layer-3/nitrolite/pkg/core"
     "github.com/layer-3/nitrolite/pkg/sign"
     sdk "github.com/layer-3/nitrolite/sdk/go"
@@ -39,122 +42,136 @@ import (
 )
 
 func main() {
-    // 1. Create signers from private key
-    msgSigner, _ := sign.NewEthereumMsgSigner(privateKeyHex)
-    stateSigner, _ := core.NewChannelDefaultSigner(msgSigner)
-    txSigner, _ := sign.NewEthereumRawSigner(privateKeyHex)
+    ctx := context.Background()
+    privateKeyHex := "0x..."
+    chainID := uint64(11155111)
+    asset := "yellow"
 
-    // 2. Create unified client
-    client, _ := sdk.NewClient(
+    msgSigner, err := sign.NewEthereumMsgSigner(privateKeyHex)
+    if err != nil {
+        log.Fatal(err)
+    }
+    stateSigner, err := core.NewChannelDefaultSigner(msgSigner)
+    if err != nil {
+        log.Fatal(err)
+    }
+    txSigner, err := sign.NewEthereumRawSigner(privateKeyHex)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    client, err := sdk.NewClient(
         "<sandbox-url-coming-soon>",
         stateSigner,
         txSigner,
-        sdk.WithBlockchainRPC(80002, "https://polygon-amoy.alchemy.com/v2/KEY"),
+        sdk.WithBlockchainRPC(chainID, "https://ethereum-sepolia-rpc.example"),
     )
+    if err != nil {
+        log.Fatal(err)
+    }
     defer client.Close()
 
-    ctx := context.Background()
+    if err := client.SetHomeBlockchain(asset, chainID); err != nil {
+        log.Fatal(err)
+    }
 
-    // 3. Build and co-sign states off-chain
-    state, _ := client.Deposit(ctx, 80002, "usdc", decimal.NewFromInt(100))
-    fmt.Printf("Deposit state version: %d\n", state.Version)
+    if _, err := client.ApproveToken(ctx, chainID, asset, decimal.NewFromFloat(0.01)); err != nil {
+        log.Fatal(err)
+    }
 
-    // 4. Settle on-chain via Checkpoint
-    txHash, _ := client.Checkpoint(ctx, "usdc")
-    fmt.Printf("On-chain tx: %s\n", txHash)
+    state, err := client.Deposit(ctx, chainID, asset, decimal.NewFromFloat(0.01))
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("deposit state version: %d\n", state.Version)
 
-    // 5. Transfer (off-chain only)
-    state, _ = client.Transfer(ctx, "0xRecipient...", "usdc", decimal.NewFromInt(50))
-
-    // 6. Low-level operations on the same client
-    config, _ := client.GetConfig(ctx)
-    balances, _ := client.GetBalances(ctx, client.GetUserAddress())
+    txHash, err := client.Checkpoint(ctx, asset)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("checkpoint tx: %s\n", txHash)
 }
 ```
 
 ## Creating a Client
 
 ```go
-// Step 1: Create signers
-msgSigner, err := sign.NewEthereumMsgSigner("0x1234...")
+msgSigner, err := sign.NewEthereumMsgSigner(privateKeyHex)
 stateSigner, err := core.NewChannelDefaultSigner(msgSigner)
-txSigner, err := sign.NewEthereumRawSigner("0x1234...")
+txSigner, err := sign.NewEthereumRawSigner(privateKeyHex)
 
-// Step 2: Create unified client
 client, err := sdk.NewClient(
     wsURL,
-    stateSigner,  // core.ChannelSigner for channel states
-    txSigner,     // sign.Signer for blockchain transactions
+    stateSigner,
+    txSigner,
     sdk.WithBlockchainRPC(chainID, rpcURL),
     sdk.WithHandshakeTimeout(10*time.Second),
     sdk.WithPingInterval(5*time.Second),
 )
-
-// Step 3: (Optional) Set home blockchain for assets
-err = client.SetHomeBlockchain("usdc", 80002)
 ```
+
+The constructor takes:
+
+| Parameter | Purpose |
+| --- | --- |
+| `wsURL` | Nitronode v1 WebSocket endpoint. |
+| `stateSigner` | `core.ChannelSigner` used for channel-state signatures. |
+| `txSigner` | Blockchain transaction signer used for settlement calls. |
+| Options | RPC URLs, handshake timeout, ping interval, and error handler. |
 
 ## Channel Signers
 
-The Go SDK wraps raw signers with a `ChannelSigner` interface that prepends a type byte to every signature:
+The Go SDK wraps raw signers with `core.ChannelSigner` so signatures carry the v1 validator type byte.
 
 | Type | Byte | Struct | Usage |
-|------|------|--------|-------|
-| Default | `0x00` | `core.ChannelDefaultSigner` | Main wallet signs directly |
-| Session Key | `0x01` | `core.ChannelSessionKeySignerV1` | Delegated session key |
+| --- | --- | --- | --- |
+| Default | `0x00` | `core.ChannelDefaultSigner` | Main wallet signs directly. |
+| Session key | `0x01` | `core.ChannelSessionKeySignerV1` | Delegated channel session key. |
 
 ```go
-// Default signer (wraps EthereumMsgSigner with 0x00 prefix)
-msgSigner, _ := sign.NewEthereumMsgSigner(privateKeyHex)
-channelSigner, _ := core.NewChannelDefaultSigner(msgSigner)
-client, _ := sdk.NewClient(wsURL, channelSigner, txSigner, opts...)
+msgSigner, err := sign.NewEthereumMsgSigner(privateKeyHex)
+channelSigner, err := core.NewChannelDefaultSigner(msgSigner)
+client, err := sdk.NewClient(wsURL, channelSigner, txSigner, opts...)
 ```
 
-## Key Concepts
+## Builder Flow
 
-### Two-Step Pattern
+For normal app-builder integrations:
 
-```go
-// Step 1: Build and co-sign state off-chain
-state, _ := client.Deposit(ctx, 80002, "usdc", decimal.NewFromInt(100))
-
-// Step 2: Settle on-chain (when needed)
-txHash, _ := client.Checkpoint(ctx, "usdc")
-```
-
-### Channel Lifecycle
-
-1. **Void**: No channel exists
-2. **Create**: `Deposit()` creates channel on-chain via `Checkpoint()`
-3. **Open**: Channel active; can deposit, withdraw, transfer
-4. **Challenged**: Dispute initiated
-5. **Closed**: Channel finalized
+1. Connect with `sdk.NewClient`.
+2. Call `GetConfig`, `GetBlockchains`, or `GetAssets` to inspect the node.
+3. Set the asset home chain with `SetHomeBlockchain`.
+4. Approve the ChannelHub spender with `ApproveToken` before first funding.
+5. Use `Deposit`, `Withdraw`, `Transfer`, and `CloseHomeChannel` to prepare signed states.
+6. Use `Checkpoint` when a state needs on-chain settlement.
+7. Use app-session methods for application-specific state.
 
 ## Configuration Options
 
 ```go
-sdk.WithBlockchainRPC(chainID, rpcURL)    // Required for Checkpoint
-sdk.WithHandshakeTimeout(duration)         // Default: 5s
-sdk.WithPingInterval(duration)             // Default: 5s
-sdk.WithErrorHandler(func(error))          // Connection error handler
+sdk.WithBlockchainRPC(chainID, rpcURL)
+sdk.WithHandshakeTimeout(duration)
+sdk.WithPingInterval(duration)
+sdk.WithErrorHandler(func(error))
 ```
 
 ## Error Handling
 
 ```go
-state, err := client.Deposit(ctx, 80002, "usdc", amount)
+state, err := client.Deposit(ctx, chainID, asset, amount)
 if err != nil {
-    log.Printf("State error: %v", err)
+    log.Printf("state error: %v", err)
 }
 
-txHash, err := client.Checkpoint(ctx, "usdc")
+txHash, err := client.Checkpoint(ctx, asset)
 if err != nil {
-    log.Printf("Checkpoint error: %v", err)
+    log.Printf("checkpoint error: %v", err)
 }
 ```
 
 Common errors:
-- `"home blockchain not set for asset"`: Missing `SetHomeBlockchain`
-- `"blockchain RPC not configured for chain"`: Missing `WithBlockchainRPC`
-- `"no channel exists for asset"`: `Checkpoint` without a co-signed state
-- `"insufficient balance"`: Not enough funds in channel/wallet
+
+- `"home blockchain not set for asset"`: call `SetHomeBlockchain` first.
+- `"blockchain RPC not configured for chain"`: pass `sdk.WithBlockchainRPC`.
+- `"no channel exists for asset"`: call `Deposit` before checkpointing.
+- `"insufficient balance"`: fund the wallet or channel before retrying.
