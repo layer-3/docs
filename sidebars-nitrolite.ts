@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
       id: 'learn/index',
       label: 'Learn',
     },
+    'learn/migrating-from-0.5.3',
     {
       type: 'category',
       label: 'Introduction',
@@ -37,6 +38,7 @@ const sidebars: SidebarsConfig = {
         'learn/core-concepts/state-channels-vs-l1-l2',
         'learn/core-concepts/challenge-response',
         'learn/core-concepts/yellow-token',
+        'learn/glossary',
       ],
       collapsed: false,
     },

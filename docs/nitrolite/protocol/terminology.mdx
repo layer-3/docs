@@ -73,7 +73,7 @@ Each unified asset defines a canonical decimal precision used during protocol in
 | --- | --- |
 | Mutually Signed State | A state that carries valid signatures from both the User and the Node. Only mutually signed states are enforceable on-chain. |
 | Node-Issued Pending State | A state produced by the Node that carries only the Node's signature. A pending state is NOT enforceable on-chain and becomes mutually signed only after the User acknowledges it. |
-| Channel Status | A specific on-chain channel data configuration throughout the lifecycle, including operating, disputed, migrating-in, and migrated-out statuses. |
+| Channel Status | A specific on-chain channel data configuration throughout the lifecycle, including open, challenged, closing, and closed states. |
 | Escrow Channel Identifier | A 32-byte hash derived deterministically from the home channel identifier and state version. It uniquely identifies each escrow operation. |
 
 ## Protocol Operations

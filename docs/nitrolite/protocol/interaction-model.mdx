@@ -1,6 +1,6 @@
 ---
 title: "Interaction Model"
-description: "Transport-independent message envelope, core operations, event messages, correlation, error handling, and ordering."
+description: "Transport-independent message envelope, core operations, response correlation, error handling, and ordering."
 ---
 
 # Interaction Model
@@ -45,7 +45,7 @@ Messages are encoded as compact ordered arrays:
 | --- |
 | Request |
 | Successful response |
-| Event notification |
+| Reserved event notification |
 | Error response |
 
 :::note Events
@@ -110,6 +110,6 @@ Rules:
 Message ordering requirements MAY depend on implementation. These protocol-level constraints apply:
 
 - `RequestId` values MUST NOT be reused within a single connection.
-- Events MAY arrive at any time and MUST NOT block request processing.
+- Future event notifications, once specified, MUST NOT block request processing.
 
 State update ordering is governed by channel state versioning and advancement rules, not by the message transport layer.

@@ -1,0 +1,65 @@
+---
+title: Migrating from 0.5.3
+description: Migration paths from @erc7824/nitrolite 0.5.3 to the Yellow v1 SDKs.
+sidebar_position: 6
+---
+
+# Migrating from 0.5.3
+
+If your application uses `@erc7824/nitrolite@0.5.3`, choose one of two migration paths:
+
+| Path | Use when |
+| --- | --- |
+| **Compat first** | You need the smallest migration and want familiar helper shapes while moving to the v1 package family. |
+| **Native v1** | You are building new flows or can afford to adopt the v1 SDK model directly. |
+
+## Path 1: Compat First
+
+Use `@yellow-org/sdk-compat` when you need to move existing 0.5.3 code with minimal application churn.
+
+Start here:
+
+- [Compat overview](/nitrolite/build/sdk/typescript-compat/overview)
+- [Migration overview](/nitrolite/build/sdk/typescript-compat/migration-overview)
+- [Off-chain migration](/nitrolite/build/sdk/typescript-compat/migration-offchain)
+- [On-chain migration](/nitrolite/build/sdk/typescript-compat/migration-onchain)
+- [Errors and recovery](/nitrolite/build/sdk/typescript-compat/errors)
+
+Compat does not preserve every old behavior. In particular, fail-fast calls, amount units, polling, and server-push assumptions need deliberate review. Follow the migration pages before changing production code.
+
+## Path 2: Native v1
+
+Use `@yellow-org/sdk` for new applications and for migrations that can adopt the v1 lifecycle directly.
+
+Start here:
+
+- [Quickstart](/nitrolite/build/getting-started/quickstart)
+- [Prerequisites](/nitrolite/build/getting-started/prerequisites)
+- [Native TypeScript SDK](/nitrolite/build/sdk/typescript/getting-started)
+- [Lifecycle example source](/nitrolite/build/getting-started/quickstart#step-7-run-it)
+
+Native v1 is the default long-term path. It exposes the current channel and app-session lifecycle directly instead of preserving the 0.5.3 helper vocabulary.
+
+## Terminology Map
+
+| 0.5.3 term | v1 term |
+| --- | --- |
+| `@erc7824/nitrolite` | `@yellow-org/sdk` or `@yellow-org/sdk-compat` |
+| Clearnode | Nitronode |
+| Custody | ChannelHub |
+| Adjudicator | Channel engine and signature validators |
+| Virtual app | App session |
+
+## Migration Checklist
+
+1. Pick compat-first or native v1.
+2. Replace package imports.
+3. Review amount units for every transfer, deposit, withdrawal, and app-session call.
+4. Replace server-push assumptions with explicit queries or the supported polling helper.
+5. Run the updated flow against a disposable test wallet before updating docs or production examples.
+
+## Related Pages
+
+- [Glossary](./glossary)
+- [API Reference](/nitrolite/api-reference/)
+- [Protocol Overview](/nitrolite/protocol/introduction)
