@@ -21,7 +21,7 @@ The Home Chain may differ from where the channel was originally created, as user
 ```mermaid
 graph LR
     U["User"] --> C["Client"]
-    C <--> N["Node (Clearnode)"]
+    C <--> N["Nitronode"]
     C --> HC["HomeChain"]
     HC -.-> N
 
@@ -35,7 +35,7 @@ graph LR
 | --- | --- |
 | **User** | The human user initiating the withdrawal |
 | **Client** | SDK/Application managing states on behalf of the user |
-| **Node** | The Clearnode that validates and stores state transitions |
+| **Node** | The Nitronode that validates and stores state transitions |
 | **HomeChain** | The blockchain where the user's home channel exists |
 
 ---
@@ -48,7 +48,7 @@ Before the home channel withdrawal flow begins:
 2. **User already has a home channel** on the HomeChain.
 3. **Node** contains the user's state with Home Channel information.
 4. **User has sufficient balance** in their unified balance to withdraw.
-5. **No ongoing operation** exists for this channel (the Clearnode will deny the request otherwise).
+5. **No ongoing operation** exists for this channel (the Nitronode will deny the request otherwise).
 
 :::note
 The "no ongoing operation" requirement applies to ALL operations except `finalize_escrow_deposit`, `finalize_escrow_withdrawal`, and `finalize_migration`.
@@ -258,7 +258,7 @@ The **Client** submits a transaction to the **HomeChain** smart contract, which:
 
 ---
 
-## Phase 6: Event Handling and Completion
+## Phase 6: Confirmation and Completion
 
 ```mermaid
 sequenceDiagram
@@ -268,19 +268,15 @@ sequenceDiagram
 
     Note right of Node: HandleChannelWithdrawn()
     Note right of Node: UpdateChannel(channel)
-    Node-->>Client: Sends ChannelUpdate and BalanceUpdate
+    Client->>Node: Query latest channel and balance
+    Node-->>Client: Returns latest channel state and balance
     Client-->>User: Returns success
 ```
 
-The Node listens for blockchain events and:
+Nitronode listens for blockchain events internally and updates its stored view:
 
 1. **HandleChannelWithdrawn()** -- Processes the withdrawal event.
 2. **UpdateChannel(channel)** -- Updates the channel's on-chain state version.
-
-| Event | Description |
-| --- | --- |
-| `ChannelUpdate` | Notifies client of new channel state |
-| `BalanceUpdate` | Notifies client of new balance |
 
 ---
 
@@ -326,7 +322,8 @@ sequenceDiagram
 
     rect rgb(100, 40, 40)
         Note over Node,User: Phase 6: Completion
-        Node-->>Client: ChannelUpdate and BalanceUpdate
+        Client->>Node: Query latest channel and balance
+        Node-->>Client: Returns latest channel state and balance
         Client-->>User: Returns success
     end
 ```

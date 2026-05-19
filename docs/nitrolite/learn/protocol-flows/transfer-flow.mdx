@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Transfer Communication Flow
 
-This document provides a comprehensive breakdown of the **off-chain transfer flow** as defined in the Nitrolite v1.0 protocol. The transfer operation moves funds between users instantly without blockchain transactions, leveraging **state transitions** managed through the **Clearnode** (Node).
+This document provides a comprehensive breakdown of the **off-chain transfer flow** as defined in the Nitrolite v1.0 protocol. The transfer operation moves funds between users instantly without blockchain transactions, leveraging **state transitions** managed through the **Nitronode** (Node).
 
 ---
 
@@ -15,7 +15,7 @@ This document provides a comprehensive breakdown of the **off-chain transfer flo
 ```mermaid
 graph LR
     SU["SenderUser"] --> SC["SenderClient"]
-    SC <--> N["Node (Clearnode)"]
+    SC <--> N["Nitronode"]
     N <--> RC["ReceiverClient"]
 
     style SU stroke:#333
@@ -28,8 +28,8 @@ graph LR
 | --- | --- |
 | **SenderUser** | The human user initiating the transfer |
 | **SenderClient** | SDK/Application that manages states on behalf of the sender |
-| **Node** | The Clearnode that validates, stores, and coordinates state transitions |
-| **ReceiverClient** | SDK/Application that receives notifications for the recipient |
+| **Node** | The Nitronode that validates, stores, and coordinates state transitions |
+| **ReceiverClient** | SDK/Application that can query the recipient's latest state |
 
 ---
 
@@ -204,9 +204,9 @@ EnsureNoOngoingTransitions()
 The Node checks that there are no pending/incomplete transitions for this user. This prevents race conditions and ensures state consistency.
 
 :::warning
-If there's an ongoing transition, the Clearnode will return a relevant error and the submission is rejected.
+If there's an ongoing transition, the Nitronode will return a relevant error and the submission is rejected.
 
-**Atomic Operations**: `escrow_deposit`, `escrow_withdrawal`, and `home-chain migration` operations are considered as one atomic operation. This means that if, for example, an escrow deposit was started with `initiate_escrow_deposit` transition, then no other states will be issued apart from `finalize_escrow_deposit`. Only after finalization can a `transfer` (or other non-`finalize_escrow_deposit` transition) be accepted by the Node.
+**Serialized operations**: Nitronode does not accept a transfer while another state transition is still pending for the same user and asset. Escrow and migration transitions are not documented as builder-facing workflows yet, but they follow the same rule: finish or acknowledge the pending state before submitting a normal transfer.
 :::
 
 :::info
@@ -219,7 +219,7 @@ Even in case of `home_deposit`, the Node won't accept a new state until it knows
 ValidateAdvancement(currentState, proposedState)
 ```
 
-State advancement validation is done by applying effects from the proposed state to the current one. If there is any difference between the proposed state and the one built by the Clearnode, it will return a relevant error (e.g., `version should be X`, `asset shouldn't change`, etc.).
+State advancement validation is done by applying effects from the proposed state to the current one. If there is any difference between the proposed state and the one built by the Nitronode, it will return a relevant error (e.g., `version should be X`, `asset shouldn't change`, etc.).
 
 The Node validates:
 
@@ -244,7 +244,7 @@ StoreState(state)
 ```
 
 :::info 2-Signature Rule
-The Node also signs the sender's state. In v1, only a 2-signature state (both User and Node signatures) can be valid. After signing, the Node stores the state locally and sends it as a notification to subscribers.
+The Node also signs the sender's state. In v1, only a 2-signature state (both User and Node signatures) can be valid. After signing, Nitronode stores the state locally and returns the signature in the transfer response.
 :::
 
 The validated and dual-signed state is stored in the Node's database. At this point, the sender's side of the transfer is complete.
@@ -324,9 +324,9 @@ The Node supports receiving funds by users who don't have a channel or are not o
 
 ---
 
-## Phase 6: Notifications and Completion
+## Phase 6: Confirmation and Completion
 
-After the receiver state is created, the Node sends notifications to both the sender and receiver clients.
+After the receiver state is created, Nitronode returns the sender-side signature. Applications that need fresh balances should query the latest channel or balance state after the transfer response.
 
 ---
 
@@ -367,11 +367,13 @@ sequenceDiagram
     end
 
     rect rgb(0, 0, 0)
-        Note over Node,ReceiverClient: Phase 6: Notify
-        Node->>SenderClient: ChannelUpdate and BalanceUpdate
-        Node->>ReceiverClient: ChannelUpdate and BalanceUpdate
+        Note over Node,ReceiverClient: Phase 6: Confirm and query
         Node->>SenderClient: Return node signature
-        SenderClient->>SenderUser: Returns success and tx hash
+        SenderClient->>Node: Query latest state if needed
+        ReceiverClient->>Node: Query latest state if online
+        Node->>SenderClient: Returns latest state
+        Node->>ReceiverClient: Returns latest state
+        SenderClient->>SenderUser: Returns success
     end
 ```
 

@@ -76,46 +76,39 @@ Each escrow is identified by an escrow channel identifier derived deterministica
 
 An escrow is not a separate protocol entity with its own state. It is an on-chain record derived from a channel state transition.
 
+:::caution Builder workflow not documented yet
+Escrow and migration mechanics can be supported by the protocol, but docs.yellow.org does not yet document them as public app-builder workflows. The sections below define the semantic model only.
+:::
+
 ## Cross-Chain Deposit
 
-Cross-chain deposit uses a two-phase escrow process:
+Cross-chain deposit is represented as a two-phase escrow family:
 
-1. **Initiate**: participants sign an Escrow Deposit Initiate state. On the home chain, the Node allocation increases to reserve funds. On the non-home chain, the User deposit is locked in escrow with an unlock delay.
-2. **Finalize**: participants sign an Escrow Deposit Finalize state. On the home chain, the User allocation increases by the deposited amount. On the non-home chain, escrowed funds are released to the Node's vault.
-
-If escrow is not finalized within the unlock delay, escrowed funds on the non-home chain are automatically unlocked to the Node. Either participant MAY challenge escrow during the challenge period. It is NOT possible to challenge a deposit escrow after the unlock delay has passed.
+| Phase | Transition literal | Meaning |
+| --- | --- | --- |
+| Initiate | `mutual_lock` | Escrow deposit initiate. |
+| Finalize | `escrow_deposit` | Escrow deposit finalize or complete. |
 
 Cross-chain amounts are validated using WAD normalization.
 
 ## Cross-Chain Withdrawal
 
-Cross-chain withdrawal uses a similar two-phase escrow process:
+Cross-chain withdrawal is represented as a two-phase escrow family:
 
-1. **Initiate**: participants sign an Escrow Withdrawal Initiate state. On the non-home chain, the Node locks funds from its vault into escrow.
-2. **Finalize**: participants sign an Escrow Withdrawal Finalize state. On the home chain, the User allocation decreases. On the non-home chain, escrowed funds are released to the User.
-
-If escrow is not finalized cooperatively, either participant MAY challenge the escrow.
+| Phase | Transition literal | Meaning |
+| --- | --- | --- |
+| Initiate | `escrow_lock` | Escrow withdrawal initiate. |
+| Finalize | `escrow_withdraw` | Escrow withdrawal finalize or complete. |
 
 ## Home Chain Migration
 
-The home chain MAY change through two-phase migration:
-
-1. **Initiate**: participants sign a Migration Initiate state. On the current home chain, the state records target-chain allocation. On the target chain, a new channel record is created with migrating-in status and the Node locks funds equal to User allocation, validated by WAD normalization.
-2. **Finalize**: participants sign a Migration Finalize state. On the new home chain, the channel transitions to operating status. On the old home chain, locked funds are released to the Node and the channel is marked as migrated out.
-
-After migration:
+The home chain may change through migration states, represented by the `migrate` transition family. Migration is not a public builder workflow today. Conceptually, after migration:
 
 - home chain identifier updates.
 - home token address updates.
-- former non-home ledger becomes the home ledger.
-- former home ledger becomes the non-home ledger and is zeroed out on finalization.
+- the new home ledger becomes the authoritative ledger.
 - subsequent enforcement operations execute against the new home chain.
-- User allocation is preserved, normalized by decimal precision.
-- Node allocation is recalculated for the new chain.
-
-:::note Migration version note
-Migration transitions are functional but may be refined in future protocol versions.
-:::
+- user allocation is preserved, normalized by decimal precision.
 
 ## Cross-Chain Replay Protection
 

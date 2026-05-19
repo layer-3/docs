@@ -1,155 +1,119 @@
 ---
 sidebar_position: 4
 title: Challenge-Response & Disputes
-description: How Yellow Network handles disputes and ensures fund safety
+description: How Yellow Network handles disputes and keeps channel funds recoverable
 keywords: [challenge, dispute, security, settlement, fund recovery]
 ---
 
 import Tooltip from '@site/src/components/Tooltip';
 import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
 
-:::warning[Work in Progress]
-This page was carried over from the v0.5.x documentation and has not yet been fully updated for v1.x. Some terminology, code examples, and API references may be outdated. An update is in progress.
-:::
-
 # Challenge-Response & Disputes
 
-In this guide, you will learn how Yellow Network resolves disputes and ensures your funds are always recoverable.
+Challenge-response is the on-chain fallback that lets a participant enforce the latest valid channel state if the counterparty stops cooperating.
 
-**Goal**: Understand the security guarantees that make off-chain transactions safe.
+**Goal**: understand why off-chain updates remain recoverable even when Nitronode is unavailable.
 
 ---
 
 ## Why Challenge-Response Matters
 
-In any off-chain system, a critical question arises: **What if someone tries to cheat?**
+In any off-chain system, a critical question arises: what if someone tries to settle an old state?
 
-<Tooltip content={tooltipDefinitions.channel}>State channels</Tooltip> solve this with a challenge-response mechanism:
+<Tooltip content={tooltipDefinitions.channel}>State channels</Tooltip> answer this with versioned, signed states:
 
-1. Anyone can submit a <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> to the blockchain
-2. Counterparties have time to respond with a newer state
-3. The newest valid state always wins
-4. Funds are distributed according to that state
+1. A participant submits a signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> on-chain.
+2. The counterparty has a challenge window to respond with a newer valid state.
+3. The newest valid state wins.
+4. Funds are released according to the final accepted state.
 
----
+## Trust Model
 
-## The Trust Model
+| Guarantee | How it is achieved |
+| --- | --- |
+| **Fund custody** | ChannelHub holds channel funds on-chain, not Nitronode. |
+| **State validity** | Only valid signed states can advance the channel. |
+| **Dispute resolution** | A participant can force the latest valid state on-chain. |
+| **Recovery** | Funds are recoverable from the latest enforceable state. |
 
-State channels are **trustless** because:
+## Channel Challenge Flow
 
-| Guarantee | How It's Achieved |
-|-----------|-------------------|
-| **Fund custody** | Smart contract holds funds, not Clearnode |
-| **State validity** | Only signed states are accepted |
-| **Dispute resolution** | On-chain fallback if disagreement |
-| **Recovery** | You can always get your funds back |
+### Scenario: Nitronode becomes unresponsive
 
----
+You have a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with 100 USDC. Nitronode stops responding.
 
-## Channel Dispute Flow
+Your options:
 
-### Scenario: Clearnode Becomes Unresponsive
+1. Wait for Nitronode to recover.
+2. Submit the latest mutually signed state on-chain and start the challenge path.
 
-You have a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with 100 USDC. The <Tooltip content={tooltipDefinitions.clearnode}>Clearnode</Tooltip> stops responding.
+### Process
 
-**Your options:**
-
-1. Wait for Clearnode to recover
-2. Force settlement on-chain via challenge
-
-### The Process
-
-1. **Initiate Challenge**: Submit your latest signed state to the blockchain
-2. **Challenge Period**: Contract sets a timer (e.g., 24 hours)
-3. **Response Window**: Counterparty can submit a newer state
-4. **Resolution**: After timeout, challenged state becomes final
+1. **Initiate challenge**: submit the latest signed state to ChannelHub.
+2. **Challenge period**: ChannelHub sets the response deadline.
+3. **Response window**: a counterparty can submit a newer valid state.
+4. **Resolution**: after timeout, the latest accepted state can be closed.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ACTIVE
-    ACTIVE --> DISPUTE: challenge()
-    DISPUTE --> ACTIVE: checkpoint() with newer state
-    DISPUTE --> FINAL: Timeout expires
-    FINAL --> [*]
-    
-    note right of DISPUTE: Anyone can submit<br/>newer valid state
-```
+    [*] --> open
+    open --> challenged: challenge
+    challenged --> open: checkpoint newer state
+    challenged --> closed: close after timeout
+    closed --> [*]
 
----
+    note right of challenged: A newer valid state<br/>can defeat the challenge
+```
 
 ## Why This Works
 
-### States Are Ordered
+### States are ordered
 
-Every state has a version number. A newer (higher version) state always supersedes older states.
+Every channel state has a version number. A higher version supersedes a lower version when both states are valid.
 
-### States Are Signed
+### States are signed
 
-With the default SimpleConsensus adjudicator, both parties must sign every state. If someone signed a state, they can't later claim they didn't agree.
+The default v1 channel path requires both user and node signatures for enforceable states. A party that signed a state cannot later deny that signature.
 
-:::note Other Adjudicators
-Different adjudicators may have different signing requirements. For example, a Remittance adjudicator may only require the sender's signature. The signing rules are defined by the channel's adjudicator contract.
-:::
+### Challenge period provides fairness
 
-### Challenge Period Provides Fairness
+The waiting window gives honest parties time to respond. Network delays should not cause immediate loss of funds.
 
-The waiting window ensures honest parties have time to respond. Network delays don't cause losses.
+### ChannelHub is neutral
 
-### On-Chain Contract is Neutral
-
-The smart contract accepts any valid signed state, picks the highest version, and distributes funds exactly as specified.
-
----
-
-## Challenge Period Selection
-
-| Duration | Trade-offs |
-|----------|------------|
-| **1 hour** | Fast resolution, tight response window |
-| **24 hours** | Balanced (recommended) |
-| **7 days** | Maximum safety, slow settlement |
-
-The Custody Contract enforces a minimum of 1 hour.
-
----
+ChannelHub validates signatures, state version, status, and ledger invariants. It does not rely on Nitronode cooperation once a valid state is submitted.
 
 ## Checkpoint vs Challenge
 
-| Operation | Purpose | Channel Status |
-|-----------|---------|----------------|
-| `checkpoint()` | Record state without dispute | Stays ACTIVE |
-| `challenge()` | Force dispute resolution | Changes to DISPUTE |
+| Operation | Purpose | Channel status |
+| --- | --- | --- |
+| `checkpoint()` | Record a valid state without forcing closure. | Stays `open`. |
+| `challenge()` | Start the on-chain dispute path. | Changes to `challenged`. |
 
-Use checkpoint for safety snapshots. Use challenge when you need to force settlement.
-
----
+Use checkpoint for safety snapshots. Use challenge when you need to force settlement because a counterparty is not cooperating.
 
 ## What Happens If...
 
 | Scenario | Outcome |
-|----------|---------|
-| **Clearnode goes offline** | Challenge with latest state, withdraw after timeout |
-| **You lose state history** | Challenge with old state; counterparty submits newer if they have it |
-| **Counterparty submits wrong state** | Submit your newer state via checkpoint |
-| **Block reorg occurs** | Replay events from last confirmed block |
-
----
+| --- | --- |
+| **Nitronode goes offline** | Challenge with the latest signed state, then close after timeout. |
+| **You lose state history** | An older state can be defeated by a newer valid state if the counterparty has it. |
+| **Counterparty submits a stale state** | Submit a newer valid state during the challenge window. |
+| **Block reorg occurs** | Replay confirmed chain state from the last trusted block. |
 
 ## Key Takeaways
 
 | Concept | Remember |
-|---------|----------|
-| **Challenge** | Force on-chain dispute resolution |
-| **Response** | Submit newer state to defeat challenge |
-| **Timeout** | After period, challenged state becomes final |
-| **Checkpoint** | Record state without dispute |
+| --- | --- |
+| **Challenge** | Starts on-chain dispute resolution. |
+| **Response** | A newer valid state defeats an older challenged state. |
+| **Timeout** | After expiry, the accepted state can be closed. |
+| **Checkpoint** | Records state without starting the close path. |
 
-:::success Security Guarantee
-You can **always** recover your funds according to the latest mutually signed state, regardless of counterparty behavior.
+:::success Security guarantee
+You can recover funds according to the latest enforceable state even if the off-chain counterparty stops cooperating.
 :::
-
----
 
 ## Deep Dive
 
-For protocol details, see the [App Layer](/nitrolite/protocol/introduction) section.
+For protocol details, see [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement).

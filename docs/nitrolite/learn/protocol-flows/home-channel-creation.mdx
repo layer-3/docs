@@ -17,7 +17,7 @@ This flow is triggered when a user attempts to deposit for the first time and ha
 ```mermaid
 graph LR
     U["User"] --> C["Client"]
-    C <--> N["Node (Clearnode)"]
+    C <--> N["Nitronode"]
     C --> HC["HomeChain"]
     HC -.-> N
 
@@ -31,7 +31,7 @@ graph LR
 | --- | --- |
 | **User** | The human user initiating their first deposit |
 | **Client** | SDK/Application managing states on behalf of the user |
-| **Node** | The Clearnode that validates, stores, and coordinates state transitions |
+| **Node** | The Nitronode that validates, stores, and coordinates state transitions |
 | **HomeChain** | The blockchain where the user's home channel will be created |
 
 ---
@@ -318,7 +318,7 @@ The **Client** submits a transaction to the **HomeChain** smart contract, which:
 
 ---
 
-## Phase 6: Event Handling and Completion
+## Phase 6: Confirmation and Completion
 
 ```mermaid
 sequenceDiagram
@@ -328,19 +328,15 @@ sequenceDiagram
 
     Note right of Node: HandleChannelCreated()
     Note right of Node: UpdateChannel(channel)
-    Node-->>Client: Sends ChannelUpdate and BalanceUpdate
+    Client->>Node: Query latest channel and balance
+    Node-->>Client: Returns latest channel state and balance
     Client-->>User: Returns success
 ```
 
-The Node listens for blockchain events and:
+Nitronode listens for blockchain events internally and updates its stored view:
 
 1. **HandleChannelCreated()** -- Processes the creation event.
 2. **UpdateChannel(channel)** -- Updates channel status to reflect on-chain state.
-
-| Event | Description |
-| --- | --- |
-| `ChannelUpdate` | Notifies client of new channel status |
-| `BalanceUpdate` | Notifies client of new balance |
 
 The Client returns success to the User, confirming:
 
@@ -392,7 +388,8 @@ sequenceDiagram
 
     rect rgb(40, 100, 100)
         Note over Node,User: Phase 6: Completion
-        Node-->>Client: ChannelUpdate and BalanceUpdate
+        Client->>Node: Query latest channel and balance
+        Node-->>Client: Returns latest channel state and balance
         Client-->>User: Returns success
     end
 ```
@@ -439,7 +436,7 @@ flowchart LR
 The Nitrolite architecture improves upon the previous version by **skipping the custody ledger step**. Users transfer funds directly from their ERC-20 token balance via approvals, saving one transaction compared to the old protocol.
 
 This means:
-1. User approves the Custody contract.
+1. User approves the ChannelHub.
 2. Channel creation pulls funds directly.
 3. No intermediate custody step required.
 

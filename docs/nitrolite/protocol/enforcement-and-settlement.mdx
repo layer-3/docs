@@ -86,14 +86,14 @@ The challenger signature is distinct from state signatures. It is produced by si
 Challenge process:
 
 1. The challenger submits a candidate state, state signatures, challenger signature, and challenger participant index.
-2. The channel MUST NOT be in `DISPUTE`, `MIGRATED_OUT`, or `CLOSED` status.
+2. The channel MUST NOT already be `challenged` or `closed`.
 3. The candidate version MUST be greater than or equal to the current on-chain version.
 4. If the candidate version is strictly greater, the blockchain layer validates and applies the new state.
-5. The channel status becomes `DISPUTED`, and challenge expiry is set to current time plus challenge duration.
+5. The channel status becomes `challenged`, and challenge expiry is set to current time plus challenge duration.
 
-During the challenge period, any participant MAY respond with a valid state whose version is strictly greater than the disputed state. It is NOT possible to file another challenge while a channel is already disputed.
+During the challenge period, any participant MAY respond with a valid state whose version is strictly greater than the challenged state. It is NOT possible to file another challenge while a channel is already challenged.
 
-After the challenge period expires without resolution, the disputed state becomes final. A separate close call is still required to release locked funds.
+After the challenge period expires without resolution, the challenged state becomes final. A separate close call is still required to release locked funds.
 
 ## Close Operation
 
@@ -104,7 +104,7 @@ Two close paths exist:
 | Cooperative close | A participant submits a state with the `CLOSE` intent, signed by all participants. |
 | Unilateral close | After challenge expiry, any party MAY call close without additional signatures. Funds are released according to the last enforced state's allocations. |
 
-It is not possible to close an already `CLOSED` or `MIGRATED_OUT` channel. In both close paths, locked funds are set to zero and the channel lifecycle ends.
+It is not possible to close an already `closed` channel. In both close paths, locked funds are set to zero and the channel lifecycle ends.
 
 ## Enforcement Validation
 
@@ -122,14 +122,13 @@ The blockchain layer applies common validation rules when processing enforcement
 
 ## Escrow and Migration Enforcement
 
-| Operation | On-chain effect |
+Escrow and migration transitions are part of the protocol model, but their public app-builder workflow is not documented yet. Treat the enforcement details as protocol reference material, not as instructions for constructing escrow or migration states by hand.
+
+| Operation family | Enforcement note |
 | --- | --- |
-| Escrow Deposit Initiate | On home chain: state updated, Node funds adjusted. On non-home chain: escrow record created, User funds locked. |
-| Escrow Deposit Finalize | On home chain: state updated, User allocation increased. On non-home chain: escrowed funds released to the Node's vault. |
-| Escrow Withdrawal Initiate | On home chain: state updated. On non-home chain: escrow record created, Node funds locked from vault. |
-| Escrow Withdrawal Finalize | On home chain: state updated, User allocation decreased. On non-home chain: escrowed funds released to User. |
-| Migration Initiate | On old home chain: state updated. On new home chain: channel created with migrating-in status, Node funds locked. |
-| Migration Finalize | On new home chain: channel transitions to operating. On old home chain: all locked funds released, channel marked as migrated out. |
+| Escrow deposit | Initiate and finalize states coordinate home-ledger accounting with a non-home-chain escrow record. |
+| Escrow withdrawal | Initiate and finalize states coordinate home-ledger accounting with non-home-chain release. |
+| Migration | Initiate and finalize states move the home-chain enforcement target while preserving normalized user allocation. |
 
 ## Failure Conditions
 
