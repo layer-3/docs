@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
       id: 'learn/index',
       label: 'Learn',
     },
+    'learn/whats-new-from-0.5.3',
     'learn/migrating-from-0.5.3',
     {
       type: 'category',
