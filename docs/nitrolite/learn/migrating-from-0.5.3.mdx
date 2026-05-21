@@ -10,7 +10,7 @@ If your application uses `@erc7824/nitrolite@0.5.3`, choose one of two migration
 
 | Path | Use when |
 | --- | --- |
-| **Compat first** | You need the smallest migration and want familiar helper shapes while moving to the v1 package family. |
+| **Compat first** | You need the smallest migration and want familiar helper shapes while moving to the v1 package family. Treat it as a bridge, not the long-term endpoint. |
 | **Native v1** | You are building new flows or can afford to adopt the v1 SDK model directly. |
 
 ## Path 1: Compat First
@@ -25,7 +25,7 @@ Start here:
 - [On-chain migration](/nitrolite/build/sdk/typescript-compat/migration-onchain)
 - [Errors and recovery](/nitrolite/build/sdk/typescript-compat/errors)
 
-Compat does not preserve every old behavior. In particular, fail-fast calls, amount units, polling, and server-push assumptions need deliberate review. Follow the migration pages before changing production code.
+Compat does not preserve every old behavior. In particular, fail-fast calls, polling, and server-push assumptions need deliberate review. It formats known compat surfaces for v1, but you should still review every amount boundary where your app crosses between compat calls, native SDK calls, RPC payloads, and UI display. Follow the migration pages before changing production code.
 
 ## Path 2: Native v1
 
@@ -52,7 +52,7 @@ Native v1 is the default long-term path. It exposes the current channel and app-
 
 ## Migration Checklist
 
-1. Pick compat-first or native v1.
+1. Pick compat-first or native v1. Prefer native v1 as the final model once the staged migration is stable.
 2. Replace package imports.
 3. Review amount units for every transfer, deposit, withdrawal, and app-session call.
 4. Replace server-push assumptions with explicit queries or the supported polling helper.

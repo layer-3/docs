@@ -22,8 +22,8 @@ flowchart TB
 
   app --> sdk
   sdk <-->|"v1 RPC over WebSocket"| node
-  sdk -->|"deposit, checkpoint, challenge, close"| chain
-  node -->|"checkpoint and escrow coordination"| chain
+  sdk -->|"deposit, enforce, challenge, close"| chain
+  node -->|"state enforcement coordination"| chain
   chain -->|"events and enforced state"| node
 ```
 
@@ -38,7 +38,7 @@ flowchart TB
 
 ## ChannelHub
 
-ChannelHub is the v1 on-chain entrypoint for channel enforcement. It works with ChannelEngine, EscrowDepositEngine, EscrowWithdrawalEngine, and signature validators. Builders interact with ChannelHub as the contract that creates channels, processes deposits and withdrawals, checkpoints signed states, accepts challenges, and closes channels.
+ChannelHub is the v1 on-chain enforcement layer. It works with ChannelEngine, EscrowDepositEngine, EscrowWithdrawalEngine, and signature validators. Builders interact with ChannelHub as the contract that creates channels, processes deposits and withdrawals, enforces signed states, accepts challenges, and closes channels.
 
 ChannelHub validates:
 
@@ -49,7 +49,7 @@ ChannelHub validates:
 - locked-funds accounting
 - challenge and close status transitions
 
-Routine transfers and app-session updates are signed off-chain. The blockchain is used for create, deposit, withdraw, checkpoint, challenge, close, escrow, and migration operations.
+Routine transfers and app-session updates are signed off-chain. The blockchain is used for create, deposit, withdraw, state enforcement, challenge, close, escrow, and migration operations.
 
 ---
 
@@ -64,7 +64,7 @@ Nitronode is operated by an independent node operator using open-source software
 - validates v1 channel transitions
 - signs mutually agreed channel states
 - issues pending receive and release states for user acknowledgement
-- coordinates cross-chain escrow and app-session flows
+- coordinates app-session flows and, where supported, cross-chain escrow flows
 - serves v1 RPC methods over WebSocket
 
 ### v1 RPC
@@ -105,19 +105,18 @@ flowchart TB
 
 ## Channel Lifecycle
 
-The v1 RPC currently exposes channel status as `void`, `open`, `challenged`, `closing`, and `closed`.
+The v1 RPC currently exposes channel status as `void`, `open`, `challenged`, and `closed`. After a challenge expires, a separate close call can move the channel to `closed`; there is no separate `closing` status in the RPC schema.
 
 ```mermaid
 stateDiagram-v2
     [*] --> VOID
     VOID --> OPEN: create or deposit
     OPEN --> OPEN: signed off-chain updates
-    OPEN --> OPEN: checkpoint higher-version state
+    OPEN --> OPEN: enforce higher-version state
     OPEN --> CHALLENGED: challenge
     CHALLENGED --> OPEN: higher-version response
-    CHALLENGED --> CLOSING: challenge expires; close required
-    OPEN --> CLOSING: cooperative close
-    CLOSING --> CLOSED: close transaction releases funds
+    CHALLENGED --> CLOSED: close after timeout
+    OPEN --> CLOSED: cooperative close
     CLOSED --> [*]
 
     note right of OPEN: Normal operation happens here
@@ -129,7 +128,7 @@ stateDiagram-v2
 
 1. **Create or deposit**: The user and Node sign an initial channel state; a deposit state may be submitted to ChannelHub to lock funds.
 2. **Operate**: The user and Node exchange signed states off-chain for transfers, acknowledgements, commits, releases, and other valid transitions.
-3. **Checkpoint or challenge**: Any party may enforce the latest mutually signed state if needed.
+3. **Enforce or challenge**: Any party may enforce the latest mutually signed state if needed.
 4. **Close**: A final signed state or expired challenge releases funds according to the enforced allocation.
 
 ## Key Takeaways

@@ -28,11 +28,17 @@ The v1 protocol uses ChannelHub, Nitronode, channel states, home ledgers, and ap
 
 **[State Channels vs L1/L2](./core-concepts/state-channels-vs-l1-l2.mdx)**: Compare state channels with Layer 1 and Layer 2 solutions. Understand when each approach is the right choice.
 
-**[Challenge-Response & Disputes](./core-concepts/challenge-response.mdx)**: How Yellow Network handles disputes and ensures your funds are recoverable through the latest mutually signed state.
+**[Challenge & Recovery](./core-concepts/challenge-response.mdx)**: How Yellow Network handles disputes and ensures your funds are recoverable through the latest mutually signed state.
 
 **[YELLOW Token](./core-concepts/yellow-token.mdx)**: The utility token powering network services, node operator collateral, and dispute resolution.
 
 **[Glossary](./glossary.mdx)**: Core v1 terms, statuses, transition literals, and amount-unit reminders.
+
+## Migration
+
+**[What Changed Since 0.5.3](./whats-new-from-0.5.3.mdx)**: Learn the v1 mental model before changing code: Clearnode is now Nitronode, ChannelHub replaces Custody, and app sessions sit on top of home channels.
+
+**[Migrating from 0.5.3](./migrating-from-0.5.3.mdx)**: Choose the compat-first or native v1 code migration path from `@erc7824/nitrolite@0.5.3`.
 
 ## Protocol Flows
 
@@ -43,12 +49,6 @@ The v1 protocol uses ChannelHub, Nitronode, channel states, home ledgers, and ap
 **[Home Channel Flows](./protocol-flows/home-channel-creation.mdx)**: Channel creation, deposits, and withdrawals on the home chain.
 
 **[App Session Deposit](./protocol-flows/app-session-deposit.mdx)**: Depositing funds into app sessions.
-
-## Migration
-
-**[What Changed Since 0.5.3](./whats-new-from-0.5.3.mdx)**: Learn the v1 mental model before changing code: Clearnode is now Nitronode, ChannelHub replaces Custody, and app sessions sit on top of home channels.
-
-**[Migrating from 0.5.3](./migrating-from-0.5.3.mdx)**: Choose the compat-first or native v1 code migration path from `@erc7824/nitrolite@0.5.3`.
 
 ## Next Steps
 
@@ -67,7 +67,7 @@ After completing the Learn section, continue to:
 | [What Yellow Solves](./introduction/what-yellow-solves) | 5 min | Beginner |
 | [Architecture at a Glance](./introduction/architecture-at-a-glance) | 8 min | Beginner |
 | [State Channels vs L1/L2](./core-concepts/state-channels-vs-l1-l2) | 12 min | Intermediate |
-| [Challenge-Response](./core-concepts/challenge-response) | 6 min | Intermediate |
+| [Challenge & Recovery](./core-concepts/challenge-response) | 6 min | Intermediate |
 | [YELLOW Token](./core-concepts/yellow-token) | 8 min | Intermediate |
 | [Glossary](./glossary) | 5 min | Beginner |
 | [What Changed Since 0.5.3](./whats-new-from-0.5.3) | 8 min | Beginner |
