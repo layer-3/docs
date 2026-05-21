@@ -105,7 +105,7 @@ flowchart TB
 
 ## Channel Lifecycle
 
-The v1 RPC currently exposes channel status as `void`, `open`, `challenged`, and `closed`. After a challenge expires, a separate close call can move the channel to `closed`; there is no separate `closing` status in the RPC schema.
+The v1 RPC exposes channel status as `void`, `open`, `challenged`, `closing`, and `closed`. `closing` appears when the Node has issued the finalization state and the channel is in the close path. After a challenge expires, a separate close call can move the channel to `closed`.
 
 ```mermaid
 stateDiagram-v2

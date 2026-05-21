@@ -38,6 +38,7 @@ The v1 RPC status surface uses:
 | `void` | No channel exists yet. |
 | `open` | The channel exists and can accept normal state updates. |
 | `challenged` | A challenge is active and the response window is running. |
+| `closing` | The Node has issued the finalization state; the channel is in the close path. |
 | `closed` | Funds have been released and the channel lifecycle is complete. |
 
 ## Transition Literals
