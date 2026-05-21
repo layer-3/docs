@@ -21,16 +21,9 @@ The conceptual model is still useful when reading protocol material:
 - Nitronode coordinates signed off-chain state updates and on-chain settlement paths.
 - The home ledger remains the user's canonical app balance for that asset.
 
-## Transition names
+## Protocol reference
 
-The current schema names the two escrow-deposit transitions as:
-
-| Transition | Meaning |
-| --- | --- |
-| `mutual_lock` | Escrow deposit initiate. The parties prepare the locked state needed for the cross-chain deposit path. |
-| `escrow_deposit` | Escrow deposit finalize. The deposit is completed into the home-ledger accounting model. |
-
-These names are included so readers can recognize them in protocol and API reference material. They are not instructions to assemble escrow deposit states by hand.
+Protocol-level operation names and invariants live in [Cross-chain and Assets](/nitrolite/protocol/cross-chain-and-assets). This Learn page intentionally avoids escrow state construction steps until the public Nitronode workflow is documented.
 
 ## Current builder guidance
 

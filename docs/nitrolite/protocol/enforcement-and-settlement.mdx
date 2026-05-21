@@ -1,6 +1,6 @@
 ---
 title: "Enforcement and Settlement"
-description: "On-chain enforceability, checkpointing, challenges, close paths, validation rules, and failure conditions."
+description: "On-chain enforceability, state submissions, challenges, close paths, validation rules, and failure conditions."
 ---
 
 # Enforcement and Settlement
@@ -27,7 +27,7 @@ Node-issued pending states carry only the Node's signature. They are NOT enforce
 - Participants advance state off-chain through signed updates.
 - At any time, any party MAY submit the latest mutually signed state to the blockchain layer.
 - The blockchain layer validates the submitted state and updates its record.
-- On-chain state always reflects the latest successfully checkpointed state.
+- On-chain state always reflects the latest successfully enforced state.
 
 The on-chain state MAY lag behind the off-chain state during normal operation for transitions with the `OPERATE` intent.
 
@@ -60,7 +60,7 @@ The state submitted for channel creation MAY carry a `DEPOSIT`, `WITHDRAW`, or `
 
 ## State Submission
 
-State submission covers checkpoint, deposit, and withdrawal operations:
+State submission covers state enforcement, deposit, and withdrawal operations:
 
 1. A participant constructs the enforcement representation of a signed state.
 2. The participant submits the enforcement representation with all required signatures.
@@ -122,7 +122,7 @@ The blockchain layer applies common validation rules when processing enforcement
 
 ## Escrow and Migration Enforcement
 
-Escrow and migration transitions are part of the protocol model, but their public app-builder workflow is not documented yet. Treat the enforcement details as protocol reference material, not as instructions for constructing escrow or migration states by hand.
+Escrow and migration operations are part of the protocol model, but the current Nitronode public app-builder workflow does not implement them yet. Treat the enforcement details as protocol reference material, not as instructions for constructing escrow or migration states by hand.
 
 | Operation family | Enforcement note |
 | --- | --- |

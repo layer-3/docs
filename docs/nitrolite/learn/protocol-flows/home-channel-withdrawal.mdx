@@ -8,7 +8,7 @@ sidebar_position: 6
 
 This document provides a comprehensive breakdown of the **Home Channel Withdrawal** flow as defined in the Nitrolite v1.0 protocol. This operation allows a user to withdraw funds from their **unified balance** back to their wallet on the **Home Chain** -- the blockchain where their channel currently exists.
 
-This is a **single-chain operation** that updates the state and checkpoints it on-chain to release funds.
+This is a **single-chain operation** that updates the state and enforces it on-chain to release funds.
 
 :::note
 The Home Chain may differ from where the channel was originally created, as users can migrate their Home Chain explicitly.
@@ -51,7 +51,7 @@ Before the home channel withdrawal flow begins:
 5. **No ongoing operation** exists for this channel (the Nitronode will deny the request otherwise).
 
 :::note
-The "no ongoing operation" requirement applies to ALL operations except `finalize_escrow_deposit`, `finalize_escrow_withdrawal`, and `finalize_migration`.
+The "no ongoing operation" requirement applies to ALL operations except the RPC operation names `finalize_escrow_deposit`, `finalize_escrow_withdrawal`, and `finalize_migration`. Those names describe protocol/RPC surfaces, not current app-builder escrow or migration how-to steps.
 :::
 
 ---
@@ -64,7 +64,6 @@ The "no ongoing operation" requirement applies to ALL operations except `finaliz
 | --- | --- | --- |
 | **home_deposit** | External to Channel | `createChannel` (first deposit) or `depositToChannel` |
 | **home_withdrawal** | Channel to External | `withdrawFromChannel` (can also be done with `createChannel`) |
-| **escrow_withdraw** | Channel to Non-Home Chain | `finalizeEscrowWithdrawal` or `initiateEscrowWithdrawal` |
 
 ### The withdrawFromChannel Mechanism
 
@@ -211,7 +210,7 @@ A state with intent `WITHDRAW` must include a negative user net-flow delta and m
 
 ---
 
-## Phase 5: On-Chain Checkpoint
+## Phase 5: On-Chain Enforcement
 
 ```mermaid
 sequenceDiagram
@@ -338,14 +337,14 @@ sequenceDiagram
 flowchart LR
     A["Current State<br/>(balance: 100)"] --> B["home_withdrawal<br/>Transition (50)"]
     B --> C["New State<br/>(balance: 50)"]
-    C --> D["Checkpoint<br/>On-Chain"]
+    C --> D["Enforce<br/>On-Chain"]
     D --> E["Funds Released<br/>to User Wallet"]
 
     style A fill:#4caf50
     style E fill:#2196f3
 ```
 
-### Withdrawal vs Checkpoint
+### Withdrawal vs Enforcement
 
 | Aspect | Description |
 | --- | --- |
@@ -376,7 +375,7 @@ Without the on-chain withdrawal call, the withdrawal is only recorded off-chain.
 ### What Protects the User?
 
 1. **Dual signatures** -- Both User and Node must agree to the state.
-2. **On-chain enforcement** -- Checkpoint validates all signatures.
+2. **On-chain enforcement** -- ChannelHub validates all signatures.
 3. **Challenge mechanism** -- User can challenge if Node misbehaves.
 
 ---
@@ -389,7 +388,7 @@ Without the on-chain withdrawal call, the withdrawal is only recorded off-chain.
 | **Ongoing transition** | Atomic operation in progress | Wait for completion |
 | **Invalid signature** | Corrupted or wrong key | Regenerate signature |
 | **Stale version** | Race condition | Refetch state and retry |
-| **Checkpoint revert** | On-chain validation failure | Check state validity |
+| **Enforcement revert** | On-chain validation failure | Check state validity |
 
 ---
 

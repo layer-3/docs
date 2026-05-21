@@ -41,7 +41,7 @@ Most interactions between parties do not need immediate on-chain settlement. Con
 | On-chain moves | Every move requires a transaction. A 40-move game becomes 40+ transactions and repeated gas fees. |
 | State channel moves | Players lock funds once, sign moves off-chain, and settle the final allocation through one enforceable state. |
 
-State channels let applications execute many signed off-chain operations between occasional on-chain checkpoints.
+State channels let applications execute many signed off-chain operations between occasional on-chain enforcement actions.
 
 ### What You Get
 
@@ -72,8 +72,8 @@ Typical flow:
 
 1. **Create or deposit into a home channel.** The user approves the ChannelHub spender and submits a signed deposit state. ChannelHub locks the deposited ERC-20 or native ETH amount for that channel.
 2. **Transact off-chain.** The user and Nitronode exchange signed channel states for transfers, acknowledgements, commits, releases, and other v1 transitions.
-3. **Move across chains through escrow.** Cross-chain deposits and withdrawals use two-phase escrow states that coordinate the home ledger and non-home ledger.
-4. **Settle when needed.** Any party may checkpoint, challenge, or close with an enforceable mutually signed state.
+3. **Move across chains through escrow where supported.** The protocol defines two-phase escrow states that coordinate the home ledger and non-home ledger, but public builder workflows for escrow are not documented yet.
+4. **Settle when needed.** Any party may enforce, challenge, or close with an enforceable mutually signed state.
 
 ```mermaid
 flowchart LR
@@ -97,7 +97,7 @@ flowchart LR
 
 - **Payments:** Micropayments, streaming payments, P2P transfers, API billing, and content monetization.
 - **Gaming:** Turn-based wagers, tournament payouts, and in-game economies with instant updates.
-- **DeFi:** High-frequency trading, prediction markets, and escrow flows with enforceable settlement.
+- **DeFi:** High-frequency trading, prediction markets, and escrow-backed flows once the public builder workflow is available.
 
 ---
 

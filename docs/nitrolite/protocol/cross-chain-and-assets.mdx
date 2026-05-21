@@ -55,7 +55,7 @@ The home chain MAY change through a migration operation. After migration, the ne
 
 | Ledger | Responsibilities |
 | --- | --- |
-| Home Ledger | Tracks authoritative asset allocations, receives checkpoints for enforcement, and holds deposited assets in the enforcement contract. |
+| Home Ledger | Tracks authoritative asset allocations, receives state enforcement submissions, and holds deposited assets in the enforcement contract. |
 | Non-Home Ledger | Tracks assets involved in cross-chain escrow operations, reflects cross-chain deposit and withdrawal allocations, and coordinates with the home ledger. |
 
 When no cross-chain operation is in progress, the non-home ledger MUST be empty.
@@ -71,23 +71,23 @@ Each escrow is identified by an escrow channel identifier derived deterministica
 | Identifier | 32-byte hash derived from home channel identifier and state version. |
 | Hosting chain | Non-home chain. For deposits, this is where User funds are locked. For withdrawals, this is where Node funds are locked. |
 | Tracked amount | Amount locked in escrow, corresponding to non-home ledger allocations. |
-| Unlock delay | Deposit escrows include an unlock delay after which funds are automatically unlocked to the Node if not challenged. |
+| Release delay | Deposit escrows include a release delay after which funds are automatically returned to the Node if not challenged. |
 | Challenge duration | Period after challenge initiation that allows resolution. If no finalization state is supplied, the initiate state is finalized and funds are returned. |
 
 An escrow is not a separate protocol entity with its own state. It is an on-chain record derived from a channel state transition.
 
 :::caution Builder workflow not documented yet
-Escrow and migration mechanics can be supported by the protocol, but docs.yellow.org does not yet document them as public app-builder workflows. The sections below define the semantic model only.
+Escrow and migration are defined by the protocol, but the current Nitronode public app-builder workflow does not implement them yet. The sections below define the semantic model only.
 :::
 
 ## Cross-Chain Deposit
 
 Cross-chain deposit is represented as a two-phase escrow family:
 
-| Phase | Transition literal | Meaning |
+| Phase | Protocol operation | Meaning |
 | --- | --- | --- |
-| Initiate | `mutual_lock` | Escrow deposit initiate. |
-| Finalize | `escrow_deposit` | Escrow deposit finalize or complete. |
+| Initiate | `initiate_escrow_deposit` | Escrow deposit initiate. |
+| Finalize | `finalize_escrow_deposit` | Escrow deposit finalize or complete. |
 
 Cross-chain amounts are validated using WAD normalization.
 
@@ -95,14 +95,14 @@ Cross-chain amounts are validated using WAD normalization.
 
 Cross-chain withdrawal is represented as a two-phase escrow family:
 
-| Phase | Transition literal | Meaning |
+| Phase | Protocol operation | Meaning |
 | --- | --- | --- |
-| Initiate | `escrow_lock` | Escrow withdrawal initiate. |
-| Finalize | `escrow_withdraw` | Escrow withdrawal finalize or complete. |
+| Initiate | `initiate_escrow_withdrawal` | Escrow withdrawal initiate. |
+| Finalize | `finalize_escrow_withdrawal` | Escrow withdrawal finalize or complete. |
 
 ## Home Chain Migration
 
-The home chain may change through migration states, represented by the `migrate` transition family. Migration is not a public builder workflow today. Conceptually, after migration:
+The home chain may change through migration states, represented by the `initiate_migration` and `finalize_migration` operation family. Migration is not implemented as a public builder workflow today. Conceptually, after migration:
 
 - home chain identifier updates.
 - home token address updates.

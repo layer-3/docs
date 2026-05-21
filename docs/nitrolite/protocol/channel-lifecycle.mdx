@@ -1,6 +1,6 @@
 ---
 title: "Channel Lifecycle"
-description: "Channel definition, identifiers, lifecycle actions, signing categories, transition families, and checkpoint-relevant transitions."
+description: "Channel definition, identifiers, lifecycle actions, signing categories, transition families, and enforcement-relevant transitions."
 ---
 
 # Channel Lifecycle
@@ -38,20 +38,20 @@ This ensures that each channel definition produces a unique identifier, that the
 ```mermaid
 stateDiagram-v2
   [*] --> Create
-  Create --> Checkpoint: enforce signed state
+  Create --> Enforced: enforce signed state
   Create --> Close: cooperative close
-  Checkpoint --> Checkpoint: higher-version state
-  Checkpoint --> Challenge: participant dispute
-  Challenge --> Checkpoint: higher-version response
+  Enforced --> Enforced: higher-version state
+  Enforced --> Challenge: participant dispute
+  Challenge --> Enforced: higher-version response
   Challenge --> Close: challenge expires
-  Checkpoint --> Close: final signed state
+  Enforced --> Close: final signed state
   Close --> [*]
 ```
 
 | Action | Context | Rule |
 | --- | --- | --- |
 | Create | Off-chain, then optionally on-chain | The Node validates and stores the channel definition. An initial state is constructed and signed by all participants. The initial state, or any later higher-version state, MAY be submitted for on-chain enforcement. |
-| Checkpoint | Off-chain, then optionally on-chain | The Node validates and stores a new state off-chain. Depending on transition type or participant initiative, the state MAY also be submitted to the blockchain layer. |
+| State enforcement | Off-chain, then optionally on-chain | The Node validates and stores a new state off-chain. Depending on transition type or participant initiative, the state MAY also be submitted to the blockchain layer. |
 | Challenge | On-chain only | A participant submits a signed state plus challenger signature. The challenge duration begins, and other participants MAY respond with a higher-version state. |
 | Close | Off-chain for cooperative agreement, on-chain for execution | A close finalizes the channel and releases funds according to final state allocations. |
 
@@ -95,8 +95,8 @@ For all transitions that do not modify the non-home ledger, the non-home ledger 
 | Transition | Core rule |
 | --- | --- |
 | Acknowledgement | Allows the User to acknowledge a pending Node-issued state. Valid only when the current state has no User signature. |
-| Home Deposit | Records an asset deposit from the home chain. `AccountId` MUST reference the home channel identifier. Requires an on-chain checkpoint to lock deposited assets. |
-| Home Withdrawal | Records an asset withdrawal to the home chain. `AccountId` MUST reference the home channel identifier. Requires an on-chain checkpoint to release withdrawn assets. |
+| Home Deposit | Records an asset deposit from the home chain. `AccountId` MUST reference the home channel identifier. Requires on-chain enforcement to lock deposited assets. |
+| Home Withdrawal | Records an asset withdrawal to the home chain. `AccountId` MUST reference the home channel identifier. Requires on-chain enforcement to release withdrawn assets. |
 | TransferSend | Transfers assets from the User to a counterparty through the Node. `TxId` correlates with the receiver's TransferReceive. |
 | TransferReceive | Records inbound transfer from a counterparty through the Node. Amount and `TxId` MUST match the sender's TransferSend. It is a Node-issued pending state. |
 | Commit | Moves assets from the channel into an extension. `AccountId` MUST reference the extension object identifier. |
@@ -121,11 +121,11 @@ Certain transitions produce side effects that create or modify states in other c
 - **Release**: when an extension releases assets, the Node MUST atomically create the Release state on the User's channel.
 - **Cross-chain escrow transitions**: escrow initiate and finalize operations MAY trigger on-chain actions that MUST be coordinated with the off-chain state change.
 
-## Checkpoint-Relevant Transitions
+## Enforcement-Relevant Transitions
 
-These transitions require or MAY trigger a checkpoint because their intent does not map to `OPERATE`:
+These transitions require or MAY trigger on-chain enforcement because their intent does not map to `OPERATE`:
 
-| Transition | Intent | Checkpoint behavior |
+| Transition | Intent | Enforcement behavior |
 | --- | --- | --- |
 | Home Deposit | `DEPOSIT` | Required to lock deposited assets. |
 | Home Withdrawal | `WITHDRAW` | Required to release withdrawn assets. |
@@ -137,4 +137,4 @@ These transitions require or MAY trigger a checkpoint because their intent does 
 | Migration Finalize | `FINALIZE_MIGRATION` | Required to complete chain migration. |
 | Finalize | `CLOSE` | Required to settle and release funds. |
 
-Any transition MAY also be checkpointed at a participant's discretion to enforce the current state on-chain. Any party MAY independently submit a validly signed state to the blockchain layer.
+Any transition MAY also be enforced at a participant's discretion to record the current state on-chain. Any party MAY independently submit a validly signed state to the blockchain layer.

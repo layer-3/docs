@@ -51,7 +51,7 @@ Before the home channel deposit flow begins:
 5. **No ongoing operation** exists for this channel (the Nitronode will deny the request otherwise).
 
 :::note
-The "no ongoing operation" requirement applies to ALL operations except `finalize_escrow_deposit`, `finalize_escrow_withdrawal`, and `finalize_migration`.
+The "no ongoing operation" requirement applies to ALL operations except the RPC operation names `finalize_escrow_deposit`, `finalize_escrow_withdrawal`, and `finalize_migration`. Those names describe protocol/RPC surfaces, not current app-builder escrow or migration how-to steps.
 :::
 
 ---
@@ -64,7 +64,6 @@ The "no ongoing operation" requirement applies to ALL operations except `finaliz
 | --- | --- | --- |
 | **home_deposit** | External to Channel | `createChannel` (first deposit) or `depositToChannel` |
 | **home_withdrawal** | Channel to External | `withdrawFromChannel` (can also be done with `createChannel`) |
-| **escrow_withdraw** | Channel to Non-Home Chain | `initiateEscrowWithdrawal` |
 
 ### The depositToChannel Mechanism
 

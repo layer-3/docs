@@ -30,9 +30,9 @@ State channels operate on a simple pattern:
 
 1. **Lock funds** in ChannelHub on-chain.
 2. **Exchange signed <Tooltip content={tooltipDefinitions.channelState}>states</Tooltip>** off-chain.
-3. **Checkpoint, challenge, or close** on-chain when needed.
+3. **Enforce, challenge, or close** on-chain when needed.
 
-Most interactions do not need immediate on-chain settlement. The chain is used for funding, checkpoints, disputes, and exits.
+Most interactions do not need immediate on-chain settlement. The chain is used for funding, state enforcement, disputes, and exits.
 
 ## State Channel Advantages
 
@@ -46,7 +46,7 @@ Most interactions do not need immediate on-chain settlement. The chain is used f
 
 ### No gas for ordinary off-chain operations
 
-Once the channel is funded, transfers and app-session updates are signed off-chain. Gas is paid only for on-chain funding, checkpointing, disputes, and exits.
+Once the channel is funded, transfers and app-session updates are signed off-chain. Gas is paid only for on-chain funding, state enforcement, disputes, and exits.
 
 ### Enforceable settlement
 
@@ -100,7 +100,7 @@ flowchart TD
 | --- | --- |
 | Identified counterparties | Nitronode coordinates off-chain channel state advancement. |
 | Liquidity | Home-channel balances and app sessions keep app funds available off-chain. |
-| Enforcement | ChannelHub provides checkpoint, challenge, and close paths. |
+| Enforcement | ChannelHub provides state enforcement, challenge, and close paths. |
 | Developer ergonomics | SDKs build signed requests and typed app-session updates. |
 
 ## Key Takeaways

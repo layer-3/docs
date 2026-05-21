@@ -73,14 +73,14 @@ Each unified asset defines a canonical decimal precision used during protocol in
 | --- | --- |
 | Mutually Signed State | A state that carries valid signatures from both the User and the Node. Only mutually signed states are enforceable on-chain. |
 | Node-Issued Pending State | A state produced by the Node that carries only the Node's signature. A pending state is NOT enforceable on-chain and becomes mutually signed only after the User acknowledges it. |
-| Channel Status | A specific on-chain channel data configuration throughout the lifecycle, including open, challenged, closing, and closed states. |
+| Channel Status | A specific on-chain channel data configuration throughout the lifecycle. The current RPC status surface is `void`, `open`, `challenged`, and `closed`. |
 | Escrow Channel Identifier | A 32-byte hash derived deterministically from the home channel identifier and state version. It uniquely identifies each escrow operation. |
 
 ## Protocol Operations
 
 | Operation | Definition |
 | --- | --- |
-| Checkpoint | Submitting a signed state to the blockchain layer so the latest agreed state is recorded on-chain. |
+| State Enforcement | Submitting a signed state to the blockchain layer so the latest agreed state is recorded on-chain. SDK or contract surfaces may expose a narrower `checkpoint` entry point for specific enforcement paths. |
 | Challenge | An on-chain operation where a participant disputes the current enforced state by submitting a signed state and challenger signature. |
 | Commit | Moving assets from a channel into an extension, such as an application session. |
 | Release | Returning assets from an extension back to channel allocations. |

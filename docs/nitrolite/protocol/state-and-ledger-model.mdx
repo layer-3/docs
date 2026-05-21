@@ -117,24 +117,26 @@ Because this mapping is deterministic, signatures over off-chain state are valid
 
 ## Intent Mapping
 
-| On-chain intent | Transition literal | Meaning |
+| On-chain intent | Protocol operation | Meaning |
 | --- | --- | --- |
 | `OPERATE` | `transfer_send` | Sender-side off-chain transfer. |
 | `OPERATE` | `transfer_receive` | Receiver-side off-chain transfer. |
 | `OPERATE` | `commit` | Move channel funds into an app session or extension. |
 | `OPERATE` | `release` | Return app-session or extension funds to the channel. |
+| `OPERATE` | acknowledgement | Acknowledge a Node-issued pending state. |
 | `CLOSE` | `finalize` | Finalize and close the channel. |
 | `DEPOSIT` | `home_deposit` | Deposit on the home chain. |
 | `WITHDRAW` | `home_withdrawal` | Withdraw on the home chain. |
-| `INITIATE_ESCROW_DEPOSIT` | `mutual_lock` | Escrow deposit initiate. |
-| `FINALIZE_ESCROW_DEPOSIT` | `escrow_deposit` | Escrow deposit finalize or complete. |
-| `INITIATE_ESCROW_WITHDRAWAL` | `escrow_lock` | Escrow withdrawal initiate. |
-| `FINALIZE_ESCROW_WITHDRAWAL` | `escrow_withdraw` | Escrow withdrawal finalize or complete. |
-| `INITIATE_MIGRATION` | `migrate` | Home-chain migration initiate. |
+| `INITIATE_ESCROW_DEPOSIT` | `initiate_escrow_deposit` | Escrow deposit initiate. |
+| `FINALIZE_ESCROW_DEPOSIT` | `finalize_escrow_deposit` | Escrow deposit finalize or complete. |
+| `INITIATE_ESCROW_WITHDRAWAL` | `initiate_escrow_withdrawal` | Escrow withdrawal initiate. |
+| `FINALIZE_ESCROW_WITHDRAWAL` | `finalize_escrow_withdrawal` | Escrow withdrawal finalize or complete. |
+| `INITIATE_MIGRATION` | `initiate_migration` | Home-chain migration initiate. |
+| `FINALIZE_MIGRATION` | `finalize_migration` | Home-chain migration finalize. |
 
-Transitions that map to `OPERATE` do not require on-chain checkpointing under normal operation.
+Transitions that map to `OPERATE` do not require on-chain enforcement under normal operation.
 
-Escrow and migration transition names are included for protocol accuracy. Their public app-builder workflow is not documented yet.
+Escrow and migration operations are included for protocol accuracy. The protocol defines them, but the current Nitronode public app-builder workflow does not implement them yet.
 
 ## Transition Field
 
