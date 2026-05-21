@@ -66,7 +66,7 @@ Participants currently rely on Nodes for:
 - **Cross-chain liquidity**: Node operators need sufficient funds on each supported chain to honor off-chain allocations.
 - **Cross-chain relay**: Nodes relay cross-chain state updates; trustless cross-chain enforcement is not yet implemented.
 - **Timely enforcement**: Nodes are expected to submit state enforcement transactions when requested.
-- **Off-chain funds integrity**: Current off-chain validation depends on Node behavior to prevent unsupported state advancement before every path is enforced on-chain.
+- **Off-chain funds integrity**: Until every state path is independently enforceable on-chain, participants trust the Node not to advance unsupported off-chain balances that do not correspond to locked funds.
 
 Participants do not need to trust Nodes for:
 
