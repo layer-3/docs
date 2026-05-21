@@ -21,7 +21,7 @@ In 0.5.3, many apps learned this through Clearnode, unified balances, explicit a
 | 0.5.3 term | v1 term | How to think about it |
 | --- | --- | --- |
 | Clearnode | Nitronode | The off-chain coordinator your SDK connects to. It serves v1 RPC, validates transitions, co-signs valid states, and coordinates app sessions. |
-| Custody | ChannelHub | The on-chain enforcement entrypoint for channel create, deposit, withdraw, checkpoint, challenge, and close operations. |
+| Custody | ChannelHub | The on-chain enforcement layer for channel create, deposit, withdraw, state enforcement, challenge, and close operations. |
 | Adjudicator | ChannelHub validators and engine logic | Validation moved into the v1 engine and signature-validator model instead of app code naming an adjudicator contract directly. |
 | Virtual app | App session | The app-specific off-chain state extension funded from channel balances. |
 | NitroRPC 0.4 helper methods | v1 RPC namespaces | Wire methods are grouped as `channels.v1.*`, `app_sessions.v1.*`, `apps.v1.*`, `user.v1.*`, and `node.v1.*`. Most builders should call them through an SDK. |
@@ -57,7 +57,7 @@ In 0.5.3, it was natural to think in terms of unified balance plus app-level hel
 
 | Concept | Role |
 | --- | --- |
-| Home channel | The user and Nitronode channel for one asset. Deposits, transfers, acknowledgements, checkpoints, and withdrawals update this state. |
+| Home channel | The user and Nitronode channel for one asset. Deposits, transfers, acknowledgements, enforcement submissions, and withdrawals update this state. |
 | Home ledger | The ledger tied to the chain where the channel state is enforced. |
 | App session | An extension that receives committed channel funds and tracks app-specific allocations. |
 | Commit and release | The movements between channel funds and app-session funds. |
@@ -68,7 +68,7 @@ An app session does not replace the home channel. It sits on top of channel fund
 
 v1 separates state advancement from blockchain settlement. A high-level SDK operation can produce a state that both the user and Nitronode have signed. That signed state is useful before it is posted on-chain.
 
-`checkpoint` is the moment you ask ChannelHub to enforce the latest signed state. For routine app activity, most updates stay off-chain. You checkpoint when the lifecycle requires on-chain enforcement, recovery, or settlement.
+State enforcement is the moment you ask ChannelHub to record the latest signed state on-chain. For routine app activity, most updates stay off-chain. You enforce a state when the lifecycle requires on-chain recovery or settlement. SDK and contract surfaces may still call a specific enforcement path `checkpoint()`.
 
 This is the mental model to keep: first agree on state, then settle only when needed.
 

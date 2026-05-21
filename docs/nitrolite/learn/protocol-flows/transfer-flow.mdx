@@ -206,7 +206,7 @@ The Node checks that there are no pending/incomplete transitions for this user. 
 :::warning
 If there's an ongoing transition, the Nitronode will return a relevant error and the submission is rejected.
 
-**Serialized operations**: Nitronode does not accept a transfer while another state transition is still pending for the same user and asset. Escrow and migration transitions are not documented as builder-facing workflows yet, but they follow the same rule: finish or acknowledge the pending state before submitting a normal transfer.
+**Serialized operations**: Nitronode advances one state at a time for the same user and asset. It rejects a transfer if an earlier state transition is still pending, because accepting both would make the final version order ambiguous. Escrow and migration are protocol-defined but not current builder-facing workflows; the same sequencing rule applies when those paths are enabled.
 :::
 
 :::info
@@ -413,8 +413,7 @@ sequenceDiagram
 | `commit` | Commit funds to lock |
 | `home_deposit` | Deposit to home channel |
 | `home_withdrawal` | Withdraw from home channel |
-| `escrow_deposit/lock/withdraw` | Escrow channel operations |
-| `migrate` | Cross-chain migration |
+| Escrow and migration operations | Protocol-defined, not current builder-facing workflows |
 
 ---
 

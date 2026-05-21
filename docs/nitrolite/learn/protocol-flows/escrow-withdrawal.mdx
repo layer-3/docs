@@ -21,16 +21,9 @@ The conceptual model is still useful when reading protocol material:
 - Nitronode coordinates signed off-chain state updates and on-chain settlement paths.
 - Applications should not ask users to run escrow withdrawal state construction manually.
 
-## Transition names
+## Protocol reference
 
-The current schema names the two escrow-withdrawal transitions as:
-
-| Transition | Meaning |
-| --- | --- |
-| `escrow_lock` | Escrow withdrawal initiate. Funds are prepared for the cross-chain withdrawal path. |
-| `escrow_withdraw` | Escrow withdrawal finalize. The withdrawal is completed toward the non-home-chain destination. |
-
-These names are included so readers can recognize them in protocol and API reference material. They are not instructions to assemble escrow withdrawal states by hand.
+Protocol-level operation names and invariants live in [Cross-chain and Assets](/nitrolite/protocol/cross-chain-and-assets). This Learn page intentionally avoids escrow state construction steps until the public Nitronode workflow is documented.
 
 ## Current builder guidance
 
