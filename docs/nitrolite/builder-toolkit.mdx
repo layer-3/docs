@@ -1,0 +1,121 @@
+---
+title: Builder Toolkit
+description: Live Nitrolite examples, source repositories, deployments, and upcoming builder tools.
+---
+
+# Builder Toolkit
+
+Start here when you want to see Nitrolite working before reading every page. Try the live apps, inspect their source, then use the SDK and migration docs when you are ready to build.
+
+## Live Examples
+
+<div className="nitrolite-toolkit-grid">
+  <article className="card nitrolite-toolkit-card">
+    <a className="nitrolite-toolkit-card__media" href="https://cosign-demo-two.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img src="/img/nitrolite/examples/cosign-demo.png" alt="Co-Sign Checkout front page" />
+    </a>
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__eyebrow">Shared checkout</div>
+      <h2>Co-Sign Checkout</h2>
+      <p>Two participants create a shared cart, co-sign checkout actions, move funds into an app session, propose purchases, close the cart, and withdraw remaining shared-wallet funds.</p>
+      <div className="nitrolite-toolkit-card__meta">
+        <span>Next.js</span>
+        <span>Supabase</span>
+        <span>MetaMask SDK</span>
+        <span><code>@yellow-org/sdk</code></span>
+        <span><code>@yellow-org/sdk-compat</code></span>
+      </div>
+    </div>
+    <div className="card__footer nitrolite-toolkit-card__footer">
+      <a className="button button--primary button--sm" href="https://cosign-demo-two.vercel.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
+      <a className="button button--secondary button--sm" href="https://github.com/layer-3/cosign-demo" target="_blank" rel="noopener noreferrer">Source</a>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card">
+    <a className="nitrolite-toolkit-card__media" href="https://nitrolite-go-example-production.up.railway.app/" target="_blank" rel="noopener noreferrer">
+      <img src="/img/nitrolite/examples/nitrolite-store.png" alt="Nitrolite Store front page" />
+    </a>
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__eyebrow">Content store</div>
+      <h2>Nitrolite Store</h2>
+      <p>A Go-backed reference app where a shopper connects MetaMask, opens a store app session, adds funds, buys catalog content, reads purchased content, and withdraws the remaining balance.</p>
+      <div className="nitrolite-toolkit-card__meta">
+        <span>Go backend</span>
+        <span>React</span>
+        <span>Vite</span>
+        <span><code>github.com/layer-3/nitrolite/sdk/go</code></span>
+        <span><code>@yellow-org/sdk</code></span>
+      </div>
+    </div>
+    <div className="card__footer nitrolite-toolkit-card__footer">
+      <a className="button button--primary button--sm" href="https://nitrolite-go-example-production.up.railway.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
+      <a className="button button--secondary button--sm" href="https://github.com/layer-3/nitrolite-store-example" target="_blank" rel="noopener noreferrer">Source</a>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card">
+    <a className="nitrolite-toolkit-card__media" href="https://nexus-testnet-sepolia-ten.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <img src="/img/nitrolite/examples/nexus-p2p-transfer.png" alt="Nexus P2P Transfer front page" />
+    </a>
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__eyebrow">Peer payments</div>
+      <h2>Nexus P2P Transfer</h2>
+      <p>A workshop-style content app that demonstrates wallet connection, Nitrolite setup, balance polling, and instant peer-to-peer support payments to post authors.</p>
+      <div className="nitrolite-toolkit-card__meta">
+        <span>Preact</span>
+        <span>Vite</span>
+        <span>viem</span>
+        <span><code>@yellow-org/sdk</code></span>
+        <span><code>@yellow-org/sdk-compat</code></span>
+      </div>
+    </div>
+    <div className="card__footer nitrolite-toolkit-card__footer">
+      <a className="button button--primary button--sm" href="https://nexus-testnet-sepolia-ten.vercel.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
+      <a className="button button--secondary button--sm" href="https://github.com/erc7824/nitrolite-example/tree/25c857184ad93a7319074546a985a510a9c0fefc" target="_blank" rel="noopener noreferrer">Source</a>
+    </div>
+  </article>
+</div>
+
+## Upcoming Tools
+
+<div className="nitrolite-toolkit-upcoming">
+  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
+      <h2>Nitrolite Playground</h2>
+      <p>Manage channels and inspect active app sessions from one UI. App-session management will be available after the playground deployment is ready for builders.</p>
+      <span className="button button--secondary button--sm disabled">Deployment pending</span>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
+      <h2>Yellow SDK MCP</h2>
+      <p>Structured SDK, protocol, RPC, examples, and migration context for AI coding tools. This should help teams build with Yellow SDK with fewer hallucinated method shapes.</p>
+      <span className="button button--secondary button--sm disabled">NPM package pending</span>
+    </div>
+  </article>
+</div>
+
+## Start Building
+
+<div className="nitrolite-toolkit-links">
+  <a className="card nitrolite-toolkit-link" href="/nitrolite/build/getting-started/quickstart">
+    <strong>Run the v1 quickstart</strong>
+    <span>Create a home channel, app session, deposit, operate, withdraw, and close.</span>
+  </a>
+  <a className="card nitrolite-toolkit-link" href="/nitrolite/build/sdk/typescript/getting-started">
+    <strong>Use the TypeScript SDK</strong>
+    <span>Start new apps with the native v1 SDK.</span>
+  </a>
+  <a className="card nitrolite-toolkit-link" href="/nitrolite/build/sdk/go/getting-started">
+    <strong>Use the Go SDK</strong>
+    <span>Build backend services and CLIs against Nitronode.</span>
+  </a>
+  <a className="card nitrolite-toolkit-link" href="/nitrolite/learn/migrating-from-0.5.3">
+    <strong>Migrate from 0.5.3</strong>
+    <span>Choose compat-first or native v1 migration.</span>
+  </a>
+</div>

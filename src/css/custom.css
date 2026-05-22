@@ -316,6 +316,153 @@ a.table-of-contents__link.table-of-contents__link--active code {
   }
 }
 
+/* Nitrolite Builder Toolkit */
+.nitrolite-toolkit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 24px 0 32px;
+}
+
+.nitrolite-toolkit-upcoming {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 20px 0 32px;
+}
+
+.nitrolite-toolkit-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.nitrolite-toolkit-card__media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ifm-color-emphasis-100);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.nitrolite-toolkit-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.nitrolite-toolkit-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.nitrolite-toolkit-card__body h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.nitrolite-toolkit-card__body p {
+  margin-bottom: 1rem;
+}
+
+.nitrolite-toolkit-card__eyebrow,
+.nitrolite-toolkit-card__badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  background: rgba(253, 218, 22, 0.16);
+  color: var(--ifm-color-emphasis-900);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.nitrolite-toolkit-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nitrolite-toolkit-card__meta span {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.nitrolite-toolkit-card__meta code {
+  overflow-wrap: anywhere;
+}
+
+.nitrolite-toolkit-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nitrolite-toolkit-card--disabled {
+  opacity: 0.68;
+  background: var(--ifm-color-emphasis-100);
+  border-style: dashed;
+}
+
+.nitrolite-toolkit-card--disabled .button.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.nitrolite-toolkit-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0 8px;
+}
+
+.nitrolite-toolkit-link {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nitrolite-toolkit-link:hover {
+  color: inherit;
+  text-decoration: none;
+  border-color: #FDDA16;
+}
+
+.nitrolite-toolkit-link span {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 996px) {
+  .nitrolite-toolkit-grid,
+  .nitrolite-toolkit-upcoming,
+  .nitrolite-toolkit-links {
+    grid-template-columns: 1fr;
+  }
+}
+
 [data-theme='dark'] .table-of-contents__link:hover,
 [data-theme='dark'] .table-of-contents__link:hover code {
   color: #cccccc !important;

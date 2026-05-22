@@ -51,12 +51,15 @@ function currentSubsite(pathname: string): 'nitrolite' | 'clearnet' | 'portal' {
 }
 
 function shouldShowItem(item: NavbarItemConfig, pathname: string): boolean {
-  const customProps = (item as {customProps?: {showOn?: ShowOn; hideOnPaths?: string[]; onlyIfPathStartsWith?: string}}).customProps;
+  const customProps = (item as {customProps?: {showOn?: ShowOn; hideOnPaths?: string[]; hideIfPathStartsWith?: string; onlyIfPathStartsWith?: string}}).customProps;
   const showOn = customProps?.showOn;
   if (showOn && showOn !== 'all' && showOn !== currentSubsite(pathname)) {
     return false;
   }
   if (customProps?.hideOnPaths?.some((p) => pathname === p || pathname === `${p}/`)) {
+    return false;
+  }
+  if (customProps?.hideIfPathStartsWith && pathname.startsWith(customProps.hideIfPathStartsWith)) {
     return false;
   }
   if (customProps?.onlyIfPathStartsWith && !pathname.startsWith(customProps.onlyIfPathStartsWith)) {

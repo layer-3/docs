@@ -45,6 +45,18 @@ const FeatureList: FeatureItem[] = [
     link: '/nitrolite/build/getting-started/quickstart',
   },
   {
+    title: 'Builder Toolkit',
+    imageSrc: require('@site/static/img/themes/light/icons/build.png').default,
+    imageSrcDark: require('@site/static/img/themes/dark/icons/build.png').default,
+    description: (
+      <>
+        Try live Nitrolite examples, inspect their source code, and track
+        upcoming builder tools from one place.
+      </>
+    ),
+    link: '/nitrolite/builder-toolkit',
+  },
+  {
     title: 'Join the Community',
     imageSrc: require('@site/static/img/themes/light/icons/community.png').default,
     imageSrcDark: require('@site/static/img/themes/dark/icons/community.png').default,

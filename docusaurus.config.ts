@@ -158,7 +158,7 @@ const config: Config = {
         },
         {
           to: '/nitrolite/build/getting-started/quickstart',
-          activeBasePath: '/nitrolite/build',
+          activeBasePath: '/nitrolite/build/',
           label: 'Build',
           position: 'left',
           customProps: { showOn: 'nitrolite' },
@@ -169,6 +169,13 @@ const config: Config = {
           label: 'Protocol',
           position: 'left',
           customProps: { showOn: 'nitrolite' },
+        },
+        {
+          to: '/nitrolite/builder-toolkit',
+          activeBasePath: '/nitrolite/builder-toolkit',
+          label: 'Builder Toolkit',
+          position: 'left',
+          customProps: { showOn: 'nitrolite', hideIfPathStartsWith: '/nitrolite/0.5.x' },
         },
         {
           type: 'doc',
