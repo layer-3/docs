@@ -1,0 +1,252 @@
+---
+sidebar_position: 2
+title: Prerequisites & Environment
+description: Set up a Node 20 TypeScript environment for @yellow-org/sdk.
+keywords: [prerequisites, setup, development, environment, Node.js, viem]
+---
+
+# Prerequisites & Environment
+
+Use this checklist to prepare a local TypeScript project for the v1 Nitrolite SDK.
+
+:::tip Choosing your SDK
+New v1 app: use [`@yellow-org/sdk`](../sdk/typescript/getting-started). Migrating from 0.5.3: read the [migration overview](../sdk/typescript-compat/overview) before moving native flows over. See the [SDK overview](../sdk/) for the full decision tree.
+:::
+
+## System Requirements
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **Node.js** | 20.x | 20.x or later |
+| **npm/yarn/pnpm** | Latest stable | Latest stable |
+| **Operating System** | macOS, Linux, Windows | macOS or Linux |
+
+The package declares `engines.node >=20.0.0`. Some package managers only warn on an older runtime, but the SDK and its dependencies are tested against Node 20 or later.
+
+## Required Knowledge
+
+Before building on Yellow Network, you should be comfortable with:
+
+| Topic | Why It Matters |
+|-------|----------------|
+| **JavaScript/TypeScript** | SDK and examples are in TypeScript |
+| **Async/await patterns** | All network operations are asynchronous |
+| **Basic Web3 concepts** | Wallets, transactions, signatures |
+| **ERC-20 tokens** | Fund management involves token operations |
+
+:::tip New to Web3?
+If you're new to blockchain development, start with the [Ethereum Developer Documentation](https://ethereum.org/developers) to understand wallets, transactions, and smart contract basics.
+:::
+
+## Step 1: Install Node.js
+
+### macOS
+
+```bash
+brew install node@20
+node --version
+npm --version
+```
+
+### Linux
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version
+npm --version
+```
+
+### Windows
+
+Download and run the current LTS installer from [nodejs.org](https://nodejs.org/), then verify `node --version` in a new terminal.
+
+## Step 2: Install Core Dependencies
+
+Create a project and install the v1 SDK:
+
+```bash
+mkdir yellow-app
+cd yellow-app
+npm init -y
+npm install @yellow-org/sdk decimal.js viem dotenv
+npm install -D typescript @types/node
+```
+
+| Package | Purpose |
+|---------|---------|
+| `@yellow-org/sdk` | v1 client for Nitronode payment channels |
+| `decimal.js` | Exact asset amounts without floating-point rounding |
+| `viem` | Wallet, address, and blockchain RPC utilities |
+| `dotenv` | Local `.env` loading for development scripts |
+| `typescript` | Type checking and JavaScript output |
+
+## Step 3: Configure TypeScript
+
+Create `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "."
+  },
+  "include": ["src/**/*", "scripts/**/*"]
+}
+```
+
+This config matches the checked-in Node.js lifecycle example. If your app is built by Vite, webpack, or another bundler, `moduleResolution: "bundler"` can be valid there, but do not use it for a plain `tsc` + `node dist/...` script.
+
+Update `package.json`:
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js"
+  }
+}
+```
+
+## Step 4: Set Up Environment Variables
+
+Create `.env` for sensitive values:
+
+```bash
+# .env - never commit this file
+USER_PRIVATE_KEY=0x...
+APP_PRIVATE_KEY=0x...
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
+RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+CHAIN_ID=11155111
+ASSET=yellow
+```
+
+:::info Test endpoint
+`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against. Use the current sandbox or test endpoint provided for your environment until the public sandbox URL is pinned.
+:::
+
+Add local files to `.gitignore`:
+
+```bash
+.env
+.env.local
+node_modules/
+dist/
+```
+
+## Step 5: Wallet Setup
+
+Use a dedicated development wallet. Never reuse a wallet that holds mainnet funds.
+
+```typescript title="scripts/create-wallet.ts"
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+
+const privateKey = generatePrivateKey();
+const account = privateKeyToAccount(privateKey);
+
+console.log('New development wallet');
+console.log('Address:', account.address);
+console.log('Private key:', privateKey);
+console.log('Save this key in .env as USER_PRIVATE_KEY or APP_PRIVATE_KEY.');
+```
+
+Run it:
+
+```bash
+npm run build
+node dist/scripts/create-wallet.js
+```
+
+### Get Test Tokens
+
+{/* coming soon: faucet endpoint pending
+
+```bash
+curl -XPOST https://clearnet-sandbox.yellow.com/faucet/requestTokens \
+  -H "Content-Type: application/json" \
+  -d '{"userAddress":"<your_wallet_address>"}'
+```
+
+*/}
+
+If you need on-chain gas or token balances before the sandbox faucet is pinned, use the relevant testnet faucet for your chain and RPC endpoint.
+
+| Network | Faucet |
+|---------|--------|
+| Polygon Amoy | [Polygon Faucet](https://faucet.polygon.technology/) |
+| Sepolia | [Ethereum Sepolia Faucet](https://sepoliafaucet.com/) |
+| Base Sepolia | [Base Faucet](https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet) |
+
+## Step 6: Verify Setup
+
+Create `src/index.ts`:
+
+```typescript title="src/index.ts"
+import 'dotenv/config';
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import { createPublicClient, http } from 'viem';
+
+const USER_PRIVATE_KEY = process.env.USER_PRIVATE_KEY as `0x${string}`;
+const RPC_URL = process.env.RPC_URL;
+const NITRONODE_WS_URL = process.env.NITRONODE_WS_URL;
+const CHAIN_ID = BigInt(process.env.CHAIN_ID || '11155111');
+
+if (!USER_PRIVATE_KEY) throw new Error('USER_PRIVATE_KEY not set in .env');
+if (!RPC_URL) throw new Error('RPC_URL not set in .env');
+
+const publicClient = createPublicClient({
+  transport: http(RPC_URL),
+});
+
+const blockNumber = await publicClient.getBlockNumber();
+const { stateSigner, txSigner } = createSigners(USER_PRIVATE_KEY);
+
+console.log('Wallet loaded:', stateSigner.getAddress());
+console.log('RPC connected, block:', blockNumber.toString());
+
+if (!NITRONODE_WS_URL) {
+  console.log('Nitronode URL not set; wallet and RPC verified.');
+} else {
+  const client = await Client.create(
+    NITRONODE_WS_URL,
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(CHAIN_ID, RPC_URL),
+  );
+
+  try {
+    console.log('Nitronode connected as:', client.getUserAddress());
+  } finally {
+    await client.close();
+  }
+}
+```
+
+Run the verification:
+
+```bash
+npm run build
+npm start
+```
+
+Without a Nitronode URL, the script stops after confirming the wallet and blockchain RPC. With a v1 Nitronode URL, it also connects through `Client.create()` and prints `client.getUserAddress()`.
+
+## When to add client options
+
+Use `withBlockchainRPC(chainId, rpcURL)` when you call any method that needs on-chain settlement, including `checkpoint()`, `approveToken()`, token allowance checks, deposits, or withdrawals.
+
+Use `withApplicationID(appID)` when you want Nitronode records tagged with the application that produced them. This is optional metadata, but useful once multiple apps share the same node or wallet.
+
+## Next Steps
+
+- [Quickstart](./quickstart) - run the native v1 channel and app-session lifecycle.
+- [Key Terms & Mental Models](./key-terms) - learn the vocabulary used across the docs.
+- [TypeScript SDK](../sdk/typescript/getting-started) - read the full SDK guide.

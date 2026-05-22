@@ -1,0 +1,170 @@
+---
+title: Overview
+description: Compatibility layer bridging selected Nitrolite SDK v0.5.3 APIs to the v1 runtime
+sidebar_position: 1
+---
+
+# TypeScript Compat SDK
+
+`@yellow-org/sdk-compat` is a migration layer for apps already built on the published `@erc7824/nitrolite@0.5.3` API. It keeps selected app-facing calls available while routing them through the native v1 `@yellow-org/sdk` runtime.
+
+:::note Package naming
+The published npm package audited for this migration path is `@erc7824/nitrolite@0.5.3`. Some older internal docs refer to the same 0.5.3 codebase as `@layer-3/nitrolite`.
+:::
+
+<details>
+<summary><strong>Already integrated with <code>@erc7824/nitrolite</code>?</strong></summary>
+
+Speed up the migration with the `yellow-sdk-codemod` repository:
+
+```bash
+# Clone the codemod and install its dependencies
+git clone https://github.com/layer-3/yellow-sdk-codemod.git
+cd yellow-sdk-codemod
+npm install
+npm run build
+
+# Scan your codebase for migrate-able patterns (no files modified)
+node dist/cli.js scan --path /path/to/your-app/src
+
+# Apply transforms (and update package.json deps)
+node dist/cli.js run --path /path/to/your-app --update-deps
+```
+
+After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `node dist/cli.js list` for the full transform list.
+
+:::info MCP-assisted migration - coming soon
+The Yellow SDK MCP server is planned for npm as `@yellow-org/sdk-mcp`, but it is not published yet. After it lands, use it as a second review pass for unresolved codemod markers, uncertain imports, old RPC helper chains, and direct v1 SDK replacements. See the [migration overview](./migration-overview#mcp-assisted-migration) for the planned workflow.
+:::
+
+</details>
+
+## Why Use Compat
+
+Use compat when a live app needs to move off the 0.5.3 package without rewriting every transport, auth, event, and amount-handling call at once. New apps should start with the native [`@yellow-org/sdk`](../typescript/getting-started) instead.
+
+Compat is a bridge, not full package parity. The underlying v1 client is available as `client.innerClient` for flows that the migration surface cannot model honestly.
+
+## Installation
+
+```bash
+npm install @yellow-org/sdk-compat
+# peer dependencies
+npm install @yellow-org/sdk viem
+```
+
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL in the `wsURL` field below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
+## Quick Start
+
+```typescript
+import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
+
+const client = await NitroliteClient.create({
+  wsURL: '<sandbox-url-coming-soon>',
+  walletClient,          // viem WalletClient with account
+  chainId: 11155111,     // Sepolia
+  blockchainRPCs: blockchainRPCsFromEnv(),
+});
+
+await client.deposit(tokenAddress, 11_000_000n);
+
+const channels = await client.getChannels();
+const balances = await client.getBalances();
+const sessions = await client.getAppSessionsList();
+
+// 5 USDC (6 decimals) as raw asset-unit string:
+await client.transfer(recipientAddress, [{ asset: 'usdc', amount: '5000000' }]);
+
+await client.close();
+```
+
+`TransferAllocation.amount` is a raw asset-unit string using the asset's canonical decimals; the compat layer divides by decimals before delegating to the v1 SDK.
+
+## Amount Units
+
+| Method area | Amount format | Example |
+|---|---|---|
+| `deposit`, `withdrawal`, token allowance helpers | raw token-unit `bigint` | `11_000_000n` |
+| `transfer` allocations | raw asset-unit string | `'5000000'` |
+| App-session allocations | human-readable decimal string | `'5.0'` |
+| Direct `@yellow-org/sdk` channel and app amounts | `Decimal` | `new Decimal(5)` |
+
+## Method Cheat Sheet
+
+| Area | Covered surface |
+|---|---|
+| Channel operations | `deposit`, `depositAndCreateChannel`, `withdrawal`, `closeChannel`, `resizeChannel`, `challengeChannel`, `acknowledge` |
+| Query methods | `getChannels`, `getChannelData`, `getBalances`, `getLedgerEntries`, `getAppSessionsList`, `getAssetsList`, `getAccountInfo`, `getConfig`, `getBlockchains`, `getActionAllowances` |
+| On-chain helpers | `getOpenChannels`, `approveTokens`, `getTokenAllowance`, `getTokenBalance` |
+| Transfers | `transfer(destination, allocations)` with raw asset-unit strings |
+| App sessions | `createAppSession`, `closeAppSession`, `submitAppState`, `getAppDefinition`, `registerApp`, `getApps` |
+| App-session signing | `packCreateAppSessionHash`, `packSubmitAppStateHash`, `toWalletQuorumSignature`, `toSessionKeyQuorumSignature` |
+| Auth helpers | `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, `createEIP712AuthMessageSigner` |
+| Event polling | `EventPoller` polls `getChannels()`, `getBalances()`, and `getAssetsList()` and emits legacy-shaped callbacks |
+
+`checkpointChannel(...)` is exported as a fail-fast migration shim; use `client.innerClient.checkpoint(asset)` instead.
+
+See [EventPoller](./event-poller) for the cookbook.
+
+Lifecycle helpers include `ping()`, `close()`, `waitForClose()`, and `refreshAssets()`.
+
+## What Compat Does Not Preserve
+
+:::warning Compat is curated, not a drop-in
+`@yellow-org/sdk-compat` preserves selected `@erc7824/nitrolite@0.5.3` app-facing APIs. It does not preserve:
+
+- the legacy server-push event model; use [EventPoller](./event-poller)
+- `checkpointChannel(...)`; it is a fail-fast stub, use `client.innerClient.checkpoint(asset)`
+- `get_session_keys` directory-style APIs
+- `get_rpc_history`
+- full root-export parity with `@erc7824/nitrolite@0.5.3`
+
+If your code touches these surfaces, run the codemod first, then use the migration guides below to finish the manual changes.
+:::
+
+## Configuration
+
+```typescript
+interface NitroliteClientConfig {
+  wsURL: string;                           // Nitronode WebSocket URL
+  walletClient: WalletClient;              // viem WalletClient with account
+  chainId: number;                         // Chain ID, for example 11155111
+  blockchainRPCs?: Record<number, string>; // Chain ID -> RPC URL map
+  channelSessionKeySigner?: {
+    sessionKeyPrivateKey: Hex;
+    walletAddress: Address;
+    metadataHash: Hex;
+    authSig: Hex;
+  };
+}
+```
+
+`blockchainRPCsFromEnv()` reads from `NEXT_PUBLIC_BLOCKCHAIN_RPCS`:
+
+```text
+NEXT_PUBLIC_BLOCKCHAIN_RPCS=11155111:https://rpc.sepolia.io,1:https://mainnet.infura.io/v3/KEY
+```
+
+## Accessing the v1 SDK
+
+`Client` is not re-exported from `@yellow-org/sdk-compat` for SSR safety. Import SDK classes directly from `@yellow-org/sdk`, or use the wrapped instance exposed on the compat client:
+
+```typescript
+const v1Client = client.innerClient;
+await v1Client.getHomeChannel(wallet, 'usdc');
+await v1Client.checkpoint('usdc');
+await v1Client.approveToken(chainId, 'usdc', amount);
+```
+
+## Error Handling
+
+The compat package exports typed errors plus `getUserFacingMessage(error)` for UI-safe messages. See [Errors and recovery](./errors) for the cookbook.
+
+## Migration Guides
+
+- [Migration Overview](./migration-overview) - choose the compat path and run the codemod
+- [On-Chain Changes](./migration-onchain) - deposits, withdrawals, channel operations, and amount units
+- [Off-Chain Changes](./migration-offchain) - auth, app sessions, transfers, ledger queries, and polling

@@ -1,0 +1,472 @@
+---
+title: Examples
+description: Complete working examples for the Yellow TypeScript SDK
+sidebar_position: 4
+---
+
+# Examples
+
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL in each `Client.create()` call below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
+## Basic Deposit and Transfer
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function basicExample() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(80002n, process.env.RPC_URL!)
+  );
+
+  try {
+    console.log('User:', client.getUserAddress());
+
+    await client.setHomeBlockchain('usdc', 80002n);
+
+    // Step 1: Build and co-sign deposit state
+    const depositState = await client.deposit(80002n, 'usdc', new Decimal(100));
+    console.log('Deposit state version:', depositState.version);
+
+    // Step 2: Settle on-chain
+    const txHash = await client.checkpoint('usdc');
+    console.log('On-chain tx:', txHash);
+
+    // Check balance
+    const balances = await client.getBalances(client.getUserAddress());
+    console.log('Balances:', balances);
+
+    // Transfer 50 USDC (off-chain, no checkpoint needed)
+    const transferState = await client.transfer(
+      '0xRecipient...',
+      'usdc',
+      new Decimal(50)
+    );
+    console.log('Transfer state version:', transferState.version);
+  } finally {
+    await client.close();
+  }
+}
+```
+
+## Multi-Chain Operations
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function multiChainExample() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(80002n, process.env.POLYGON_RPC!),
+    withBlockchainRPC(11155111n, process.env.SEPOLIA_RPC!)
+  );
+
+  try {
+    await client.setHomeBlockchain('usdc', 80002n);
+    await client.setHomeBlockchain('eth', 11155111n);
+
+    // Deposit on different chains
+    await client.deposit(80002n, 'usdc', new Decimal(100));
+    await client.checkpoint('usdc');
+
+    await client.deposit(11155111n, 'eth', new Decimal(0.1));
+    await client.checkpoint('eth');
+
+    const balances = await client.getBalances(client.getUserAddress());
+    balances.forEach(b => console.log(`${b.asset}: ${b.balance}`));
+  } finally {
+    await client.close();
+  }
+}
+```
+
+## Transaction History with Pagination
+
+```typescript
+import { Client, createSigners } from '@yellow-org/sdk';
+
+async function queryTransactions() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner
+  );
+
+  try {
+    const wallet = client.getUserAddress();
+    const result = await client.getTransactions(wallet, {
+      page: 1,
+      pageSize: 10,
+    });
+
+    console.log(`Total: ${result.metadata.totalCount}`);
+    console.log(`Page ${result.metadata.page} of ${result.metadata.pageCount}`);
+
+    result.transactions.forEach((tx, i) => {
+      console.log(`${i + 1}. ${tx.txType}: ${tx.amount} ${tx.asset}`);
+    });
+  } finally {
+    await client.close();
+  }
+}
+```
+
+## App Session Workflow
+
+This example uses a single participant and `quorum: 1` to keep the native SDK wiring short. Use the multi-party app-session guide when you need multiple participants to co-sign the same app definition and state updates.
+
+```typescript
+import {
+  AppSessionWalletSignerV1,
+  AppStateUpdateIntent,
+  Client,
+  EthereumMsgSigner,
+  createSigners,
+  packAppStateUpdateV1,
+  packCreateAppSessionRequestV1,
+  withBlockchainRPC,
+  type AppDefinitionV1,
+  type AppStateUpdateV1,
+} from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function appSessionExample() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+  const appSigner = new AppSessionWalletSignerV1(
+    new EthereumMsgSigner(process.env.PRIVATE_KEY as `0x${string}`)
+  );
+
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(80002n, process.env.RPC_URL!)
+  );
+
+  try {
+    const definition: AppDefinitionV1 = {
+      applicationId: 'chess-v1',
+      participants: [
+        { walletAddress: client.getUserAddress(), signatureWeight: 1 },
+      ],
+      quorum: 1,
+      nonce: 1n,
+    };
+
+    await client.registerApp('chess-v1', '{"name":"Chess"}', true);
+
+    const createHash = packCreateAppSessionRequestV1(definition, '{}');
+    const createSig = await appSigner.signMessage(createHash);
+
+    const { appSessionId } = await client.createAppSession(
+      definition,
+      '{}',
+      [createSig]
+    );
+    console.log('Session created:', appSessionId);
+
+    // Deposit to app session
+    const appUpdate: AppStateUpdateV1 = {
+      appSessionId,
+      intent: AppStateUpdateIntent.Deposit,
+      version: 2n,
+      allocations: [{
+        participant: client.getUserAddress(),
+        asset: 'usdc',
+        amount: new Decimal(50),
+      }],
+      sessionData: '{}',
+    };
+
+    const depositHash = packAppStateUpdateV1(appUpdate);
+    const depositSig = await appSigner.signMessage(depositHash);
+
+    const nodeSig = await client.submitAppSessionDeposit(
+      appUpdate,
+      [depositSig],
+      'usdc',
+      new Decimal(50)
+    );
+    console.log('Deposit signature:', nodeSig);
+
+    const { sessions } = await client.getAppSessions({
+      wallet: client.getUserAddress(),
+    });
+    console.log(`Found ${sessions.length} sessions`);
+  } finally {
+    await client.close();
+  }
+}
+```
+
+## Browser Wallet Integration (viem)
+
+The example-app demonstrates using viem `WalletClient` (e.g. MetaMask) instead of private keys. You need to implement the `StateSigner` and `TransactionSigner` interfaces:
+
+```typescript
+import {
+  Client,
+  ChannelDefaultSigner,
+  type StateSigner,
+  type TransactionSigner,
+  withBlockchainRPC,
+} from '@yellow-org/sdk';
+import {
+  createWalletClient,
+  custom,
+  type Address,
+  type Hex,
+  type WalletClient,
+} from 'viem';
+import { sepolia } from 'viem/chains';
+
+// Adapt viem WalletClient to SDK's StateSigner (EIP-191 signatures)
+class BrowserStateSigner implements StateSigner {
+  constructor(private wc: WalletClient) {}
+
+  getAddress(): Address {
+    return this.wc.account!.address;
+  }
+
+  async signMessage(hash: Hex): Promise<Hex> {
+    return await this.wc.signMessage({
+      account: this.wc.account!,
+      message: { raw: hash },
+    });
+  }
+}
+
+// Adapt viem WalletClient to SDK's TransactionSigner
+class BrowserTransactionSigner implements TransactionSigner {
+  constructor(private wc: WalletClient) {}
+
+  getAddress(): Address {
+    return this.wc.account!.address;
+  }
+
+  async sendTransaction(tx: Parameters<WalletClient['sendTransaction']>[0]): Promise<Hex> {
+    return await this.wc.sendTransaction(tx);
+  }
+
+  async signMessage({ raw }: { raw: Hex }): Promise<Hex> {
+    return await this.wc.signMessage({
+      account: this.wc.account!,
+      message: { raw },
+    });
+  }
+
+  async signPersonalMessage(hash: Hex): Promise<Hex> {
+    return await this.wc.signMessage({
+      account: this.wc.account!,
+      message: { raw: hash },
+    });
+  }
+}
+
+async function connectWithWallet() {
+  const transport = custom(window.ethereum!);
+  const requestClient = createWalletClient({
+    chain: sepolia,
+    transport,
+  });
+
+  const [address] = await requestClient.requestAddresses();
+  const walletClient = createWalletClient({
+    account: address,
+    chain: sepolia,
+    transport,
+  });
+
+  const stateSigner = new ChannelDefaultSigner(new BrowserStateSigner(walletClient));
+  const txSigner = new BrowserTransactionSigner(walletClient);
+
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner,
+    withBlockchainRPC(11155111n, 'https://rpc.sepolia.io'),
+  );
+
+  return client;
+}
+```
+
+## Allowance Handling
+
+On-chain operations like `checkpoint()` require ERC-20 token approval. This pattern assumes `deposit()` succeeded and only retries the checkpoint transaction. The recovery example below wraps the full deposit plus checkpoint flow.
+
+```typescript
+import { Client } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+const MAX_APPROVE = new Decimal('1000000000');
+
+async function depositWithApproval(
+  client: Client,
+  chainId: bigint,
+  asset: string,
+  amount: Decimal,
+) {
+  await client.deposit(chainId, asset, amount);
+
+  try {
+    await client.checkpoint(asset);
+  } catch (error: any) {
+    const msg = error?.message ?? '';
+    if (msg.includes('allowance') || msg.includes('insufficient')) {
+      await client.approveToken(chainId, asset, MAX_APPROVE);
+      await client.checkpoint(asset);
+    } else {
+      throw error;
+    }
+  }
+}
+```
+
+## Errors and Recovery
+
+```typescript
+import { Client } from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+async function recoverableDeposit(
+  client: Client,
+  chainId: bigint,
+  asset: string,
+  amount: Decimal,
+) {
+  try {
+    await client.deposit(chainId, asset, amount);
+    return await client.checkpoint(asset);
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+
+    if (message.includes('allowance') || message.includes('insufficient')) {
+      await client.approveToken(chainId, asset, amount);
+      return await client.checkpoint(asset);
+    }
+
+    if (message.includes('ongoing')) {
+      await client.acknowledge(asset);
+      return await client.checkpoint(asset);
+    }
+
+    if (message.includes('blockchain client')) {
+      throw new Error(`Missing withBlockchainRPC(${chainId}n, rpcURL) for ${asset}`);
+    }
+
+    if (message.includes('asset')) {
+      const assets = await client.getAssets(chainId);
+      throw new Error(`Unsupported asset ${asset}. Supported assets: ${assets.map((a) => a.symbol).join(', ')}`);
+    }
+
+    if (message.includes('channel')) {
+      throw new Error(`No ready ${asset} channel. Deposit first or call setHomeBlockchain('${asset}', ${chainId}n).`);
+    }
+
+    throw error;
+  }
+}
+```
+
+## Channel Session Keys
+
+Session keys let users delegate signing authority so operations don't require repeated wallet prompts. From the example-app:
+
+```typescript
+import {
+  Client,
+  ChannelSessionKeyStateSigner,
+  getChannelSessionKeyAuthMetadataHashV1,
+  type ChannelSessionKeyStateV1,
+} from '@yellow-org/sdk';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+
+async function setupSessionKey(client: Client) {
+  const skPrivateKey = generatePrivateKey();
+  const skAccount = privateKeyToAccount(skPrivateKey);
+  const userAddress = client.getUserAddress();
+
+  const assets = ['usdc'];
+  const expiresAt = String(Math.floor(Date.now() / 1000) + 86400); // 24h
+
+  // Check existing version
+  const existing = await client.getLastChannelKeyStates(userAddress, skAccount.address);
+  const version = existing.length > 0
+    ? String(Number(existing[0].version) + 1)
+    : '1';
+
+  const state: ChannelSessionKeyStateV1 = {
+    user_address: userAddress,
+    session_key: skAccount.address,
+    version,
+    assets,
+    expires_at: expiresAt,
+    user_sig: '0x',
+  };
+
+  // Sign and submit
+  const sig = await client.signChannelSessionKeyState(state);
+  state.user_sig = sig;
+  await client.submitChannelSessionKeyState(state);
+
+  // Compute metadata hash for creating a session-key-based signer
+  const metadataHash = getChannelSessionKeyAuthMetadataHashV1(
+    BigInt(version),
+    assets,
+    BigInt(expiresAt),
+  );
+
+  // Rebuild client with session key signer (no more wallet prompts)
+  const sessionSigner = new ChannelSessionKeyStateSigner(
+    skPrivateKey,
+    userAddress as `0x${string}`,
+    metadataHash,
+    sig,
+  );
+
+  return { sessionSigner, skPrivateKey, metadataHash, authSig: sig };
+}
+```
+
+## Connection Monitoring
+
+```typescript
+import { Client, createSigners, withErrorHandler } from '@yellow-org/sdk';
+
+async function monitorConnection() {
+  const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
+
+  const client = await Client.create(
+    '<sandbox-url-coming-soon>',
+    stateSigner,
+    txSigner,
+    withErrorHandler((error) => {
+      console.error('Connection error:', error);
+    })
+  );
+
+  client.waitForClose().then(() => {
+    console.log('Connection closed, reconnecting...');
+  });
+
+  const config = await client.getConfig();
+  console.log('Connected to:', config.nodeAddress);
+
+  await new Promise(resolve => setTimeout(resolve, 30000));
+  await client.close();
+}
+```

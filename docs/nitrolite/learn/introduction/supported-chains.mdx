@@ -1,0 +1,80 @@
+---
+sidebar_position: 3
+title: Supported Chains & Assets
+description: Discover supported blockchains, assets, and ChannelHub addresses at runtime
+keywords: [supported chains, blockchains, assets, tokens, ChannelHub, Ethereum Sepolia, Polygon Amoy, Base Sepolia]
+---
+
+# Supported Chains & Assets
+
+Yellow Network nodes advertise their supported blockchains, ChannelHub addresses, and assets through v1 RPC. Treat runtime discovery as the source of truth.
+
+---
+
+## Runtime Discovery
+
+Do not hardcode v1 contract addresses in application docs or app configuration. The active Nitronode returns current network and asset configuration:
+
+- `client.getConfig()` wraps `node.v1.get_config` and returns the node address, node version, supported signature validators, supported blockchains, and each blockchain's ChannelHub address.
+- `client.getAssets()` wraps `node.v1.get_assets` and returns asset symbols, decimals, suggested blockchain IDs, token addresses, and token chain IDs.
+
+```typescript
+import { Client, createSigners, withBlockchainRPC } from '@yellow-org/sdk';
+
+const wsUrl = process.env.NITRONODE_WS_URL!;
+const rpcUrl = process.env.RPC_URL!;
+const chainId = BigInt(process.env.CHAIN_ID!);
+const privateKey = process.env.PRIVATE_KEY as `0x${string}`;
+
+const { stateSigner, txSigner } = createSigners(privateKey);
+const client = await Client.create(
+  wsUrl,
+  stateSigner,
+  txSigner,
+  withBlockchainRPC(chainId, rpcUrl),
+);
+
+const config = await client.getConfig();
+const assets = await client.getAssets();
+
+for (const chain of config.blockchains) {
+  console.log(`${chain.name} (${chain.id}) ChannelHub=${chain.channelHubAddress}`);
+}
+
+for (const asset of assets) {
+  console.log(`${asset.symbol} decimals=${asset.decimals}`);
+  for (const token of asset.tokens) {
+    console.log(`  chain=${token.blockchainId} token=${token.address}`);
+  }
+}
+```
+
+Raw RPC clients can call `node.v1.get_config` for blockchain and ChannelHub data and `node.v1.get_assets` for asset and token data.
+
+---
+
+## Deployed v1 Contract Folders
+
+The Nitrolite repository currently contains v1 deployment artifacts under [`contracts/deployments`](https://github.com/layer-3/nitrolite/tree/main/contracts/deployments).
+
+| Chain ID | Deployment folder |
+| ---: | --- |
+| `11155111` | `contracts/deployments/11155111/` |
+| `80002` | `contracts/deployments/80002/` |
+| `84532` | `contracts/deployments/84532/` |
+
+Each folder contains ChannelHub, ChannelEngine, escrow engines, signature validators, and test token deployment records for that chain. Use the runtime RPC response for the active endpoint you are connected to, because a node may support only a subset of deployed chains.
+
+---
+
+## Asset Symbols
+
+Asset symbols are node configuration, not protocol constants. The current v1 sandbox examples use symbols such as `yusd` and `yellow`, all represented in lower case, but applications should discover the available list through `client.getAssets()` or `node.v1.get_assets`.
+
+---
+
+## See Also
+
+- [Quick Start Guide](/nitrolite/build/getting-started/quickstart) — Get started building with Yellow SDK
+- [Multi-Party App Sessions](/nitrolite/build/sdk/multi-party-app-sessions) — Create multi-party application sessions
+- [API Reference](/nitrolite/api-reference) — Complete SDK documentation

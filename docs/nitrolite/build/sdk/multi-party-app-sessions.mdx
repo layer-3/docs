@@ -1,0 +1,313 @@
+---
+sidebar_position: 3
+title: Multi-Party Application Sessions
+description: Create, update, withdraw from, and close a native v1 Nitrolite application session
+keywords: [app sessions, multi-party, state channels, quorum, signatures, allocations]
+---
+
+# Multi-Party Application Sessions
+
+:::warning Native v1 API
+This page demonstrates the v1 native API. If you're on `@erc7824/nitrolite@0.5.3` and want a minimal-diff migration, see the [`@yellow-org/sdk-compat` overview](./typescript-compat/overview) first.
+:::
+
+Application sessions are shared off-chain states owned by an app. Participants sign each app-session creation and update. Nitronode verifies quorum, stores the latest state, and connects deposits or withdrawals to each participant's home channel.
+
+The native v1 TypeScript SDK uses:
+
+- `Client.create()` for each participant connection.
+- `Client.registerApp()` for the `apps.v1.submit_app_version` prerequisite.
+- `Client.createAppSession()` for `app_sessions.v1.create_app_session`.
+- `Client.submitAppSessionDeposit()` for `app_sessions.v1.submit_deposit_state`.
+- `Client.submitAppState()` for `Operate`, `Withdraw`, `Close`, and `Rebalance` updates.
+- `packCreateAppSessionRequestV1()` and `packAppStateUpdateV1()` to hash the exact payload participants sign.
+
+There is no separate `closeAppSession()` helper in `@yellow-org/sdk@1.2.1`; closing is an app-state update with `AppStateUpdateIntent.Close`.
+
+## Prerequisites
+
+You need two disposable wallets, a Nitronode WebSocket URL, a chain RPC URL, and enough test funds in the first user's home channel to fund the session.
+
+```bash
+USER_1_PRIVATE_KEY=0x...
+USER_2_PRIVATE_KEY=0x...
+NITRONODE_WS_URL=<sandbox-url-coming-soon>
+RPC_URL=https://polygon-amoy.g.alchemy.com/v2/YOUR_KEY
+CHAIN_ID=80002
+ASSET=usdc
+```
+
+:::info Sandbox URL - coming soon
+Use your Nitronode WebSocket URL for `NITRONODE_WS_URL`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::
+
+## Step 1: Connect both participants
+
+Each participant has a channel signer, a transaction signer, and an app-session signer. The channel signer signs home-channel states. The app-session signer signs app-session payloads and prefixes signatures with the v1 app-session wallet signer byte.
+
+```typescript
+import {
+  AppSessionWalletSignerV1,
+  AppStateUpdateIntent,
+  Client,
+  EthereumMsgSigner,
+  createSigners,
+  packAppStateUpdateV1,
+  packCreateAppSessionRequestV1,
+  withBlockchainRPC,
+  type AppDefinitionV1,
+  type AppStateUpdateV1,
+} from '@yellow-org/sdk';
+import Decimal from 'decimal.js';
+
+const wsURL = process.env.NITRONODE_WS_URL ?? '<sandbox-url-coming-soon>';
+const chainId = BigInt(process.env.CHAIN_ID ?? '80002');
+const asset = process.env.ASSET ?? 'usdc';
+
+const user1Key = process.env.USER_1_PRIVATE_KEY as `0x${string}`;
+const user2Key = process.env.USER_2_PRIVATE_KEY as `0x${string}`;
+
+const user1 = createSigners(user1Key);
+const user2 = createSigners(user2Key);
+
+const client1 = await Client.create(
+  wsURL,
+  user1.stateSigner,
+  user1.txSigner,
+  withBlockchainRPC(chainId, process.env.RPC_URL!)
+);
+
+const client2 = await Client.create(
+  wsURL,
+  user2.stateSigner,
+  user2.txSigner,
+  withBlockchainRPC(chainId, process.env.RPC_URL!)
+);
+
+const appSigner1 = new AppSessionWalletSignerV1(new EthereumMsgSigner(user1Key));
+const appSigner2 = new AppSessionWalletSignerV1(new EthereumMsgSigner(user2Key));
+```
+
+Always close both clients in a `finally` block when the flow ends.
+
+## Step 2: Prepare the user home channel
+
+The session deposit comes from `client1`'s home channel. If the channel does not exist yet, create and checkpoint it first.
+
+```typescript
+await client1.setHomeBlockchain(asset, chainId);
+await client2.setHomeBlockchain(asset, chainId);
+
+await client1.approveToken(chainId, asset, new Decimal('20'));
+await client1.deposit(chainId, asset, new Decimal('10'));
+await client1.checkpoint(asset);
+```
+
+If the home channel already has enough signed balance, skip the approve/deposit/checkpoint block and continue.
+
+## Step 3: Define the app session
+
+The native v1 app definition uses `AppDefinitionV1`, not the legacy RPC app-definition and protocol-version shape.
+
+```typescript
+const appId = `checkout-demo-${Date.now()}`;
+
+const definition: AppDefinitionV1 = {
+  applicationId: appId,
+  participants: [
+    { walletAddress: client1.getUserAddress(), signatureWeight: 1 },
+    { walletAddress: client2.getUserAddress(), signatureWeight: 1 },
+  ],
+  quorum: 2,
+  nonce: BigInt(Date.now()),
+};
+
+const sessionData = JSON.stringify({ cartId: 'cart-001' });
+```
+
+## Step 4: Register the application via `apps.v1.submit_app_version`
+
+`app_sessions.v1.create_app_session` requires the application to exist in the app registry. If the app is missing, Nitronode returns `application_not_registered`.
+
+The SDK wrapper is `Client.registerApp(appID, metadata, creationApprovalNotRequired)`. It signs the packed app data with the transaction signer and submits `apps.v1.submit_app_version`.
+
+```typescript
+await client1.registerApp(
+  appId,
+  JSON.stringify({ name: 'Checkout demo', version: 1 }),
+  true
+);
+```
+
+If `creationApprovalNotRequired` is `false`, pass the owner's approval signature to `createAppSession()` through the optional `{ ownerSig }` argument.
+
+## Step 5: Create the session
+
+Every participant signs the same create-session hash.
+
+```typescript
+const createHash = packCreateAppSessionRequestV1(definition, sessionData);
+
+const createSigs = [
+  await appSigner1.signMessage(createHash),
+  await appSigner2.signMessage(createHash),
+];
+
+const { appSessionId, version, status } = await client1.createAppSession(
+  definition,
+  sessionData,
+  createSigs
+);
+
+console.log({ appSessionId, version, status });
+```
+
+## Step 6: Deposit into the session
+
+A deposit update moves funds from the user's home channel into the app session.
+
+```typescript
+const depositUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Deposit,
+  version: 2n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('10') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('0') },
+  ],
+  sessionData,
+};
+
+const depositHash = packAppStateUpdateV1(depositUpdate);
+const depositSigs = [
+  await appSigner1.signMessage(depositHash),
+  await appSigner2.signMessage(depositHash),
+];
+
+const nodeSig = await client1.submitAppSessionDeposit(
+  depositUpdate,
+  depositSigs,
+  asset,
+  new Decimal('10')
+);
+
+console.log('Deposit state node signature:', nodeSig);
+```
+
+## Step 7: Operate on app state
+
+An `Operate` update changes the session's off-chain state without touching the blockchain.
+
+```typescript
+const operateUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Operate,
+  version: 3n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('8') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('2') },
+  ],
+  sessionData: JSON.stringify({ cartId: 'cart-001', purchase: 'item-123' }),
+};
+
+const operateHash = packAppStateUpdateV1(operateUpdate);
+await client1.submitAppState(operateUpdate, [
+  await appSigner1.signMessage(operateHash),
+  await appSigner2.signMessage(operateHash),
+]);
+```
+
+## Step 8: Withdraw remaining funds
+
+Use `Withdraw` when participants move session funds back to home channels.
+
+Setting each allocation to zero in a `Withdraw` update tells the node to release those amounts back to the participant's home channel.
+
+```typescript
+const withdrawUpdate: AppStateUpdateV1 = {
+  appSessionId,
+  intent: AppStateUpdateIntent.Withdraw,
+  version: 4n,
+  allocations: [
+    { participant: client1.getUserAddress(), asset, amount: new Decimal('0') },
+    { participant: client2.getUserAddress(), asset, amount: new Decimal('0') },
+  ],
+  sessionData: operateUpdate.sessionData,
+};
+
+const withdrawHash = packAppStateUpdateV1(withdrawUpdate);
+await client1.submitAppState(withdrawUpdate, [
+  await appSigner1.signMessage(withdrawHash),
+  await appSigner2.signMessage(withdrawHash),
+]);
+```
+
+## Step 9: Close the session
+
+Close is another signed app-state update. Submit it after final withdrawals or with the final allocation state your app requires.
+
+This example reuses `withdrawUpdate` intentionally: Close carries forward the same final allocations and session data from the Withdraw step.
+
+```typescript
+const closeUpdate: AppStateUpdateV1 = {
+  ...withdrawUpdate,
+  intent: AppStateUpdateIntent.Close,
+  version: 5n,
+};
+
+const closeHash = packAppStateUpdateV1(closeUpdate);
+await client1.submitAppState(closeUpdate, [
+  await appSigner1.signMessage(closeHash),
+  await appSigner2.signMessage(closeHash),
+]);
+```
+
+## Step 10: Query final state and close clients
+
+```typescript
+const { sessions } = await client1.getAppSessions({
+  wallet: client1.getUserAddress(),
+  status: 'closed',
+});
+
+const finalDefinition = await client1.getAppDefinition(appSessionId);
+
+console.log({ sessions, finalDefinition });
+
+await client1.close();
+await client2.close();
+```
+
+## Compat alternative for migrators
+
+If you are still using `@yellow-org/sdk-compat`, do not copy the native snippets above into a compat-only client. Use the compat app-session helpers while migrating call sites, then move to the native `Client` flow when you are ready to own app definitions and signed `AppStateUpdateV1` payloads directly.
+
+```typescript
+// Compat path: keep the 0.5.3-facing surface while the app migrates.
+import { NitroliteClient } from '@yellow-org/sdk-compat';
+
+// See the compat overview for walletClient and blockchainRPCs setup.
+const compatClient = await NitroliteClient.create({
+  wsURL,
+  walletClient,
+  chainId: Number(chainId),
+  blockchainRPCs,
+});
+```
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `application_not_registered` | `createAppSession()` ran before app registration. | Call `registerApp()` first; it submits `apps.v1.submit_app_version`. |
+| `quorum_not_met` | Not enough participant signatures for the app definition's quorum. | Sign the same packed hash with enough app-session signers. |
+| `invalid_app_state` | The signed payload does not match the submitted update. | Recompute `packAppStateUpdateV1(update)` and collect fresh signatures. |
+| `channel_not_found` | The depositing user has no ready home channel for `asset`. | Deposit and checkpoint the home channel before `submitAppSessionDeposit()`. |
+| `ongoing_transition` | A prior channel transition is still pending. | Acknowledge or checkpoint the pending state, then retry the app-session update. |
+
+## Further Reading
+
+- [TypeScript SDK examples](./typescript/examples)
+- [TypeScript SDK API reference](./typescript/api-reference)
+- App-session RPC catalogue: `app_sessions.v1` in the API Reference rebuild.
+- App registry RPC catalogue: `apps.v1` in the API Reference rebuild.

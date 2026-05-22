@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Build how-to pages must include a '## Verify' heading."
+level: error
+scope: raw
+token: "(?m)^## Verify\\b"
+min: 1

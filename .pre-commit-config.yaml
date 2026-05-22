@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: vale-docs
+        name: Vale docs language lint
+        entry: vale --minAlertLevel=error
+        language: system
+        files: ^(docs|templates)/.*\.(md|mdx)$

@@ -1,0 +1,41 @@
+---
+title: "Escrow Channel Deposit Flow"
+description: "Current documentation status for non-home-chain escrow deposits in Nitrolite v1."
+sidebar_position: 8
+---
+
+# Escrow Channel Deposit Flow
+
+Escrow deposits are the protocol path for bringing funds from a non-home chain into a user's home-channel balance. The mechanism can be supported by Nitrolite, but docs.yellow.org does not yet document escrow deposits as a builder-facing workflow.
+
+:::caution Not documented as an app workflow yet
+Escrow operation mechanics are intentionally deferred until the Nitronode automation and product surface are ready for public builder docs. Use the home-channel deposit and app-session lifecycle docs for the current v1 builder path.
+:::
+
+## What is stable
+
+The conceptual model is still useful when reading protocol material:
+
+- A user has one home chain for a given asset.
+- A non-home-chain deposit needs a temporary escrow path because one chain cannot directly verify another chain's latest channel state.
+- Nitronode coordinates signed off-chain state updates and on-chain settlement paths.
+- The home ledger remains the user's canonical app balance for that asset.
+
+## Protocol reference
+
+Protocol-level operation names and invariants live in [Cross-chain and Assets](/nitrolite/protocol/cross-chain-and-assets). This Learn page intentionally avoids escrow state construction steps until the public Nitronode workflow is documented.
+
+## Current builder guidance
+
+For applications today:
+
+- Use home-channel deposit for same-chain funding.
+- Use app-session deposit to move available home-channel funds into an app session.
+- Treat escrow deposit automation as a future product path until the public Nitronode workflow is documented.
+
+## Related pages
+
+- [Architecture at a Glance](../introduction/architecture-at-a-glance)
+- [Home Channel Deposit Flow](./home-channel-deposit)
+- [App Session Deposit Flow](./app-session-deposit)
+- [Cross-chain and Assets](/nitrolite/protocol/cross-chain-and-assets)

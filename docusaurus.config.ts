@@ -32,8 +32,7 @@ const config: Config = {
   organizationName: 'layer-3', // Usually your GitHub org/user name.
   projectName: 'docs', // Usually your repo name.
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   // SEO metadata - injected into HTML head
   headTags: [
@@ -59,10 +58,11 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
-          routeBasePath: '/docs',
+          path: './docs/nitrolite',
+          sidebarPath: './sidebars-nitrolite.ts',
+          routeBasePath: '/nitrolite',
           editUrl:
-            'https://github.com/layer-3/docs/tree/master/',
+            'https://github.com/layer-3/docs/tree/main/',
           sidebarCollapsed: false,
           sidebarCollapsible: false,
           breadcrumbs: true,
@@ -90,9 +90,26 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
   themes: ['@docusaurus/theme-mermaid'],
   plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'clearnet',
+        path: './docs/clearnet',
+        routeBasePath: '/clearnet',
+        sidebarPath: './sidebars-clearnet.ts',
+        editUrl: 'https://github.com/layer-3/docs/tree/main/',
+        sidebarCollapsed: false,
+        sidebarCollapsible: false,
+        breadcrumbs: true,
+        // No versions block — Clearnet starts unversioned
+      },
+    ],
     [
       'docusaurus-lunr-search',
       {
@@ -118,45 +135,85 @@ const config: Config = {
         srcDark: 'img/themes/dark/logo.svg',
       },
       items: [
+        // Portal-only product entry links
+        {
+          to: '/nitrolite',
+          label: 'Nitrolite',
+          position: 'left',
+          customProps: { showOn: 'portal' },
+        },
+        {
+          to: '/clearnet/learn/introduction',
+          label: 'Clearnet',
+          position: 'left',
+          customProps: { showOn: 'portal' },
+        },
+        // Nitrolite navbar items (shown on /nitrolite/*)
         {
           type: 'doc',
           docId: 'learn/index',
           label: 'Learn',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
         },
         {
-          type: 'doc',
-          docId: 'build/quick-start/index',
+          to: '/nitrolite/build/getting-started/quickstart',
+          activeBasePath: '/nitrolite/build/',
           label: 'Build',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
         },
         {
           type: 'doc',
           docId: 'protocol/introduction',
           label: 'Protocol',
           position: 'left',
+          customProps: { showOn: 'nitrolite' },
+        },
+        {
+          to: '/nitrolite/builder-toolkit',
+          activeBasePath: '/nitrolite/builder-toolkit',
+          label: 'Builder Toolkit',
+          position: 'left',
+          customProps: { showOn: 'nitrolite', hideIfPathStartsWith: '/nitrolite/0.5.x' },
         },
         {
           type: 'doc',
           docId: 'guides/index',
           label: 'Guides',
           position: 'left',
+          customProps: { showOn: 'nitrolite', onlyIfPathStartsWith: '/nitrolite/0.5.x' },
         },
+        // Clearnet navbar items (shown on /clearnet/*) — single "Learn" entry
+        // is a plain link to Introduction, not a doc reference, so the navbar
+        // item itself doesn't represent a page.
+        {
+          to: '/clearnet/learn/introduction',
+          label: 'Learn',
+          position: 'left',
+          customProps: { showOn: 'clearnet' },
+        },
+        // Whitepaper only on portal
         {
           to: '/whitepaper',
           label: 'Whitepaper',
           position: 'left',
+          customProps: { showOn: 'portal' },
         },
+        // GitHub link visible on all sub-sites
         {
-          href: 'https://github.com/layer-3',
+          href: 'https://github.com/layer-3/docs',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
+          customProps: { showOn: 'all' },
         },
+        // Version dropdown only on Nitrolite (Clearnet is unversioned).
         {
           type: 'docsVersionDropdown',
           position: 'right',
           className: 'navbar-version-dropdown',
+          customProps: { showOn: 'nitrolite' },
         },
       ],
     },
@@ -175,20 +232,42 @@ const config: Config = {
           ],
         },
         {
-          title: 'Docs',
+          title: 'Nitrolite',
           items: [
             {
               label: 'Learn',
-              to: '/docs/learn',
+              to: '/nitrolite/learn',
             },
             {
               label: 'Build',
-              to: '/docs/build/quick-start',
+              to: '/nitrolite/build/getting-started/quickstart',
             },
             {
-              label: 'Guides',
-              to: '/docs/guides',
+              label: 'Protocol',
+              to: '/nitrolite/protocol/introduction',
             },
+          ],
+        },
+        {
+          title: 'Clearnet',
+          items: [
+            {
+              label: 'Introduction',
+              to: '/clearnet/learn/introduction',
+            },
+            {
+              label: 'Architecture',
+              to: '/clearnet/learn/architecture',
+            },
+            {
+              label: 'Contracts',
+              to: '/clearnet/learn/contracts',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
             {
               label: 'Whitepaper',
               to: '/whitepaper',
@@ -198,6 +277,10 @@ const config: Config = {
         {
           title: 'Community',
           items: [
+            {
+              label: 'Telegram',
+              href: 'https://t.me/YellowSDKCommunity',
+            },
             {
               label: 'Discord',
               href: 'https://discord.com/invite/yellownetwork',
@@ -224,7 +307,7 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'diff', 'json', 'go', 'typescript'],
-      defaultLanguage: 'javascript',
+      defaultLanguage: 'typescript',
       magicComments: [
         {
           className: 'git-diff-remove',

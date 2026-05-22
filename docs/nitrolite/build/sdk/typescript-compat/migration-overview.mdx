@@ -1,0 +1,147 @@
+---
+title: Migration Overview
+description: Migrating from v0.5.3 to the compat layer
+sidebar_position: 2
+---
+
+# Migrating from v0.5.3 to Compat
+
+Use this guide when an existing app depends on `@erc7824/nitrolite@0.5.3` and needs a staged path onto the v1 runtime. Compat preserves the supported app-facing surface, but it does not promise full 0.5.3 package parity.
+
+## Start With the Codemod
+
+Run the codemod before hand-editing. It rewrites imports, migrates client constructors, renames auth fields, updates dependencies, and leaves `TODO [codemod]` comments where a human needs to collapse a workflow.
+
+```bash
+git clone https://github.com/layer-3/yellow-sdk-codemod.git
+cd yellow-sdk-codemod
+npm install
+npm run build
+
+node dist/cli.js scan --path /path/to/your-app/src
+node dist/cli.js run --path /path/to/your-app --update-deps
+```
+
+Then search for the manual markers:
+
+```bash
+rg "TODO \\[codemod\\]" /path/to/your-app
+```
+
+See the [overview](./overview) for the command sequence and `node dist/cli.js list` for available transforms.
+
+## MCP-Assisted Migration
+
+:::info Coming soon
+The Yellow SDK MCP server is proposed for npm publication as `@yellow-org/sdk-mcp`. Until that package is published, treat this as a preview of the assisted workflow, not a command that should work today.
+:::
+
+After publication, connect the MCP server to your MCP-compatible client and use it as a second review pass after the codemod:
+
+1. Run `server_info` to confirm the MCP content version matches the SDK version you are migrating to.
+2. Use the `migrate-from-v053` prompt to walk through changed files and unresolved `TODO [codemod]` markers.
+3. Use `validate_import` when you are unsure whether a symbol belongs to `@yellow-org/sdk-compat` or native `@yellow-org/sdk`.
+4. Use `get_rpc_method` to map old `create*Message` + `sendRequest` + `parse*Response` flows onto the v1 wire method.
+5. Use `lookup_method`, `lookup_type`, or `search_api` to verify direct v1 SDK replacements before reaching for `client.innerClient`.
+
+MCP assistance does not replace the manual checklist below. Tool-specific setup belongs with the package publish so the documented commands are runnable on the day they appear here.
+
+## Install Compat
+
+```bash
+npm install @yellow-org/sdk-compat
+npm install @yellow-org/sdk viem
+```
+
+## Client Construction
+
+**Before:** app-owned WebSocket plus helper calls.
+
+```typescript
+const msg = await createGetChannelsMessage(signer.sign, address);
+const raw = await sendRequest(msg);
+const parsed = parseGetChannelsResponse(raw);
+```
+
+**After:** one compat client backed by the v1 SDK.
+
+```typescript
+import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
+
+const client = await NitroliteClient.create({
+  wsURL: '<sandbox-url-coming-soon>',
+  walletClient,
+  chainId: 11155111,
+  blockchainRPCs: blockchainRPCsFromEnv(),
+});
+
+const channels = await client.getChannels();
+```
+
+:::info Sandbox URL - coming soon
+Use the same Nitronode URL placeholder pattern as the native v1 quickstart. Replace `<sandbox-url-coming-soon>` only when the canonical sandbox host is pinned.
+:::
+
+## Migration Matrix
+
+| Legacy use | Compat status | Direct v1 replacement |
+|---|---|---|
+| Auth helpers | Available: `createAuthRequestMessage`, `createAuthVerifyMessage`, `createAuthVerifyMessageWithJWT`, `createEIP712AuthMessageSigner` | SDK client auth flow |
+| Channel create or resize helpers | Unsupported or fail-fast where no honest v1 mapping exists | Native `client.innerClient.deposit(...)`, `client.innerClient.checkpoint(asset)`, lifecycle methods |
+| Transfer | Available with raw-amount caveat | `Client.transfer(recipient, asset, Decimal)` |
+| App sessions | Available with v1 remapping | Native app-session methods on `Client` |
+
+## Amount Rules
+
+Do not flatten all amounts into one convention. Compat intentionally keeps separate units for separate method families.
+
+- `deposit`, `withdrawal`, and token allowance helpers use raw token-unit `bigint`.
+- `transfer` uses raw asset-unit strings, for example `{ asset: 'usdc', amount: '5000000' }` for 5 USDC with 6 decimals.
+- App-session allocations use human-readable decimal strings, for example `'5.0'`.
+- Direct native v1 calls use `Decimal`.
+
+See the canonical [amount-units table](./overview#amount-units).
+
+## What Changes
+
+| Concern | v0.5.3 habit | Compat behavior |
+|---|---|---|
+| WebSocket ownership | App creates and manages `WebSocket` | `NitroliteClient` manages the connection |
+| Signing | App passes `signer.sign` into each helper | Client methods sign internally with `walletClient` |
+| Contract addresses | App hard-codes custody and adjudicator addresses | Compat reads current node config and asset metadata |
+| Channel creation | App calls `createChannel()` | First `deposit()` creates the home channel when needed |
+| Server-push events | App handles pushed channel and balance events | Use [EventPoller](./event-poller) |
+| Errors | App matches raw strings | Use typed errors and [Errors and recovery](./errors) |
+
+## Manual Review Checklist
+
+After the codemod runs, review each changed area before shipping:
+
+| Area | What to check |
+|---|---|
+| Imports | `@erc7824/nitrolite`, `@layer-3/nitrolite`, and vendored tarballs are gone from app source |
+| Client setup | `new NitroliteClient(...)` and `createNitroliteClient(...)` are replaced with `NitroliteClient.create({ wsURL, walletClient, chainId, blockchainRPCs })` |
+| Auth | `app_name`, `expire`, `participant`, and `challenge` are migrated to `application`, `expires_at`, `session_key`, `scope`, and `allowances` |
+| RPC chains | `create*Message` + `sendRequest` + `parse*Response` call chains are replaced with client methods or consciously kept as transitional helpers |
+| Channel operations | `createChannel`, `depositToChannel`, and old `approveToken` wrappers are replaced with `deposit`, `withdrawal`, `approveTokens`, or a direct `innerClient` call |
+| Events | WebSocket push handlers are replaced with [EventPoller](./event-poller) or app-owned polling |
+| Contract config | `custody`, `adjudicator`, `CUSTODIES`, and `ADJUDICATORS` constants are removed; config comes from Nitronode |
+| Amounts | Transfer amounts are raw asset-unit strings; app-session allocations are human-readable decimal strings |
+| Errors | Raw string matching is replaced with `NitroliteClient.classifyError()` and `getUserFacingMessage()` |
+| SSR | Do not import `Client` from `@yellow-org/sdk-compat`; import SDK classes directly from `@yellow-org/sdk` |
+
+## Unsupported Surfaces
+
+The following names can still appear in migrated code, but they are not full live replacements:
+
+- `checkpointChannel(...)` fails fast; use `client.innerClient.checkpoint(asset)`.
+- Workflow-only `create*Message` helpers such as `createTransferMessage`, `createCreateChannelMessage`, `createCloseChannelMessage`, and `createResizeChannelMessage` fail fast with migration guidance.
+- `parse*Response` helpers normalize known v1 payloads into 0.5.x-shaped responses, but they are not a replacement for an app-owned RPC transport.
+- `get_session_keys` directory-style APIs and `get_rpc_history` are not preserved.
+
+## Next Steps
+
+- [On-Chain Changes](./migration-onchain) - deposits, withdrawals, channel operations, and raw token units
+- [Off-Chain Changes](./migration-offchain) - auth helpers, app sessions, transfers, and ledger queries
+- [EventPoller](./event-poller) - replace server-push handlers with polling callbacks
+- [Errors and recovery](./errors) - classify wallet, allowance, funds, and transition errors

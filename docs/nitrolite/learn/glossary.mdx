@@ -1,0 +1,74 @@
+---
+title: Glossary
+description: Core Nitrolite v1 terms for builders and protocol readers.
+sidebar_position: 5
+---
+
+# Glossary
+
+This page defines the terms used across the Nitrolite v1 Learn, Build, Protocol, and API Reference docs.
+
+## Core Terms
+
+| Term | Meaning |
+| --- | --- |
+| **App session** | An app-specific off-chain state where users can commit channel funds, exchange app-state signatures, and later release balances back to their home channels. |
+| **Asset** | A unified value unit that Nitronode configures across supported chains, such as one canonical `usdc` asset spanning chain-specific USDC tokens. |
+| **Channel** | A user-node relationship for one asset, with signed state updates and an on-chain enforcement path. |
+| **Channel state** | The signed record of channel version, transition, ledgers, and participant signatures. |
+| **ChannelHub** | The v1 on-chain enforcement layer for channel creation, deposits, withdrawals, state enforcement, challenges, and close operations. |
+| **Checkpoint / enforcement** | An on-chain submission that records a valid signed state without necessarily closing the channel. `checkpoint()` is an SDK or contract entry point for specific enforcement paths. |
+| **Challenge** | An on-chain dispute path where a participant submits a signed state and gives the counterparty time to respond with a newer valid state. |
+| **Home channel** | The user's primary channel for a configured asset. |
+| **Home ledger** | The authoritative ledger for the channel's current enforcement chain. |
+| **Nitronode** | The open-source off-chain entrypoint that validates state transitions, signs states, and serves v1 RPC. |
+| **Non-home ledger** | The secondary ledger used when a cross-chain operation is in progress. It is empty during ordinary same-chain operation. |
+| **Pending state** | A proposed state that is not enforceable yet because it does not have every required signature. Node-issued pending states commonly wait for user acknowledgement. |
+| **Quorum** | The signature threshold required by an app session before an app-state update is accepted. |
+| **Session key** | A scoped signing key authorized by a participant. It can apply to channel state or app-session state, depending on its signature-validation scope. |
+| **Token** | A chain-specific contract or native token instance. A single asset can map to different tokens on different supported chains. |
+| **Vault** | Node-controlled liquidity used by enforcement and cross-chain accounting paths. |
+
+## Channel Statuses
+
+The v1 RPC status surface uses:
+
+| Status | Meaning |
+| --- | --- |
+| `void` | No channel exists yet. |
+| `open` | The channel exists and can accept normal state updates. |
+| `challenged` | A challenge is active and the response window is running. |
+| `closing` | The Node has issued the finalization state; the channel is in the close path. |
+| `closed` | Funds have been released and the channel lifecycle is complete. |
+
+## Transition Literals
+
+These are the current `transition_type` literals from the v1 API schema.
+
+| Literal | Meaning |
+| --- | --- |
+| `transfer_send` | Sender-side off-chain transfer. |
+| `transfer_receive` | Receiver-side off-chain transfer. |
+| `release` | Return funds from an app session or extension to the channel. |
+| `commit` | Move funds from the channel into an app session or extension. |
+| `home_deposit` | Same-chain home-channel deposit. |
+| `home_withdrawal` | Same-chain home-channel withdrawal. |
+| `finalize` | Finalize and close the channel state. |
+
+Escrow and migration operation names are documented in the Protocol section because they are protocol-level concepts, not current app-builder how-to flows.
+
+## Amount Units
+
+Use the SDK method signature as the source of truth for amount shape:
+
+| Surface | Typical amount shape |
+| --- | --- |
+| Native TypeScript SDK | `Decimal` for app-facing method calls. |
+| Compat TypeScript SDK | Raw asset-unit strings for transfer-style methods and raw base units for on-chain-style methods. |
+| API Reference | Wire payload shape from `docs/api.yaml`. |
+
+## Related Pages
+
+- [Architecture at a Glance](./introduction/architecture-at-a-glance)
+- [State and Ledger Model](/nitrolite/protocol/state-and-ledger-model)
+- [Key Terms](/nitrolite/build/getting-started/key-terms)

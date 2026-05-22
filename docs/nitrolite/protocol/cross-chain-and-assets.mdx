@@ -1,0 +1,132 @@
+---
+title: "Cross-Chain and Assets"
+description: "Unified assets, amount normalization, home and non-home ledger roles, escrow, migration, and replay protection."
+---
+
+# Cross-Chain and Assets
+
+The unified asset model allows participants to operate on assets from multiple blockchains within a single channel. This eliminates the need for separate channels per blockchain and enables cross-chain interactions.
+
+## Unified Asset Concept
+
+Assets are identified independently of any specific blockchain.
+
+| Field | Description |
+| --- | --- |
+| `Symbol` | Human-readable canonical asset identifier. |
+| `Decimals` | Decimal precision of the asset. |
+
+## Canonical Asset Identification
+
+The protocol identifies a unified asset by symbol. Within channel metadata, the symbol is represented as the first 8 bytes of its Keccak-256 hash. Two chain-specific tokens are recognized as the same unified asset if they share the same symbol-derived identifier and are configured as such by the Node.
+
+Symbol collisions are prevented by the Node's asset configuration. The protocol does not maintain a global on-chain registry of unified assets.
+
+## Amount Normalization
+
+Assets on different blockchains MAY have different decimal precisions. The protocol normalizes amounts for cross-chain comparisons using WAD normalization:
+
+```text
+NormalizedAmount = Amount * 10^(18 - ChainDecimals)
+```
+
+Rules:
+
+- Normalization is used only for cross-chain comparisons, such as validating escrow amounts across chains.
+- Normalization is not used for storage or accounting; stored values remain in chain-native precision.
+- The asset's configured decimal precision acts as the base, while 18 is the upscaling target.
+- Maximum supported decimal precision is 18.
+- Normalization is exact and lossless when scaling up.
+- The blockchain layer validates that declared decimals match actual token decimals on the current chain.
+
+## Home Chain
+
+The home chain is the blockchain against which a channel state is enforced. It is identified by the chain identifier in the home ledger.
+
+The home chain determines:
+
+- where enforcement operations execute.
+- which blockchain holds locked funds for the channel.
+- the authoritative source for state validation.
+
+The home chain MAY change through a migration operation. After migration, the new home chain becomes the authoritative enforcement target.
+
+## Home and Non-Home Ledger Roles
+
+| Ledger | Responsibilities |
+| --- | --- |
+| Home Ledger | Tracks authoritative asset allocations, receives state enforcement submissions, and holds deposited assets in the enforcement contract. |
+| Non-Home Ledger | Tracks assets involved in cross-chain escrow operations, reflects cross-chain deposit and withdrawal allocations, and coordinates with the home ledger. |
+
+When no cross-chain operation is in progress, the non-home ledger MUST be empty.
+
+## Escrow Model
+
+Cross-chain operations use escrow to coordinate fund movement across two independent blockchains. An escrow is a temporary on-chain record that locks funds on one chain while a corresponding state update is finalized on another chain.
+
+Each escrow is identified by an escrow channel identifier derived deterministically from the home channel identifier and the state version at initiation.
+
+| Property | Description |
+| --- | --- |
+| Identifier | 32-byte hash derived from home channel identifier and state version. |
+| Hosting chain | Non-home chain. For deposits, this is where User funds are locked. For withdrawals, this is where Node funds are locked. |
+| Tracked amount | Amount locked in escrow, corresponding to non-home ledger allocations. |
+| Release delay | Deposit escrows include a release delay after which funds are automatically returned to the Node if not challenged. |
+| Challenge duration | Period after challenge initiation that allows resolution. If no finalization state is supplied, the initiate state is finalized and funds are returned. |
+
+An escrow is not a separate protocol entity with its own state. It is an on-chain record derived from a channel state transition.
+
+:::caution Builder workflow not documented yet
+Escrow and migration are defined by the protocol, but the current Nitronode public app-builder workflow does not implement them yet. The sections below define the semantic model only.
+:::
+
+## Cross-Chain Deposit
+
+Cross-chain deposit is represented as a two-phase escrow family:
+
+| Phase | Protocol operation | Meaning |
+| --- | --- | --- |
+| Initiate | `initiate_escrow_deposit` | Escrow deposit initiate. |
+| Finalize | `finalize_escrow_deposit` | Escrow deposit finalize or complete. |
+
+Cross-chain amounts are validated using WAD normalization.
+
+## Cross-Chain Withdrawal
+
+Cross-chain withdrawal is represented as a two-phase escrow family:
+
+| Phase | Protocol operation | Meaning |
+| --- | --- | --- |
+| Initiate | `initiate_escrow_withdrawal` | Escrow withdrawal initiate. |
+| Finalize | `finalize_escrow_withdrawal` | Escrow withdrawal finalize or complete. |
+
+## Home Chain Migration
+
+The home chain may change through migration states, represented by the `initiate_migration` and `finalize_migration` operation family. Migration is not implemented as a public builder workflow today. Conceptually, after migration:
+
+- home chain identifier updates.
+- home token address updates.
+- the new home ledger becomes the authoritative ledger.
+- subsequent enforcement operations execute against the new home chain.
+- user allocation is preserved, normalized by decimal precision.
+
+## Cross-Chain Replay Protection
+
+The protocol prevents cross-chain replay through:
+
+- **Chain identifier binding**: each ledger is bound to a chain identifier, and the blockchain layer validates that the home ledger chain identifier matches the current blockchain.
+- **Channel identifier scoping**: channel identifiers incorporate a protocol version byte.
+- **Escrow identifier uniqueness**: escrow identifiers are derived from home channel identifier and state version at initiation.
+- **Ledger validation**: enforcement validates declared decimals against token decimals on the current execution chain and applies security invariants.
+
+## Current Version Notes
+
+:::warning Current trust boundary
+In the current protocol version, cross-chain operations require trust in the Node to relay state correctly between chains. Full cross-chain enforcement is a planned future improvement.
+:::
+
+Current constraints:
+
+- The Node is responsible for submitting escrow initiation and finalization transactions on the appropriate chains.
+- Each channel state supports exactly two ledgers: one home ledger and one non-home ledger.
+- Future protocol versions MAY support additional ledger configurations.

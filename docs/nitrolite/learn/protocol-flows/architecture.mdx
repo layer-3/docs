@@ -1,0 +1,69 @@
+---
+title: "Protocol Architecture (Petal Diagram)"
+description: "A visual and technical breakdown of the Nitrolite Protocol architecture, covering the four core petals and three operational layers."
+sidebar_position: 1
+---
+
+# Protocol Architecture (Petal Diagram)
+
+The **Petal Diagram** is the central architectural reference for the Nitrolite Protocol. It maps how deposits, withdrawals, transfers, and app sessions interact with blockchains, all centered on a user's channel.
+
+<img src="/img/protocol-petal-diagram.png" alt="Nitrolite Protocol Petal Diagram" style={{maxWidth: '100%'}} />
+
+*The diagram represents the architecture centered on a user's channel and maps how different actions interact with various blockchains.*
+
+---
+
+## The Four Petals
+
+### Petal 1: My Home Chain (Deposits and Withdrawals)
+
+The **Home Chain** is the blockchain where the user's channel state is enforced for a specific asset.
+
+:::info Important Choice
+When selecting your Home Chain, choose the blockchain where you are most comfortable depositing, enforcing and withdrawing a specific asset if cooperation with the Node fails.
+:::
+
+**The Flow:** The user approves the ChannelHub spender, submits a signed home-deposit state, and ChannelHub pulls ERC-20 tokens or native ETH into the home channel. A home-withdrawal state releases funds from ChannelHub back to the user.
+
+---
+
+### Petal 2: Another Chain (Cross-Chain Support)
+
+When a user already has a Home Chain with funds and wants to deposit from a different chain, the protocol uses a two-phase escrow mechanism.
+
+**The Challenge:** The home ledger is authoritative for enforcement, but the user's funds may start on a non-home chain.
+
+**The Solution:** A signed escrow-deposit initiate state creates a non-home escrow record, and a signed finalize state completes the deposit and updates the home ledger. Cross-chain withdrawals mirror this flow. Token decimal normalization validates cross-chain amounts when token precisions differ.
+
+**Key Property:** Escrow coordinates the home ledger and non-home ledger so cross-chain operations can be challenged or finalized according to the protocol rules.
+
+---
+
+### Petal 3: Transfers (Sender and Receiver State)
+
+Transfers update two unrelated user channels. The sender signs a `transfer_send` state. The receiver later acknowledges a Node-issued `transfer_receive` state.
+
+**The Solution:** The sender signs a new state showing funds sent through the Node. Nitronode prepares a receive state for the receiver's channel. The receiver signs an acknowledgement to make the pending state mutually signed and enforceable.
+
+**Key Efficiency:** Receive states can be batched before acknowledgement, reducing signature overhead while preserving the enforceable-state boundary.
+
+---
+
+### Petal 4: App Sessions
+
+App sessions are extension states funded by commit transitions from the user's home channel.
+
+**The Mechanism:** A `commit` transition moves assets from the user's home channel ledger into the app session extension. The app session tracks its own state and participant allocations. A `release` transition returns assets from the app session back into the user's channel ledger.
+
+**Security and Risk:**
+
+- Home-channel assets outside app sessions remain recoverable through the latest mutually signed channel state.
+- In-session app funds depend on the app-session participants and current extension-layer trust assumptions.
+- The protocol roadmap includes stronger extension-layer enforcement and watchtower support.
+
+:::note Current trust boundary
+App-session funds are not fully enforced on-chain in the current protocol version. Core channel assets remain recoverable through ChannelHub; extension-layer enforcement is still evolving.
+:::
+
+**UX Philosophy:** Core deposits, withdrawals, transfers, and challenges stay tied to channel-state enforcement, while app sessions provide flexible application logic through the extension layer.

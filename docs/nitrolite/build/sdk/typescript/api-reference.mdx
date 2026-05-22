@@ -1,0 +1,343 @@
+---
+title: API Reference
+description: Complete API reference for the Yellow TypeScript SDK
+sidebar_position: 2
+---
+
+# TypeScript SDK API Reference
+
+All methods are available on the `Client` instance. State operations return `Promise<core.State>`, settlement returns transaction hashes, and queries return typed response objects.
+
+## State Operations (Off-Chain)
+
+These methods build and co-sign a state off-chain. Use [`checkpoint()`](#checkpointasset) to settle on-chain.
+
+### `deposit(blockchainId, asset, amount)`
+
+Prepares a deposit state. Creates a new channel if none exists, otherwise advances the existing state.
+Backing RPC: creates new channels through `channels.v1.request_creation`, then submits signed states through `channels.v1.submit_state`.
+
+```typescript
+const state = await client.deposit(80002n, 'usdc', new Decimal(100));
+const txHash = await client.checkpoint('usdc');
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `blockchainId` | `bigint` | Target blockchain ID |
+| `asset` | `string` | Asset symbol (e.g. `'usdc'`) |
+| `amount` | `Decimal` | Amount to deposit |
+
+**Scenarios:**
+- No channel exists → creates new channel with initial deposit
+- Channel exists → advances the existing state with a deposit transition
+
+---
+
+### `withdraw(blockchainId, asset, amount)`
+
+Prepares a withdrawal state to remove funds from the channel.
+Backing RPC: submits the signed withdrawal state through `channels.v1.submit_state`.
+
+```typescript
+const state = await client.withdraw(80002n, 'usdc', new Decimal(25));
+const txHash = await client.checkpoint('usdc');
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `blockchainId` | `bigint` | Target blockchain ID |
+| `asset` | `string` | Asset symbol |
+| `amount` | `Decimal` | Amount to withdraw |
+
+**Requires:** Existing channel with sufficient balance.
+
+---
+
+### `transfer(recipientWallet, asset, amount)`
+
+Prepares an off-chain transfer to another wallet. For existing channels, no checkpoint is needed.
+Backing RPC: submits the sender state through `channels.v1.submit_state`; the node creates the receiver state and returns the signed pair.
+
+```typescript
+const state = await client.transfer('0xRecipient...', 'usdc', new Decimal(50));
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `recipientWallet` | `string` | Recipient address |
+| `asset` | `string` | Asset symbol |
+| `amount` | `Decimal` | Amount to transfer |
+
+**Requires:** Existing channel with sufficient balance, or home blockchain configured via `setHomeBlockchain()` for new channels.
+
+---
+
+### `closeHomeChannel(asset)`
+
+Prepares a finalize state to close the user's channel for a specific asset.
+Backing RPC: submits the finalize transition through `channels.v1.submit_state`.
+
+```typescript
+const state = await client.closeHomeChannel('usdc');
+const txHash = await client.checkpoint('usdc');
+```
+
+---
+
+### `acknowledge(asset)`
+
+Acknowledges a received state (e.g., after receiving a transfer).
+Backing RPC: submits the acknowledgement transition through `channels.v1.submit_state`.
+
+```typescript
+const state = await client.acknowledge('usdc');
+```
+
+**Requires:** Home blockchain configured via `setHomeBlockchain()` when no channel exists.
+
+---
+
+## Blockchain Settlement
+
+### `checkpoint(asset)`
+
+Settles the latest co-signed state on-chain. Routes to the correct contract method based on transition type and on-chain channel status:
+
+- **Channel not on-chain** (Void) → creates the channel
+- **Deposit/Withdrawal** on existing channel → checkpoints the state
+- **Finalize** → closes the channel
+
+Backing RPC: reads channel context through `channels.v1.get_latest_state` and `channels.v1.get_home_channel`, then sends the on-chain ChannelHub transaction.
+
+```typescript
+const txHash = await client.checkpoint('usdc');
+```
+
+**Requires:** Blockchain RPC via `withBlockchainRPC()` and a co-signed state.
+
+---
+
+### `challenge(state)`
+
+Submits an on-chain challenge for a channel. Initiates a dispute period.
+Backing RPC: none for submission; the SDK verifies the signed state locally and sends the on-chain ChannelHub challenge transaction.
+
+```typescript
+const state = await client.getLatestState(wallet, 'usdc', true);
+const txHash = await client.challenge(state);
+```
+
+---
+
+### `approveToken(chainId, asset, amount)`
+
+Approves the ChannelHub contract to spend ERC-20 tokens. Required before depositing.
+Backing RPC: none; this is an ERC-20 approval transaction against the token contract resolved from Nitronode asset config.
+
+```typescript
+const txHash = await client.approveToken(80002n, 'usdc', new Decimal(1000));
+```
+
+---
+
+### `checkTokenAllowance(chainId, tokenAddress, owner)`
+
+Checks the current token allowance for the ChannelHub contract.
+Backing RPC: none; this reads the ERC-20 allowance through the configured blockchain RPC.
+
+```typescript
+const allowance = await client.checkTokenAllowance(80002n, '0xToken...', '0xOwner...');
+```
+
+---
+
+## Node Information
+
+```typescript
+await client.ping();                          // Health check
+const config = await client.getConfig();      // Node configuration
+const chains = await client.getBlockchains(); // Supported blockchains
+const assets = await client.getAssets();      // All assets (or pass blockchainId)
+```
+
+Backing RPC: `node.v1.ping`, `node.v1.get_config`, and `node.v1.get_assets`. `getBlockchains()` reads the blockchains returned by `node.v1.get_config`.
+
+---
+
+## User Queries
+
+```typescript
+const balances = await client.getBalances(wallet);
+
+const { transactions, metadata } = await client.getTransactions(wallet, {
+  asset: 'usdc',           // filter by asset
+  txType: 'transfer',      // filter by transaction type
+  page: 1,
+  pageSize: 50,
+});
+
+const allowances = await client.getActionAllowances(wallet);
+```
+
+Backing RPC: `user.v1.get_balances`, `user.v1.get_transactions`, and `user.v1.get_action_allowances`.
+
+---
+
+## Channel Queries
+
+```typescript
+const { channels, metadata } = await client.getChannels(wallet, {
+  status: 'open',          // filter by status
+  asset: 'usdc',           // filter by asset
+  channelType: 'home',     // 'home' or 'escrow'
+  pagination: { offset: 0, limit: 20 },
+});
+
+const channel = await client.getHomeChannel(wallet, asset);
+const escrow = await client.getEscrowChannel(escrowChannelId);
+
+// onlySigned: if true, returns only the latest state with both signatures
+const state = await client.getLatestState(wallet, asset, true);
+```
+
+Backing RPC: `channels.v1.get_channels`, `channels.v1.get_home_channel`, `channels.v1.get_escrow_channel`, and `channels.v1.get_latest_state`.
+
+---
+
+## App Registry
+
+```typescript
+const { apps, metadata } = await client.getApps({
+  appId: 'my-app',
+  ownerWallet: '0x1234...',
+  page: 1,
+  pageSize: 10,
+});
+
+await client.registerApp('my-app', '{"name": "My App"}', false);
+```
+
+Backing RPC: `apps.v1.get_apps` and `apps.v1.submit_app_version`. Register the app before creating sessions for its `applicationId`.
+
+---
+
+## App Sessions
+
+### Create and Manage
+
+```typescript
+const { appSessionId, version, status } = await client.createAppSession(
+  definition,   // AppDefinitionV1
+  sessionData,  // JSON string
+  signatures    // string[]
+);
+
+const nodeSig = await client.submitAppSessionDeposit(
+  appUpdate,     // AppStateUpdateV1
+  quorumSigs,    // string[]
+  asset,         // string
+  depositAmount  // Decimal
+);
+
+await client.submitAppState(appUpdate, quorumSigs);
+
+const batchId = await client.rebalanceAppSessions(signedUpdates);
+```
+
+Backing RPC: `app_sessions.v1.create_app_session`, `app_sessions.v1.submit_deposit_state`, `app_sessions.v1.submit_app_state`, and `app_sessions.v1.rebalance_app_sessions`.
+
+### Query
+
+```typescript
+const { sessions, metadata } = await client.getAppSessions(opts);
+const definition = await client.getAppDefinition(appSessionId);
+```
+
+Backing RPC: `app_sessions.v1.get_app_sessions` and `app_sessions.v1.get_app_definition`.
+
+---
+
+## App Session Keys
+
+```typescript
+const sig = await client.signSessionKeyState({
+  user_address: '0x1234...',
+  session_key: '0xabcd...',
+  version: '1',
+  application_ids: ['app1'],
+  app_session_ids: [],
+  expires_at: String(Math.floor(Date.now() / 1000) + 86400),
+  user_sig: '0x',
+});
+
+await client.submitSessionKeyState({ ...state, user_sig: sig });
+
+const states = await client.getLastKeyStates('0x1234...');
+```
+
+Backing RPC: `app_sessions.v1.submit_session_key_state` and `app_sessions.v1.get_last_key_states`.
+
+---
+
+## Channel Session Keys
+
+```typescript
+const sig = await client.signChannelSessionKeyState({
+  user_address: '0x1234...',
+  session_key: '0xabcd...',
+  version: '1',
+  assets: ['usdc'],
+  expires_at: String(Math.floor(Date.now() / 1000) + 86400),
+  user_sig: '0x',
+});
+
+await client.submitChannelSessionKeyState({ ...state, user_sig: sig });
+
+const states = await client.getLastChannelKeyStates('0x1234...');
+```
+
+Backing RPC: `channels.v1.submit_session_key_state` and `channels.v1.get_last_key_states`.
+
+---
+
+## Utilities
+
+```typescript
+await client.close();                          // Close WebSocket connection
+client.waitForClose();                         // Promise that resolves on close
+await client.signState(state);                 // Sign a state (advanced)
+client.getUserAddress();                       // Get signer's address
+await client.setHomeBlockchain('usdc', 80002n); // Set default chain for asset
+```
+
+---
+
+## Type Imports
+
+```typescript
+import type {
+  State,
+  Channel,
+  Transaction,
+  BalanceEntry,
+  Asset,
+  Blockchain,
+  ActionAllowance,
+  AppSessionInfoV1,
+  AppDefinitionV1,
+  AppStateUpdateV1,
+  SignedAppStateUpdateV1,
+  AppSessionKeyStateV1,
+  ChannelSessionKeyStateV1,
+  PaginationMetadata,
+  AppV1,
+  AppInfoV1,
+} from '@yellow-org/sdk';
+```

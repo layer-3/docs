@@ -1,0 +1,25 @@
+{
+  "name": "@yellow-org/docs-nitrolite-v1-lifecycle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Nitrolite v1 TypeScript SDK channel and app-session lifecycle example.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lifecycle": "node dist/index.js",
+    "start": "npm run build && npm run lifecycle"
+  },
+  "dependencies": {
+    "@yellow-org/sdk": "1.2.1",
+    "decimal.js": "^10.6.0",
+    "dotenv": "^17.2.3",
+    "viem": "2.46.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "typescript": "~6.0.2"
+  }
+}

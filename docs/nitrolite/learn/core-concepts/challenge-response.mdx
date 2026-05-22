@@ -1,0 +1,120 @@
+---
+sidebar_position: 4
+title: Challenge & Recovery
+description: How Yellow Network lets participants recover funds when a counterparty stops cooperating
+keywords: [challenge, dispute, security, settlement, fund recovery]
+---
+
+import Tooltip from '@site/src/components/Tooltip';
+import { tooltipDefinitions } from '@site/src/constants/tooltipDefinitions';
+
+# Challenge & Recovery
+
+A challenge is the on-chain fallback that lets a participant recover from an unresponsive or broken counterparty.
+
+**Goal**: understand why off-chain updates remain recoverable even when Nitronode is unavailable.
+
+---
+
+## Why Challenges Matter
+
+In any off-chain system, a critical question arises: what if the counterparty stops signing, stops responding, or tries to use an on-chain state you disagree with?
+
+<Tooltip content={tooltipDefinitions.channel}>State channels</Tooltip> answer this with versioned, signed states:
+
+1. Old states cannot replace newer states because versions must increase.
+2. A participant can enforce a signed <Tooltip content={tooltipDefinitions.channelState}>state</Tooltip> on-chain when cooperation fails.
+3. If a challenge is active, the counterparty has a response window to enforce a newer valid state.
+4. If no newer state is accepted before the window expires, the challenged state can be closed.
+
+## Trust Model
+
+| Guarantee | How it is achieved |
+| --- | --- |
+| **Fund custody** | ChannelHub holds channel funds on-chain, not Nitronode. |
+| **State validity** | Only states signed by the required participants, with a greater version and correct intent, can advance the channel. |
+| **Dispute resolution** | A participant can force the latest valid state on-chain. |
+| **Recovery** | Funds are recoverable from the latest enforceable state. |
+
+## Channel Challenge Flow
+
+### Scenario: Nitronode becomes unresponsive
+
+You have a <Tooltip content={tooltipDefinitions.channel}>channel</Tooltip> with 100 USDC. Nitronode stops responding.
+
+Your options:
+
+1. Wait for Nitronode to recover.
+2. Submit the latest mutually signed state on-chain and start the challenge path.
+
+### Process
+
+1. **Initiate challenge**: submit a mutually signed state to ChannelHub with a challenger signature.
+2. **Challenge period**: ChannelHub sets the response deadline.
+3. **Response window**: a counterparty can enforce a newer mutually signed state.
+4. **Resolution**: a newer state returns the channel to `open`; after timeout, the challenged state can be closed.
+
+```mermaid
+stateDiagram-v2
+    [*] --> open
+    open --> challenged: challenge
+    challenged --> open: enforce newer state
+    challenged --> closed: close after timeout
+    closed --> [*]
+
+    note right of challenged: A newer valid state<br/>can defeat the challenge
+```
+
+## Why This Works
+
+### States are ordered
+
+Every channel state has a version number. ChannelHub rejects stale submissions that do not advance the version beyond the state already recorded on-chain.
+
+### States are signed
+
+The default v1 channel path requires both user and node signatures for enforceable states. A party that signed a state cannot later deny that signature.
+
+### Challenge period provides fairness
+
+The waiting window gives honest parties time to respond. Network delays should not cause immediate loss of funds.
+
+### ChannelHub is neutral
+
+ChannelHub validates signatures, state version, status, and ledger invariants. It does not rely on Nitronode cooperation once a valid state is submitted.
+
+## Enforcement vs Challenge
+
+| Operation | Purpose | Channel status |
+| --- | --- | --- |
+| Enforce a signed state | Record a valid state without starting the dispute path. | Stays `open`. |
+| `challenge()` | Start the on-chain dispute path. | Changes to `challenged`. |
+
+Use ordinary state enforcement when you only need the chain to record a newer state. Use challenge when you need to force recovery because a counterparty is not cooperating.
+
+## What Happens If...
+
+| Scenario | Outcome |
+| --- | --- |
+| **Nitronode goes offline** | Challenge with the latest signed state, then close after timeout. |
+| **You lose state history** | An older state can be defeated by a newer valid state if the counterparty has it. |
+| **Counterparty submits a stale state** | ChannelHub rejects it if it does not have a higher version than the current on-chain state. |
+| **Counterparty challenges with a stale state** | Enforce a newer valid state during the challenge window to resolve the challenge. |
+| **Block reorg occurs** | Wait for the transaction to be included in the canonical chain again. No special challenge action is required only because of a reorg. |
+
+## Key Takeaways
+
+| Concept | Remember |
+| --- | --- |
+| **Challenge** | Starts on-chain dispute resolution. |
+| **Response** | A newer mutually signed state resolves an older challenged state. |
+| **Timeout** | The time window during which a challenge can be resolved. After expiry, the challenged state can be closed. |
+| **Enforcement** | Records state without starting the dispute path. |
+
+:::success Security guarantee
+You can recover funds according to the latest enforceable state even if the off-chain counterparty stops cooperating.
+:::
+
+## Deep Dive
+
+For protocol details, see [Enforcement and Settlement](/nitrolite/protocol/enforcement-and-settlement).

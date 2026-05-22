@@ -1,0 +1,45 @@
+name: Vale
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/vale.yml"
+      - ".pre-commit-config.yaml"
+      - ".vale.ini"
+      - ".vale/**"
+      - "docs/**/*.md"
+      - "docs/**/*.mdx"
+      - "templates/**/*.md"
+      - "templates/**/*.mdx"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vale:
+    name: Vale advisory lint
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Vale
+        run: |
+          VALE_VERSION=3.14.2
+          curl -sSL "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" -o /tmp/vale.tar.gz
+          tar -xzf /tmp/vale.tar.gz -C /tmp vale
+          sudo mv /tmp/vale /usr/local/bin/vale
+          vale --version
+
+      - name: Run Vale
+        run: |
+          vale sync
+          set +e
+          vale --minAlertLevel=error docs templates
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo "::warning::Vale found advisory issues. See the log above."
+          fi
+          exit 0
