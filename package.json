@@ -29,18 +29,18 @@
     "clsx": "^2.0.0",
     "docusaurus-lunr-search": "^3.6.1",
     "prism-react-renderer": "^2.3.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.1",
     "@docusaurus/tsconfig": "3.10.1",
     "@docusaurus/types": "3.10.1",
-    "@tailwindcss/postcss": "^4.2.4",
+    "@tailwindcss/postcss": "^4.3.0",
     "@yellow-org/contracts": "^1.0.4",
     "autoprefixer": "^10.5.0",
-    "postcss": "^8.5.12",
+    "postcss": "^8.5.15",
     "tailwindcss": "^4.1.17",
     "typescript": "~6.0.3"
   },
