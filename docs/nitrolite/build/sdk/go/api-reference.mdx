@@ -124,20 +124,6 @@ err = client.SubmitChannelSessionKeyState(ctx, state)
 states, err := client.GetLastChannelKeyStates(ctx, userAddress, nil)
 ```
 
-## Operator Surface
-
-Security-token methods are operator surface, not the normal app-builder flow.
-
-```go
-client.ApproveSecurityToken(ctx, chainID, amount)
-client.EscrowSecurityTokens(ctx, targetWalletAddress, blockchainID, amount)
-client.InitiateSecurityTokensWithdrawal(ctx, blockchainID)
-client.CancelSecurityTokensWithdrawal(ctx, blockchainID)
-client.WithdrawSecurityTokens(ctx, blockchainID, destinationWalletAddress)
-```
-
-Use these only when building node-operator or security-token tooling.
-
 ## Utilities
 
 ```go
