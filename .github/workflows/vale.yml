@@ -15,7 +15,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   vale:
@@ -26,12 +25,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Install Vale
+        run: |
+          VALE_VERSION=3.14.2
+          curl -sSL "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" -o /tmp/vale.tar.gz
+          tar -xzf /tmp/vale.tar.gz -C /tmp vale
+          sudo mv /tmp/vale /usr/local/bin/vale
+          vale --version
+
       - name: Run Vale
-        uses: errata-ai/vale-action@v2.1.1
-        with:
-          files: '["docs", "templates"]'
-          fail_on_error: false
-          filter_mode: nofilter
-          vale_flags: "--minAlertLevel=error"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vale sync
+          set +e
+          vale --minAlertLevel=error docs templates
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo "::warning::Vale found advisory issues. See the log above."
+          fi
+          exit 0
