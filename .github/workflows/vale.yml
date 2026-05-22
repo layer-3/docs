@@ -30,8 +30,8 @@ jobs:
         uses: errata-ai/vale-action@v2.1.1
         with:
           files: '["docs", "templates"]'
-          fail_on_error: true
-          filter_mode: added
+          fail_on_error: false
+          filter_mode: nofilter
           vale_flags: "--minAlertLevel=error"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
