@@ -1,0 +1,253 @@
+---
+title: Cerebro REPL
+description: Install and use Cerebro, an interactive CLI REPL built on the Nitrolite Go SDK.
+sidebar_position: 7
+---
+
+# Cerebro REPL
+
+Cerebro is an interactive CLI REPL built on the Nitrolite Go SDK. It uses the Go SDK underneath rather than evaluating Go code. Use it to connect to Nitronode, inspect network data, manage local wallet configuration, register session keys, and run channel operations without writing a custom script.
+
+It wraps both high-level SDK operations, such as `deposit`, `transfer`, `withdraw`, and `checkpoint`, and lower-level RPC queries, such as balances, transaction history, states, app registry data, and app sessions.
+
+:::info Source package
+Cerebro lives in the Nitrolite repository under [`cerebro/`](https://github.com/layer-3/nitrolite/tree/main/cerebro). The commands below reflect the current Nitrolite source implementation.
+:::
+
+:::caution Active development
+Cerebro is available for development workflows, but its command surface, behavior, and interactive UX may change as Nitrolite v1 builder tooling stabilizes.
+:::
+
+## Requirements
+
+- Go 1.25.7 or later.
+- A Nitronode WebSocket endpoint. If you do not pass one, Cerebro uses `wss://nitronode-sandbox.yellow.org/v1/ws`.
+- A wallet private key for real operations. Cerebro auto-generates a wallet on first run, but you should export and back it up before funding it.
+- A blockchain RPC URL for any chain where you call on-chain operations such as `approve`, `token-balance`, `checkpoint`, or security-token commands.
+
+## Install
+
+Install the latest Cerebro package:
+
+```bash
+go install github.com/layer-3/nitrolite/cerebro@latest
+```
+
+Or build it from a Nitrolite source checkout:
+
+```bash
+cd /path/to/nitrolite
+go build -o cerebro ./cerebro
+```
+
+Start Cerebro with an explicit Nitronode endpoint:
+
+```bash
+cerebro wss://nitronode.example.com/v1/ws
+```
+
+If you built from source:
+
+```bash
+./cerebro wss://nitronode.example.com/v1/ws
+```
+
+When no endpoint is passed, Cerebro uses the stored endpoint if one exists. Otherwise it connects to:
+
+```text
+wss://nitronode-sandbox.yellow.org/v1/ws
+```
+
+## First Run
+
+On first run, Cerebro creates a local wallet automatically and prints its address. Export the generated private key immediately if you plan to reuse or fund the wallet:
+
+```text
+cerebro> config wallet export ./cerebro-wallet.txt
+```
+
+You can replace the generated wallet at any time:
+
+```text
+cerebro> config wallet import
+```
+
+Configure a blockchain RPC endpoint for on-chain operations:
+
+```text
+cerebro> config rpc import 80002 https://polygon-amoy.g.alchemy.com/v2/YOUR_KEY
+```
+
+Check the active wallet, RPCs, session key status, and Nitronode endpoint:
+
+```text
+cerebro> config
+```
+
+Persist a different Nitronode endpoint:
+
+```text
+cerebro> config node set-ws-url wss://nitronode.example.com/v1/ws
+```
+
+## Quickstart Flow
+
+This example uses Polygon Amoy chain ID `80002` and an `usdc` asset symbol. Use the chain IDs and asset symbols returned by your connected Nitronode.
+
+```text
+cerebro> config wallet import
+cerebro> config rpc import 80002 https://polygon-amoy.g.alchemy.com/v2/YOUR_KEY
+cerebro> config node set-home-blockchain usdc 80002
+cerebro> chains
+cerebro> assets 80002
+cerebro> token-balance 80002 usdc
+cerebro> approve 80002 usdc 1000
+cerebro> deposit 80002 usdc 100
+cerebro> checkpoint usdc
+cerebro> balances
+cerebro> transfer 0xRecipient... usdc 50
+cerebro> transactions
+cerebro> withdraw 80002 usdc 25
+cerebro> checkpoint usdc
+```
+
+`deposit`, `withdraw`, `transfer`, `close-channel`, and `acknowledge` prepare and submit signed state updates to Nitronode. `checkpoint` submits the latest state on-chain.
+
+## Command Groups
+
+### Configuration
+
+```text
+config                                                       Display current configuration
+config wallet                                                Display wallet address
+config wallet import                                         Import existing private key
+config wallet generate                                       Generate new wallet
+config wallet export <path>                                  Export private key to file
+config rpc import <chain_id> <url>                           Configure blockchain RPC endpoint
+config node                                                  Show node info
+config node set-ws-url <url>                                 Set Nitronode WebSocket URL
+config node set-home-blockchain <asset> <chain_id>           Set home blockchain for channels
+config session-key                                           Show current session key info
+config session-key generate                                  Generate new session key
+config session-key import                                    Import existing session key
+config session-key clear                                     Clear session key, revert to default signer
+config session-key register-channel-key <key> <hours> <assets>     Register channel session key
+config session-key channel-keys                              List active channel session keys
+config session-key register-app-key <key> <hours> [apps] [sessions]  Register app session key
+config session-key app-keys                                  List active app session keys
+```
+
+### Channel Operations
+
+```text
+token-balance <chain_id> <asset>             Check on-chain token balance
+approve <chain_id> <asset> <amount>          Approve token spending for deposits
+deposit <chain_id> <asset> <amount>          Deposit to channel, auto-create if needed
+withdraw <chain_id> <asset> <amount>         Withdraw from channel
+transfer <recipient> <asset> <amount>        Transfer to another wallet
+acknowledge <asset>                          Acknowledge transfer or channel creation
+close-channel <asset>                        Close home channel on-chain
+checkpoint <asset>                           Submit latest state on-chain
+```
+
+### Queries
+
+```text
+ping                          Test node connection
+chains                        List supported blockchains
+assets [chain_id]             List supported assets, optionally filtered by chain
+balances [wallet]             Get user balances, defaults to configured wallet
+transactions [wallet]         Get transaction history
+action-allowances [wallet]    Get action allowances
+state [wallet] <asset>        Get latest state
+home-channel [wallet] <asset> Get home channel
+escrow-channel <channel_id>   Get escrow channel by ID
+```
+
+### App Registry and Sessions
+
+```text
+app-info <app_id>                    Show application details
+my-apps                              List your registered applications
+register-app <app_id> [no-approval]  Register a new application
+app-sessions                         List app sessions
+```
+
+### Security Token Operations
+
+```text
+security-token approve <chain_id> <amount>                  Approve security token spending
+security-token balance <chain_id> [wallet]                  Check escrowed security token balance
+security-token escrow <chain_id> [target_address] <amount>  Escrow security tokens
+security-token initiate-withdrawal <chain_id>               Start unlock period
+security-token cancel-withdrawal <chain_id>                 Cancel unlock and re-lock
+security-token withdraw <chain_id> <destination>            Withdraw unlocked security tokens
+```
+
+## Session Keys
+
+Generate a session key locally:
+
+```text
+cerebro> config session-key generate
+```
+
+Register a channel session key for specific assets:
+
+```text
+cerebro> config session-key register-channel-key 0xSessionKeyAddr... 24 usdc,weth
+```
+
+Register an app session key for specific apps or sessions:
+
+```text
+cerebro> config session-key register-app-key 0xSessionKeyAddr... 48 app1,app2 session1,session2
+```
+
+After a locally stored channel session key is registered on Nitronode, Cerebro reconnects and uses it for state signing. Clear it to return to the wallet signer:
+
+```text
+cerebro> config session-key clear
+```
+
+## Configuration Storage
+
+Cerebro stores configuration in a local SQLite database:
+
+| Platform | Default path |
+| --- | --- |
+| Linux | `~/.config/cerebro/config.db` |
+| macOS | `~/Library/Application Support/cerebro/config.db` |
+| Windows | `%APPDATA%\cerebro\config.db` |
+
+If a legacy `clearnode-cli` config directory exists, Cerebro uses it and prints a warning that suggests renaming it to `cerebro`.
+
+Override the config directory with:
+
+```bash
+export NITRONODE_CLI_CONFIG_DIR=/custom/path
+```
+
+## Command Input
+
+- Chain IDs are standard blockchain chain IDs, for example `80002` for Polygon Amoy or `84532` for Base Sepolia.
+- Asset symbols are lowercase, for example `usdc`, `eth`, or `dai`.
+- Wallet addresses are full Ethereum addresses that start with `0x`.
+- Amounts are decimal values, for example `100`, `0.5`, or `1000.25`.
+- Comma-separated lists do not use spaces, for example `usdc,weth` or `app1,app2`.
+
+## Interactive Features
+
+- Press Tab for command suggestions.
+- Use arrow keys for command history.
+- Chain IDs and assets autocomplete from node data when available.
+
+## Security Notes
+
+:::warning Private key storage
+Cerebro stores private keys locally in SQLite without application-level encryption. The database is protected only by local OS file permissions.
+:::
+
+- Never commit a Cerebro config database or exported private key.
+- Back up generated private keys before funding the wallet.
+- Use hardware wallets or a production custody process for production funds.
