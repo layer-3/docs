@@ -16,7 +16,7 @@
     "@yellow-org/sdk": "1.2.1",
     "decimal.js": "^10.6.0",
     "dotenv": "^17.2.3",
-    "viem": "2.46.1"
+    "viem": "2.51.2"
   },
   "devDependencies": {
     "@types/node": "^24.12.2",
