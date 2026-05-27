@@ -1,11 +1,60 @@
 ---
 title: Builder Toolkit
-description: Live Nitrolite examples, source repositories, deployments, and upcoming builder tools.
+description: Nitrolite builder tools, live examples, source repositories, and deployments.
 ---
 
 # Builder Toolkit
 
-Start here when you want to see Nitrolite working before reading every page. Try the live apps, inspect their source, then use the SDK and migration docs when you are ready to build.
+Start here when you want to build with Nitrolite before reading every page. Use the tools to inspect and test flows, then try the live apps and inspect their source when you are ready to wire the SDK into an application.
+
+## Tools
+
+<div className="nitrolite-toolkit-tools">
+  <article className="card nitrolite-toolkit-card">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__eyebrow">CLI REPL</div>
+      <h2>Cerebro REPL</h2>
+      <p>Install the interactive CLI REPL built on the Nitrolite Go SDK, connect to Nitronode, inspect network state, manage local wallet configuration, and run channel operations from your terminal.</p>
+      <div className="nitrolite-toolkit-card__meta">
+        <span>Go SDK</span>
+        <span>Nitronode RPC</span>
+        <span>Wallet config</span>
+        <span>Session keys</span>
+      </div>
+    </div>
+    <div className="card__footer nitrolite-toolkit-card__footer">
+      <a className="button button--primary button--sm" href="/nitrolite/build/sdk/cerebro">Open guide</a>
+      <a className="button button--secondary button--sm" href="https://github.com/layer-3/nitrolite/tree/main/cerebro" target="_blank" rel="noopener noreferrer">Source</a>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
+      <h2>Nitrolite Playground</h2>
+      <p>Manage channels and inspect active app sessions from one UI. App-session management will be available after the playground deployment is ready for builders.</p>
+      <span className="button button--secondary button--sm disabled">Deployment pending</span>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
+      <h2>Yellow SDK MCP</h2>
+      <p>Structured SDK, protocol, RPC, examples, and migration context for AI coding tools. This should help teams build with Yellow SDK with fewer hallucinated method shapes.</p>
+      <span className="button button--secondary button--sm disabled">NPM package pending</span>
+    </div>
+  </article>
+
+  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
+    <div className="card__body nitrolite-toolkit-card__body">
+      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
+      <h2>Faucet App</h2>
+      <p>Get testnet assets for the v1 builder flow without leaving the Nitrolite docs path. This will be linked here once the faucet deployment is ready.</p>
+      <span className="button button--secondary button--sm disabled">Deployment pending</span>
+    </div>
+  </article>
+</div>
 
 ## Live Examples
 
@@ -73,37 +122,6 @@ Start here when you want to see Nitrolite working before reading every page. Try
     <div className="card__footer nitrolite-toolkit-card__footer">
       <a className="button button--primary button--sm" href="https://nexus-testnet-sepolia-ten.vercel.app/" target="_blank" rel="noopener noreferrer">Live demo</a>
       <a className="button button--secondary button--sm" href="https://github.com/erc7824/nitrolite-example/tree/25c857184ad93a7319074546a985a510a9c0fefc" target="_blank" rel="noopener noreferrer">Source</a>
-    </div>
-  </article>
-</div>
-
-## Upcoming Tools
-
-<div className="nitrolite-toolkit-upcoming">
-  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
-    <div className="card__body nitrolite-toolkit-card__body">
-      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
-      <h2>Nitrolite Playground</h2>
-      <p>Manage channels and inspect active app sessions from one UI. App-session management will be available after the playground deployment is ready for builders.</p>
-      <span className="button button--secondary button--sm disabled">Deployment pending</span>
-    </div>
-  </article>
-
-  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
-    <div className="card__body nitrolite-toolkit-card__body">
-      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
-      <h2>Yellow SDK MCP</h2>
-      <p>Structured SDK, protocol, RPC, examples, and migration context for AI coding tools. This should help teams build with Yellow SDK with fewer hallucinated method shapes.</p>
-      <span className="button button--secondary button--sm disabled">NPM package pending</span>
-    </div>
-  </article>
-
-  <article className="card nitrolite-toolkit-card nitrolite-toolkit-card--disabled">
-    <div className="card__body nitrolite-toolkit-card__body">
-      <div className="nitrolite-toolkit-card__badge">Coming soon</div>
-      <h2>Faucet App</h2>
-      <p>Get testnet assets for the v1 builder flow without leaving the Nitrolite docs path. This will be linked here once the faucet deployment is ready.</p>
-      <span className="button button--secondary button--sm disabled">Deployment pending</span>
     </div>
   </article>
 </div>
