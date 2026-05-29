@@ -1,30 +1,147 @@
 ---
-title: MCP Server
-description: Use the Nitrolite SDK MCP server with AI coding tools.
+title: Yellow SDK MCP
+description: Build with Yellow SDK inside your AI coding tool.
 sidebar_position: 5
 ---
 
-# MCP Server
+# Yellow SDK MCP
 
-The Nitrolite SDK MCP server gives AI coding tools structured access to the TypeScript SDK, Go SDK, protocol docs, v1 RPC catalogue, examples, and migration guidance.
+Build with Yellow SDK inside your AI coding tool.
 
-:::caution Coming soon on npm
-`@yellow-org/sdk-mcp` is not published on npm yet. `npm view @yellow-org/sdk-mcp version` currently returns `404`. Until the package is published, run the server from the Nitrolite source checkout.
-:::
+Yellow SDK MCP connects tools like Claude Code, Codex, Cursor, Windsurf, and VS Code Copilot to Yellow SDK knowledge. Ask your AI tool to find the right SDK call, explain a flow, create a starter app, or review a migration while you stay in your project.
+
+You do not need to clone the Nitrolite repository. Run it from npm:
+
+```bash
+npx -y @yellow-org/sdk-mcp@^1
+```
 
 ## What It Provides
 
-| Capability | Tools and resources |
+| Builder need | How MCP helps |
 | --- | --- |
-| SDK lookup | `lookup_method`, `lookup_type`, `search_api`, and import validation for TypeScript and Go. |
-| RPC lookup | `lookup_rpc_method` reads the same `docs/api.yaml` surface as the API Reference. |
-| Protocol help | Protocol resources for channel lifecycle, state model, enforcement, cross-chain notes, and interactions. |
-| Scaffolding | Starter project prompts for TypeScript and Go flows. |
-| Migration help | Guidance for moving from `@erc7824/nitrolite@0.5.3` to the v1 package family. |
+| Start a new app | Create TypeScript or Go starter code for transfer, app-session, and AI-agent flows. |
+| Find the right call | Search Yellow SDK methods, types, and examples without reading every page first. |
+| Understand a flow | Ask for plain-language help with channels, app sessions, signing, settlement, and protocol terms. |
+| Check a migration | Review codemod leftovers, old 0.5.3 helper chains, imports, and native v1 replacements. |
+| Need wire-level details | Look up v1 RPC methods when you are building a thin proxy, debugger, or non-SDK integration. |
 
-## Source Setup
+Most builders only need the setup command and natural-language prompts in their AI tool. The exact tool names are listed later for teams that want to be more explicit.
 
-From a local Nitrolite source checkout:
+## Setup
+
+### Claude Code
+
+```bash
+claude mcp add --transport stdio nitrolite -- npx -y @yellow-org/sdk-mcp@^1
+```
+
+Then run `/mcp` inside Claude Code and confirm `nitrolite` is connected.
+
+### Codex
+
+```bash
+codex mcp add nitrolite -- npx -y @yellow-org/sdk-mcp@^1
+```
+
+### Claude Desktop
+
+Add this to Claude Desktop's MCP config, then restart Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### Cursor
+
+Create `.cursor/mcp.json` in your project, or `~/.cursor/mcp.json` for all projects:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add this to `~/.codeium/windsurf/mcp_config.json`, then refresh MCP servers in Windsurf:
+
+```json
+{
+  "mcpServers": {
+    "nitrolite": {
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+### VS Code and GitHub Copilot
+
+Create `.vscode/mcp.json` in your workspace, or add it from the command palette with **MCP: Add Server**:
+
+```json
+{
+  "servers": {
+    "nitrolite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@yellow-org/sdk-mcp@^1"]
+    }
+  }
+}
+```
+
+You can also add it from the terminal:
+
+```bash
+code --add-mcp '{"name":"nitrolite","type":"stdio","command":"npx","args":["-y","@yellow-org/sdk-mcp@^1"]}'
+```
+
+## Try It
+
+After setup, ask your AI coding tool questions like:
+
+```text
+Use Yellow SDK MCP to build a minimal TypeScript transfer app.
+```
+
+```text
+Find the right Yellow SDK calls to create, fund, and close an app session.
+```
+
+```text
+Review my 0.5.3 migration TODOs and check whether each import belongs in @yellow-org/sdk or @yellow-org/sdk-compat.
+```
+
+## Tool Reference
+
+| Need | MCP surface |
+| --- | --- |
+| Find SDK calls and types | `search_api`, `lookup_method`, `lookup_type` |
+| Check imports | `validate_import` |
+| Explain protocol concepts | `explain_concept`, protocol resources |
+| Inspect v1 wire methods | `lookup_rpc_method`, `get_rpc_method` |
+| Create starter code | `scaffold_project` |
+| Start guided workflows | `create-channel-app`, `migrate-from-v053`, `build-ai-agent-app` prompts |
+
+## For Contributors
+
+The npm package ships with a release-time content snapshot, so normal users can run it without a repo clone. If you are changing the MCP server itself, use the local source workflow in the Nitrolite monorepo:
 
 ```bash
 cd sdk/mcp
@@ -32,63 +149,3 @@ npm install
 npm run build
 npm run start
 ```
-
-For stdio clients, configure the server command from the repository root:
-
-```json
-{
-  "mcpServers": {
-    "nitrolite": {
-      "command": "npm",
-      "args": ["--prefix", "/path/to/nitrolite/sdk/mcp", "run", "start"]
-    }
-  }
-}
-```
-
-## Tool Setup Shapes
-
-The exact config file location depends on the AI tool. Use the same stdio command shape in each tool until the npm package is published.
-
-### Claude Code
-
-Add the `nitrolite` server to the project's MCP configuration and point it at the source checkout command above. Restart Claude Code so it reloads MCP servers.
-
-### Claude Desktop
-
-Add the `nitrolite` entry under `mcpServers` in Claude Desktop's MCP config. Use an absolute path to the Nitrolite repo if Claude Desktop is not launched from the repo root.
-
-### Cursor
-
-Add a project MCP server named `nitrolite` with the stdio command above. Keep the working directory at the Nitrolite repo root or use absolute paths in `args`.
-
-### VS Code and Copilot-Compatible MCP Clients
-
-Use a workspace MCP configuration that starts `npm --prefix /path/to/nitrolite/sdk/mcp run start`. Restart the MCP client after changing the config.
-
-### Generic Stdio Clients
-
-Use:
-
-```bash
-npm --prefix /path/to/nitrolite/sdk/mcp run start
-```
-
-The server communicates over stdio, so the client must keep the process open for the duration of the session.
-
-## After NPM Publish
-
-Once `@yellow-org/sdk-mcp` is published, this page should switch from source setup to a package command, for example:
-
-```json
-{
-  "mcpServers": {
-    "nitrolite": {
-      "command": "npx",
-      "args": ["-y", "@yellow-org/sdk-mcp"]
-    }
-  }
-}
-```
-
-Leave the source setup available as the local-development fallback.

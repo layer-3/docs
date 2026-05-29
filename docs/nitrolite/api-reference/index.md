@@ -27,7 +27,7 @@ The official SDKs are the recommended way to call every method documented here:
 
 - **TypeScript:** [`@yellow-org/sdk`](../build/sdk/typescript/getting-started) for new apps, or [`@yellow-org/sdk-compat`](../build/sdk/typescript-compat/overview) for migrations from `@erc7824/nitrolite@0.5.3`. You get IDE autocomplete, parameter checking, discriminated-union response types, and correct amount-unit handling out of the box.
 - **Go:** [`github.com/layer-3/nitrolite/sdk/go`](../build/sdk/go/getting-started) for backends and CLI tooling, with typed structs for every request and response.
-- **MCP server (`@yellow-org/sdk-mcp`, coming soon):** ask `lookup_rpc_method` for a method by name, for example `channels.v1.submit_state`, and `lookup_method` to find the matching SDK call. The MCP indexes the same `docs/api.yaml` surface and is intended for agentic browsing inside coding tools.
+- **Yellow SDK MCP:** connect [`@yellow-org/sdk-mcp`](../build/sdk/mcp) to your AI coding tool when you want guided help instead of reading raw RPC tables manually. Ask it to find the matching SDK call, explain a flow, or look up a v1 wire method such as `channels.v1.submit_state`.
 
 The SDKs handle the `[type, requestId, method, payload, timestamp]` envelope, signing, response correlation, event streams, auth/session-key plumbing, and amount-unit conversions. Reach for the catalogue below when you genuinely need to inspect or generate against the wire surface.
 

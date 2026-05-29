@@ -15,7 +15,7 @@ Yellow Network provides official SDKs for building applications on top of Nitrol
 | New TypeScript app | [`@yellow-org/sdk@1.2.1`](./typescript/getting-started) | `import { Client, createSigners } from '@yellow-org/sdk'` | Native v1 SDK; uses `Decimal` amounts. |
 | Migrating from 0.5.3 (TS) | [`@yellow-org/sdk-compat@1.2.1`](./typescript-compat/overview) | `import { NitroliteClient } from '@yellow-org/sdk-compat'` | Minimal-diff bridge for `@erc7824/nitrolite@0.5.3`; see the compat codemod workflow. |
 | Go integration | [`github.com/layer-3/nitrolite/sdk/go`](./go/getting-started) | `import "github.com/layer-3/nitrolite/sdk/go"` | Standard Go package; run `go get github.com/layer-3/nitrolite/sdk/go`. |
-| Agentic IDE / AI agents | `@yellow-org/sdk-mcp@1.2.1` | `npx -y @yellow-org/sdk-mcp` | MCP server with binary `yellow-sdk-mcp`; coming soon on npm. |
+| AI coding tools | [`@yellow-org/sdk-mcp@^1`](./mcp) | `npx -y @yellow-org/sdk-mcp@^1` | Connect Claude Code, Codex, Cursor, Windsurf, VS Code Copilot, and other MCP-compatible tools to Yellow SDK guidance. |
 | 0.5.3 codemod | `@yellow-org/nitrolite-codemod@1.0.0` | `npx -y @yellow-org/nitrolite-codemod` | One-time migration tool; use the source workflow until the npm package publishes. |
 
 ## Architecture
