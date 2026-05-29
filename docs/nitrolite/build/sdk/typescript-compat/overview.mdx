@@ -33,8 +33,8 @@ node dist/cli.js run --path /path/to/your-app --update-deps
 
 After running, search for `TODO [codemod]` in your codebase and resolve them manually. The codemod surfaces every place a chained `create*Message` + `sendRequest` + `parse*Response` pattern needs context. See `node dist/cli.js list` for the full transform list.
 
-:::info MCP-assisted migration - coming soon
-The Yellow SDK MCP server is planned for npm as `@yellow-org/sdk-mcp`, but it is not published yet. After it lands, use it as a second review pass for unresolved codemod markers, uncertain imports, old RPC helper chains, and direct v1 SDK replacements. See the [migration overview](./migration-overview#mcp-assisted-migration) for the planned workflow.
+:::tip MCP-assisted migration
+Yellow SDK MCP is available as `@yellow-org/sdk-mcp`. Connect it to your AI coding tool when you want help reviewing unresolved codemod markers, uncertain imports, old RPC helper chains, and direct v1 SDK replacements. See the [migration overview](./migration-overview#mcp-assisted-migration) for the workflow.
 :::
 
 </details>

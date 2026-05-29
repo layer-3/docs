@@ -32,19 +32,19 @@ See the [overview](./overview) for the command sequence and `node dist/cli.js li
 
 ## MCP-Assisted Migration
 
-:::info Coming soon
-The Yellow SDK MCP server is proposed for npm publication as `@yellow-org/sdk-mcp`. Until that package is published, treat this as a preview of the assisted workflow, not a command that should work today.
+:::tip Available now
+Yellow SDK MCP is available from npm as `@yellow-org/sdk-mcp`. Connect it to your AI coding tool when you want a second pass on migration leftovers.
 :::
 
-After publication, connect the MCP server to your MCP-compatible client and use it as a second review pass after the codemod:
+After the codemod, use the MCP server as a second review pass:
 
-1. Run `server_info` to confirm the MCP content version matches the SDK version you are migrating to.
-2. Use the `migrate-from-v053` prompt to walk through changed files and unresolved `TODO [codemod]` markers.
-3. Use `validate_import` when you are unsure whether a symbol belongs to `@yellow-org/sdk-compat` or native `@yellow-org/sdk`.
-4. Use `get_rpc_method` to map old `create*Message` + `sendRequest` + `parse*Response` flows onto the v1 wire method.
-5. Use `lookup_method`, `lookup_type`, or `search_api` to verify direct v1 SDK replacements before reaching for `client.innerClient`.
+1. [Set up Yellow SDK MCP](../mcp) in Claude Code, Codex, Cursor, Windsurf, VS Code Copilot, or another MCP-compatible tool.
+2. Ask it to walk through changed files and unresolved `TODO [codemod]` markers.
+3. Ask it to check whether uncertain imports belong to `@yellow-org/sdk-compat` or native `@yellow-org/sdk`.
+4. Ask it to map old `create*Message` + `sendRequest` + `parse*Response` flows onto v1 SDK calls where possible.
+5. Ask it to verify direct v1 SDK replacements before reaching for `client.innerClient`.
 
-MCP assistance does not replace the manual checklist below. Tool-specific setup belongs with the package publish so the documented commands are runnable on the day they appear here.
+MCP assistance does not replace the manual checklist below. Treat it as a practical review partner that can keep the SDK, RPC catalogue, examples, and migration guidance in the same conversation.
 
 ## Install Compat
 
