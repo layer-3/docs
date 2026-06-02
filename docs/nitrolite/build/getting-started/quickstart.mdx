@@ -23,6 +23,14 @@ You need:
 
 See [Prerequisites & Environment](./prerequisites) for the full setup checklist.
 
+:::tip Public Nitronode endpoints
+Use `wss://nitronode-sandbox.yellow.org/v1/ws` while testing on sandbox assets. Use `wss://nitronode.yellow.org/v1/ws` only when you intentionally connect to production/mainnet assets.
+:::
+
+:::info Builder Toolkit
+Need a consolidated list of live examples, source repositories, Playground, faucet, MCP, and SDK entry points? Open the [Builder Toolkit](/nitrolite/builder-toolkit).
+:::
+
 ## Step 1: Install and configure
 
 Clone the docs repo, enter the tested example package, and install its isolated dependencies:
@@ -39,7 +47,7 @@ Edit `.env`:
 ```bash title=".env"
 USER_PRIVATE_KEY=0x...
 APP_PRIVATE_KEY=0x...
-NITRONODE_WS_URL=<sandbox-url-coming-soon>
+NITRONODE_WS_URL=wss://nitronode-sandbox.yellow.org/v1/ws
 RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 CHAIN_ID=11155111
 ASSET=yellow

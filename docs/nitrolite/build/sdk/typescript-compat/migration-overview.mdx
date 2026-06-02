@@ -69,7 +69,7 @@ const parsed = parseGetChannelsResponse(raw);
 import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
 
 const client = await NitroliteClient.create({
-  wsURL: '<sandbox-url-coming-soon>',
+  wsURL: 'wss://nitronode-sandbox.yellow.org/v1/ws',
   walletClient,
   chainId: 11155111,
   blockchainRPCs: blockchainRPCsFromEnv(),
@@ -78,8 +78,8 @@ const client = await NitroliteClient.create({
 const channels = await client.getChannels();
 ```
 
-:::info Sandbox URL - coming soon
-Use the same Nitronode URL placeholder pattern as the native v1 quickstart. Replace `<sandbox-url-coming-soon>` only when the canonical sandbox host is pinned.
+:::info Public Nitronode endpoints
+Use `wss://nitronode-sandbox.yellow.org/v1/ws` for migration tests with sandbox assets. Use `wss://nitronode.yellow.org/v1/ws` only when you intentionally connect migrated code to production/mainnet assets.
 :::
 
 ## Migration Matrix

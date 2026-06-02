@@ -22,7 +22,7 @@ npm run lifecycle
 
 Use disposable test wallets only. The app signer can be an unfunded test wallet; the user wallet needs Sepolia gas and the selected test asset.
 
-Set `NITRONODE_WS_URL` to the current v1 sandbox or test endpoint provided for your environment before running `npm run lifecycle`.
+Set `NITRONODE_WS_URL` to `wss://nitronode-sandbox.yellow.org/v1/ws` before running `npm run lifecycle`. Use `wss://nitronode.yellow.org/v1/ws` only when the example is ready for production/mainnet assets.
 
 The script calls `enableNodeLocalAccountTransactions()` after creating each SDK client. This keeps viem's local account attached to `writeContract()` requests in Node.js so `approveToken()` and `checkpoint()` can send transactions through public RPC endpoints. Browser wallet apps do not need this shim.
 

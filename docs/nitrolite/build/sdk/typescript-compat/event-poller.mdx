@@ -46,7 +46,7 @@ import {
 } from '@yellow-org/sdk-compat';
 
 const client = await NitroliteClient.create({
-  wsURL: '<sandbox-url-coming-soon>',
+  wsURL: 'wss://nitronode-sandbox.yellow.org/v1/ws',
   walletClient,
   chainId: 11155111,
   blockchainRPCs: blockchainRPCsFromEnv(),
@@ -73,6 +73,8 @@ window.addEventListener('beforeunload', () => {
   poller.stop();
 });
 ```
+
+This example uses the sandbox Nitronode endpoint. Use `wss://nitronode.yellow.org/v1/ws` only when the migrated app is ready for production/mainnet assets.
 
 ## Intervals
 

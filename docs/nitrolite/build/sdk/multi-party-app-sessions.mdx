@@ -31,14 +31,17 @@ You need two disposable wallets, a Nitronode WebSocket URL, a chain RPC URL, and
 ```bash
 USER_1_PRIVATE_KEY=0x...
 USER_2_PRIVATE_KEY=0x...
-NITRONODE_WS_URL=<sandbox-url-coming-soon>
+NITRONODE_WS_URL=wss://nitronode-sandbox.yellow.org/v1/ws
 RPC_URL=https://polygon-amoy.g.alchemy.com/v2/YOUR_KEY
 CHAIN_ID=80002
 ASSET=usdc
 ```
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL for `NITRONODE_WS_URL`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+Use the sandbox endpoint for disposable wallets and test assets. Use production/mainnet only when you intentionally connect to live assets.
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
 :::
 
 ## Step 1: Connect both participants
@@ -60,7 +63,7 @@ import {
 } from '@yellow-org/sdk';
 import Decimal from 'decimal.js';
 
-const wsURL = process.env.NITRONODE_WS_URL ?? '<sandbox-url-coming-soon>';
+const wsURL = process.env.NITRONODE_WS_URL ?? 'wss://nitronode-sandbox.yellow.org/v1/ws';
 const chainId = BigInt(process.env.CHAIN_ID ?? '80002');
 const asset = process.env.ASSET ?? 'usdc';
 

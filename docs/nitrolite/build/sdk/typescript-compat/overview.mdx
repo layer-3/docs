@@ -53,8 +53,11 @@ npm install @yellow-org/sdk-compat
 npm install @yellow-org/sdk viem
 ```
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL in the `wsURL` field below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+Use the sandbox endpoint in the `wsURL` field below while testing a migration. Use production/mainnet only when you intentionally connect to live assets.
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
 :::
 
 ## Quick Start
@@ -63,7 +66,7 @@ Use your Nitronode WebSocket URL in the `wsURL` field below. The public sandbox 
 import { NitroliteClient, blockchainRPCsFromEnv } from '@yellow-org/sdk-compat';
 
 const client = await NitroliteClient.create({
-  wsURL: '<sandbox-url-coming-soon>',
+  wsURL: 'wss://nitronode-sandbox.yellow.org/v1/ws',
   walletClient,          // viem WalletClient with account
   chainId: 11155111,     // Sepolia
   blockchainRPCs: blockchainRPCsFromEnv(),

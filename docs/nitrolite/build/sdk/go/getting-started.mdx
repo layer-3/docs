@@ -23,8 +23,11 @@ go get github.com/layer-3/nitrolite/sdk/go
 
 ## Quick Start
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL in `sdk.NewClient()`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+Use the sandbox endpoint in `sdk.NewClient()` while testing. Switch to production only when your service intentionally connects to mainnet assets.
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
 :::
 
 ```go
@@ -61,7 +64,7 @@ func main() {
     }
 
     client, err := sdk.NewClient(
-        "<sandbox-url-coming-soon>",
+        "wss://nitronode-sandbox.yellow.org/v1/ws",
         stateSigner,
         txSigner,
         sdk.WithBlockchainRPC(chainID, "https://ethereum-sepolia-rpc.example"),
