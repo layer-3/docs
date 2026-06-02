@@ -31,8 +31,11 @@ pnpm add @yellow-org/sdk
 
 ## Quick Start
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL in the `Client.create()` call below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+Use the sandbox endpoint in the `Client.create()` call below while testing. Switch to production only when your app intentionally connects to mainnet assets.
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
 :::
 
 ```typescript
@@ -47,7 +50,7 @@ async function main() {
 
   // 2. Create unified client
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, 'https://polygon-amoy.alchemy.com/v2/KEY')

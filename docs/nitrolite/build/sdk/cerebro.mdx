@@ -43,13 +43,13 @@ go build -o cerebro ./cerebro
 Start Cerebro with an explicit Nitronode endpoint:
 
 ```bash
-cerebro wss://nitronode.example.com/v1/ws
+cerebro wss://nitronode-sandbox.yellow.org/v1/ws
 ```
 
 If you built from source:
 
 ```bash
-./cerebro wss://nitronode.example.com/v1/ws
+./cerebro wss://nitronode-sandbox.yellow.org/v1/ws
 ```
 
 When no endpoint is passed, Cerebro uses the stored endpoint if one exists. Otherwise it connects to:
@@ -87,8 +87,10 @@ cerebro> config
 Persist a different Nitronode endpoint:
 
 ```text
-cerebro> config node set-ws-url wss://nitronode.example.com/v1/ws
+cerebro> config node set-ws-url wss://nitronode.yellow.org/v1/ws
 ```
+
+Use `wss://nitronode.yellow.org/v1/ws` only when you intentionally connect Cerebro to production/mainnet assets.
 
 ## Quickstart Flow
 

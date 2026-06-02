@@ -123,14 +123,23 @@ Create `.env` for sensitive values:
 # .env - never commit this file
 USER_PRIVATE_KEY=0x...
 APP_PRIVATE_KEY=0x...
-NITRONODE_WS_URL=<sandbox-url-coming-soon>
+NITRONODE_WS_URL=wss://nitronode-sandbox.yellow.org/v1/ws
 RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 CHAIN_ID=11155111
 ASSET=yellow
 ```
 
-:::info Test endpoint
-`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against. Use the current sandbox or test endpoint provided for your environment until the public sandbox URL is pinned.
+:::info Public Nitronode endpoints
+`NITRONODE_WS_URL` should point at a v1 Nitronode endpoint for the environment you are testing against:
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
+
+Use sandbox for development wallets and faucet-funded test assets. Use production only when you intentionally connect to mainnet assets.
+:::
+
+:::tip Builder Toolkit
+Need a consolidated list of live examples, source repositories, Playground, faucet, MCP, and SDK entry points? Open the [Builder Toolkit](/nitrolite/builder-toolkit).
 :::
 
 Add local files to `.gitignore`:
@@ -248,5 +257,6 @@ Use `withApplicationID(appID)` when you want Nitronode records tagged with the a
 ## Next Steps
 
 - [Quickstart](./quickstart) - run the native v1 channel and app-session lifecycle.
+- [Builder Toolkit](/nitrolite/builder-toolkit) - find live examples, Playground, faucet, MCP, and SDK entry points.
 - [Key Terms & Mental Models](./key-terms) - learn the vocabulary used across the docs.
 - [TypeScript SDK](../sdk/typescript/getting-started) - read the full SDK guide.

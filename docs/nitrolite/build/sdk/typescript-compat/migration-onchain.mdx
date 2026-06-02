@@ -99,7 +99,7 @@ If an on-chain helper needs an RPC URL for a chain, pass `blockchainRPCs` when c
 
 ```typescript
 const client = await NitroliteClient.create({
-  wsURL: '<sandbox-url-coming-soon>',
+  wsURL: 'wss://nitronode-sandbox.yellow.org/v1/ws',
   walletClient,
   chainId: 11155111,
   blockchainRPCs: {
@@ -107,6 +107,8 @@ const client = await NitroliteClient.create({
   },
 });
 ```
+
+This example uses the sandbox Nitronode endpoint. Use `wss://nitronode.yellow.org/v1/ws` only when migration code is ready for production/mainnet assets.
 
 ## Approval Helpers
 

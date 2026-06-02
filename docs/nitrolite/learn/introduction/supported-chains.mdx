@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
 title: Supported Chains & Assets
-description: Discover supported blockchains, assets, and ChannelHub addresses at runtime
-keywords: [supported chains, blockchains, assets, tokens, ChannelHub, Ethereum Sepolia, Polygon Amoy, Base Sepolia]
+description: Discover supported blockchains, assets, tokens, and ChannelHub addresses at runtime
+keywords: [supported chains, supported assets, blockchains, assets, tokens, ChannelHub, USDT, YUSD, YELLOW]
 ---
 
 # Supported Chains & Assets
@@ -51,6 +51,68 @@ for (const asset of assets) {
 
 Raw RPC clients can call `node.v1.get_config` for blockchain and ChannelHub data and `node.v1.get_assets` for asset and token data.
 
+:::tip Builder Toolkit
+Need a consolidated list of live examples, source repositories, Playground, faucet, MCP, and SDK entry points? Open the [Builder Toolkit](/nitrolite/builder-toolkit).
+:::
+
+---
+
+## Current Public Endpoints
+
+The table below was queried from the public v1 Nitronode endpoints on June 2, 2026. Treat it as a convenience snapshot. The active endpoint response from `node.v1.get_assets` remains the source of truth for production code.
+
+| Environment | WebSocket endpoint | Node address | Node version |
+| --- | --- | --- | --- |
+| Production (mainnet) | `wss://nitronode.yellow.org/v1/ws` | `0xbffaa37e34fb9aa11b23eb6cc939abbb45d6ccb6` | `55fd346` |
+| Sandbox | `wss://nitronode-sandbox.yellow.org/v1/ws` | `0x6f375dad1ff0ad968bdde939f76a2b3d6b9d3ec5` | `55fd346` |
+
+## Current Asset Matrix
+
+Use this matrix for asset availability. Exact token decimals can vary by chain, so use the token address tables below when configuring amounts.
+
+| Asset symbol | Sandbox Nitronode | Production Nitronode |
+| --- | --- | --- |
+| `eth` | Ether, 18 decimals. Available on Linea Sepolia `59141`, Base Sepolia `84532`, and Ethereum Sepolia `11155111`. | Ether, 18 decimals. Available on Linea `59144`. |
+| `pol` | POL, 18 decimals. Available on Polygon Amoy `80002`. | Not listed. |
+| `usdt` | Not listed. | Tether USD. Available on Ethereum `1`, Flare `14`, BSC `56`, Polygon `137`, Base `8453`, Linea `59144`, and XRPL EVM `1440000`; token decimals are chain-specific. |
+| `xrp` | XRP. Available on XRPL EVM Testnet `1449000`; token decimals are chain-specific. | XRP. Available on Flare `14` and XRPL EVM `1440000`; token decimals are chain-specific. |
+| `yellow` | Yellow, 18 decimals. Available on Ethereum Sepolia `11155111`. | Yellow, 18 decimals. Available on Ethereum `1`. |
+| `yusd` | Yellow USD. Available on Linea Sepolia `59141`, Polygon Amoy `80002`, Base Sepolia `84532`, XRPL EVM Testnet `1449000`, and Ethereum Sepolia `11155111`; token decimals are chain-specific. | Not listed. |
+
+## Production Token Addresses
+
+| Asset | Chain | Token address | Token decimals |
+| --- | --- | --- | ---: |
+| `eth` | Linea `59144` | `0x0000000000000000000000000000000000000000` | 18 |
+| `usdt` | Ethereum `1` | `0xdac17f958d2ee523a2206206994597c13d831ec7` | 6 |
+| `usdt` | Flare `14` | `0xe7cd86e13ac4309349f30b3435a9d337750fc82d` | 6 |
+| `usdt` | BSC `56` | `0x55d398326f99059ff775485246999027b3197955` | 18 |
+| `usdt` | Polygon `137` | `0xc2132d05d31c914a87c6611c10748aeb04b58e8f` | 6 |
+| `usdt` | Base `8453` | `0xfde4c96c8593536e31f229ea8f37b2ada2699bb2` | 6 |
+| `usdt` | Linea `59144` | `0xa219439258ca9da29e9cc4ce5596924745e12b93` | 6 |
+| `usdt` | XRPL EVM `1440000` | `0x9f8cf9c00fac501b3965872f4ed3271f6f4d06ff` | 6 |
+| `xrp` | Flare `14` | `0xad552a648c74d49e10027ab8a618a3ad4901c5be` | 6 |
+| `xrp` | XRPL EVM `1440000` | `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` | 18 |
+| `yellow` | Ethereum `1` | `0x236eb848c95b231299b4aa9f56c73d6893462720` | 18 |
+
+## Sandbox Token Addresses
+
+| Asset | Chain | Token address | Token decimals |
+| --- | --- | --- | ---: |
+| `eth` | Linea Sepolia `59141` | `0x0000000000000000000000000000000000000000` | 18 |
+| `eth` | Base Sepolia `84532` | `0x0000000000000000000000000000000000000000` | 18 |
+| `eth` | Ethereum Sepolia `11155111` | `0x0000000000000000000000000000000000000000` | 18 |
+| `pol` | Polygon Amoy `80002` | `0x0000000000000000000000000000000000000000` | 18 |
+| `xrp` | XRPL EVM Testnet `1449000` | `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` | 18 |
+| `yellow` | Ethereum Sepolia `11155111` | `0x236eb848c95b231299b4aa9f56c73d6893462720` | 18 |
+| `yusd` | Linea Sepolia `59141` | `0x67a5f0b0553e22689a539b80cbe4a1cd126e2bde` | 18 |
+| `yusd` | Polygon Amoy `80002` | `0x1b66e510b845a746334b866b62c64746bebff857` | 8 |
+| `yusd` | Base Sepolia `84532` | `0x67a5f0b0553e22689a539b80cbe4a1cd126e2bde` | 6 |
+| `yusd` | XRPL EVM Testnet `1449000` | `0x67a5f0b0553e22689a539b80cbe4a1cd126e2bde` | 18 |
+| `yusd` | Ethereum Sepolia `11155111` | `0x67a5f0b0553e22689a539b80cbe4a1cd126e2bde` | 6 |
+
+Native assets use the sentinel token address returned by Nitronode: `0x0000000000000000000000000000000000000000` for native EVM gas tokens and `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` where the node config uses that native-token marker.
+
 ---
 
 ## Deployed v1 Contract Folders
@@ -76,5 +138,6 @@ Asset symbols are node configuration, not protocol constants. The current v1 san
 ## See Also
 
 - [Quick Start Guide](/nitrolite/build/getting-started/quickstart) — Get started building with Yellow SDK
+- [Builder Toolkit](/nitrolite/builder-toolkit) — Find live examples, Playground, faucet, MCP, and SDK entry points
 - [Multi-Party App Sessions](/nitrolite/build/sdk/multi-party-app-sessions) — Create multi-party application sessions
 - [API Reference](/nitrolite/api-reference) — Complete SDK documentation

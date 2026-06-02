@@ -10,8 +10,11 @@ sidebar_position: 3
 
 Configuration is passed as variadic options to `Client.create()`:
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL for `wsURL`. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+Use the sandbox endpoint for local development and test assets. Use production/mainnet only when your app is ready for live assets.
+
+- Sandbox: `wss://nitronode-sandbox.yellow.org/v1/ws`
+- Production/mainnet: `wss://nitronode.yellow.org/v1/ws`
 :::
 
 ```typescript
@@ -24,7 +27,7 @@ import {
 } from '@yellow-org/sdk';
 
 const client = await Client.create(
-  '<sandbox-url-coming-soon>',
+  'wss://nitronode-sandbox.yellow.org/v1/ws',
   stateSigner,
   txSigner,
   withBlockchainRPC(chainId, rpcURL),  // Blockchain RPC (required for checkpoint)
@@ -70,7 +73,7 @@ import Decimal from 'decimal.js';
 const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
 const client = await Client.create(
-  '<sandbox-url-coming-soon>',
+  'wss://nitronode-sandbox.yellow.org/v1/ws',
   stateSigner,
   txSigner,
   withBlockchainRPC(80002n, process.env.POLYGON_AMOY_RPC!),

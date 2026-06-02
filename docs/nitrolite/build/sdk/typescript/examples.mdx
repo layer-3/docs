@@ -6,8 +6,8 @@ sidebar_position: 4
 
 # Examples
 
-:::info Sandbox URL - coming soon
-Use your Nitronode WebSocket URL in each `Client.create()` call below. The public sandbox URL is intentionally shown as `<sandbox-url-coming-soon>` until the canonical host is pinned.
+:::info Public Nitronode endpoints
+The examples below use the sandbox endpoint. Use `wss://nitronode.yellow.org/v1/ws` only when you intentionally connect to production/mainnet assets.
 :::
 
 ## Basic Deposit and Transfer
@@ -20,7 +20,7 @@ async function basicExample() {
   const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.RPC_URL!)
@@ -66,7 +66,7 @@ async function multiChainExample() {
   const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.POLYGON_RPC!),
@@ -100,7 +100,7 @@ import { Client, createSigners } from '@yellow-org/sdk';
 async function queryTransactions() {
   const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner
   );
@@ -150,7 +150,7 @@ async function appSessionExample() {
   );
 
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withBlockchainRPC(80002n, process.env.RPC_URL!)
@@ -294,7 +294,7 @@ async function connectWithWallet() {
   const txSigner = new BrowserTransactionSigner(walletClient);
 
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withBlockchainRPC(11155111n, 'https://rpc.sepolia.io'),
@@ -451,7 +451,7 @@ async function monitorConnection() {
   const { stateSigner, txSigner } = createSigners(process.env.PRIVATE_KEY as `0x${string}`);
 
   const client = await Client.create(
-    '<sandbox-url-coming-soon>',
+    'wss://nitronode-sandbox.yellow.org/v1/ws',
     stateSigner,
     txSigner,
     withErrorHandler((error) => {
