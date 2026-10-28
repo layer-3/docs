@@ -1,5 +1,5 @@
 ---
-title: Yellow Network Whitepaper v2.1
+title: Yellow Network Whitepaper v2.2
 description: Yellow Network Whitepaper - Understand the Yellow token, network architecture, and ecosystem
 ---
 
@@ -7,7 +7,7 @@ description: Yellow Network Whitepaper - Understand the Yellow token, network ar
 
 ## Summary
 
-YELLOW is the native utility token of the Yellow Network, only intended to provide access to the goods and services supplied by Layer3 Fintech Ltd. — including clearing network access, SDK and developer tools, broker registration, node operation, AppRegistry, and dispute resolution. YELLOW operates across multiple blockchain networks, including Ethereum, Base, Arbitrum, Linea, BNB, and Polygon, and has a maximum supply of 10,000,000,000 tokens.
+YELLOW is the native utility token of the Yellow Network, only intended to provide access to the goods and services supplied by Layer3 Fintech Ltd., including clearing network access, SDK and developer tools, broker registration, node operation, AppRegistry, and dispute resolution. YELLOW is an ERC-20 token on Ethereum with a maximum supply of 10,000,000,000 tokens. The Yellow Network it gives access to operates across Ethereum, Base, Arbitrum, Linea, BNB Chain, Polygon, XRPL EVM Sidechain and Solana.
 
 Holders of YELLOW tokens have the right to use the token for accessing network services. However, they do not have ownership, voting, or profit-sharing rights in Layer3 Fintech Ltd. or its affiliates, and the token may lose its value in part or in full. Users who hold YELLOW pay service fees directly at a discounted rate. Users who do not yet hold YELLOW may optionally pay in other supported assets through an independent third-party conversion mechanism.
 
@@ -24,7 +24,16 @@ The total supply of YELLOW is 10,000,000,000 tokens. The issue price for the mos
 
 **Token allocation:**
 
-![Token Allocation](/img/token-allocation.png)
+![Token Allocation](/img/token-allocation-v2.2.png)
+
+| Category | Share | Tokens | Release terms |
+|---|---|---|---|
+| Founders | 10% | 1,000,000,000 | 6-month cliff, then 60 months linear |
+| Token Sales (private and public) | 12.5% | 1,250,000,000 | 4% at TGE (8 March 2026), then released on a set schedule through August 2029 |
+| Community Treasury | 30% | 3,000,000,000 | 6-month cliff, 20% released at cliff end, then 96 months linear |
+| Foundation Treasury | 20% | 2,000,000,000 | 1% at TGE, 6-month cliff, 15% released at cliff end, then 36 months linear |
+| Network Growth Incentives | 25% | 2,500,000,000 | 6-month cliff, then 60 months linear |
+| Ecosystem Accessibility Reserve | 2.5% | 250,000,000 | 100% at TGE |
 
 ---
 
@@ -32,17 +41,17 @@ The total supply of YELLOW is 10,000,000,000 tokens. The issue price for the mos
 
 **Layer3 Fintech Ltd.**
 
-- **Legal form:** 6EH6
-- **Registered address:** Jayla Place, P.O. Box 216, Road Town, VG1110-VG
+- **Legal form:** 6EH6 (BVI Business Company limited by shares, company number 2092094)
+- **Registered address:** C/O Harkom Corporate Services Limited, Jayla Place, 2nd Floor, P.O. Box 216, Road Town, Tortola VG1110, British Virgin Islands
 - **Registration date:** 2022-02-21
 - **Legal entity identifier:** 254900STB0GXVL1RUO86
-- **Parent company:** Layer3 Foundation
+- **Parent company:** Layer3 Capital (Cayman Islands), wholly owned by Layer3 Foundation (Cayman Islands)
 - **Contact:** [legal@layer3.foundation](mailto:legal@layer3.foundation)
 
 ### Management Body
 
-Identity: Paul Parker
-Function: Sole Director of Layer3 Fintech Ltd. and its parent Layer3 Foundation
+Identity: Michel Eduardo Giacomotti Coronado\
+Function: Director of Layer3 Fintech Ltd.
 
 Layer3 Foundation is in the process of establishing a Foundation Council comprising project advisors and community representatives. The Council has been partially appointed at the time of this white paper, with remaining members to be confirmed following filing.
 
@@ -52,19 +61,19 @@ Layer3 Foundation is in the process of establishing a Foundation Council compris
 
 Yellow Network's strategy is to provide a complete Web3 toolkit that unifies liquidity, simplifies dApp development, and improves the user experience. The base technology is a three-layer architecture:
 
-1. **Layer 1** — EVM smart contracts provide on-chain custody and dispute enforcement.
-2. **Layer 2** — The Yellow Clearnet, a distributed peer-to-peer ledger, enables off-chain clearing and settlement across multiple blockchains using threshold cryptographic signatures.
-3. **Layer 3** — The Application Layer supports dApps, the App Store, and developer tools.
+1. **Layer 1:** EVM smart contracts provide on-chain custody and dispute enforcement.
+2. **Layer 2:** The Yellow Clearnet, a distributed peer-to-peer ledger, enables off-chain clearing and settlement across multiple blockchains using threshold cryptographic signatures.
+3. **Layer 3:** The Application Layer supports dApps, the App Store, and developer tools.
 
 This architecture creates a global, unified pool of liquidity while enabling transactions at scale. Built on top of this is the Yellow SDK, which provides developers with the tools to build dApps with the speed and user experience of traditional Web2 platforms.
 
 ### Products and Services
 
-- **Yellow Network** — The Layer-3 protocol underpins all network operations, providing the clearing and settlement infrastructure for the ecosystem.
-- **Yellow SDK** — A comprehensive Software Development Kit that serves as the primary toolkit for developers to build advanced, user-friendly, and efficient dApps on the Yellow Network.
-- **Yellow Token** — The native utility token that provides access to goods and services supplied by Layer3 Fintech Ltd. within the Yellow Network.
-- **NeoDAX** — An open-source crypto brokerage solution that provides turnkey liquidity and can handle hundreds of thousands of transactions per second.
-- **Yellow.com** — A separate entity from Layer3 Fintech Ltd., with no shared management. It currently serves as a media outlet.
+- **Yellow Network:** The Layer-3 protocol underpins all network operations, providing the clearing and settlement infrastructure for the ecosystem.
+- **Yellow SDK:** A comprehensive Software Development Kit that serves as the primary toolkit for developers to build advanced, user-friendly, and efficient dApps on the Yellow Network. The SDK MCP server (July 2026) brings the SDK into AI coding tools.
+- **Yellow Token:** The native utility token that provides access to goods and services supplied by Layer3 Fintech Ltd. within the Yellow Network.
+- **NeoDAX:** White-label brokerage software built on the Yellow SDK that provides turnkey liquidity and can handle hundreds of thousands of transactions per second.
+- **Yellow.com:** A separate entity from Layer3 Fintech Ltd., with no shared management. It currently serves as a media outlet.
 
 **Markets served:** The primary market for Yellow Network is professional traders and brokers. The Yellow ecosystem appeals to a wider audience aiming to address common issues in traditional and Web3 finance and to provide new experiences spanning finance and entertainment.
 
@@ -78,9 +87,9 @@ Yellow aims to create a decentralised clearing and settlement framework where bu
 
 ### Entities Involved
 
-Yellow is an open-source software framework developed through multi-entity collaboration across several independent organisations and jurisdictions. The core state channel technology builds on academic research from statechannels.org and the Nitrolite framework, developed in collaboration with Consensys and other open-source contributors. Principal development entities include Clearsync Ltd. (UK) and other independent contributors across multiple jurisdictions, with approximately 60 core developers contributing across the open-source codebase. The project's ecosystem extends further through participation in Ethereum Foundation and ETHGlobal hackathons, with over 500 independent developer-built projects now building on the protocol.
+Yellow is an open-source software framework. The core state channel technology builds on academic research from statechannels.org and the Nitrolite framework, developed in collaboration with Consensys and other open-source contributors. Protocol development is carried out by Yellow Software, a service company that employs the core team and provides it to Layer3 Fintech Ltd., together with independent open-source contributors. The project's ecosystem extends further through participation in Ethereum Foundation and ETHGlobal hackathons, with over 500 independent developer-built projects now building on the protocol.
 
-Layer3 Fintech Ltd. integrates, maintains, and supplies the resulting goods and services — including the protocol software, SDK, developer tools, AppRegistry, smart account infrastructure, and associated platform services.
+Layer3 Fintech Ltd. integrates, maintains, and supplies the resulting goods and services, including the protocol software, SDK, developer tools, AppRegistry, smart account infrastructure, and associated platform services.
 
 ### Token Utility
 
@@ -107,6 +116,7 @@ YELLOW is consumed when accessing protocol services: each protocol operation req
 - Establishment of the Clearing Network Legal Framework
 - Launch of the Yellow.com User Portal
 - Finalization of the Core Protocol Architecture
+- Hacken security audit of the Nitrolite custody contracts (September 2024)
 
 **2025:**
 
@@ -115,57 +125,66 @@ YELLOW is consumed when accessing protocol services: each protocol operation req
 - Official Launch of the Yellow Builder Program
 - Launch of 100+ Third-Party Applications on the Yellow Network
 
-**Outlook:**
-
 **2026:**
 
-- Public Release of the NeoDAX Brokerage Software — Q2 2026
-- Finalization of the Clearing Network Architecture
-- Public Release of the Yellow Clearing Network — Q3 2026
-- Initiation of non-EVM Chain Support (Closed Beta) — Q4 2026
+- YELLOW admitted to trading (8 March 2026)
+- Yellow Builders Alliance launched (12 March 2026)
+- Clearnet on-chain registries (NodeRegistry, AppRegistry, YellowGovernor, TimelockController) live on Ethereum mainnet (17 March 2026)
+- Guardian audits of the YELLOW token, the Yellow Network contracts and Nitewatch (March 2026)
+- Solana integration (15 July 2026)
+- Yellow SDK MCP server for AI coding tools (22 July 2026)
+- Arc connection (16 September 2026)
+
+**Outlook:**
+
+- Final release of the Yellow Clearnet and onboarding of node operators through the NodeRegistry: Q4 2026
+- Public release of the NeoDAX brokerage software: Q1 2027
+- Venue and broker connections to the clearing network: Q1 2027
+- Migration of applications to the Yellow Clearnet and first protocol-parameter proposals through YellowGovernor
+- Support for non-EVM chains beyond Solana and XRPL
 
 ### Operational Status
 
-The following goods and services are fully operational at the time of this white paper: State Channels, Smart Account Abstraction, Yellow Wallet, Yellow.com Portal, Core Protocol, Yellow SDK v1.0, Yellow Builder Program, Yellow App Store, Yellow App Registry, and Yellow Node Registry. The Application Layer (AppLayer) and the Ledger Layer (DLT Clearnet) are accessible to node operators on testnet and are expected to reach mainnet within six months of filing.
+The following goods and services are fully operational at the time of this white paper: State Channels, Smart Account Abstraction, Yellow Wallet, Yellow.com Portal, Core Protocol, Yellow SDK v1.0 and SDK MCP server, Yellow Builder Program, Yellow App Store, Yellow App Registry, and Yellow Node Registry. The on-chain registries of the Yellow Clearnet (NodeRegistry, AppRegistry, YellowGovernor and TimelockController) have been live on Ethereum mainnet since 17 March 2026. The final release of the Ledger Layer (Yellow Clearnet) is expected in Q4 2026.
 
 ### Resource Allocation
 
 Layer3 Fintech Ltd. has committed substantial resources to the Yellow project:
 
-- **Financial Resources** — Private round seed funding and a $1M public placement, primarily allocated to operational expenses and team salaries.
-- **Human Resources** — 33 full-time staff within Layer3 Fintech Ltd., supplemented by approximately 60 core developers across independent entities including Clearsync Ltd. (UK). Advisors include Chris Larsen, co-founder of Ripple Labs.
-- **Technical Resources** — Builds on open-source state channel research from statechannels.org and the Nitrolite framework developed in collaboration with Consensys.
-- **Operational Partnerships** — Exchange partnerships with Kraken, Coinbase, Bithumb, and yellow.pro have been initiated. Admission to additional exchanges is subject to final listing agreements.
+- **Financial Resources:** Private token sales between 2022 and 2025, with Chris Larsen, co-founder of Ripple, as lead seed investor, and a USD 1 million public placement under US Regulation D and Regulation S completed in August 2025. The private sales raised about USD 11 million, of which about USD 8 million was refunded to venture investors; retail participants kept their allocations. Funds are primarily allocated to development, operations and team costs.
+- **Human Resources:** Layer3 Fintech Ltd. has one employee, its director. The core team of 35 people (product and engineering 20, marketing and growth 7, operations 5, business development 3) is employed by Yellow Software and provided to Layer3 Fintech Ltd. Advisors: Louis Bellet and Camille Meulien.
+- **Technical Resources:** Builds on open-source state channel research from statechannels.org and the Nitrolite framework developed in collaboration with Consensys.
+- **Operational Partnerships:** Admission to trading on additional exchanges is subject to final listing agreements and approvals.
 
 ---
 
 ## Offer Information
 
-The public offer of the YELLOW token has been completed. The most recent public sale was successfully funded and closed on 25 August 2025. The YELLOW token was admitted to secondary market trading on 8 March 2026 on a non-EU regulated exchange. Layer3 Fintech Ltd. intends to seek admission to trading on additional centralised exchanges, including Kraken, Coinbase, and Bithumb, as well as on yellow.pro, subject to final agreements and listing approvals.
+The public offer of the YELLOW token has been completed. The most recent public sale was successfully funded and closed on 25 August 2025. The YELLOW token was admitted to secondary market trading on 8 March 2026 on Yellow Pro (yellow.pro), a non-EU trading platform, and is also traded on Uniswap V2 and V4 on Ethereum. Layer3 Fintech Ltd. intends to seek admission to trading on additional centralised exchanges, subject to final agreements and listing approvals.
 
 The public offer was facilitated through Republic, a US-based funding platform, under Regulation D and Regulation S. No MiCA-authorized CASP was designated for token placement.
 
 ### Token Allocation Details
 
-Each allocation is functional and tied to the delivery or consumption of Yellow ecosystem services:
+Each allocation is functional and tied to the delivery or consumption of Yellow ecosystem services. Each allocation is held in a dedicated Treasury contract on Ethereum, and the Treasury contracts are owned by Layer3 Foundation through a 3-of-4 multisig. Release terms are counted from TGE on 8 March 2026.
 
-- **10% Founders** — subject to a 6-month cliff and 60-month linear vesting schedule; allocated to the founding team in connection with their ongoing obligations to develop and maintain the goods and services accessible through YELLOW.
-- **12.5% Token Sales** (private and public) — distributed to participants who require YELLOW to access and use Yellow ecosystem services.
-- **30% Community Treasury** — grants for application builders who will consume YELLOW for AppRegistry registration, SDK access fees, and service quality deposits.
-- **20% Foundation Treasury** — allocated to fund the issuer's ongoing research, development, and delivery of goods and services.
-- **25% Network Growth Incentives** — distributed automatically based on network scale through protocol-governed rules; operational subsidies for node operators who must post YELLOW as a mandatory security deposit.
-- **2.5% Ecosystem Accessibility Reserve** — allocated to ensure that YELLOW remains accessible on trading platforms for participants who need to acquire it for its intended utility functions.
+- **10% Founders:** subject to a 6-month cliff and 60-month linear vesting schedule; allocated to the founding team in connection with their ongoing obligations to develop and maintain the goods and services accessible through YELLOW. Treasury contract: `0x914abaDC0e36e03f29e4F1516951125c774dBAc8`
+- **12.5% Token Sales** (private and public): distributed to participants who require YELLOW to access and use Yellow ecosystem services. 4% released at TGE, then released on a set schedule through August 2029. Treasury contract: `0xd572f3a0967856a09054578439aCe81B2f2ff88B`
+- **30% Community Treasury:** grants for application builders who will consume YELLOW for AppRegistry registration, SDK access fees, and service quality deposits. 6-month cliff, 20% released at cliff end, then 96 months linear. Treasury contract: `0xAec5157545635A7523EFB5ABe3a37F52dB7DE72e`
+- **20% Foundation Treasury:** allocated to fund the issuer's ongoing research, development, and delivery of goods and services. 1% released at TGE, 6-month cliff, 15% released at cliff end, then 36 months linear. Treasury contract: `0xfD8E336757aE9cDc0766264064B51492814fCd47`
+- **25% Network Growth Incentives:** distributed automatically based on network scale through protocol-governed rules; operational subsidies for node operators who must post YELLOW as a mandatory security deposit. 6-month cliff, then 60 months linear. Treasury contract: `0xE277830b3444EA2cfee2B95F780c971222DEcfA9`
+- **2.5% Ecosystem Accessibility Reserve:** allocated to ensure that YELLOW remains accessible on trading platforms for participants who need to acquire it for its intended utility functions. 100% released at TGE. Treasury contract: `0xA8f52FFe4DeE9565505f8E390163A335D6A2F708`
 
 ---
 
 ## Token Information
 
-YELLOW is a fungible, transferable, and digitally stored crypto-asset operating primarily on the Ethereum blockchain as an ERC-20 token, deployed to Ethereum mainnet on 5 March 2026 at contract address `0x236eB848C95b231299B4AA9f56c73D6893462720`.
+YELLOW is a fungible, transferable, and digitally stored crypto-asset issued on the Ethereum blockchain as an ERC-20 token, deployed to Ethereum mainnet on 5 March 2026 at contract address `0x236eB848C95b231299B4AA9f56c73D6893462720`.
 
 - **Type:** Utility token
-- **Total supply:** 10,000,000,000 (fixed, no inflation or deflation)
-- **Standard:** ERC-20
-- **Supported chains:** Ethereum, Base, Arbitrum, Linea, BNB, Polygon
+- **Total supply:** 10,000,000,000 (fixed, no inflation or deflation; the contract has no mint or burn function)
+- **Standard:** ERC-20 on Ethereum
+- **Yellow Network chains:** Ethereum, Base, Arbitrum, Linea, BNB Chain, Polygon, XRPL EVM Sidechain, Solana
 - **Digital Token Identifier:** SCKVXCTRN
 
 The token is not backed by any asset or reference value, does not purport to maintain a stable value, and does not represent a claim on the issuer's assets, profits, or governance rights.
@@ -178,14 +197,14 @@ YELLOW is classified as a utility token under Regulation (EU) 2023/1114 (MiCA) A
 
 Holders of YELLOW acquire a digital asset that is only intended to provide access to the goods and services supplied by Layer3 Fintech Ltd. within the Yellow Network ecosystem. Specifically:
 
-- **No ownership rights** — YELLOW does not entitle the holder to dividends, profit-sharing, voting rights, or claims on the issuer's assets.
-- **Utility access** — Enables paying service access fees for transactions, clearing, and in-app subscriptions; posting mandatory functional security deposits for node operation; and accessing dispute adjudication services.
-- **Transferable** — YELLOW may be traded on secondary markets.
-- **No supply adjustment** — The total supply is statically capped. There is no protocol-based burning or inflationary mechanism.
+- **No ownership rights:** YELLOW does not entitle the holder to dividends, profit-sharing, voting rights, or claims on the issuer's assets.
+- **Utility access:** Enables paying service access fees for transactions, clearing, and in-app subscriptions; posting mandatory functional security deposits for node operation; and accessing dispute adjudication services.
+- **Transferable:** YELLOW may be traded on secondary markets.
+- **No supply adjustment:** The total supply is statically capped. There is no protocol-based burning or inflationary mechanism.
 
 ### Conditions for Modifications
 
-Protocol-level service parameters (security thresholds, fee levels, supported chains, collateral requirements) may be modified through the node operator governance mechanism. Such modifications require collective agreement from multiple active node operators through distributed multi-signature execution. Passive token holders cannot initiate or vote on parameter changes. Governance scope is strictly limited to protocol-level service parameters and does not extend to token supply, treasury allocation, or issuer corporate matters.
+Protocol-level service parameters (security thresholds, fee levels, supported chains, collateral requirements) may be modified through the node operator governance mechanism, run on-chain through YellowGovernor (`0x7Ce0AE21E11dFEDA2F6e4D8bF2749E4061119512`) with execution delayed by a TimelockController (`0x9530896F9622b925c37dF5Cfa271cc9deBB226b7`). Voting weight comes from YELLOW locked as collateral in the NodeRegistry by active node operators. Passive token holders cannot initiate or vote on parameter changes. Governance scope is strictly limited to protocol-level service parameters and does not extend to token supply, treasury allocation, or issuer corporate matters.
 
 ---
 
@@ -195,37 +214,38 @@ Protocol-level service parameters (security thresholds, fee levels, supported ch
 
 The Yellow Network operates as a three-layer architecture built on top of public blockchains. The underlying technology builds on open-source state channel research (statechannels.org) and collaborative development, including the Nitrolite framework developed with Consensys.
 
-**Layer 1 — Base Blockchain (EVM Settlement)**
+**Layer 1: Base Blockchain (EVM Settlement)**
 
 YELLOW is implemented as an ERC-20 token on Ethereum, ensuring compatibility with existing wallets, smart contract systems, and decentralised applications. Smart contracts deployed on each supported EVM chain provide on-chain asset custody, the NodeRegistry for node operator registration and collateral management, the AppRegistry for application registration, and collateral slashing enforcement.
 
-**Layer 2 — Ledger Layer (Yellow Clearnet)**
+**Layer 2: Ledger Layer (Yellow Clearnet)**
 
-A distributed peer-to-peer ledger that operates off-chain above the base blockchain. Independent node operators form a decentralised network where each user account is guarded by a group of nodes assigned by the protocol. These nodes collectively manage the account's state using threshold cryptographic signatures — no single node can unilaterally move funds; a supermajority of the group must agree before any balance change is recorded.
+A distributed peer-to-peer ledger that operates off-chain above the base blockchain. Independent node operators form a decentralised network where each user account is guarded by a group of nodes assigned by the protocol. These nodes collectively manage the account's state using threshold cryptographic signatures: no single node can unilaterally move funds; a supermajority of the group must agree before any balance change is recorded.
 
 The protocol scales security proportionally: as the value held in an account grows, it automatically assigns more nodes to guard it, ensuring the total collateral at risk always exceeds the value being protected. A separate set of nodes independently verifies every state change and can produce on-chain fraud proofs if the primary group acts dishonestly.
 
-The Ledger Layer provides Virtual State Channels — channels that are created and managed entirely off-chain without requiring an on-chain transaction to initialise — enabling off-chain balance management, cross-chain clearing and settlement, and unified multi-chain balances through clearnode infrastructure.
+The Ledger Layer provides Virtual State Channels (channels that are created and managed entirely off-chain without requiring an on-chain transaction to initialise), enabling off-chain balance management, cross-chain clearing and settlement, and unified multi-chain balances through clearnode infrastructure.
 
-**Layer 3 — Application Layer (AppLayer)**
+**Layer 3: Application Layer (AppLayer)**
 
 Applications built on top of the Ledger Layer. Application-level state updates are agreed off-chain by channel participants through quorum consensus. Misconduct is enforced through collateral slashing on the base blockchain. The Application Layer supports the Yellow App Store, SDK-built applications, and specialised services such as dispute adjudication through independent arbitration forums.
 
 ### Protocols and Technical Standards
 
-**Layer 1 — On-chain standards**
+**Layer 1: On-chain standards**
 
 - ERC-20 token standard on Ethereum
 - Custody smart contracts for on-chain asset custody and withdrawal settlement
 - NodeRegistry and AppRegistry contracts for node/application registration and collateral management
+- YellowGovernor and TimelockController for protocol-parameter governance
 
-**Layer 2 — Ledger Layer protocols**
+**Layer 2: Ledger Layer protocols**
 
 - Peer-to-peer network protocol with deterministic, decentralised routing
 - Threshold signature protocol (BLS) requiring supermajority for state updates
 - Virtual State Channel protocol for off-chain balance management and cross-chain clearing
 
-**Layer 3 — Application Layer standards**
+**Layer 3: Application Layer standards**
 
 - AppLayer RPC API for application-to-clearnode interaction
 - AppLayerClient library for Virtual State Channel control and cryptographic signing
@@ -235,11 +255,11 @@ Applications built on top of the Ledger Layer. Application-level state updates a
 
 The Yellow Network uses a layered consensus model:
 
-**Layer 1 — Ethereum Proof-of-Stake:** YELLOW inherits Ethereum's PoS consensus. Validators stake ETH to participate in block proposal and attestation, ensuring transactions are finalised through consensus checkpoints.
+**Layer 1: Ethereum Proof-of-Stake.** YELLOW inherits Ethereum's PoS consensus. Validators stake ETH to participate in block proposal and attestation, ensuring transactions are finalised through consensus checkpoints.
 
-**Layer 2 — Threshold-signature consensus:** Each user account is guarded by a group of nodes that reach consensus through threshold cryptographic signatures. A supermajority must co-sign every state update. A separate set of verifier nodes independently checks state changes and can trigger on-chain dispute certificates and automatic collateral slashing.
+**Layer 2: Threshold-signature consensus.** Each user account is guarded by a group of nodes that reach consensus through threshold cryptographic signatures. A supermajority must co-sign every state update. A separate set of verifier nodes independently checks state changes and can trigger on-chain dispute certificates and automatic collateral slashing.
 
-**Layer 3 — Channel consensus:** State updates within Virtual State Channels are agreed off-chain by participating parties through quorum co-signing. The base blockchain is used only for asset custody and collateral slashing enforcement when fraud is detected.
+**Layer 3: Channel consensus.** State updates within Virtual State Channels are agreed off-chain by participating parties through quorum co-signing. The base blockchain is used only for asset custody and collateral slashing enforcement when fraud is detected.
 
 ### Incentive Mechanisms and Fees
 
@@ -255,15 +275,15 @@ Posting YELLOW as collateral is a functional security requirement. The protocol 
 
 Node collateral serves three essential functions:
 
-1. **Sybil resistance** — a minimum collateral threshold per node prevents cheap flooding of the network with malicious nodes.
-2. **Fraud deterrence** — if a node participates in producing a fraudulent transaction, its collateral is slashed automatically through on-chain fraud proofs.
-3. **Dynamic security scaling** — as value held in any account grows, the protocol assigns more nodes to guard it, requiring proportionally more collateral at risk.
+1. **Sybil resistance:** a minimum collateral threshold per node prevents cheap flooding of the network with malicious nodes.
+2. **Fraud deterrence:** if a node participates in producing a fraudulent transaction, its collateral is slashed automatically through on-chain fraud proofs.
+3. **Dynamic security scaling:** as value held in any account grows, the protocol assigns more nodes to guard it, requiring proportionally more collateral at risk.
 
 Protocol fees from processed transactions are locked into node operators' collateral, increasing slashing exposure proportionally. This does not constitute income, yield, or reward. There is no fee distribution to passive token holders.
 
 **Node Operator Governance**
 
-Node operator governance replaces a centralized administrator key with distributed multi-signature execution by operators who run network infrastructure. Governance participation requires:
+Node operator governance replaces a centralized administrator key with on-chain governance by operators who run network infrastructure. Governance participation requires:
 
 - Running a clearnode with registered nodes
 - Maintaining collateral above the protocol minimum
@@ -273,9 +293,9 @@ Governance is non-transferable, non-delegable, and terminates immediately upon c
 
 ### Audits
 
-**Hacken (2024)** — Independent security assessment of Ethereum smart contracts. No critical issues found. Full report: [hacken.io/audits/openware-yellow-network](https://hacken.io/audits/openware-yellow-network/sca-yellow-network-vault-sept-2024/)
+**Hacken (September 2024):** Independent security assessment of the Nitrolite custody smart contracts. No critical, high or medium issues found. Full report: [hacken.io/audits/openware-yellow-network](https://hacken.io/audits/openware-yellow-network/sca-yellow-network-vault-sept-2024/)
 
-**GuardianAudits (ongoing)** — Auditing the decentralised ledger (Yellow Clearnet). Reports: [github.com/GuardianAudits](https://github.com/GuardianAudits/Audits/tree/main/Yellow%20Network/)
+**Guardian (March 2026):** Three reports covering the YELLOW token (Token.sol, no findings), the Yellow Network contracts and Nitewatch; 21 findings in total, none critical or high. Reports: [guardian.security/portfolio/yellow](https://guardian.security/portfolio/yellow/) and [github.com/GuardianAudits](https://github.com/GuardianAudits/Audits/tree/main/Yellow%20Network/)
 
 ---
 
@@ -283,66 +303,67 @@ Governance is non-transferable, non-delegable, and terminates immediately upon c
 
 ### Offer-Related Risks
 
-- **Market volatility** — The market price of YELLOW may fluctuate sharply due to broader crypto-asset sentiment, exchange depth, and scheduled token releases.
-- **Liquidity conditions** — YELLOW may experience low trading volumes or wide bid-ask spreads, particularly during early distribution.
-- **Funds loss** — Risks such as transaction errors, allocation mistakes, or offer cancellation may expose participants to potential loss.
-- **Scheduled unlocks** — Pre-allocated YELLOW tranches are released on a pre-defined schedule and may affect market pricing.
-- **Regulatory exposure** — YELLOW may fall under multiple evolving legal and regulatory regimes across jurisdictions.
+- **Market volatility:** The market price of YELLOW may fluctuate sharply due to broader crypto-asset sentiment, exchange depth, and scheduled token releases.
+- **Liquidity conditions:** YELLOW may experience low trading volumes or wide bid-ask spreads, particularly during early distribution.
+- **Funds loss:** Risks such as transaction errors, allocation mistakes, or offer cancellation may expose participants to potential loss.
+- **Scheduled unlocks:** Pre-allocated YELLOW tranches are released on a pre-defined schedule and may affect market pricing.
+- **Regulatory exposure:** YELLOW may fall under multiple evolving legal and regulatory regimes across jurisdictions.
 
 ### Issuer-Related Risks
 
-- **Operational integrity** — Weaknesses in fraud prevention, error handling, or system reliability could cause losses or reduce user trust.
-- **Governance practices** — Concentration of decision-making within a small group may create risks of mismanagement.
-- **Partnership dependencies** — If key partners leave or fail to perform, network operations could slow down.
-- **Regulatory risks** — New rules or stricter compliance demands could add costs or limit activity in some regions.
+- **Operational integrity:** Weaknesses in fraud prevention, error handling, or system reliability could cause losses or reduce user trust.
+- **Governance practices:** Concentration of decision-making within a small group may create risks of mismanagement.
+- **Partnership dependencies:** If key partners leave or fail to perform, network operations could slow down.
+- **Regulatory risks:** New rules or stricter compliance demands could add costs or limit activity in some regions.
 
 ### Crypto-Asset-Related Risks
 
-- **Volatility** — Fluctuations may affect the cost of accessing network services and the operational economics of node operators.
-- **Liquidity** — Limited market liquidity may make it difficult to buy or sell without causing large price changes.
-- **Market manipulation** — Large holders could influence price movements through coordinated trading.
-- **Irreversibility** — Transactions are irreversible. Mistaken or unauthorized transfers cannot be undone.
-- **Private key management** — Loss, theft, or exposure of private keys results in permanent loss of assets.
-- **Custodial risks** — Third-party custodians may suffer technical failures, breaches, or poor management.
-- **Privacy** — All on-chain activity is publicly visible, which can expose wallet addresses or transaction patterns.
-- **Treasury risks** — If network activity declines, premium feature revenue may be insufficient to cover development costs.
+- **Volatility:** Fluctuations may affect the cost of accessing network services and the operational economics of node operators.
+- **Liquidity:** Limited market liquidity may make it difficult to buy or sell without causing large price changes.
+- **Market manipulation:** Large holders could influence price movements through coordinated trading.
+- **Irreversibility:** Transactions are irreversible. Mistaken or unauthorized transfers cannot be undone.
+- **Private key management:** Loss, theft, or exposure of private keys results in permanent loss of assets.
+- **Custodial risks:** Third-party custodians may suffer technical failures, breaches, or poor management.
+- **Privacy:** All on-chain activity is publicly visible, which can expose wallet addresses or transaction patterns.
+- **Treasury risks:** If network activity declines, premium feature revenue may be insufficient to cover development costs.
 
 ### Project Implementation-Related Risks
 
-- **Technical delays** — Unforeseen technical issues or underestimated resource needs could lead to delayed milestones or increased costs.
-- **Operational interruptions** — Outages or degraded performance of brokers, nodes, or sequencers could temporarily halt transaction processing.
-- **Governance and control risk** — Weak governance safeguards could enable parameter manipulation or insufficient operator participation.
-- **Interdependency across systems** — A malfunction in one module could cascade into others due to shared infrastructure and liquidity routing.
-- **Dependency on third parties** — Delays or policy changes from external providers could slow progress or introduce vulnerabilities.
-- **Operator concentration** — If only a small group of node operators supports key functions, the network faces concentration risk.
-- **Force majeure** — External events such as blockchain congestion or global infrastructure failures could interrupt access.
+- **Technical delays:** Unforeseen technical issues or underestimated resource needs could lead to delayed milestones or increased costs.
+- **Operational interruptions:** Outages or degraded performance of brokers, nodes, or sequencers could temporarily halt transaction processing.
+- **Governance and control risk:** Weak governance safeguards could enable parameter manipulation or insufficient operator participation.
+- **Interdependency across systems:** A malfunction in one module could cascade into others due to shared infrastructure and liquidity routing.
+- **Dependency on third parties:** Delays or policy changes from external providers could slow progress or introduce vulnerabilities.
+- **Operator concentration:** If only a small group of node operators supports key functions, the network faces concentration risk.
+- **Force majeure:** External events such as blockchain congestion or global infrastructure failures could interrupt access.
 
 ### Technology-Related Risks
 
-- **Smart-contract errors** — Defects in custody contracts, NodeRegistry, or AppRegistry could result in value misrouting or lock-ins.
-- **Protocol logic defects** — Logic errors in threshold-signature consensus or verification may result in undetected fraud or incorrect slashing.
-- **Cryptographic risks** — Compromise of signature algorithms or quantum computing advances could endanger signature validity.
-- **Infrastructure dependencies** — Dependencies on clearnodes, RPC gateways, explorers, and indexers could create single points of failure.
+- **Smart-contract errors:** Defects in custody contracts, NodeRegistry, or AppRegistry could result in value misrouting or lock-ins.
+- **Protocol logic defects:** Logic errors in threshold-signature consensus or verification may result in undetected fraud or incorrect slashing.
+- **Cryptographic risks:** Compromise of signature algorithms or quantum computing advances could endanger signature validity.
+- **Infrastructure dependencies:** Dependencies on clearnodes, RPC gateways, explorers, and indexers could create single points of failure.
 
 ### Mitigation Measures
 
 - **Market volatility:** The Foundation Treasury maintains a diversified asset portfolio. Protocol fees are locked into node operators' collateral, providing security independent of treasury funding.
 - **Funds loss:** Purchasers benefited from a 14-day withdrawal right. All funds were securely held in safeguarded accounts or managed by regulated third-party custodians until token allocation was complete.
 - **Operational integrity:** Collateral deposits, automated smart-contract dispute resolution, and distributed peer-to-peer consensus with independent fraud verification.
-- **Governance:** Transitioning from a single administrator key to distributed multi-signature execution by active node operators.
+- **Governance:** Protocol parameters are changed through on-chain governance by active node operators (YellowGovernor), with execution delayed by a timelock.
+- **Treasury control:** Each allocation sits in a dedicated Treasury contract owned by Layer3 Foundation through a 3-of-4 multisig.
 - **Treasury risks:** Foundation Treasury managed by Layer3 Foundation with documented policies covering diversification, operational continuity, and quarterly reporting.
 - **Third-party dependency:** Working with a broad range of specialized partners (HackenAI, Zokyo for audits; Cobo, Fireblocks for custody and treasury management).
-- **Smart-contract defects:** Independent audits by Hacken (2024) with no critical vulnerabilities found.
+- **Smart-contract defects:** Independent audits by Hacken (2024) and Guardian (2026), with no critical vulnerabilities found.
 
 ---
 
 ## Resources
 
-- [yellow.org](https://yellow.org/) — Yellow Network overview, technology, roadmap, and ecosystem updates
-- [docs.yellow.org](https://docs.yellow.org/) — Developer documentation, guides, tools, and tutorials
-- [github.com/layer-3/yellow](https://github.com/layer-3/yellow) — Yellow network Protocol smart-contracts
-- [github.com/layer-3/clearnet](https://github.com/layer-3/clearnet) — Yellow network node repository (open-source client software and smart contracts)
-- [github.com/layer-3/docs](https://github.com/layer-3/docs) — Documentation website repository
+- [yellow.org](https://yellow.org/): Yellow Network overview, technology, roadmap, and ecosystem updates
+- [docs.yellow.org](https://docs.yellow.org/): Developer documentation, guides, tools, and tutorials
+- [github.com/layer-3/yellow](https://github.com/layer-3/yellow): Yellow Network Protocol smart contracts and deployed addresses
+- [github.com/layer-3/clearnet](https://github.com/layer-3/clearnet): Yellow Network node repository (open-source client software and smart contracts)
+- [github.com/layer-3/docs](https://github.com/layer-3/docs): Documentation website repository
 
 ## MiCA White Paper Filing History
 
