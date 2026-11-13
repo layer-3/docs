@@ -135,13 +135,12 @@ Layer3 Fintech Ltd. has committed substantial resources to the Yellow project:
 - **Financial Resources** — Private round seed funding and a $1M public placement, primarily allocated to operational expenses and team salaries.
 - **Human Resources** — 33 full-time staff within Layer3 Fintech Ltd., supplemented by approximately 60 core developers across independent entities including Clearsync Ltd. (UK). Advisors include Chris Larsen, co-founder of Ripple Labs.
 - **Technical Resources** — Builds on open-source state channel research from statechannels.org and the Nitrolite framework developed in collaboration with Consensys.
-- **Operational Partnerships** — Exchange partnerships with Kraken, Coinbase, Bithumb, and yellow.pro have been initiated. Admission to additional exchanges is subject to final listing agreements.
 
 ---
 
 ## Offer Information
 
-The public offer of the YELLOW token has been completed. The most recent public sale was successfully funded and closed on 25 August 2025. The YELLOW token was admitted to secondary market trading on 8 March 2026 on a non-EU regulated exchange. Layer3 Fintech Ltd. intends to seek admission to trading on additional centralised exchanges, including Kraken, Coinbase, and Bithumb, as well as on yellow.pro, subject to final agreements and listing approvals.
+The public offer of the YELLOW token has been completed. The most recent public sale was successfully funded and closed on 25 August 2025. The YELLOW token was admitted to secondary market trading on 8 March 2026 on a non-EU regulated exchange. 
 
 The public offer was facilitated through Republic, a US-based funding platform, under Regulation D and Regulation S. No MiCA-authorized CASP was designated for token placement.
 
