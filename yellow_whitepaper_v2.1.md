@@ -53,7 +53,7 @@ YELLOW is the access token for the Yellow Network, required to use the goods and
 
 ## 10 — Key information about the offer to the public or admission to trading
 
-The total supply of YELLOW is 10,000,000,000 tokens. The issue price for the most recent public sale was USD 0.011 per token, and no subscription fees were charged. The offering targets both retail and professional users. The offer was conducted in multiple phases: a pre-sale running from 2022 to 2025, followed by a public sale that was successfully funded and closed on 25 August 2025. Primary sales are closed. The YELLOW token was admitted to secondary market trading on 8 March 2026. The public offer was facilitated through Republic, a US-based funding platform, under Regulation D and Regulation S. No MiCA-authorized CASP was designated for token placement. The token allocation is as follows: 10% Founders, 12.5% Token Sales, 30% Community Treasury, 20% Foundation Treasury, 25% Network Growth Incentives (distributed automatically based on network scale), and 2.5% Ecosystem Accessibility Reserve. The Foundation controls 50% of total supply, subject to linear vesting. The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange. Layer3 Fintech Ltd. intends to seek admission to trading on additional centralised exchanges, including Kraken, Coinbase, and Bithumb, as well as on yellow.pro, an exchange built on the Yellow Network's NeoDAX software, subject to final agreements and listing approvals.
+The total supply of YELLOW is 10,000,000,000 tokens. The issue price for the most recent public sale was USD 0.011 per token, and no subscription fees were charged. The offering targets both retail and professional users. The offer was conducted in multiple phases: a pre-sale running from 2022 to 2025, followed by a public sale that was successfully funded and closed on 25 August 2025. Primary sales are closed. The YELLOW token was admitted to secondary market trading on 8 March 2026. The public offer was facilitated through Republic, a US-based funding platform, under Regulation D and Regulation S. No MiCA-authorized CASP was designated for token placement. The token allocation is as follows: 10% Founders, 12.5% Token Sales, 30% Community Treasury, 20% Foundation Treasury, 25% Network Growth Incentives (distributed automatically based on network scale), and 2.5% Ecosystem Accessibility Reserve. The Foundation controls 50% of total supply, subject to linear vesting. The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange.
 # Part A: Information about the offeror or person seeking admission to trading
 
 ## A.1 — Name
@@ -351,7 +351,7 @@ Human Resources — Yellow has a dedicated core team of 33 full-time staff withi
 
 Technical Resources — The project builds on open-source state channel research from statechannels.org and the Nitrolite framework developed in collaboration with Consensys and other contributors. Core developers across the contributing entities maintain and extend the open-source codebase, with Layer3 Fintech Ltd. integrating contributions into the supplied goods and services.
 
-Operational Partnerships — Exchange partnerships with Kraken, Coinbase, Bithumb, and yellow.pro have been initiated to support token launch and liquidity provision. The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange. Admission to additional exchanges is subject to final listing agreements.
+The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange.
 
 ## D.10 — Planned Use of Collected Funds or Crypto-Assets
 
@@ -514,7 +514,7 @@ WOUT
 
 ## E.33 — Trading platforms name
 
-The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange. Layer3 Fintech Ltd. intends to seek admission to trading on additional centralised exchanges, including Kraken, Coinbase, and Bithumb, as well as on yellow.pro (an exchange built on the Yellow Network's NeoDAX software), subject to final agreements and listing approvals. Other MiCA-compliant centralised and/or decentralized exchanges may be added based on future agreements.
+The YELLOW token was admitted to trading on 8 March 2026 on a non-EU regulated exchange. Other MiCA-compliant centralised and/or decentralized exchanges may be added based on future agreements.
 
 ## E.34 — Trading platforms Market Identifier Code (MIC)
 
